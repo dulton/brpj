@@ -1,0 +1,36 @@
+//产品字段
+struct PRODUCT_INFO_ST
+{
+	unsigned long int nid;
+	char barcode[64];	//一维码
+	char name[256];		//名称
+	char spec[2048];	//规格 其他信息
+	char path1[260];		//图片路径
+	char path2[260];		//图片路径
+	char path3[260];		//图片路径
+};
+
+///////////////////////////
+//二进制描述
+flag |0x01 ==使用 一维码 查询  用LIKE模式
+flag |0x02 ==使用 产品名称 查询	用LIKE模式
+
+函数内部用 1 == flag & 0x01 来判断是否开启。
+
+UL 查总共有多少条信息
+(char *barcode,
+char *name,
+char *输出合成的SQL语句
+)；
+
+BOOL 分页查信息（CHAR *输入SQL语句，int flag,int 起始编号，结束编号，list<struct PRODUCT_INFO_ST> &A）;
+
+///////////////////////////
+
+BOOL 增(struct PRODUCT_INFO_ST a);
+
+///////////////////////////
+void 删(unsigned long int nid);
+
+///////////////////////////////////////////
+void 改(struct PRODUCT_INFO_ST a);

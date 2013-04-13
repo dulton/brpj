@@ -1,0 +1,54 @@
+//视频字段
+struct VIDEO_INFO_ST
+{
+	unsigned long int nid;
+
+	unsigned long int product_nid;	//产品nid
+	char product_barcode[64];	//一维码
+	char product_name[256];		//名称
+
+	//起始时间
+	int start_year;
+	int start_mon;
+	int start_day;
+	int start_hour;
+	int start_min;
+	int start_sec;
+	//结束时间
+	int end_year;
+	int end_mon;
+	int end_day;
+	int end_hour;
+	int end_min;
+	int end_sec;
+
+	unsigned long int size;	//文件大小
+	char path[260];	//文件路径
+};
+
+//二进制描述
+flag |0x01 ==使用 产品一维码 查询  用LIKE模式
+flag |0x02 ==使用 产品名称 查询	用LIKE模式
+flag |0x04 ==使用 时间 查询	用>= <=模式
+
+
+UL 查总共有多少条信息
+(char *barcode,
+char *name,
+char *starttime,
+char *endtime,
+char *输出合成的SQL语句
+)；
+
+BOOL 分页查信息（CHAR *输入SQL语句，int flag,int 起始编号，结束编号，list<struct VIDEO_INFO_ST> &A）;
+/////////////////////////////////
+
+BOOL 增（
+UL product_nid，
+char *starttime,
+char *endtime,
+char path,
+UL size）;
+/////////////////////////////////
+bool 删（UL nid）;
+包括把视频文件也删了

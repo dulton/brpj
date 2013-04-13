@@ -1,0 +1,396 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\BarcodeRecord.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\BarcodeRecord.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 44
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About BarcodeRecord"
+FONT 9, "Arial"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,14,18,17
+    LTEXT           "BarcodeRecord",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2013",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_BARCODERECORD_DIALOG DIALOGEX 0, 0, 563, 346
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "BarcodeRecord"
+FONT 9, "Arial"
+BEGIN
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,
+                    449,17,107,111
+    LTEXT           "IP Camera Tree",IDC_STATIC_TITLE,422,7,51,8
+END
+
+IDD_PRODUCT_INFO DIALOG DISCARDABLE  0, 0, 146, 210
+STYLE WS_CHILD
+FONT 9, "Arial"
+BEGIN
+    EDITTEXT        IDC_EDIT_BARCODE,0,15,146,14,ES_AUTOHSCROLL
+    LTEXT           "Barcode",IDC_STATIC,0,5,29,8
+    PUSHBUTTON      "OK",IDC_BUTTON_OK,96,32,50,14
+    LTEXT           "",IDC_STATIC_NAME,0,52,146,13,WS_BORDER
+    LTEXT           "Product Name",IDC_STATIC,0,41,49,8
+    LTEXT           "Product Specifications",IDC_STATIC,0,67,71,8
+    LTEXT           "",IDC_STATIC_SPEC,0,78,146,34,WS_BORDER
+    LTEXT           "Product Image",IDC_STATIC,0,114,47,8
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,0,1,146,1
+    CONTROL         "Tab1",IDC_TAB_PIC,"SysTabControl32",0x0,0,124,146,86
+END
+
+IDD_CONTROL DIALOG DISCARDABLE  0, 0, 406, 28
+STYLE WS_CHILD
+FONT 9, "Arial"
+BEGIN
+    PUSHBUTTON      "Record",IDC_BUTTON_RECORD,7,7,50,14
+    PUSHBUTTON      "Pause",IDC_BUTTON_PAUSE,64,7,50,14
+    PUSHBUTTON      "Stop",IDC_BUTTON_STOP,121,7,50,14
+    PUSHBUTTON      "Shot Frame",IDC_BUTTON_SHOTFRAME,178,7,50,14
+    PUSHBUTTON      "Settings",IDC_BUTTON_SETTINGS,235,7,50,14
+    PUSHBUTTON      "Video List",IDC_BUTTON_VIDEOLIST,292,7,50,14
+    PUSHBUTTON      "Product List",IDC_BUTTON_PRODUCTLIST,349,7,50,14
+END
+
+IDD_PLAYWIN DIALOG DISCARDABLE  0, 0, 187, 100
+STYLE WS_CHILD
+FONT 9, "Arial"
+BEGIN
+    LTEXT           "video info",IDC_STATIC_INFO,7,85,173,8
+END
+
+IDD_PRODUCTLIST DIALOG DISCARDABLE  0, 0, 547, 346
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Product List"
+FONT 9, "Arial"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SORTASCENDING | WS_BORDER | 
+                    WS_TABSTOP,7,24,533,200
+    LTEXT           "Barcode",IDC_STATIC,7,7,27,8
+    EDITTEXT        IDC_EDIT_SEARCH_BARCODE,39,7,132,14,ES_AUTOHSCROLL
+    LTEXT           "Product Name",IDC_STATIC,177,7,46,8
+    EDITTEXT        IDC_EDIT_SEARCH_NAME,229,7,132,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "<<",IDC_BUTTON_FIRST,181,229,39,14
+    LTEXT           "",IDC_STATIC_INFO,7,230,163,8
+    PUSHBUTTON      "Search",IDC_BUTTON_SEARCH,402,7,50,14
+    PUSHBUTTON      "<",IDC_BUTTON_PREVIOUS,233,229,39,14
+    PUSHBUTTON      ">",IDC_BUTTON_NEXT,285,229,39,14
+    PUSHBUTTON      ">>",IDC_BUTTON_LAST,337,229,39,14
+    EDITTEXT        IDC_EDIT_PAGE,389,229,39,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Jump To",IDC_BUTTON_JUMP,441,229,39,14
+    LTEXT           "Barcode",IDC_STATIC,13,254,27,8
+    EDITTEXT        IDC_EDIT_PRODUCT_BARCODE,51,254,132,14,ES_AUTOHSCROLL
+    LTEXT           "Name",IDC_STATIC,13,272,20,8
+    EDITTEXT        IDC_EDIT_PRODUCT_NAME,51,270,196,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SPEC,250,256,226,76,ES_MULTILINE | WS_VSCROLL | 
+                    WS_HSCROLL
+    RTEXT           "Specifications",IDC_STATIC,201,257,45,8
+    LTEXT           "Image Path",IDC_STATIC,13,306,37,8
+    EDITTEXT        IDC_EDIT_PRODUCT_IMAGE1,51,287,141,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Selection",IDC_BUTTON_IMAGE1,197,287,50,14
+    GROUPBOX        "Product Info",IDC_STATIC,7,244,475,95
+    PUSHBUTTON      "New",IDC_BUTTON_NEW,490,266,50,14
+    PUSHBUTTON      "Modify",IDC_BUTTON_MODIFY,490,286,50,14
+    PUSHBUTTON      "Delete",IDC_BUTTON_DELETE,490,306,50,14
+    EDITTEXT        IDC_EDIT_PRODUCT_IMAGE2,51,303,141,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Selection",IDC_BUTTON_IMAGE2,197,303,50,14
+    EDITTEXT        IDC_EDIT_PRODUCT_IMAGE3,51,319,141,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Selection",IDC_BUTTON_IMAGE3,197,319,50,14
+END
+
+IDD_VIDEOLIST DIALOG DISCARDABLE  0, 0, 353, 233
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Video List"
+FONT 9, "Arial"
+BEGIN
+    CONTROL         "Check1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,98,21,40,10
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER1,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | WS_TABSTOP,154,8,
+                    100,15
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER2,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | WS_TABSTOP,150,30,
+                    100,15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER3,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,266,7,57,
+                    15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER4,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,265,29,57,
+                    15
+END
+
+IDD_SETTINGS DIALOG DISCARDABLE  0, 0, 299, 114
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings"
+FONT 9, "Arial"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,181,93,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,242,93,50,14
+    EDITTEXT        IDC_EDIT_SHOTFRAME,7,61,229,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "Shot Frame Save Folder",IDC_STATIC,7,51,76,8
+    PUSHBUTTON      "Selection",IDC_BUTTON_SHOTFRAME,242,61,50,14
+    EDITTEXT        IDC_EDIT_RECORD,7,17,229,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Record Save Folder",IDC_STATIC,7,7,63,8
+    PUSHBUTTON      "Selection",IDC_BUTTON_RECORD,242,17,50,14
+    COMBOBOX        IDC_COMBO_RECORD,54,34,123,80,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Naming Rule",IDC_STATIC,7,36,43,8
+    COMBOBOX        IDC_COMBO_SHOTFRAME,54,78,123,62,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Naming Rule",IDC_STATIC,7,78,43,8
+END
+
+IDD_NEWDEVICE DIALOG DISCARDABLE  0, 0, 189, 123
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "New Device"
+FONT 9, "Arial"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,31,102,50,14
+    PUSHBUTTON      "取消",IDCANCEL,109,102,50,14
+    EDITTEXT        IDC_EDIT_NAME,61,7,121,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IP,61,25,121,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PORT,61,43,121,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_PWD,61,79,121,14,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_USER,61,61,121,14,ES_AUTOHSCROLL
+    LTEXT           "Camera Name",IDC_STATIC,7,13,49,8
+    LTEXT           "Camera IPaddr",IDC_STATIC,7,30,49,8
+    LTEXT           "Camera port",IDC_STATIC,7,47,49,8
+    LTEXT           "Username",IDC_STATIC,7,64,49,8
+    LTEXT           "Password",IDC_STATIC,7,81,49,8
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "BarcodeRecord Microsoft 基础类应用程序\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "BarcodeRecord\0"
+            VALUE "LegalCopyright", "版权所有 (C) 2013\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "BarcodeRecord.EXE\0"
+            VALUE "ProductName", "BarcodeRecord 应用程序\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 37
+    END
+
+    IDD_BARCODERECORD_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 556
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 339
+    END
+
+    IDD_CONTROL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 399
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 21
+    END
+
+    IDD_PLAYWIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 93
+    END
+
+    IDD_PRODUCTLIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 540
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 339
+    END
+
+    IDD_VIDEOLIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 346
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 226
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 292
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
+    END
+
+    IDD_NEWDEVICE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 182
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 116
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "关于 BarcodeRecord(&A)..."
+END
+
+#endif    // Chinese (中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\BarcodeRecord.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
