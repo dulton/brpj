@@ -9,7 +9,6 @@
 extern CDLGSettings DlgSettings;
 
 #include "DLGVideoList.h"
-#include "DLGProductList.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -47,7 +46,6 @@ BEGIN_MESSAGE_MAP(CDLGControl, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SHOTFRAME, OnButtonShotframe)
 	ON_BN_CLICKED(IDC_BUTTON_SETTINGS, OnButtonSettings)
 	ON_BN_CLICKED(IDC_BUTTON_VIDEOLIST, OnButtonVideolist)
-	ON_BN_CLICKED(IDC_BUTTON_PRODUCTLIST, OnButtonProductlist)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -106,20 +104,16 @@ void CDLGControl::OnButtonSettings()
 void CDLGControl::OnButtonVideolist() 
 {
 	// TODO: Add your control notification handler code here
+
+	/*
 	//打开文件所在的文件夹
 	ShellExecute(this->m_hWnd,
 		"open",
 		"explorer.exe",
 		"/e,/select,D:\\GGG\\YiRongCarDetectAIO\\IO定义\\历史识别报警表 数据库IO规则.txt",
 		NULL,SW_NORMAL);
+		*/
 
 	CDLGVideoList DlgVideoList;
 	DlgVideoList.DoModal();
-}
-
-void CDLGControl::OnButtonProductlist() 
-{
-	// TODO: Add your control notification handler code here
-	CDLGProductList DlgProductList;
-	DlgProductList.DoModal();
 }

@@ -224,9 +224,9 @@ void CBarcodeRecordDlg::UpdatePannelPosition()
 	GetClientRect(&m_clientRect);
 
 	//ÇÐ»»À¸¿í¶È=LOGOÍ¼Æ¬µÄ¿í¶È
-	int tree_width=258;
+	int tree_width=320;
 	//LOGOÍ¼Æ¬µÄ¸ß¶È
-	int tree_height=200;
+	int tree_height=150;
 
 	//´°Ìå±ß¾à
 	int distance=10;

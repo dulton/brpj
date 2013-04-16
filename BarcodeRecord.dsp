@@ -118,10 +118,6 @@ SOURCE=.\DLGProductInfo.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DLGProductList.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\DLGSettings.cpp
 # End Source File
 # Begin Source File
@@ -160,10 +156,6 @@ SOURCE=.\DLGPlaywin.h
 # Begin Source File
 
 SOURCE=.\DLGProductInfo.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DLGProductList.h
 # End Source File
 # Begin Source File
 

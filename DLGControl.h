@@ -42,7 +42,6 @@ protected:
 	afx_msg void OnButtonShotframe();
 	afx_msg void OnButtonSettings();
 	afx_msg void OnButtonVideolist();
-	afx_msg void OnButtonProductlist();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
