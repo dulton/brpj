@@ -39,7 +39,7 @@
 #define IDC_DATETIMEPICKER_STARTHOUR    1030
 #define IDC_DATETIMEPICKER_ENDHOUR      1031
 #define IDC_EDIT_RUNNUM                 1048
-#define IDC_EDIT_TAG                    1049
+#define IDC_EDIT_HMNUM                  1049
 #define IDC_BUTTON_PREVIOUS             1050
 #define IDC_BUTTON_FIRST                1051
 #define IDC_BUTTON_NEXT                 1052
@@ -50,6 +50,21 @@
 #define IDC_BUTTON_PLAY                 1057
 #define IDC_BUTTON_DELETE               1058
 #define IDC_LIST                        1059
+#define IDC_STATIC_RUNNUMBER            1060
+#define IDC_EDIT_DESC                   1060
+#define IDC_STATIC_TAG                  1061
+#define IDC_STATIC_MAINC                1062
+#define IDC_STATIC_SUBC                 1063
+#define IDC_STATIC_METAFIELD            1064
+#define IDC_STATIC_COLORDESC            1065
+#define IDC_STATIC_COLOR                1066
+#define IDC_STATIC_UNIT                 1067
+#define IDC_STATIC_FACTORYITEM          1068
+#define IDC_STATIC_HMNUM                1069
+#define IDC_STATIC_DESC                 1070
+#define IDC_STATIC_PIC2                 1071
+#define IDC_STATIC_PIC3                 1072
+#define IDC_STATIC_PIC1                 1073
 
 // Next default values for new objects
 // 
@@ -57,7 +72,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1060
+#define _APS_NEXT_CONTROL_VALUE         1074
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -30,6 +30,7 @@ public:
 	CDLGControl DlgControl;
 	CDLGPlaywin	DlgPlaywin;
 	CDLGProductInfo	DlgProductInfo;
+	CSqliteOperate SQLiteIO;
 
 	CRect		m_clientRect;		//程序界面区域位置
 	//切换位置

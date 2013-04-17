@@ -126,6 +126,10 @@ SOURCE=.\DLGVideoList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SQLiteOperate.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -168,6 +172,10 @@ SOURCE=.\DLGVideoList.h
 # Begin Source File
 
 SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SQLiteOperate.h
 # End Source File
 # Begin Source File
 

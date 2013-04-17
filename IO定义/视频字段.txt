@@ -2,10 +2,9 @@
 struct VIDEO_INFO_ST
 {
 	unsigned long int nid;
-
-	unsigned long int product_nid;	//产品nid
-	char product_barcode[64];	//一维码
-	char product_name[256];		//名称
+	
+	//产品结构体
+	struct PRODUCT_INFO_ST product;
 
 	//起始时间
 	int start_year;
@@ -27,21 +26,23 @@ struct VIDEO_INFO_ST
 };
 
 //二进制描述
-flag |0x01 ==使用 产品一维码 查询  用LIKE模式
-flag |0x02 ==使用 产品名称 查询	用LIKE模式
+flag |0x01 ==使用 产品RUN NUM 查询  用LIKE模式
+flag |0x02 ==使用 产品TAG 查询	用LIKE模式
 flag |0x04 ==使用 时间 查询	用>= <=模式
 
 
 UL 查总共有多少条信息
-(char *barcode,
-char *name,
+(char *runnum,
+char *tag,
 char *starttime,
 char *endtime,
 char *输出合成的SQL语句
 )；
 
-BOOL 分页查信息（CHAR *输入SQL语句，int flag,int 起始编号，结束编号，list<struct VIDEO_INFO_ST> &A）;
+BOOL 分页查信息（CHAR *输入SQL语句，int flag,int 起始编号，int 结束编号，list<struct VIDEO_INFO_ST> &A）;
 /////////////////////////////////
+
+//增的时候自己将 产品的RUNNUM 和TAG 字段 以及产品nid 写入视频表中 以方便查询
 
 BOOL 增（
 UL product_nid，
@@ -49,6 +50,6 @@ char *starttime,
 char *endtime,
 char path,
 UL size）;
-/////////////////////////////////
+
 bool 删（UL nid）;
 包括把视频文件也删了

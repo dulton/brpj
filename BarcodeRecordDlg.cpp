@@ -5,6 +5,8 @@
 #include "BarcodeRecord.h"
 #include "BarcodeRecordDlg.h"
 
+CBarcodeRecordDlg *pCMainDlg;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -91,6 +93,14 @@ END_MESSAGE_MAP()
 
 BOOL CBarcodeRecordDlg::OnInitDialog()
 {
+	pCMainDlg=this;
+	//打开数据库
+	SQLiteIO.OpenDB("BarcodeRecordSQL.db");
+	//数据库建表
+	SQLiteIO.Product_CreatTable();
+	SQLiteIO.Video_CreatTable();
+
+	//翻译
 	Language_SetWndStaticText(this);
 	CDialog::OnInitDialog();
 
@@ -192,7 +202,9 @@ void CBarcodeRecordDlg::OnOK()
 void CBarcodeRecordDlg::OnCancel() 
 {
 	// TODO: Add extra cleanup here
-	
+	//关闭数据库
+	SQLiteIO.CloseDB();
+	Sleep(1000);
 	CDialog::OnCancel();
 }
 

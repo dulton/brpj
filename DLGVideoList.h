@@ -6,36 +6,15 @@
 #endif // _MSC_VER > 1000
 // DLGVideoList.h : header file
 //
+
+#include "SqliteOperate.h"
+
 #include <vector>
 #include <list>
 using namespace::std;
 
 #define VIDEO_INFO_MAX_NUM 40
 
-//视频字段
-struct VIDEO_INFO_ST
-{
-	unsigned long int nid;
-	unsigned long int product_nid;
-
-	//起始时间
-	int start_year;
-	int start_mon;
-	int start_day;
-	int start_hour;
-	int start_min;
-	int start_sec;
-	//结束时间
-	int end_year;
-	int end_mon;
-	int end_day;
-	int end_hour;
-	int end_min;
-	int end_sec;
-
-	unsigned long int size;	//文件大小
-	char path[260];	//文件路径
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGVideoList dialog
@@ -57,7 +36,8 @@ public:
 	CTime	m_EndHour;
 	BOOL	m_CheckTime;
 	CString	m_runnum;
-	CString	m_tag;
+	CString	m_desc;
+	CString	m_hmnum;
 	//}}AFX_DATA
 
 	list<struct VIDEO_INFO_ST> list_video;

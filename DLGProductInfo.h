@@ -7,6 +7,29 @@
 // DLGProductInfo.h : header file
 //
 
+#include "SqliteOperate.h"
+
+/*
+struct PRODUCT_INFO_ST
+{
+	unsigned long int nid;
+	char RunningNumber[256];	
+	char tag[256];		
+	char MainCategory[256];
+	char SubCategory[256];
+	char MetaField[256];
+	char ColourDesc[256];
+	char Colour[256];
+	char Unit[256];
+	char FactoryItem[256];
+	char HmNum[256];
+	char Description[2560];
+	char path1[260];		//Í¼Æ¬Â·¾¶
+	char path2[260];		//Í¼Æ¬Â·¾¶
+	char path3[260];		//Í¼Æ¬Â·¾¶
+};
+*/
+
 /////////////////////////////////////////////////////////////////////////////
 // CDLGProductInfo dialog
 
@@ -19,11 +42,16 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGProductInfo)
 	enum { IDD = IDD_PRODUCT_INFO };
-		// NOTE: the ClassWizard will add data members here
+	CString	m_barcode;
 	//}}AFX_DATA
 
 	BOOL OnInitDialog();
 	void AutoSize();
+	void Display(int i);
+
+	int curchoose;
+	struct PRODUCT_INFO_ST data[MAX_PLAYWIN];
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGProductInfo)
