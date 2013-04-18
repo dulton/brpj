@@ -8,6 +8,11 @@
 #include "DLGSettings.h"
 extern CDLGSettings DlgSettings;
 
+////////////////////////////////////
+#include "BarcodeRecordDlg.h"
+extern CBarcodeRecordDlg *pCMainDlg;
+
+
 #include "DLGVideoList.h"
 
 #ifdef _DEBUG
@@ -74,7 +79,7 @@ void CDLGControl::AutoSize()
 void CDLGControl::OnButtonRecord() 
 {
 	// TODO: Add your control notification handler code here
-	
+	pCMainDlg->DlgPlaywin.StartPlay();
 }
 
 void CDLGControl::OnButtonPause() 
@@ -92,7 +97,7 @@ void CDLGControl::OnButtonStop()
 void CDLGControl::OnButtonShotframe() 
 {
 	// TODO: Add your control notification handler code here
-	
+	pCMainDlg->DlgPlaywin.CapturePic("D:\\111.bmp");
 }
 
 void CDLGControl::OnButtonSettings() 

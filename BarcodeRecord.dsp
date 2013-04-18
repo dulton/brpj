@@ -102,6 +102,10 @@ SOURCE=.\BarcodeRecordDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\BSWndContainer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DLGControl.cpp
 # End Source File
 # Begin Source File
@@ -126,12 +130,24 @@ SOURCE=.\DLGVideoList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\PlayWnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ScreenPannel.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SQLiteOperate.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\YaanCamera.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -144,6 +160,10 @@ SOURCE=.\BarcodeRecord.h
 # Begin Source File
 
 SOURCE=.\BarcodeRecordDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\BSWndContainer.h
 # End Source File
 # Begin Source File
 
@@ -171,7 +191,15 @@ SOURCE=.\DLGVideoList.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\PlayWnd.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ScreenPannel.h
 # End Source File
 # Begin Source File
 
@@ -180,6 +208,10 @@ SOURCE=.\SQLiteOperate.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\YaanCamera.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

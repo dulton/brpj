@@ -85,14 +85,14 @@ BOOL CDLGVideoList::OnInitDialog()
 	Language_SetWndStaticText(this);
 	CDialog::OnInitDialog();
 
-	m_list.InsertColumn(0, _T("No.") , LVCFMT_LEFT, 50);
+	m_list.InsertColumn(0, _T("No.") , LVCFMT_LEFT, 65);
 	m_list.InsertColumn(1, _T("Running Number") , LVCFMT_LEFT, 150);
 	m_list.InsertColumn(2, _T("Carton TAG" ), LVCFMT_LEFT, 150);
-	m_list.InsertColumn(3, _T("Hm Number" ), LVCFMT_LEFT, 100);
+	m_list.InsertColumn(3, _T("Hm Number" ), LVCFMT_LEFT, 120);
 	m_list.InsertColumn(4, _T("Description" ), LVCFMT_LEFT, 220);
-	m_list.InsertColumn(5, _T("Start Time" ), LVCFMT_LEFT, 120);
-	m_list.InsertColumn(6, _T("End Time" ), LVCFMT_LEFT, 120);
-	m_list.InsertColumn(7, _T("File Size" ), LVCFMT_LEFT, 60);
+	m_list.InsertColumn(5, _T("Start Time" ), LVCFMT_LEFT, 130);
+	m_list.InsertColumn(6, _T("End Time" ), LVCFMT_LEFT, 130);
+	m_list.InsertColumn(7, _T("File Size" ), LVCFMT_LEFT, 80);
 	m_list.InsertColumn(8, _T("File Path" ), LVCFMT_LEFT, 0);
 
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
@@ -352,7 +352,7 @@ void CDLGVideoList::DisplayerList(void)
 			beglist->end_sec);
 		m_list.SetItemText(nItem,6,str);
 
-		sprintf(str,"%d",beglist->size);
+		sprintf(str,"%.2f MB",beglist->size/1024.0/1024.0);
 		m_list.SetItemText(nItem,7,str);
 
 		m_list.SetItemText(nItem,8,beglist->path);
