@@ -8,6 +8,16 @@ using namespace::std;
 
 #pragma comment( lib, "sqlite3.lib")
 
+struct CAMERA_INFO_ST
+{
+	long int nid;
+	char name[24];				//摄像机名称
+	char ip[40];
+	char user[20];
+	char psw[20];
+	long port;
+};
+
 struct PRODUCT_INFO_ST
 {
 	unsigned long int nid;
@@ -72,18 +82,24 @@ public:
 	void CloseDB();
 	//执行SQL语句
 	void Sql_Execute(char *sql);
+
+	//摄像头表
+	void Camera_CreateTable(void);
+	void Camera_Add(struct CAMERA_INFO_ST cInfo);
+	void Camera_Modify(struct CAMERA_INFO_ST cInfo);
+	void Camera_Delete(unsigned long int nid);
+	bool Camera_Read(int maxNum,list<struct CAMERA_INFO_ST> &cameraList);
 	//产品信息表
-	void Product_CreatTable(void);
+	void Product_CreateTable(void);
 	void Product_Add(struct PRODUCT_INFO_ST pInfo);
 	void Product_Modify(struct PRODUCT_INFO_ST pInfo);
 	void Product_Delete(unsigned long int nid);
 	bool Product_Read(char *barcode,struct PRODUCT_INFO_ST &pInfo);
 
 	//视频信息表
-	void Video_CreatTable(void);
+	void Video_CreateTable(void);
 	void Video_Add(struct PRODUCT_INFO_ST pInfo,char *starttime,char *endtime,char *path,unsigned long size);
 	void Video_Delete(unsigned long int nid);
-	bool Video_Read(list<struct VIDEO_INFO_ST> &videoList);
 	unsigned long Video_GetCount(char *runnum,char *HmNum,char *Description,\
 								 char *starttime,char *endtime,int flag,char *sql);
 	bool Video_GetHistory(char *sql,int flag,int startNum,int endNum,\

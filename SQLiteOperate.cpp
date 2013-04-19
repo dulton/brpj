@@ -55,8 +55,110 @@ void CSqliteOperate::Sql_Execute(char *sql)
 }
 
 ////////////////////////////////////////////////////
+//摄像头表
+void CSqliteOperate::Camera_CreateTable(void)
+{
+	CString sql;
+	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_camera'");
+	sqlite3_prepare_v2(m_pDB, sql.GetBuffer(0), strlen(sql.GetBuffer(0)) + 1, &stmt, NULL);
+
+	if (SQLITE_ROW == sqlite3_step(stmt)) {
+		int row = sqlite3_column_int(stmt, 0);
+		sqlite3_finalize(stmt);
+		if(0 == row)
+		{
+			sql.Format("create table tb_camera(id integer primary key,name nvarchar(24), \
+												ip nvarchar(40), user nvarchar(20), \
+												psw nvarchar(20), port integer)");
+			Sql_Execute(sql.GetBuffer(0));
+			//第一次创建四个空的摄像头
+			struct CAMERA_INFO_ST cInfo;
+			strcpy(cInfo.name,"");
+			strcpy(cInfo.ip,"");
+			strcpy(cInfo.user,"");
+			strcpy(cInfo.psw,"");
+			cInfo.port = 0;
+
+			for(int i=0;i<MAX_PLAYWIN;i++)
+			{
+				Camera_Add(cInfo);
+			}
+		}
+	}
+}
+
+////////////////////////////////////////////////////
+void CSqliteOperate::Camera_Add(struct CAMERA_INFO_ST cInfo)
+{
+	CString sql;
+	sql.Format("insert into tb_camera(name,ip,user,psw,port) values('%s', '%s', '%s', '%s', %d)",\
+									  cInfo.name,cInfo.ip,cInfo.user,cInfo.psw,cInfo.port);
+	Sql_Execute(sql.GetBuffer(0));
+}
+
+////////////////////////////////////////////////////
+void CSqliteOperate::Camera_Modify(struct CAMERA_INFO_ST cInfo)
+{
+	CString sql;
+	sql.Format("update tb_camera set name='%s',ip='%s',user='%s',psw='%s',port=%d where id=%d",\
+									 cInfo.name,cInfo.ip,cInfo.user,cInfo.psw,cInfo.port,cInfo.nid);
+	Sql_Execute(sql.GetBuffer(0));
+}
+
+////////////////////////////////////////////////////
+void CSqliteOperate::Camera_Delete(unsigned long int nid)
+{
+	CString sql;
+	sql.Format("delete from tb_camera where id=%d",nid);
+	Sql_Execute(sql.GetBuffer(0));
+}
+
+////////////////////////////////////////////////////
+static int ReadCameraCallBack(void *context, int argc, char **argv, char **ColName)
+{
+	list<struct CAMERA_INFO_ST> *mSqlite = (list<struct CAMERA_INFO_ST> *)context; 
+
+	struct CAMERA_INFO_ST cInfo = {0};
+
+	sscanf(argv[0],"%d",&cInfo.nid);
+	strcpy(cInfo.name,argv[1]);
+	strcpy(cInfo.ip,argv[2]);
+	strcpy(cInfo.user,argv[3]);
+	strcpy(cInfo.psw,argv[4]);
+
+	if(strlen(argv[5]))
+		sscanf(argv[5],"%d",&cInfo.port);
+	else
+		cInfo.port=0;
+
+	mSqlite->push_back(cInfo);
+
+    return 0;
+}
+
+////////////////////////////////////////////////////
+bool CSqliteOperate::Camera_Read(int maxNum,list<struct CAMERA_INFO_ST> &cameraList)
+{
+	CString strSql;
+	strSql.Format(_T("select * from tb_camera limit %d"),maxNum);
+	char* cErrMsg;
+	int res = sqlite3_exec(m_pDB, strSql.GetBuffer(0), ReadCameraCallBack , &cameraList , &cErrMsg); 
+	if(res == SQLITE_OK)
+	{
+		if(cameraList.size())
+			return true;
+		else
+			return false;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+////////////////////////////////////////////////////
 //产品信息表
-void CSqliteOperate::Product_CreatTable(void)
+void CSqliteOperate::Product_CreateTable(void)
 {
 	CString sql;
 	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_product'");
@@ -111,7 +213,7 @@ void CSqliteOperate::Product_Delete(unsigned long int nid)
 {
 #if 0
 	CString sql;
-	sql.Format("delete form tb_product where id=%d",nid);
+	sql.Format("delete from tb_product where id=%d",nid);
 	Sql_Execute(sql.GetBuffer(0));
 #endif
 }
@@ -178,7 +280,7 @@ bool CSqliteOperate::Product_Read(char *barcode,struct PRODUCT_INFO_ST &pInfo)
 
 ////////////////////////////////////////////////////
 //视频信息表
-void CSqliteOperate::Video_CreatTable(void)
+void CSqliteOperate::Video_CreateTable(void)
 {
 	CString sql;
 	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_video'");
@@ -213,7 +315,7 @@ void CSqliteOperate::Video_Add(struct PRODUCT_INFO_ST pInfo,char *starttime,char
 void CSqliteOperate::Video_Delete(unsigned long int nid)
 {
 	CString sql;
-	sql.Format("delete form tb_video where id=%d",nid);
+	sql.Format("delete from tb_video where id=%d",nid);
 	Sql_Execute(sql.GetBuffer(0));
 }
 
@@ -252,23 +354,6 @@ static int ReadViedoCallBack(void *context, int argc, char **argv, char **ColNam
 	mSqlite->push_back(vInfo);
 
     return 0;
-}
-
-////////////////////////////////////////////////////
-bool CSqliteOperate::Video_Read(list<struct VIDEO_INFO_ST> &videoList)
-{
-	CString sql = "select id,RunningNumber,tag,HmNum,Description,strftime(stime),strftime(etime),size,path from tb_video";
-	char* cErrMsg;
-	int res = sqlite3_exec(m_pDB, sql.GetBuffer(0), ReadViedoCallBack , &videoList , &cErrMsg); 
-	if(res == SQLITE_OK)
-	{
-		if(videoList.size())
-			return true;
-		else
-			return false;
-	}
-	else
-		return false;
 }
 
 ////////////////////////////////////////////////////

@@ -75,7 +75,6 @@ void CBarcodeRecordDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CBarcodeRecordDlg)
-	DDX_Control(pDX, IDC_TREE, m_tree);
 	//}}AFX_DATA_MAP
 }
 
@@ -97,8 +96,11 @@ BOOL CBarcodeRecordDlg::OnInitDialog()
 	//打开数据库
 	SQLiteIO.OpenDB("BarcodeRecordSQL.db");
 	//数据库建表
-	SQLiteIO.Product_CreatTable();
-	SQLiteIO.Video_CreatTable();
+	SQLiteIO.Product_CreateTable();
+	SQLiteIO.Video_CreateTable();
+	SQLiteIO.Camera_CreateTable();
+
+	DlgNewDevice.read();
 
 	//翻译
 	Language_SetWndStaticText(this);
@@ -137,7 +139,9 @@ BOOL CBarcodeRecordDlg::OnInitDialog()
 	DlgProductInfo.Create(IDD_PRODUCT_INFO,this);
 	DlgProductInfo.ShowWindow(SW_SHOW);
 
-
+	//设置字体
+	TextFont.CreatePointFont(120,_T("Arial"));
+	GetDlgItem(IDC_STATIC_TITLE)->SetFont(&TextFont,true);
 	// TODO: Add extra initialization here
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -238,7 +242,7 @@ void CBarcodeRecordDlg::UpdatePannelPosition()
 	//切换栏宽度=LOGO图片的宽度
 	int tree_width=320;
 	//LOGO图片的高度
-	int tree_height=150;
+	int tree_height=0;
 
 	//窗体边距
 	int distance=10;
@@ -252,18 +256,9 @@ void CBarcodeRecordDlg::UpdatePannelPosition()
 	//必须 样式=重叠，边框=调整大小
 	GetDlgItem(IDC_STATIC_TITLE)->MoveWindow(treetitle_Rect);
 
-	//树
-	CRect tree_Rect;
-	tree_Rect.top = treetitle_Rect.bottom+distance;
-	tree_Rect.bottom = tree_Rect.top + tree_height;
-	tree_Rect.left = treetitle_Rect.left;
-	tree_Rect.right =treetitle_Rect.right;
-	//必须 样式=重叠，边框=调整大小
-	m_tree.MoveWindow(tree_Rect);
-
 	//产品信息
 	CRect product_Rect;
-	product_Rect.top = tree_Rect.bottom+distance;
+	product_Rect.top = treetitle_Rect.bottom;
 	product_Rect.bottom = m_clientRect.bottom;
 	product_Rect.left = treetitle_Rect.left;
 	product_Rect.right =treetitle_Rect.right;

@@ -37,11 +37,11 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDLGControl)
 	afx_msg void OnButtonRecord();
-	afx_msg void OnButtonPause();
 	afx_msg void OnButtonStop();
 	afx_msg void OnButtonShotframe();
 	afx_msg void OnButtonSettings();
 	afx_msg void OnButtonVideolist();
+	afx_msg void OnButtonIptree();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

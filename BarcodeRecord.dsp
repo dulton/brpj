@@ -130,6 +130,10 @@ SOURCE=.\DLGVideoList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Picture.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\PlayWnd.cpp
 # End Source File
 # Begin Source File
@@ -188,6 +192,10 @@ SOURCE=.\DLGSettings.h
 # Begin Source File
 
 SOURCE=.\DLGVideoList.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Picture.h
 # End Source File
 # Begin Source File
 

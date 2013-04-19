@@ -11,7 +11,7 @@
 #include "DLGControl.h"
 #include "DLGPlaywin.h"
 #include "DLGProductInfo.h"
-
+#include "DLGNewDevice.h"
 /////////////////////////////////////////////////////////////////////////////
 // CBarcodeRecordDlg dialog
 
@@ -31,6 +31,9 @@ public:
 	CDLGPlaywin	DlgPlaywin;
 	CDLGProductInfo	DlgProductInfo;
 	CSqliteOperate SQLiteIO;
+	CDLGNewDevice DlgNewDevice;
+
+	CFont TextFont;
 
 	CRect		m_clientRect;		//程序界面区域位置
 	//切换位置

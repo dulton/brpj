@@ -179,13 +179,36 @@ void CDLGVideoList::OnButtonSearch()
 void CDLGVideoList::OnButtonPlay() 
 {
 	// TODO: Add your control notification handler code here
-	
+	if(ListChoose<0)
+		return ;
+
+	char str[260];
+	m_list.GetItemText(ListChoose,8,str,260);
+
+	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
 }
 
 void CDLGVideoList::OnButtonDelete() 
 {
 	// TODO: Add your control notification handler code here
-	
+	if(ListChoose<0)
+		return ;
+
+	//删除数据库
+	int nid;
+	char str[260];
+	m_list.GetItemText(ListChoose,0,str,260);
+
+	sscanf(str,"%d",&nid);
+	pCMainDlg->SQLiteIO.Video_Delete(nid);
+
+	//删除文件
+	m_list.GetItemText(ListChoose,8,str,260);
+	DeleteFile(str);
+
+	ListNow=0;
+	DisplayerList();
+
 }
 
 void CDLGVideoList::OnButtonFirst() 
@@ -400,20 +423,17 @@ void CDLGVideoList::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO: Add your control notification handler code here
 	char str[260];
+	m_list.GetItemText(pNMIA->iItem,8,str,260);
+	char cmdstr[512];
 
+	sprintf(cmdstr,"/e,/select,%s",str);
 
-//	m_list.GetItemText(pNMIA->iItem,10,str,260);
-
-	/*
 	//打开文件所在的文件夹
 	ShellExecute(this->m_hWnd,
 		"open",
 		"explorer.exe",
-		"/e,/select,D:\\GGG\\YiRongCarDetectAIO\\IO定义\\历史识别报警表 数据库IO规则.txt",
+		cmdstr,
 		NULL,SW_NORMAL);
-		*/
-
-	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
 
 	*pResult = 0;
 }

@@ -43,7 +43,7 @@ void CDLGPlaywin::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDLGPlaywin, CDialog)
 	//{{AFX_MSG_MAP(CDLGPlaywin)
-	ON_WM_CTLCOLOR()
+
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -79,18 +79,6 @@ void CDLGPlaywin::AutoSize()
 {
 	CRect rc(0, 0, 0, 0);
 	GetClientRect(&rc);
-
-	//信息
-	CRect info_Rect;
-	info_Rect.top = rc.bottom-15;
-	info_Rect.bottom =  rc.bottom;
-	info_Rect.left = rc.left;
-	info_Rect.right =rc.right;
-	//必须 样式=重叠，边框=调整大小
-	GetDlgItem(IDC_STATIC_INFO)->MoveWindow(info_Rect);
-
-	//重置rc
-	rc.bottom=info_Rect.top;
 
 	//以下给视频分配窗口
 	m_screenPannel.MoveWindow(rc);
@@ -153,17 +141,4 @@ void CDLGPlaywin::StopRecord()
 	m_video.StopRecord(m_curScreen);
 }
 
-HBRUSH CDLGPlaywin::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
-{
-	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
-	if(nCtlColor==CTLCOLOR_STATIC)
-	{
-		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
-		// TODO: Change any attributes of the DC here
-		pDC->SetTextColor(RGB(255, 0, 0)); // 设置文本颜色
-		// TODO: Return a non-NULL brush if the parent's handler should not be called
-		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
-		// TODO: Return a different brush if the default is not desired
-	}
-	return hbr;
-}
+

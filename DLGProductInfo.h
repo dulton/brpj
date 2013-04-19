@@ -7,6 +7,7 @@
 // DLGProductInfo.h : header file
 //
 
+#include "Picture.h"
 #include "SqliteOperate.h"
 
 /*
@@ -42,8 +43,15 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGProductInfo)
 	enum { IDD = IDD_PRODUCT_INFO };
+	CStatic	m_pic3;
+	CStatic	m_pic2;
+	CStatic	m_pic1;
 	CString	m_barcode;
 	//}}AFX_DATA
+	CPicture pic1;
+	CPicture pic2;
+	CPicture pic3;
+	CFont TextFont;
 
 	BOOL OnInitDialog();
 	void AutoSize();
@@ -65,6 +73,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDLGProductInfo)
 	afx_msg void OnButtonOk();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
