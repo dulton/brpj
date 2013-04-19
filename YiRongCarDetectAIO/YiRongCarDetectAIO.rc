@@ -1,0 +1,1577 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\YiRongCarDetectAIO.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\YiRongCarDetectAIO.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 亿榕车牌识别系统"
+FONT 9, "宋体"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "亿榕车牌识别系统",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "版权所有 (C) 2013",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "确定",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_YIRONGCARDETECTAIO_DIALOG DIALOGEX 0, 0, 596, 417
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "亿榕车牌识别系统"
+MENU IDR_MENU
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "List2",IDC_LIST_CAR,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,144,334,445,56
+    CONTROL         137,IDC_STATIC,"Static",SS_BITMAP,3,0,147,87
+    LTEXT           "日志状态:",IDC_STATIC_PRINTF,3,402,586,8
+    CONTROL         "tree",IDC_BUTTON_TREE,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,3,320,50,14
+    CONTROL         "normal",IDC_BUTTON_NORMAL,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,61,319,50,14
+    CONTROL         "ptz",IDC_BUTTON_PTZ,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    117,316,50,14
+END
+
+IDD_SHORTCUT DIALOG DISCARDABLE  0, 0, 74, 483
+STYLE DS_3DLOOK | WS_CHILD
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "抓图",IDC_BUTTON_CAPBMP,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,280,45,40
+    CONTROL         "1窗",IDC_BUTTON_MODE1,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,0,45,40
+    CONTROL         "4窗",IDC_BUTTON_MODE4,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,40,45,40
+    CONTROL         "9窗",IDC_BUTTON_MODE9,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,80,45,40
+    CONTROL         "16窗",IDC_BUTTON_MODE16,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,120,45,40
+    CONTROL         "预览",IDC_BUTTON_PREVIEW,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,160,45,40
+    CONTROL         "报警",IDC_BUTTON_ALARM,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,240,45,40
+    CONTROL         "录制",IDC_BUTTON_RECORD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,320,45,40
+    CONTROL         "识别",IDC_BUTTON_CAR,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    0,200,45,40
+    CONTROL         "设置识别",IDC_SET_CAR,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,0,360,45,40
+END
+
+IDD_DEVICE_TREE DIALOG DISCARDABLE  0, 0, 204, 258
+STYLE DS_3DLOOK | WS_CHILD
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "Tree1",IDC_TREE_DEVICE,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_LINESATROOT | TVS_EDITLABELS | 
+                    WS_BORDER | WS_TABSTOP,7,7,190,244
+END
+
+IDD_PTZ DIALOG DISCARDABLE  0, 0, 145, 269
+STYLE DS_3DLOOK | WS_CHILD
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "UL",IDC_UPLEFT,"Button",BS_OWNERDRAW | WS_TABSTOP,25,7,
+                    28,15
+    CONTROL         "U",IDC_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,58,7,28,15
+    CONTROL         "UR",IDC_UPRIGHT,"Button",BS_OWNERDRAW | WS_TABSTOP,91,7,
+                    28,15
+    CONTROL         "L",IDC_LEFT,"Button",BS_OWNERDRAW | WS_TABSTOP,25,27,28,
+                    15
+    CONTROL         "AUTO",IDC_AUTO,"Button",BS_OWNERDRAW | WS_TABSTOP,58,27,
+                    28,15
+    CONTROL         "R",IDC_RIGHT,"Button",BS_OWNERDRAW | WS_TABSTOP,91,27,
+                    28,15
+    CONTROL         "DL",IDC_DOWNLEFT,"Button",BS_OWNERDRAW | WS_TABSTOP,25,
+                    47,28,15
+    CONTROL         "D",IDC_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,58,47,28,
+                    15
+    CONTROL         "DR",IDC_DOWNRIGHT,"Button",BS_OWNERDRAW | WS_TABSTOP,91,
+                    47,28,15
+    CONTROL         "focusadd",IDC_FOCUS_ADD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,15,75,29,29
+    CONTROL         "FOCUSSUB",IDC_FOCUS_SUB,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,15,129,29,29
+    CONTROL         "IRISadd",IDC_IRIS_ADD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,57,75,29,29
+    CONTROL         "IRISSUB",IDC_IRIS_SUB,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,57,129,29,29
+    CONTROL         "ZOOMadd",IDC_ZOOM_ADD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,99,75,29,29
+    CONTROL         "ZOOMSUB",IDC_ZOOM_SUB,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,99,129,29,29
+    CONTROL         "SET",IDC_BUTTON_SET,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    29,192,25,14
+    CONTROL         "GO",IDC_BUTTON_GO,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    104,192,25,14
+    EDITTEXT        IDC_EDIT_SET,60,192,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "SS",IDC_SPEED_SUB,"Button",BS_OWNERDRAW | WS_TABSTOP,29,
+                    214,25,14
+    CONTROL         "SA",IDC_SPEED_ADD,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    104,214,25,14
+    EDITTEXT        IDC_EDIT_SPEED,60,214,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CTEXT           "聚\r焦",IDC_STATIC,15,109,29,17
+    CTEXT           "光\r圈",IDC_STATIC,57,109,29,17
+    CTEXT           "变\r倍",IDC_STATIC,99,109,29,17
+    LTEXT           "预设",IDC_STATIC,7,196,17,8
+    LTEXT           "速度",IDC_STATIC,7,218,17,8
+END
+
+IDD_NORMAL DIALOG DISCARDABLE  0, 0, 181, 279
+STYLE DS_3DLOOK | WS_CHILD
+FONT 9, "宋体"
+BEGIN
+    PUSHBUTTON      "全屏画面",IDC_BUTTON_FULL_SCREEN,75,7,53,14,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    CONTROL         "打开通道",IDC_BUTTON_OPENCHANNEL,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,75,27,53,14
+    CONTROL         "关闭预览(全)",IDC_BUTTON_CLOSE_PREVIEW_ALL,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,11,98,53,14
+    COMBOBOX        IDC_COMBO_SCREEN,11,7,53,58,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_STREAM,11,27,53,68,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "开启预览",IDC_BUTTON_OPEN_PREVIEW,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,11,54,53,14
+    CONTROL         "开启预览(全)",IDC_BUTTON_OPEN_PREVIEW_ALL,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,11,76,53,14
+    CONTROL         "开启识别",IDC_BUTTON_OPEN_DETECT,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,75,54,53,14
+    CONTROL         "开启识别(全)",IDC_BUTTON_OPEN_DETECT_ALL,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,75,76,53,14
+    CONTROL         "关闭识别(全)",IDC_BUTTON_CLOSE_DETECT_ALL,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,75,98,53,14
+    CONTROL         "开启录像",IDC_BUTTON_OPEN_RECORD,"Button",BS_OWNERDRAW | 
+                    WS_DISABLED | WS_TABSTOP,11,129,53,14
+    CONTROL         "开启录像全)",IDC_BUTTON_OPEN_RECORD_ALL,"Button",
+                    BS_OWNERDRAW | WS_DISABLED | WS_TABSTOP,11,151,53,14
+    CONTROL         "关闭录像(全)",IDC_BUTTON_CLOSE_RECORD_ALL,"Button",
+                    BS_OWNERDRAW | WS_DISABLED | WS_TABSTOP,11,173,53,14
+    CONTROL         "开启报警",IDC_BUTTON_OPEN_ALARM,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,75,129,53,14
+    CONTROL         "开启报警(全)",IDC_BUTTON_OPEN_ALARM_ALL,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,75,151,53,14
+    CONTROL         "关闭报警(全)",IDC_BUTTON_CLOSE_ALARM_ALL,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,75,173,53,14
+    CONTROL         "抓拍图片",IDC_BUTTON_CAPBMP,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,11,205,53,14
+    CONTROL         "历史视频查询",IDC_BUTTON_HISTORY_VIDEO,"Button",
+                    BS_OWNERDRAW | WS_DISABLED | WS_TABSTOP,75,205,53,14
+    CONTROL         "历史识别查询",IDC_BUTTON_HISTORY_DETECT,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,75,227,53,14
+    CONTROL         "历史报警查询",IDC_BUTTON_HISTORY_ALARM,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,75,249,53,14
+    CONTROL         "车牌识别设置",IDC_BUTTON_SET_CAR,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,11,227,53,14
+    CONTROL         "黑名单设置",IDC_BUTTON_SET_BLACK,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,11,249,53,14
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,200,62,66
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,125,62,66
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,50,62,66
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,71,50,62,66
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,72,125,62,66
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,71,200,62,66
+END
+
+IDD_SCREEN DIALOG DISCARDABLE  0, 0, 187, 100
+STYLE DS_3DLOOK | WS_CHILD
+FONT 9, "宋体"
+BEGIN
+END
+
+IDD_LOGIN DIALOGEX 0, 0, 213, 157
+STYLE WS_POPUP
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "确定",IDOK,"Button",BS_OWNERDRAW | WS_TABSTOP,37,129,50,
+                    14
+    CONTROL         "取消",IDCANCEL,"Button",BS_OWNERDRAW | WS_TABSTOP,130,
+                    129,50,14
+    EDITTEXT        IDC_EDIT_USER,71,51,109,14,ES_AUTOHSCROLL
+    LTEXT           "用户名",IDC_STATIC_USER,37,53,25,8,0,WS_EX_TRANSPARENT
+    LTEXT           "密码",IDC_STATIC_PSW,37,71,17,8
+    EDITTEXT        IDC_EDIT_PSW,71,69,109,14,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "新密码",IDC_STATIC_NEWPSW,37,89,25,8
+    EDITTEXT        IDC_EDIT_NEWPSW,71,87,109,14,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    LTEXT           "确认密码",IDC_STATIC_NEWPSW_AGAIN,37,107,33,8
+    EDITTEXT        IDC_EDIT_NEWPSW_AGAIN,71,105,109,14,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+END
+
+IDD_OPEN_CLOSE_PREVIEW DIALOG DISCARDABLE  0, 0, 404, 285
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "打开/关闭预览"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | 
+                    WS_BORDER | WS_TABSTOP,7,7,390,250
+    CONTROL         "全选",IDC_CHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,
+                    262,32,10
+    PUSHBUTTON      "启用",IDC_BUTTON_OPEN,213,264,50,14
+    PUSHBUTTON      "不启用",IDC_BUTTON_CLOSE,281,264,50,14
+    LTEXT           "指定窗口号",IDC_STATIC_WINNO,91,264,41,8
+    COMBOBOX        IDC_COMBO_WINNO,135,264,48,76,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_HISTORY_VIDEO DIALOG DISCARDABLE  0, 0, 523, 411
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "历史视频查询"
+FONT 9, "宋体"
+BEGIN
+    EDITTEXT        IDC_EDIT_NAME,45,7,129,14,ES_AUTOHSCROLL
+    LTEXT           "设备名称",IDC_STATIC,7,13,33,8
+    LTEXT           "设备ip",IDC_STATIC,7,29,25,8
+    CONTROL         "指定时间段",IDC_CHECK_TIME,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,185,19,56,10
+    LTEXT           "起始时间",IDC_STATIC,241,13,33,8
+    LTEXT           "结束时间",IDC_STATIC,241,30,33,8
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_STARTMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,277,7,99,15
+    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER_ENDMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,277,25,99,15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER_STARTHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,380,7,50,15
+    CONTROL         "DateTimePicker4",IDC_DATETIMEPICKER_ENDHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,380,25,50,15
+    EDITTEXT        IDC_EDIT_IP,45,25,129,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "查询",IDC_BUTTON_SEARCH,445,7,50,14
+    PUSHBUTTON      "播放",IDC_BUTTON_PLAY,445,25,50,14
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,43,509,342
+    PUSHBUTTON      "<<",IDC_BUTTON_FIRST,237,390,35,14
+    LTEXT           "",IDC_STATIC_INFO,7,389,215,8
+    PUSHBUTTON      "<",IDC_BUTTON_PREVIOUS,277,390,35,14
+    PUSHBUTTON      ">",IDC_BUTTON_NEXT,317,390,35,14
+    PUSHBUTTON      ">>",IDC_BUTTON_LAST,358,390,35,14
+    EDITTEXT        IDC_EDIT_PAGE,400,390,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "跳至",IDC_BUTTON_JUMP,446,390,50,14
+END
+
+IDD_SET_USER DIALOG DISCARDABLE  0, 0, 326, 339
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "用户设置"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SORTASCENDING | WS_BORDER | 
+                    WS_TABSTOP,7,7,151,324
+    LTEXT           "用户名",IDC_STATIC,163,7,25,8
+    LTEXT           "确认密码",IDC_STATIC,163,45,33,8
+    LTEXT           "密码",IDC_STATIC,163,26,17,8
+    EDITTEXT        IDC_EDIT_USER,200,7,119,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_USER_PSW,200,26,119,14,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_USER_PSWAGAIN,200,45,119,14,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    PUSHBUTTON      "添加",IDC_BUTTON_USER_ADD,161,317,50,14
+    PUSHBUTTON      "修改",IDC_BUTTON_USER_MODIFY,216,317,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_USER_DELETE,269,317,50,14
+    GROUPBOX        "用户权限",IDC_STATIC,164,90,155,222
+    CONTROL         "设备管理",IDC_CHECK_USER_DEVICE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,109,48,10
+    CONTROL         "抓拍图片",IDC_CHECK_USER_CAPBMP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,121,48,10
+    CONTROL         "本地录像",IDC_CHECK_USER_RECORD,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,134,48,10
+    CONTROL         "预览管理",IDC_CHECK_USER_PREVIEW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,147,48,10
+    CONTROL         "云台设置",IDC_CHECK_USER_PTZ,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,189,182,48,10
+    CONTROL         "定时录像设置",IDC_CHECK_USER_RECORDSET,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,208,64,10
+    CONTROL         "系统参数设置",IDC_CHECK_USER_SYSTEMSET,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,195,64,10
+    CONTROL         "黑名单设置",IDC_CHECK_USER_BLACKSET,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,234,56,10
+    CONTROL         "车牌识别设置",IDC_CHECK_USER_DETECTSET,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,222,64,10
+    CONTROL         "识别报警管理",IDC_CHECK_USER_DETECT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,160,64,10
+    CONTROL         "系统视频查询",IDC_CHECK_USER_HISTORYVIDEO,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,255,64,10
+    CONTROL         "系统识别查询",IDC_CHECK_USER_HISTORYDETECT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,281,64,10
+    CONTROL         "系统报警查询",IDC_CHECK_USER_HISTORYALARM,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,268,64,10
+    CONTROL         "系统日志查询",IDC_CHECK_USER_HISTORYREPORT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,294,64,10
+    CONTROL         "全选",IDC_CHECK_ALL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,280,99,32,10
+    CONTROL         "管理员权限",IDC_CHECK_ADMIN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,254,71,56,10
+END
+
+IDD_SET_BLACK DIALOG DISCARDABLE  0, 0, 440, 417
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "黑名单设置"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SORTASCENDING | WS_BORDER | 
+                    WS_TABSTOP,7,7,425,304
+    PUSHBUTTON      "<<",IDC_BUTTON_FIRST,175,315,35,14
+    LTEXT           "Static",IDC_STATIC_INFO,7,317,156,8
+    PUSHBUTTON      "<",IDC_BUTTON_PREVIOUS,215,315,35,14
+    PUSHBUTTON      ">",IDC_BUTTON_NEXT,255,315,35,14
+    PUSHBUTTON      ">>",IDC_BUTTON_LAST,295,315,35,14
+    EDITTEXT        IDC_EDIT_PAGE,337,315,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "跳至",IDC_BUTTON_JUMP,383,315,50,14
+    GROUPBOX        "基本信息",IDC_STATIC,7,334,358,77
+    PUSHBUTTON      "导入",IDC_BUTTON_BLACK_INPUT,375,343,50,14
+    PUSHBUTTON      "导出",IDC_BUTTON_BLACK_OUPUT,375,363,50,14
+    PUSHBUTTON      "清空",IDC_BUTTON_BLACK_CLEAN,375,383,50,14
+    PUSHBUTTON      "添加",IDC_BUTTON_BLACK_ADD,199,394,50,14
+    PUSHBUTTON      "修改",IDC_BUTTON_BLACK_MODIFY,254,394,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_BLACK_DELETE,307,394,50,14
+    EDITTEXT        IDC_EDIT_BLACK_PLATE,143,342,93,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BLACK_NAME,51,359,52,14,ES_AUTOHSCROLL
+    LTEXT           "车牌号",IDC_STATIC,107,346,25,8
+    LTEXT           "失主姓名",IDC_STATIC,14,363,33,8
+    LTEXT           "联系电话",IDC_STATIC,107,363,33,8
+    EDITTEXT        IDC_EDIT_BLACK_PHONE,143,359,93,14,ES_AUTOHSCROLL
+    LTEXT           "车辆品牌",IDC_STATIC,13,346,33,8
+    EDITTEXT        IDC_EDIT_BLACK_BRAND,51,342,52,14,ES_AUTOHSCROLL
+    LTEXT           "其他信息",IDC_STATIC,15,380,33,8
+    EDITTEXT        IDC_EDIT_OTHER,51,376,306,14,ES_AUTOHSCROLL
+END
+
+IDD_SET_SYSTEM DIALOG DISCARDABLE  0, 0, 367, 243
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "对话"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,231,221,50,14
+    PUSHBUTTON      "取消",IDCANCEL,310,221,50,14
+    GROUPBOX        "报警设置",IDC_STATIC,7,7,353,66
+    CONTROL         "弹出图片",IDC_CHECK_ALARM_PIC,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,20,48,10
+    CONTROL         "播放声音",IDC_CHECK_ALARM_WAV,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,67,20,48,10
+    LTEXT           "声音文件路径",IDC_STATIC,13,38,49,8
+    EDITTEXT        IDC_EDIT_ALARM_WAV,67,35,228,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "浏览",IDC_BUTTON_ALARM_WAV,302,35,50,14
+    GROUPBOX        "抓图 录像设置",IDC_STATIC,7,77,353,68
+    LTEXT           "文件打包时间",IDC_STATIC,13,91,49,8
+    EDITTEXT        IDC_EDIT_TIME,65,89,40,14,ES_AUTOHSCROLL
+    LTEXT           "分钟",IDC_STATIC,111,91,17,8
+    LTEXT           "录像文件夹路径",IDC_STATIC,13,111,57,8
+    EDITTEXT        IDC_EDIT_RECORD_DIR,74,108,223,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "浏览",IDC_BUTTON_RECORD_DIR,303,108,50,14
+    LTEXT           "没有硬盘空间时",IDC_STATIC,140,91,57,8
+    COMBOBOX        IDC_COMBO_RECORDFULL,199,89,74,68,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP
+    LTEXT           "识别结果路径",IDC_STATIC,13,55,49,8
+    LTEXT           "抓拍文件夹路径",IDC_STATIC,13,128,57,8
+    CONTROL         "是否启用FTP",IDC_CHECK_FTP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,161,155,60,10
+    GROUPBOX        "FTP设置",IDC_STATIC,7,147,144,88
+    EDITTEXT        IDC_EDIT_DETECT_DIR,67,53,228,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "浏览",IDC_BUTTON_DETECT_DIR,302,53,50,14
+    EDITTEXT        IDC_EDIT_CAPBMP_DIR,74,127,223,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "浏览",IDC_BUTTON_CAPBMP_DIR,303,126,50,14
+    EDITTEXT        IDC_EDIT_FTP_IPADDR,44,161,101,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FTP_PORT,44,179,101,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FTP_USER,44,197,101,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FTP_PSW,44,215,101,14,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    LTEXT           "ip地址",IDC_STATIC,14,163,25,8
+    LTEXT           "端口",IDC_STATIC,14,181,17,8
+    LTEXT           "用户名",IDC_STATIC,14,199,25,8
+    LTEXT           "密码",IDC_STATIC,14,217,17,8
+END
+
+IDD_WARNNING DIALOG DISCARDABLE  0, 0, 187, 63
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "警告对话框"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,27,42,50,14
+    PUSHBUTTON      "取消",IDCANCEL,108,42,50,14
+    CTEXT           "输入警告语，警告框 用在再次确认提示。",
+                    IDC_STATIC_WARNTXT,7,7,173,30
+END
+
+IDD_ADD_DEVICE DIALOG DISCARDABLE  0, 0, 283, 175
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "对话"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,89,154,50,14
+    PUSHBUTTON      "取消",IDCANCEL,143,154,50,14
+    LTEXT           "区域:",IDC_STATIC,66,38,25,12
+    LTEXT           "摄像头名称:",IDC_STATIC,66,55,44,12
+    EDITTEXT        IDC_EDIT_CAM_NAME,124,54,93,12,ES_AUTOHSCROLL
+    LTEXT           "IP地址:",IDC_STATIC,66,72,34,12
+    EDITTEXT        IDC_EDIT_CAM_IPADDR,124,71,93,12,ES_AUTOHSCROLL
+    LTEXT           "端口:",IDC_STATIC,66,89,23,12
+    EDITTEXT        IDC_EDIT_CAM_PORT,124,88,93,12,ES_AUTOHSCROLL
+    LTEXT           "用户名:",IDC_STATIC,66,106,36,12
+    LTEXT           "密码:",IDC_STATIC,66,123,23,12
+    EDITTEXT        IDC_EDIT_CAM_USER,124,105,93,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_CAM_PSW,124,122,93,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "新增区域",IDC_BUTTON_ADDAREA,66,19,42,12
+    EDITTEXT        IDC_EDIT_ADDAREA,124,20,93,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_CAMAREA,124,37,93,62,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "note",IDC_STATIC_ADDAREA_NOTE,75,137,134,12
+END
+
+IDD_HISTORY_DETECT DIALOG DISCARDABLE  0, 0, 595, 429
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "对话"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SORTASCENDING | WS_BORDER | 
+                    WS_TABSTOP,7,63,581,340
+    PUSHBUTTON      "<<",IDC_BUTTON_FIRST,237,408,35,14
+    LTEXT           "",IDC_STATIC_INFO,7,407,215,8
+    PUSHBUTTON      "<",IDC_BUTTON_PREVIOUS,277,408,35,14
+    PUSHBUTTON      ">",IDC_BUTTON_NEXT,317,408,35,14
+    PUSHBUTTON      ">>",IDC_BUTTON_LAST,358,408,35,14
+    EDITTEXT        IDC_EDIT_PAGE,400,408,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "跳至",IDC_BUTTON_JUMP,446,408,50,14
+    EDITTEXT        IDC_EDIT_NAME,51,7,129,14,ES_AUTOHSCROLL
+    LTEXT           "摄像头名称",IDC_STATIC,7,13,41,8
+    LTEXT           "摄像头ip",IDC_STATIC,185,13,33,8
+    CONTROL         "指定时间段",IDC_CHECK_TIME,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,38,56,10
+    LTEXT           "起始时间",IDC_STATIC,63,32,33,8
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_STARTMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,99,26,99,15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER_STARTHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,202,26,50,15
+    EDITTEXT        IDC_EDIT_IP,223,7,136,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "查询",IDC_BUTTON_SEARCH,527,34,50,14
+    LTEXT           "结束时间",IDC_STATIC,63,49,33,8
+    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER_ENDMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,99,44,99,15
+    CONTROL         "DateTimePicker4",IDC_DATETIMEPICKER_ENDHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,202,44,50,15
+    COMBOBOX        IDC_COMBO_DIRECTION,366,7,94,69,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_PLATE,261,37,96,16,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_PLATECOLOR,366,26,94,105,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_PLATETYPE,366,44,94,106,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CARCOLOR,466,7,80,99,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "车牌号",IDC_STATIC,256,25,104,34
+END
+
+IDD_HISTORY_REPORT DIALOG DISCARDABLE  0, 0, 508, 425
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "系统日志查询"
+FONT 9, "宋体"
+BEGIN
+    EDITTEXT        IDC_EDIT_USER,37,19,129,14,ES_AUTOHSCROLL
+    LTEXT           "用户名",IDC_STATIC,7,21,25,8
+    CONTROL         "指定时间段",IDC_CHECK_TIME,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,185,19,56,10
+    LTEXT           "起始时间",IDC_STATIC,241,13,33,8
+    LTEXT           "结束时间",IDC_STATIC,241,30,33,8
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_STARTMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,277,7,99,15
+    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER_ENDMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,277,25,99,15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER_STARTHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,380,7,50,15
+    CONTROL         "DateTimePicker4",IDC_DATETIMEPICKER_ENDHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,380,25,50,15
+    PUSHBUTTON      "查询",IDC_BUTTON_SEARCH,443,19,50,14
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SORTASCENDING | WS_BORDER | 
+                    WS_TABSTOP,7,45,494,351
+    PUSHBUTTON      "<<",IDC_BUTTON_FIRST,237,404,35,14
+    LTEXT           "",IDC_STATIC_INFO,7,404,215,8
+    PUSHBUTTON      "<",IDC_BUTTON_PREVIOUS,277,404,35,14
+    PUSHBUTTON      ">",IDC_BUTTON_NEXT,317,404,35,14
+    PUSHBUTTON      ">>",IDC_BUTTON_LAST,358,404,35,14
+    EDITTEXT        IDC_EDIT_PAGE,400,404,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "跳至",IDC_BUTTON_JUMP,446,404,50,14
+END
+
+IDD_SET_CAR DIALOG DISCARDABLE  0, 0, 438, 273
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "车牌识别设置"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,327,252,50,14
+    PUSHBUTTON      "取消",IDCANCEL,381,252,50,14
+    LTEXT           "默认省份:",IDC_STATIC,29,35,38,12
+    COMBOBOX        IDC_DEFAULT_PROVINCE,75,34,53,87,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "汉字置信度阈值:",IDC_STATIC,29,53,62,12
+    EDITTEXT        IDC_EDIT_RELIABILITY,97,52,31,12,ES_AUTOHSCROLL
+    LTEXT           "最小宽度:",IDC_STATIC,164,170,37,12
+    CONTROL         "云",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    176,35,21,12
+    CONTROL         "京",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    209,35,21,12
+    CONTROL         "冀",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    242,35,21,12
+    CONTROL         "吉",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    275,35,21,12
+    CONTROL         "宁",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    308,35,21,12
+    CONTROL         "川",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    341,35,21,12
+    CONTROL         "新",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    374,35,21,12
+    CONTROL         "晋",IDC_CHECK8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    176,53,21,12
+    CONTROL         "桂",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    209,53,21,12
+    CONTROL         "沪",IDC_CHECK10,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    242,53,21,12
+    CONTROL         "津",IDC_CHECK11,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    275,53,21,12
+    CONTROL         "浙",IDC_CHECK12,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    308,53,21,12
+    CONTROL         "渝",IDC_CHECK13,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    341,53,21,12
+    CONTROL         "湘",IDC_CHECK14,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    374,53,21,12
+    CONTROL         "琼",IDC_CHECK15,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    176,71,21,12
+    CONTROL         "甘",IDC_CHECK16,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    209,71,21,12
+    CONTROL         "皖",IDC_CHECK17,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    242,71,21,12
+    CONTROL         "粤",IDC_CHECK18,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    275,71,21,12
+    CONTROL         "苏",IDC_CHECK19,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    308,71,21,12
+    CONTROL         "蒙",IDC_CHECK20,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    341,71,21,12
+    CONTROL         "藏",IDC_CHECK21,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    374,71,21,12
+    CONTROL         "豫",IDC_CHECK22,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    176,89,21,12
+    CONTROL         "贵",IDC_CHECK23,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    209,89,21,12
+    CONTROL         "赣",IDC_CHECK24,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    242,89,21,12
+    CONTROL         "辽",IDC_CHECK25,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    275,89,21,12
+    CONTROL         "鄂",IDC_CHECK26,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    308,89,21,12
+    CONTROL         "闽",IDC_CHECK27,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    341,89,21,12
+    CONTROL         "陕",IDC_CHECK28,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    374,89,21,12
+    CONTROL         "青",IDC_CHECK29,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    176,107,21,12
+    CONTROL         "鲁",IDC_CHECK30,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    209,107,21,12
+    CONTROL         "黑",IDC_CHECK31,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    242,107,21,12
+    CONTROL         "全选",IDC_CHECK_ALL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,275,107,30,12
+    GROUPBOX        "设置",IDC_STATIC,16,21,124,104
+    GROUPBOX        "车牌中出现较多的省份",IDC_STATIC,147,21,275,104
+    GROUPBOX        "省份设置",IDC_STATIC,7,7,424,127
+    CONTROL         "车牌倾斜校正",IDC_CHECK_DESKEW,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,29,167,67,12
+    CONTROL         "车牌颜色识别",IDC_CHECK_CAR_COLOR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,29,185,67,12
+    CONTROL         "抓拍图片叠加车牌框",IDC_CHECK_OUTPUT_RECT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,29,203,92,12
+    LTEXT           "JPEG图片质量:",IDC_STATIC,29,221,57,12
+    EDITTEXT        IDC_EDIT_JPG_QUALITY,89,220,31,12,ES_AUTOHSCROLL
+    GROUPBOX        "其他设置",IDC_STATIC,16,153,124,86
+    LTEXT           "最大宽度:",IDC_STATIC,164,188,37,12
+    EDITTEXT        IDC_EDIT_MIN_WIDTH,203,169,31,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_MAX_WIDTH,203,187,31,12,ES_AUTOHSCROLL
+    LTEXT           "像素",IDC_STATIC,238,170,20,12
+    LTEXT           "像素",IDC_STATIC,238,188,20,12
+    LTEXT           "注:建议阈值50左右",IDC_STATIC,29,71,71,12
+    LTEXT           "注:车牌最小像素60,    车牌最大像素200",IDC_STATIC,164,
+                    206,75,18
+    LTEXT           "左:",IDC_STATIC,290,170,14,12
+    EDITTEXT        IDC_EDIT_LEFT,306,169,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,341,170,8,12
+    LTEXT           "上:",IDC_STATIC,290,188,14,12
+    EDITTEXT        IDC_EDIT_UP,306,187,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,341,188,8,12
+    LTEXT           "右:",IDC_STATIC,350,170,14,12
+    EDITTEXT        IDC_EDIT_RIGHT,366,169,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,401,170,8,12
+    LTEXT           "下:",IDC_STATIC,350,188,14,12
+    EDITTEXT        IDC_EDIT_DOWN,366,187,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,401,188,8,12
+    GROUPBOX        "车牌宽度设置",IDC_STATIC,147,153,124,86
+    GROUPBOX        "识别区域设置",IDC_STATIC,279,153,143,86
+    GROUPBOX        "识别设置",IDC_STATIC,7,139,424,109
+END
+
+IDD_SET_ELECAR DIALOG DISCARDABLE  0, 0, 359, 141
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "车牌识别设置"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,128,121,50,14
+    PUSHBUTTON      "取消",IDCANCEL,181,121,50,14
+    LTEXT           "最小宽度:",IDC_STATIC,255,33,37,12
+    CONTROL         "车牌倾斜校正",IDC_CHECK_DESKEW,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,30,67,12
+    CONTROL         "车牌颜色识别",IDC_CHECK_CAR_COLOR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,48,67,12
+    CONTROL         "抓拍图片叠加车牌框",IDC_CHECK_OUTPUT_RECT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,66,92,12
+    LTEXT           "JPEG图片质量:",IDC_STATIC,15,84,57,12
+    EDITTEXT        IDC_EDIT_JPG_QUALITY,73,82,31,12,ES_AUTOHSCROLL
+    GROUPBOX        "其他设置",IDC_STATIC,7,16,105,86
+    LTEXT           "最大宽度:",IDC_STATIC,255,51,37,12
+    EDITTEXT        IDC_EDIT_MIN_WIDTH,293,32,31,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_MAX_WIDTH,293,50,31,12,ES_AUTOHSCROLL
+    LTEXT           "像素",IDC_STATIC,329,33,20,12
+    LTEXT           "像素",IDC_STATIC,329,51,20,12
+    LTEXT           "注:车牌最小像素60,    车牌最大像素200",IDC_STATIC,255,
+                    69,75,18
+    LTEXT           "左:",IDC_STATIC,123,33,14,12
+    EDITTEXT        IDC_EDIT_LEFT,139,32,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,173,33,8,12
+    LTEXT           "上:",IDC_STATIC,123,51,14,12
+    EDITTEXT        IDC_EDIT_UP,139,50,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,173,51,8,12
+    LTEXT           "右:",IDC_STATIC,183,33,14,12
+    EDITTEXT        IDC_EDIT_RIGHT,199,32,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,233,33,8,12
+    LTEXT           "下:",IDC_STATIC,183,51,14,12
+    EDITTEXT        IDC_EDIT_DOWN,199,50,31,12,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,233,51,8,12
+    GROUPBOX        "车牌宽度设置",IDC_STATIC,247,16,105,86
+    GROUPBOX        "识别区域设置",IDC_STATIC,117,16,125,86
+END
+
+IDD_SET_PTZ DIALOG DISCARDABLE  0, 0, 590, 347
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "云台设置"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,135,7,448,333
+    LTEXT           "区域:",IDC_STATIC,13,39,21,8
+    LTEXT           "名称:",IDC_STATIC,13,56,21,8
+    LTEXT           "IP:",IDC_STATIC,13,73,21,8
+    LTEXT           "",IDC_STATIC_AEAR,44,39,81,8
+    LTEXT           "",IDC_STATIC_CAM,44,56,81,8
+    LTEXT           "",IDC_STATIC_IP,44,73,81,8
+    CONTROL         "UL",IDC_UPLEFT,"Button",BS_OWNERDRAW | WS_TABSTOP,25,
+                    108,28,15
+    CONTROL         "U",IDC_UP,"Button",BS_OWNERDRAW | WS_TABSTOP,58,108,28,
+                    15
+    CONTROL         "UR",IDC_UPRIGHT,"Button",BS_OWNERDRAW | WS_TABSTOP,91,
+                    108,28,15
+    CONTROL         "L",IDC_LEFT,"Button",BS_OWNERDRAW | WS_TABSTOP,25,128,
+                    28,15
+    CONTROL         "AUTO",IDC_AUTO,"Button",BS_OWNERDRAW | WS_TABSTOP,58,
+                    128,28,15
+    CONTROL         "R",IDC_RIGHT,"Button",BS_OWNERDRAW | WS_TABSTOP,91,128,
+                    28,15
+    CONTROL         "DL",IDC_DOWNLEFT,"Button",BS_OWNERDRAW | WS_TABSTOP,25,
+                    148,28,15
+    CONTROL         "D",IDC_DOWN,"Button",BS_OWNERDRAW | WS_TABSTOP,58,148,
+                    28,15
+    CONTROL         "DR",IDC_DOWNRIGHT,"Button",BS_OWNERDRAW | WS_TABSTOP,91,
+                    148,28,15
+    CONTROL         "focusadd",IDC_FOCUS_ADD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,15,176,29,29
+    CONTROL         "FOCUSSUB",IDC_FOCUS_SUB,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,15,230,29,29
+    CONTROL         "IRISadd",IDC_IRIS_ADD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,57,176,29,29
+    CONTROL         "IRISSUB",IDC_IRIS_SUB,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,57,230,29,29
+    CONTROL         "ZOOMadd",IDC_ZOOM_ADD,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,99,176,29,29
+    CONTROL         "ZOOMSUB",IDC_ZOOM_SUB,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,99,230,29,29
+    CONTROL         "SET",IDC_BUTTON_SET,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    29,293,25,14
+    CONTROL         "GO",IDC_BUTTON_GO,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    104,293,25,14
+    EDITTEXT        IDC_EDIT_SET,60,293,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "SS",IDC_SPEED_SUB,"Button",BS_OWNERDRAW | WS_TABSTOP,29,
+                    315,25,14
+    CONTROL         "SA",IDC_SPEED_ADD,"Button",BS_OWNERDRAW | WS_TABSTOP,
+                    104,315,25,14
+    EDITTEXT        IDC_EDIT_SPEED,60,315,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CTEXT           "聚\r焦",IDC_STATIC,15,210,29,17
+    CTEXT           "光\r圈",IDC_STATIC,57,210,29,17
+    CTEXT           "变\r倍",IDC_STATIC,99,210,29,17
+    LTEXT           "预设",IDC_STATIC,7,297,17,8
+    LTEXT           "速度",IDC_STATIC,7,319,17,8
+    LTEXT           "当前摄像头:",IDC_STATIC,13,23,45,8
+    CONTROL         "",IDC_STATIC_RECT,"Static",SS_BLACKFRAME,7,18,126,73
+END
+
+IDD_SET_RECORD DIALOG DISCARDABLE  0, 0, 402, 349
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "定时录像设置"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,17,388,200
+    LTEXT           "已设置的列表",IDC_STATIC,7,7,49,8
+    COMBOBOX        IDC_COMBO_AREA,35,255,113,98,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CAM,199,255,113,98,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "使用日期",IDC_CHECK_DATE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,88,283,48,10
+    LTEXT           "起始时间",IDC_STATIC,46,301,33,8
+    LTEXT           "结束时间",IDC_STATIC,46,319,33,8
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_STARTMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,88,297,99,15
+    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER_ENDMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,88,315,99,15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER_STARTHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,258,297,50,15
+    CONTROL         "DateTimePicker4",IDC_DATETIMEPICKER_ENDHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,258,315,50,15
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,84,279,105,56
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,196,279,57,56
+    CONTROL         "使用星期",IDC_CHECK_WEEK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,200,283,48,10
+    COMBOBOX        IDC_COMBO_ENDWEEK,200,315,48,44,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_STARTWEEK,200,297,48,62,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "启用",IDC_CHECK_ENABLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,17,283,32,10
+    CONTROL         "全选",IDC_CHECK_ALL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,222,32,10
+    PUSHBUTTON      "启用",IDC_BUTTON_ENABLE,51,222,50,14
+    PUSHBUTTON      "不启用",IDC_BUTTON_DISABLE,111,222,50,14
+    GROUPBOX        "计划配置",IDC_STATIC,7,243,388,99
+    LTEXT           "区域",IDC_STATIC,15,257,17,8
+    LTEXT           "摄像头名称",IDC_STATIC,155,257,41,8
+    CONTROL         "每天",IDC_CHECK_EVERYDAY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,258,283,32,10
+    PUSHBUTTON      "添加",IDC_BUTTON_ADD,336,265,50,14
+    PUSHBUTTON      "修改",IDC_BUTTON_MODIFY,336,289,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_DELETE,337,313,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_DELETEALL,337,221,50,14
+END
+
+IDD_BLACK_INOUT DIALOG DISCARDABLE  0, 0, 187, 65
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "黑名单数据导入"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",PBS_SMOOTH,
+                    7,7,173,14
+    CTEXT           "Static",IDC_STATIC_INFO,7,29,173,8
+    PUSHBUTTON      "停止",IDC_BUTTON_STOP,68,44,50,14
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "YiRongCarDetectAIO Microsoft 基础类应用程序\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "YiRongCarDetectAIO\0"
+            VALUE "LegalCopyright", "版权所有 (C) 2013\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "YiRongCarDetectAIO.EXE\0"
+            VALUE "ProductName", "YiRongCarDetectAIO 应用程序\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_YIRONGCARDETECTAIO_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 3
+        RIGHTMARGIN, 589
+        BOTTOMMARGIN, 410
+    END
+
+    IDD_DEVICE_TREE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 197
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 251
+    END
+
+    IDD_PTZ, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 138
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 262
+    END
+
+    IDD_NORMAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 174
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 272
+    END
+
+    IDD_SCREEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 93
+    END
+
+    IDD_LOGIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 206
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 150
+    END
+
+    IDD_OPEN_CLOSE_PREVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 397
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 278
+    END
+
+    IDD_HISTORY_VIDEO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 516
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 404
+    END
+
+    IDD_SET_USER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 319
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 331
+    END
+
+    IDD_SET_BLACK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 433
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 410
+    END
+
+    IDD_SET_SYSTEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 360
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 236
+    END
+
+    IDD_WARNNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_ADD_DEVICE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 276
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 168
+    END
+
+    IDD_HISTORY_DETECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 588
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 422
+    END
+
+    IDD_HISTORY_REPORT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 501
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 418
+    END
+
+    IDD_SET_CAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 431
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 266
+    END
+
+    IDD_SET_ELECAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 352
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 134
+    END
+
+    IDD_SET_PTZ, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 583
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 340
+    END
+
+    IDD_SET_RECORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 395
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 342
+    END
+
+    IDD_BLACK_INOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU DISCARDABLE 
+BEGIN
+    MENUITEM "",                            65535
+    POPUP "文件"
+    BEGIN
+        MENUITEM "锁屏/解锁",                   ID_MENUITEM_LOGIN_LOCK
+        MENUITEM "登陆",                        ID_MENUITEM_LOGIN_IN
+        MENUITEM "修改密码",                    ID_MENUITEM_LOGIN_MODIFY
+        MENUITEM "退出",                        ID_MENUITEM_LOGIN_EXIT
+    END
+    POPUP "操作"
+    BEGIN
+        MENUITEM "抓取图片",                    ID_MENUITEM_CAPBMP
+        POPUP "预览画面切换"
+        BEGIN
+            MENUITEM "单画面",                      ID_MENUITEM_1MODE
+            MENUITEM "四画面",                      ID_MENUITEM_4MODE
+            MENUITEM "九画面",                      ID_MENUITEM_9MODE
+            MENUITEM "十六画面",                    ID_MENUITEM_16MODE
+        END
+        MENUITEM "开启/关闭预览",               ID_MENUITEM_PREVIEW
+        MENUITEM "开启/关闭识别",               ID_MENUITEM_DETECT
+        MENUITEM "开启/关闭报警",               ID_MENUITEM_ALARM
+        MENUITEM "开启/关闭录像",               ID_MENUITEM_RECORD, GRAYED
+        MENUITEM "系统日志查询",                ID_MENUITEM_SYSTEM_REPORT
+        MENUITEM "历史视频查询",                ID_MENUITEM_HISTORY_VIDEO
+        , GRAYED
+        MENUITEM "历史识别查询",                ID_MENUITEM_HISTORY_CAR
+        MENUITEM "历史报警查询",                ID_MENUITEM_HISTORY_ALARM
+        MENUITEM "黑名单导入",                  ID_MENUITEM_BLACK_IN
+        MENUITEM "黑名单导出",                  ID_MENUITEM_BLACK_OUT
+    END
+    POPUP "设置"
+    BEGIN
+        MENUITEM "用户设置",                    ID_MENUITEM_SET_USER
+        MENUITEM "系统设置",                    ID_MENUITEM_SET_SYSTEM
+        MENUITEM "系统参数导入",                ID_MENUITEM_SET_SYSTEM_IN
+        MENUITEM "系统参数导出",                ID_MENUITEM_SET_SYSTEM_OUT
+        MENUITEM "定时录像设置",                ID_MENUITEM_SET_RECORD
+        , GRAYED
+        MENUITEM "车牌识别设置",                ID_MENUITEM_SET_CAR
+        MENUITEM "黑名单设置",                  ID_MENUITEM_SET_BLACK
+        MENUITEM "云台设置",                    ID_MENUITEM_SET_PTZ
+    END
+    POPUP "统计分析", GRAYED
+    BEGIN
+        MENUITEM "车流量",                      ID_MENUITEM_CARSTREAM
+    END
+    POPUP "关于"
+    BEGIN
+        MENUITEM "关于",                        ID_MENUITEM_ABOUT
+        MENUITEM "帮助",                        ID_MENUITEM_HELP
+    END
+END
+
+IDR_MENU_RCTREE MENU DISCARDABLE 
+BEGIN
+    POPUP " "
+    BEGIN
+        MENUITEM "添加设备",                    ID_MENUITEM_ADDDEVICE
+        MENUITEM "删除区域",                    ID_MENUITEM_DELETEAREA
+    END
+END
+
+IDR_MENU_RCTREE1 MENU DISCARDABLE 
+BEGIN
+    POPUP " "
+    BEGIN
+        MENUITEM "编辑设备",                    ID_MENUITEM_EDITDEVICE
+        MENUITEM "删除设备",                    ID_MENUITEM_DELETEDEVICE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_LOGO                BITMAP  DISCARDABLE     "res\\logo.bmp"
+IDB_CAR_OPEN            BITMAP  DISCARDABLE     "res\\mode_car.bmp"
+IDB_CAR_CLOSE           BITMAP  DISCARDABLE     "res\\mode_car_dis.bmp"
+IDB_CAR_MOVE            BITMAP  DISCARDABLE     "res\\mode_car_push.bmp"
+IDB_CAPBMP_OPEN         BITMAP  DISCARDABLE     "res\\capbmp.BMP"
+IDB_CAPBMP_MOVE         BITMAP  DISCARDABLE     "res\\capbmp_push.BMP"
+IDB_RECORD_MOVE         BITMAP  DISCARDABLE     "res\\record_push.BMP"
+IDB_MODE1_OPEN          BITMAP  DISCARDABLE     "res\\mode1.BMP"
+IDB_MODE1_CLOSE         BITMAP  DISCARDABLE     "res\\mode1_dis.BMP"
+IDB_MODE1_MOVE          BITMAP  DISCARDABLE     "res\\mode1_push.BMP"
+IDB_MODE4_OPEN          BITMAP  DISCARDABLE     "res\\mode4.BMP"
+IDB_MODE4_CLOSE         BITMAP  DISCARDABLE     "res\\mode4_dis.BMP"
+IDB_MODE4_MOVE          BITMAP  DISCARDABLE     "res\\mode4_push.BMP"
+IDB_MODE9_OPEN          BITMAP  DISCARDABLE     "res\\mode9.BMP"
+IDB_MODE9_CLOSE         BITMAP  DISCARDABLE     "res\\mode9_dis.BMP"
+IDB_MODE9_MOVE          BITMAP  DISCARDABLE     "res\\mode9_push.BMP"
+IDB_MODE16_OPEN         BITMAP  DISCARDABLE     "res\\mode16.BMP"
+IDB_MODE16_CLOSE        BITMAP  DISCARDABLE     "res\\mode16_dis.BMP"
+IDB_MODE16_MOVE         BITMAP  DISCARDABLE     "res\\mode16_push.BMP"
+IDB_RECORD_CLOSE        BITMAP  DISCARDABLE     "res\\record_dis.BMP"
+IDB_RECORD_OPEN         BITMAP  DISCARDABLE     "res\\record.BMP"
+IDB_ALARM_OPEN          BITMAP  DISCARDABLE     "res\\alarm.bmp"
+IDB_ALARM_CLOSE         BITMAP  DISCARDABLE     "res\\alarm_dis.bmp"
+IDB_ALARM_MOVE          BITMAP  DISCARDABLE     "res\\alarm_push.bmp"
+IDB_PREVIEW_MOVE        BITMAP  DISCARDABLE     "res\\preview_push.BMP"
+IDB_PREVIEW_OPEN        BITMAP  DISCARDABLE     "res\\preview.BMP"
+IDB_PREVIEW_CLOSE       BITMAP  DISCARDABLE     "res\\preview_dis.BMP"
+IDB_BACK_TREE           BITMAP  DISCARDABLE     "res\\treeback.bmp"
+IDB_BACK_NORMAL         BITMAP  DISCARDABLE     "res\\normalback.bmp"
+IDB_BACK_PTZ            BITMAP  DISCARDABLE     "res\\ptzback.bmp"
+IDB_BACK_SHORTCUT       BITMAP  DISCARDABLE     "res\\shortcutback.bmp"
+IDB_PTZ_AUTO_MOVE       BITMAP  DISCARDABLE     "res\\ptzauto_push.bmp"
+IDB_PTZ_AUTO_OPEN       BITMAP  DISCARDABLE     "res\\ptzauto.bmp"
+IDB_PTZ_AUTO_CLOSE      BITMAP  DISCARDABLE     "res\\ptzauto_dis.bmp"
+IDB_PTZ_DOWN_MOVE       BITMAP  DISCARDABLE     "res\\ptzdown_push.bmp"
+IDB_PTZ_DOWN_OPEN       BITMAP  DISCARDABLE     "res\\ptzdown.bmp"
+IDB_PTZ_DOWN_CLOSE      BITMAP  DISCARDABLE     "res\\ptzdown_dis.bmp"
+IDB_PTZ_FOCUSSUB_MOVE   BITMAP  DISCARDABLE     "res\\ptzfocussub_push.bmp"
+IDB_PTZ_FOCUSADD_OPEN   BITMAP  DISCARDABLE     "res\\ptzfocusadd.bmp"
+IDB_PTZ_FOCUSADD_CLOSE  BITMAP  DISCARDABLE     "res\\ptzfocusadd_dis.bmp"
+IDB_PTZ_FOCUSADD_MOVE   BITMAP  DISCARDABLE     "res\\ptzfocusadd_push.bmp"
+IDB_PTZ_FOCUSSUB_OPEN   BITMAP  DISCARDABLE     "res\\ptzfocussub.bmp"
+IDB_PTZ_FOCUSSUB_CLOSE  BITMAP  DISCARDABLE     "res\\ptzfocussub_dis.bmp"
+IDB_PTZ_IRISSUB_MOVE    BITMAP  DISCARDABLE     "res\\ptzirissub_push.bmp"
+IDB_PTZ_GO_OPEN         BITMAP  DISCARDABLE     "res\\ptzgo.bmp"
+IDB_PTZ_GO_CLOSE        BITMAP  DISCARDABLE     "res\\ptzgo_dis.bmp"
+IDB_PTZ_GO_MOVE         BITMAP  DISCARDABLE     "res\\ptzgo_push.bmp"
+IDB_PTZ_IRISADD_OPEN    BITMAP  DISCARDABLE     "res\\ptzirisadd.bmp"
+IDB_PTZ_IRISADD_CLOSE   BITMAP  DISCARDABLE     "res\\ptzirisadd_dis.bmp"
+IDB_PTZ_IRISADD_MOVE    BITMAP  DISCARDABLE     "res\\ptzirisadd_push.bmp"
+IDB_PTZ_IRISSUB_OPEN    BITMAP  DISCARDABLE     "res\\ptzirissub.bmp"
+IDB_PTZ_IRISSUB_CLOSE   BITMAP  DISCARDABLE     "res\\ptzirissub_dis.bmp"
+IDB_PTZ_RIGHT_MOVE      BITMAP  DISCARDABLE     "res\\ptzright_push.bmp"
+IDB_PTZ_LEFT_OPEN       BITMAP  DISCARDABLE     "res\\ptzleft.bmp"
+IDB_PTZ_LEFT_CLOSE      BITMAP  DISCARDABLE     "res\\ptzleft_dis.bmp"
+IDB_PTZ_LEFT_MOVE       BITMAP  DISCARDABLE     "res\\ptzleft_push.bmp"
+IDB_PTZ_LEFTDOWN_OPEN   BITMAP  DISCARDABLE     "res\\ptzleftdown.bmp"
+IDB_PTZ_LEFTDOWN_CLOSE  BITMAP  DISCARDABLE     "res\\ptzleftdown_dis.bmp"
+IDB_PTZ_LEFTDOWN_MOVE   BITMAP  DISCARDABLE     "res\\ptzleftdown_push.bmp"
+IDB_PTZ_LEFTUP_OPEN     BITMAP  DISCARDABLE     "res\\ptzleftup.bmp"
+IDB_PTZ_LEFTUP_CLOSE    BITMAP  DISCARDABLE     "res\\ptzleftup_dis.bmp"
+IDB_PTZ_LEFTUP_MOVE     BITMAP  DISCARDABLE     "res\\ptzleftup_push.bmp"
+IDB_PTZ_RIGHT_OPEN      BITMAP  DISCARDABLE     "res\\ptzright.bmp"
+IDB_PTZ_RIGHT_CLOSE     BITMAP  DISCARDABLE     "res\\ptzright_dis.bmp"
+IDB_PTZ_SET_MOVE        BITMAP  DISCARDABLE     "res\\ptzset_push.bmp"
+IDB_PTZ_RIGHTDOWN_OPEN  BITMAP  DISCARDABLE     "res\\ptzrightdown.bmp"
+IDB_PTZ_RIGHTDOWN_CLOSE BITMAP  DISCARDABLE     "res\\ptzrightdown_dis.bmp"
+IDB_PTZ_RIGHTDOWN_MOVE  BITMAP  DISCARDABLE     "res\\ptzrightdown_push.bmp"
+IDB_PTZ_RIGHTUP_OPEN    BITMAP  DISCARDABLE     "res\\ptzrightup.bmp"
+IDB_PTZ_RIGHTUP_CLOSE   BITMAP  DISCARDABLE     "res\\ptzrightup_dis.bmp"
+IDB_PTZ_RIGHTUP_MOVE    BITMAP  DISCARDABLE     "res\\ptzrightup_push.bmp"
+IDB_PTZ_SET_OPEN        BITMAP  DISCARDABLE     "res\\ptzset.bmp"
+IDB_PTZ_SET_CLOSE       BITMAP  DISCARDABLE     "res\\ptzset_dis.bmp"
+IDB_PTZ_SPEEDSUB_MOVE   BITMAP  DISCARDABLE     "res\\ptzspeedsub_push.bmp"
+IDB_PTZ_SPEEDADD_OPEN   BITMAP  DISCARDABLE     "res\\ptzspeedadd.bmp"
+IDB_PTZ_SPEEDADD_CLOSE  BITMAP  DISCARDABLE     "res\\ptzspeedadd_dis.bmp"
+IDB_PTZ_SPEEDADD_MOVE   BITMAP  DISCARDABLE     "res\\ptzspeedadd_push.bmp"
+IDB_PTZ_SPEEDSUB_OPEN   BITMAP  DISCARDABLE     "res\\ptzspeedsub.bmp"
+IDB_PTZ_SPEEDSUB_CLOSE  BITMAP  DISCARDABLE     "res\\ptzspeedsub_dis.bmp"
+IDB_PTZ_ZOOMSUB_MOVE    BITMAP  DISCARDABLE     "res\\ptzzoomsub_push.bmp"
+IDB_PTZ_UP_OPEN         BITMAP  DISCARDABLE     "res\\ptzup.bmp"
+IDB_PTZ_UP_CLOSE        BITMAP  DISCARDABLE     "res\\ptzup_dis.bmp"
+IDB_PTZ_UP_MOVE         BITMAP  DISCARDABLE     "res\\ptzup_push.bmp"
+IDB_PTZ_ZOOMADD_OPEN    BITMAP  DISCARDABLE     "res\\ptzzoomadd.bmp"
+IDB_PTZ_ZOOMADD_CLOSE   BITMAP  DISCARDABLE     "res\\ptzzoomadd_dis.bmp"
+IDB_PTZ_ZOOMADD_MOVE    BITMAP  DISCARDABLE     "res\\ptzzoomadd_push.bmp"
+IDB_PTZ_ZOOMSUB_OPEN    BITMAP  DISCARDABLE     "res\\ptzzoomsub.bmp"
+IDB_PTZ_ZOOMSUB_CLOSE   BITMAP  DISCARDABLE     "res\\ptzzoomsub_dis.bmp"
+IDB_BACK_MAIN           BITMAP  DISCARDABLE     "res\\background.bmp"
+IDB_LOGIN_EXIT          BITMAP  DISCARDABLE     "res\\logout_background.bmp"
+IDB_LOGIN_LOCK          BITMAP  DISCARDABLE     "res\\lock_background.bmp"
+IDB_LOGIN_IN            BITMAP  DISCARDABLE     "res\\login_background.bmp"
+IDB_LOGIN_OKOUT         BITMAP  DISCARDABLE     "res\\ok_out.bmp"
+IDB_LOGIN_CANCELIN      BITMAP  DISCARDABLE     "res\\cancel_in.bmp"
+IDB_LOGIN_CANCELOUT     BITMAP  DISCARDABLE     "res\\cancel_out.bmp"
+IDB_LOGIN_OKIN          BITMAP  DISCARDABLE     "res\\ok_in.bmp"
+IDB_SETCAR_OPEN         BITMAP  DISCARDABLE     "res\\set_car.BMP"
+IDB_SETCAR_CLOSE        BITMAP  DISCARDABLE     "res\\set_car_dis.bmp"
+IDB_SETCAR_MOVE         BITMAP  DISCARDABLE     "res\\set_car_push.BMP"
+IDB_LOGIN_MODIFY        BITMAP  DISCARDABLE     "res\\modify_background.bmp"
+IDB_SETPTZ_BACK         BITMAP  DISCARDABLE     "res\\setptz_back.bmp"
+IDB_SCREEN_BACK         BITMAP  DISCARDABLE     "res\\screenback.bmp"
+IDB_NORMAL_RECOGNIZE_CLOSE BITMAP  DISCARDABLE     "res\\normal_recognize_close.bmp"
+IDB_NORMAL_ALARM_CLOSE  BITMAP  DISCARDABLE     "res\\normal_alarm_close.bmp"
+IDB_NORMAL_ALARM_CLOSEALL BITMAP  DISCARDABLE     "res\\normal_alarm_closeall.bmp"
+IDB_NORMAL_CAR_SET      BITMAP  DISCARDABLE     "res\\normal_carset.bmp"
+IDB_NORMAL_CHANNEL      BITMAP  DISCARDABLE     "res\\normal_channel.bmp"
+IDB_NORMAL_PREVIEW_CLOSE BITMAP  DISCARDABLE     "res\\normal_preview_close.bmp"
+IDB_NORMAL_PREVIEW_CLOSEALL BITMAP  DISCARDABLE     "res\\normal_preview_closeall.bmp"
+IDB_NORMAL_RECOGNIZE_CLOSEALL BITMAP  DISCARDABLE     "res\\normal_recognize_closeall.bmp"
+IDB_NORMAL_RECORD_CLOSE BITMAP  DISCARDABLE     "res\\normal_record_close.bmp"
+IDB_NORMAL_RECORD_CLOSEALL BITMAP  DISCARDABLE     "res\\normal_record_closeall.bmp"
+IDB_NORMAL_BLACK_SET    BITMAP  DISCARDABLE     "res\\normal_black_set.bmp"
+IDB_NORMAL_ALARM_OPEN   BITMAP  DISCARDABLE     "res\\normal_alarm_open.bmp"
+IDB_NORMAL_ALARM_OPENALL BITMAP  DISCARDABLE     "res\\normal_alarm_openall.bmp"
+IDB_NORMAL_PREVIEW_OPENALL BITMAP  DISCARDABLE     "res\\normal_preview_openall.bmp"
+IDB_NORMAL_RECOGNIZE_OPEN BITMAP  DISCARDABLE     "res\\normal_recognize_open.bmp"
+IDB_NORMAL_RECOGNIZE_OPENALL BITMAP  DISCARDABLE     "res\\normal_recognize_openall.bmp"
+IDB_NORMAL_HISTORY_ALARM BITMAP  DISCARDABLE     "res\\normal_history_alarm.bmp"
+IDB_NORMAL_HISTORY_RECOGNIZE BITMAP  DISCARDABLE     "res\\normal_history_recognize.bmp"
+IDB_NORMAL_HISTORY_VIDEO BITMAP  DISCARDABLE     "res\\normal_history_video.bmp"
+IDB_NORMAL_PREVIEW_OPEN BITMAP  DISCARDABLE     "res\\normal_preview_open.bmp"
+IDB_NORMAL_RECORD_OPEN  BITMAP  DISCARDABLE     "res\\normal_record_open.bmp"
+IDB_NORMAL_RECORD_OPENALL BITMAP  DISCARDABLE     "res\\normal_record_openall.bmp"
+IDB_NORMAL_CAPBMP       BITMAP  DISCARDABLE     "res\\normal_capbmp.bmp"
+IDB_NORMAL_ALARM_OPENALL_PUSH BITMAP  DISCARDABLE     "res\\normal_alarm_openall_push.bmp"
+IDB_NORMAL_HISTORY_RECOGNIZE_PUSH BITMAP  DISCARDABLE     "res\\normal_history_recognize_push.bmp"
+IDB_NORMAL_RECORD_OPEN_PUSH BITMAP  DISCARDABLE     "res\\normal_record_open_push.bmp"
+IDB_NORMAL_RECORD_OPENALL_PUSH BITMAP  DISCARDABLE     "res\\normal_record_openall_push.bmp"
+IDB_NORMAL_CAPBMP_PUSH  BITMAP  DISCARDABLE     "res\\normal_capbmp_push.bmp"
+IDB_NORMAL_RECOGNIZE_OPEN_PUSH BITMAP  DISCARDABLE     "res\\normal_recognize_open_push.bmp"
+IDB_NORMAL_RECOGNIZE_OPENALL_PUSH BITMAP  DISCARDABLE     "res\\normal_recognize_openall_push.bmp"
+IDB_NORMAL_PREVIEW_OPEN_PUSH BITMAP  DISCARDABLE     "res\\normal_preview_open_push.bmp"
+IDB_NORMAL_PREVIEW_OPENALL_PUSH BITMAP  DISCARDABLE     "res\\normal_preview_openall_push.bmp"
+IDB_NORMAL_CHANNEL_PUSH BITMAP  DISCARDABLE     "res\\normal_channel_push.bmp"
+IDB_NORMAL_RECOGNIZE_CLOSE_PUSH BITMAP  DISCARDABLE     "res\\normal_recognize_close_push.bmp"
+IDB_NORMAL_CAR_SET_PUSH BITMAP  DISCARDABLE     "res\\normal_carset_push.bmp"
+IDB_NORMAL_BLACK_SET_PUSH BITMAP  DISCARDABLE     "res\\normal_black_set_push.bmp"
+IDB_NORMAL_PREVIEW_CLOSE_PUSH BITMAP  DISCARDABLE     "res\\normal_preview_close_push.bmp"
+IDB_NORMAL_RECORD_CLOSE_PUSH BITMAP  DISCARDABLE     "res\\normal_record_close_push.bmp"
+IDB_NORMAL_ALARM_CLOSE_PUSH BITMAP  DISCARDABLE     "res\\normal_alarm_close_push.bmp"
+IDB_NORMAL_RECORD_CLOSEALL_PUSH BITMAP  DISCARDABLE     "res\\normal_record_closeall_push.bmp"
+IDB_NORMAL_ALARM_CLOSEALL_PUSH BITMAP  DISCARDABLE     "res\\normal_alarm_closeall_push.bmp"
+IDB_NORMAL_ALARM_OPEN_PUSH BITMAP  DISCARDABLE     "res\\normal_alarm_open_push.bmp"
+IDB_NORMAL_HISTORY_ALARM_PUSH BITMAP  DISCARDABLE     "res\\normal_history_alarm_push.bmp"
+IDB_NORMAL_HISTORY_VIDEO_PUSH BITMAP  DISCARDABLE     "res\\normal_history_video_push.bmp"
+IDB_NORMAL_PREVIEW_CLOSEALL_PUSH BITMAP  DISCARDABLE     "res\\normal_preview_closeall_push.bmp"
+IDB_NORMAL_RECOGNIZE_CLOSEALL_PUSH BITMAP  DISCARDABLE     "res\\normal_recognize_closeall_push.bmp"
+IDB_TAB_NORMAL_CLOSE    BITMAP  DISCARDABLE     "res\\tab_noraml_dis.bmp"
+IDB_TAB_NORMAL          BITMAP  DISCARDABLE     "res\\tab_normal.bmp"
+IDB_TAB_PTZ             BITMAP  DISCARDABLE     "res\\tab_ptz.bmp"
+IDB_TAB_PTZ_CLOSE       BITMAP  DISCARDABLE     "res\\tab_ptz_dis.bmp"
+IDB_TAB_TREE            BITMAP  DISCARDABLE     "res\\tab_tree.bmp"
+IDB_TAB_TREE_CLOSE      BITMAP  DISCARDABLE     "res\\tab_tree_dis.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_NORMAL DLGINIT
+BEGIN
+    IDC_COMBO_SCREEN, 0x403, 7, 0
+0xa5b5, 0xadbb, 0xe6c3, "\000" 
+    IDC_COMBO_SCREEN, 0x403, 7, 0
+0xc4cb, 0xadbb, 0xe6c3, "\000" 
+    IDC_COMBO_SCREEN, 0x403, 7, 0
+0xc5be, 0xadbb, 0xe6c3, "\000" 
+    IDC_COMBO_SCREEN, 0x403, 9, 0
+0xaeca, 0xf9c1, 0xadbb, 0xe6c3, "\000" 
+    IDC_COMBO_STREAM, 0x403, 7, 0
+0xf7d6, 0xebc2, 0xf7c1, "\000" 
+    IDC_COMBO_STREAM, 0x403, 8, 0
+0xd3b4, 0xebc2, 0xf7c1, 0x0031, 
+    IDC_COMBO_STREAM, 0x403, 8, 0
+0xd3b4, 0xebc2, 0xf7c1, 0x0032, 
+    IDC_COMBO_STREAM, 0x403, 8, 0
+0xd3b4, 0xebc2, 0xf7c1, 0x0033, 
+    0
+END
+
+IDD_SET_SYSTEM DLGINIT
+BEGIN
+    IDC_COMBO_RECORDFULL, 0x403, 11, 0
+0xbec9, 0xfdb3, 0xcfc0, 0xc4ce, 0xfebc, "\000" 
+    IDC_COMBO_RECORDFULL, 0x403, 9, 0
+0xa3cd, 0xb9d6, 0xbcc2, 0xf1cf, "\000" 
+    0
+END
+
+IDD_SET_CAR DLGINIT
+BEGIN
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xc6d4, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xa9be, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xbdbc, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xaabc, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xfec4, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xa8b4, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xc2d0, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xfabd, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xf0b9, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xa6bb, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xf2bd, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xe3d5, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xe5d3, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xe6cf, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xedc7, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xcab8, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xeecd, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xc1d4, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xd5cb, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xc9c3, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xd8b2, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xa5d4, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xf3b9, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xd3b8, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xc9c1, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xf5b6, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xf6c3, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xc2c9, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xe0c7, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xb3c2, "\000" 
+    IDC_DEFAULT_PROVINCE, 0x403, 3, 0
+0xdaba, "\000" 
+    0
+END
+
+IDD_HISTORY_DETECT DLGINIT
+BEGIN
+    IDC_COMBO_DIRECTION, 0x403, 9, 0
+0xcec8, 0xe2d2, 0xbdb7, 0xf2cf, "\000" 
+    IDC_COMBO_DIRECTION, 0x403, 9, 0
+0xb4ce, 0xaad6, 0xbdb7, 0xf2cf, "\000" 
+    IDC_COMBO_DIRECTION, 0x403, 9, 0
+0xd3b4, 0xcfc9, 0xbdb5, 0xc2cf, "\000" 
+    IDC_COMBO_DIRECTION, 0x403, 9, 0
+0xd3b4, 0xc2cf, 0xbdb5, 0xcfc9, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 13, 0
+0xcec8, 0xe2d2, 0xb5b3, 0xc6c5, 0xd5d1, 0xabc9, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xb6c0, 0xc6c5, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xc6bb, 0xc6c5, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xd7b0, 0xc6c5, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xdaba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xecba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xccc2, 0xc6c5, "\000" 
+    IDC_COMBO_PLATECOLOR, 0x403, 5, 0
+0xb4ce, 0xaad6, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xcec8, 0xe2d2, 0xb5b3, 0xc6c5, 0xe0c0, 0xcdd0, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xf3b4, 0xcdd0, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xa1d0, 0xcdd0, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xccbd, 0xb7c1, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xafbe, 0xc3d3, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xfcbe, 0xc3d3, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xb3be, 0xe2cd, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 17, 0
+0xb3be, 0xe2cd, 0xccc9, 0xc3d3, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 13, 0
+0xa9c5, 0xc3d3, 0xfbc6, 0xb5b3, 0xc5ba, 0xc6c5, "\000" 
+    IDC_COMBO_PLATETYPE, 0x403, 5, 0
+0xb4ce, 0xaad6, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 13, 0
+0xcec8, 0xe2d2, 0xb5b3, 0xedc9, 0xd5d1, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xd7b0, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xf8d2, 0xd2bb, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xc6bb, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xdbb7, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xecba, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xcfd7, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xccc2, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xb6c0, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xd8d7, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xdaba, 0xabc9, "\000" 
+    IDC_COMBO_CARCOLOR, 0x403, 5, 0
+0xb4ce, 0xaad6, "\000" 
+    0
+END
+
+IDD_OPEN_CLOSE_PREVIEW DLGINIT
+BEGIN
+    IDC_COMBO_WINNO, 0x403, 1, 0
+"\000" 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_WINNO, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3331, "\000" 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3431, "\000" 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3531, "\000" 
+    IDC_COMBO_WINNO, 0x403, 3, 0
+0x3631, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "关于 亿榕车牌识别系统(&A)..."
+END
+
+#endif    // Chinese (中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\YiRongCarDetectAIO.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

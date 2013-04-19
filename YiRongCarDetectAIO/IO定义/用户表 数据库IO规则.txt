@@ -1,0 +1,83 @@
+用户表 数据库IO规则.txt
+
+struct SET_USER_LIST_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	char user[32];
+};
+
+//命名太长会出错
+struct SET_USER_DATA_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	char user[32];
+	char psw[260];
+	//管理员权限
+	int admin;
+	//权限
+	//系统设置
+	int	systemset;
+	//录制设置
+	int	recordset;
+	//录制
+	int	record;
+	//云台
+	int	ptz;
+	//预览
+	int	preview;
+	//历史视频查询
+	int	historyvideo;
+	//系统日志查询
+	int	historyreport;
+	//历史识别查询
+	int	historydetect;
+	//历史报警查询
+	int	historyalarm;
+	//设备管理
+	int	device;
+	//黑名单设置
+	int	blackset;
+	//抓拍
+	int	capbmp;
+	//识别
+	int	detect;
+	//识别设置
+	int	detectset;
+};
+////////////////////////////////////////////
+不许改结构体名称。
+带 每个函数名带USER_前缀.
+///////////////////////////////////////////
+
+BOOL 增(struct SET_USER_DATA_ST a);
+其中传入的a.nid不要使用.
+增的时候判断用户名是否重复，重复直接返回FALSE
+成功返回TRUE。
+用户名和NID必须唯一。
+
+//////////////////////////////////////
+void 删(unsigned long int nid);
+根据NID来删
+
+///////////////////////////////////////////
+void 改(struct SET_USER_DATA_ST a);
+根据传入的a.nid来改.
+直接覆盖
+传参前，由ZOG判断用户名是否一致
+
+///////////////////////////////////////////
+void 查1(char *user,struct SET_USER_DATA_ST *a);
+输入用户名，输出该用户名的结构体。
+
+///////////////////////////////////////////
+void 查2(list<struct SET_USER_LIST_ST> &a);
+返回整个表的用户名和nid
+
+///////////////////////////////////////////
+void 查3(unsigned long int nid,struct SET_USER_DATA_ST *a);
+输入nid，输出该用户名的结构体。
+
+
+

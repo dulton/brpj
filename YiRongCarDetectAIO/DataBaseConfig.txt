@@ -1,0 +1,5 @@
+Ip:10.142.50.125
+Port:1521
+User:ushow2
+Psw:1110129712751154123113190560
+DataBaseName:yrvm

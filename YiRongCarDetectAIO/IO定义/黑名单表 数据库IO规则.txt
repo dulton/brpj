@@ -1,0 +1,32 @@
+struct BLACK_DATA_ST
+{
+	unsigned long int nid;
+	char brand[32];	//品牌
+	char name[32];	//失主姓名
+	char Phone[32];	//失主电话
+	char plate[32];	//车牌号
+	char othar[1024];	//其他信息
+
+};
+////////////////////////////
+//插入一条信息
+BOOL 增(struct BLACK_DATA_ST a);
+
+////////////////////////////
+void 删(unsigned long int nid);
+根据NID来删
+
+///////////////////////////////////////////
+void 改(struct BLACK_DATA_ST a);
+
+///////////////////////////////////////////
+//无任何条件
+UL 查总共有多少条信息()；
+
+///////////////////////////////////////////
+//给编号和语句，输出结果到A
+BOOL 分页查信息（int 起始编号，结束编号，list<struct BLACK_DATA_ST> &A）;
+
+
+///////////////////////////////////////////
+BOOL 清空黑名单表（）；

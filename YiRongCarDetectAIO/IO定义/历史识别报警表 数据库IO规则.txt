@@ -1,0 +1,161 @@
+struct HISTORY_DETECT_ST
+{	//nid
+	unsigned long int nid;
+	char area[260];	//区域名称 //暂时无效
+	char name[260];	//摄像头名称
+	char ip[32];	//IP地址
+
+	//时间
+	int year;
+	int mon;
+	int day;
+	int hour;
+	int min;
+	int sec;
+
+	//车牌类型
+	char	platetype[32];
+	//车牌颜色
+	char	platecolor[32];
+	//车牌方向
+	char	direction[32];
+	//车身颜色
+	char	carcolor[32];
+	//车牌号
+	char	plate[32];
+	//置信度
+	int reliability;
+	
+	//文件路径
+	char path[260];
+	//图像大小
+	unsigned long int picsize;
+};
+
+/////////////////////////////////
+
+表结构 再次确认
+NID	自增	UL
+CAMID	关联摄像头ID
+时间	系统自动添加	TIME
+图像	BLOB
+图像大小 UL
+/////////////////////////////////
+
+//汽车////////////////
+bool 增(UL CAMID，
+	//车牌类型
+	char	*platetype，
+	//车牌颜色
+	char	*platecolor，
+	//车牌方向
+	char	*direction，
+	//车身颜色
+	char	*carcolor，
+	//车牌号
+	char	*plate，
+	//置信度
+	int reliability,
+	//文件路径
+	char *path,
+	//图像大小
+	unsigned long int picsize,
+	//图像数据
+	unsigned char *picdata
+);
+
+//电动车////////////////
+bool 增(UL CAMID，
+	//车牌方向
+	char	*direction，
+	//车牌号
+	char	*plate，
+	//置信度
+	int reliability,
+	//文件路径
+	char *path,
+	//图像大小
+	unsigned long int picsize,
+	//图像数据
+	unsigned char *picdata
+);
+
+
+///////////////////以下 报警表 识别表 函数各出一个///////////////////////////////
+
+
+//获取图片数据
+//输入NID 输出图像数据
+bool 获取（UL NID，unsigned char *data） ；
+
+//////////////////////////////////////////////////
+
+
+//汽车////////////////////////////////////
+//二进制描述
+flag |0x01 ==使用 摄像头名称 查询  用LIKE模式
+flag |0x02 ==使用 摄像头IP 查询	用=模式
+flag |0x04 ==使用 车牌号 查询	用LIKE模式
+flag |0x08 ==使用 时间 查询	用>= <=模式
+flag |0x10 ==使用 车牌方向 查询 用 ==模式
+flag |0x20 ==使用 车牌颜色 查询	用 ==模式
+flag |0x40 ==使用 车牌类型 查询	用 ==模式
+flag |0x80 ==使用 车身颜色 查询	用 ==模式
+
+
+函数内部用 1 == flag & 0x01 来判断是否开启。
+
+UL 查总共有多少条信息
+(char *输入摄像头名称,
+char *输入IP,
+char *输入车牌号，
+char *输入起始时间，
+char *输入结束时间，
+char *输入车牌方向，
+char *输入车牌颜色，
+char *输入车牌类型,
+char *输入车身颜色,
+int flag,
+char *输出合成的SQL语句
+)；
+UL输出 0=没有查询结果或者错误 N=总共有多少条信息
+
+//电动车////////////////////////////////////
+//二进制描述
+flag |0x01 ==使用 摄像头名称 查询  用LIKE模式
+flag |0x02 ==使用 摄像头IP 查询	用=模式
+flag |0x04 ==使用 车牌号 查询	用LIKE模式
+flag |0x08 ==使用 时间 查询	用>= <=模式
+flag |0x10 ==使用 车牌方向 查询 用 ==模式
+
+
+函数内部用 1 == flag & 0x01 来判断是否开启。
+
+UL 查总共有多少条信息
+(char *输入摄像头名称,
+char *输入IP,
+char *输入车牌号，
+char *输入起始时间，
+char *输入结束时间，
+char *输入车牌方向，
+int flag,
+char *输出合成的SQL语句
+)；
+UL输出 0=没有查询结果或者错误 N=总共有多少条信息
+
+
+//////////////////////////////////////////////////
+//电动车的函数 不必拷贝 以下信息
+	//车牌类型
+	char	platetype[32];
+	//车牌颜色
+	char	platecolor[32];
+	//车身颜色
+	char	carcolor[32];
+///////////////////////////
+
+//给编号和语句，输出结果到A
+BOOL 分页查信息（CHAR *输入SQL语句，int flag,int 起始编号，结束编号，list<struct HISTORY_DETECT_ST&A）;
+
+
+
