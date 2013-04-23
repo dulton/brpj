@@ -11,7 +11,9 @@ extern CBarcodeRecordDlg *pCMainDlg;
 
 #include "Yaanlib/launet.h"
 #include "Yaanlib/megaplay.h"
+#include "Yaanlib/lauplaym4.h"
 
+#pragma comment( lib, "Yaanlib/PlayerSDK.lib")
 #pragma comment( lib, "Yaanlib/NetClient.lib")
 #pragma comment( lib, "Yaanlib/NetPlaySDK.lib")
 
@@ -22,12 +24,15 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
+struct RECORD_INFO_ST ConvrtThread[PMAX_NUM];	//录像转换线程
+
 //////////////////////////////////////////////////////////////
 CYaanCamera::CYaanCamera()
 {
 	for(int i=0;i<MAX_PLAYWIN;i++)
 	{
 		m_bplay[i] = FALSE;
+		m_brecord[i] = FALSE;
 		m_playhandle[i] = i;
 	}
 }
@@ -38,6 +43,8 @@ CYaanCamera::~CYaanCamera()
 	for(int i=0;i<MAX_PLAYWIN;i++)
 	{
 		StopPlay(i);
+		if(m_brecord[i] == TRUE)
+			StopRecord(i);
 	}
 }
 
@@ -48,7 +55,7 @@ void CYaanCamera::SDKinit()
 }
 
 //////////////////////////////////////////////////////////////
-void CYaanCamera::StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd)
+bool CYaanCamera::StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd)
 {
 	CHANNEL_CLIENTINFO pVSChann;
 
@@ -76,7 +83,7 @@ void CYaanCamera::StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *us
 	if (m_playhandle[nCuWinID] == -1)
 	{
 		AfxMessageBox(_T("启动通道失败 ：\n句柄获取失败\n可能输入的IP不存在"));
-		return;
+		return false;
 	}
 	else
 	{
@@ -84,6 +91,7 @@ void CYaanCamera::StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *us
 		VSNET_ClientSetWnd(m_playhandle[nCuWinID],hWnd);
 		VSNET_ClientMediaData(m_playhandle[nCuWinID],TRUE);
 		VSNET_ClientStartViewEx(m_playhandle[nCuWinID]);
+		return true;
 	}
 }
 
@@ -108,10 +116,12 @@ void CYaanCamera::CapturePic(int nCuWinID,char *filename)
 //////////////////////////////////////////////////////////////
 int CYaanCamera::StartRecord(int nCuWinID,LPCSTR filename)
 {
+//	char sRecFileName[MAX_PATH];
+//	sprintf(sRecFileName, "%s%d%s", "C:\\test_", "1111", ".mp4");
+//	BOOL bSuc = VSNET_ClientStartMp4Capture(s_ChanSock[g_GlobeEnvi.m_iSelWndSn],sRecFileName);
 	int iRet=0;
 	iRet = VSNET_ClientStartMp4Capture(m_playhandle[nCuWinID],filename);
-	if(iRet != 0)
-		TRACE("StartRecord Error:%d\n",iRet);
+	m_brecord[nCuWinID] = TRUE;
 	return iRet;
 }
 
@@ -120,8 +130,72 @@ int CYaanCamera::StopRecord(int nCuWinID)
 {
 	int iRet=0;
 	iRet = VSNET_ClientStopMp4Capture(m_playhandle[nCuWinID]);
-	if(iRet != 0)
-		TRACE("StopRecord Error:%d\n",iRet);
+	m_brecord[nCuWinID] = FALSE;
 	return iRet;
 }
+
+
+//////////////////////////////////////////////////////////////
+//以下是MP4转AVI接口
+bool zogMP4toAVI(char *src,char *dst)
+{
+	long int conv_h=LCPLAYM4_StartAVIConvert(src,dst);
+
+	if(conv_h >= 0)
+	{
+		while(LCPLAYM4_GetAVIConvertPos(conv_h) >= 0)
+			Sleep(2000);
+
+		LCPLAYM4_StopAVIConvert(conv_h);
+		return true;
+	}
+	return false;
+}
+
+//转换线程
+DWORD WINAPI ThreadPROC(LPVOID lpParameter)
+{
+	RECORD_INFO_ST *pRecord = (RECORD_INFO_ST*)lpParameter;
+
+	pRecord->ThreadFlag=false;
+
+	if(zogMP4toAVI(pRecord->MP4path,pRecord->AVIpath))
+	{
+		///写数据库	
+	}
+	pRecord->ThreadFlag=true;
+	return 0;
+}
+
+void CYaanCamera::ConvertMp4ToAvi(struct RECORD_INFO_ST file)
+{
+	for(int i=0;i<PMAX_NUM;i++)
+	{
+		if(ConvrtThread[i].ThreadFlag)
+		{
+			if(NULL!=ConvrtThread[i].pthread)
+				TerminateThread(ConvrtThread[i].pthread,0);
+	
+			memcpy(ConvrtThread[i].AVIpath,file.AVIpath,260);
+			memcpy(ConvrtThread[i].MP4path,file.MP4path,260);
+			memcpy(ConvrtThread[i].stime,file.stime,32);
+			memcpy(ConvrtThread[i].etime,file.etime,32);
+			memcpy(ConvrtThread[i].RunningNumber,file.RunningNumber,256);
+			memcpy(ConvrtThread[i].tag,file.tag,256);
+			memcpy(ConvrtThread[i].HmNum,file.HmNum,256);
+			memcpy(ConvrtThread[i].Description,file.Description,2560);
+			
+			
+			ConvrtThread[i].pthread=NULL;
+			ConvrtThread[i].pthread=CreateThread(NULL,0,ThreadPROC,&ConvrtThread[i],0,NULL);
+				
+			//线程满了
+			if(NULL==ConvrtThread[i].pthread)
+				break;
+			break;
+		}
+	}
+}
+
+
 

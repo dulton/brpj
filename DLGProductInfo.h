@@ -56,9 +56,15 @@ public:
 	BOOL OnInitDialog();
 	void AutoSize();
 	void Display(int i);
+	void Clean(int i);
+	void CleanTemp();
+	void DisplayTemp();
+	void temp2data(int i);
+	void DisplayLite(struct PRODUCT_INFO_ST &input);
 
 	int curchoose;
 	struct PRODUCT_INFO_ST data[MAX_PLAYWIN];
+	struct PRODUCT_INFO_ST temp;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

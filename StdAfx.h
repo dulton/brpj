@@ -19,7 +19,8 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
-#define MAX_PLAYWIN 4
+#define MAX_PLAYWIN 4	//最大播放窗口
+#define PMAX_NUM	12	//最大线程数
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

@@ -109,8 +109,14 @@ public:
 
 	//////////////////////////////////////////////////
 	//¿ªÆôÔ¤ÀÀ
-	void SetWindPlayState(int screenNo,BOOL bFlag);
-	BOOL GetPlayState(int screenNo);
+	void SetCurWndPlayState(BOOL bFlag);
+	BOOL GetCurWndPlayState();
+
+	/////////////////////////////////////////////////
+	//¿ªÆôÂ¼Ïñ
+	void SetCurWndRecordState(BOOL bFlag);
+	BOOL GetCurWndRecordState();
+
 
 	//////////////////////////////////////////////////
 	//×¥ÅÄÍ¼Ïñ

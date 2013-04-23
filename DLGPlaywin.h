@@ -8,6 +8,7 @@
 //
 #include "ScreenPannel.h"
 #include "YaanCamera.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CDLGPlaywin dialog
 
@@ -21,6 +22,7 @@ public:
 	//当前选择画面序号
 	int m_curScreen;
 	CYaanCamera m_video;
+
 // Dialog Data
 	//{{AFX_DATA(CDLGPlaywin)
 	enum { IDD = IDD_PLAYWIN };
@@ -33,17 +35,21 @@ public:
 	//获取当前选择的窗口
 	int GetCurWindId(void);
 	//获取当前选择的窗口的播放状态
-	BOOL GetWindPlayState(int screenNo);
+	BOOL GetCurWndPlayState();
+	//获取当前选择的窗口的录像状态
+	BOOL GetCurWndRecordState();
 	//开始播放
-	bool StartPlay();
+	bool StartPlay(int screenNo,char *name,char *ip,WORD port,char *user,char *psw);
 	//停止播放
 	void StopPlay();
 	//抓拍图像
-	void CapturePic(char *filename);
+	void CapturePic();
 	//开始录像
-	void StartRecord(LPCSTR filename);
+	void StartRecord();
 	//停止录像
 	void StopRecord();
+	//更新窗口的产品信息
+	void UpdateWndProductInfo();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGPlaywin)

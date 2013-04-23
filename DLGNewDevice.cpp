@@ -86,7 +86,6 @@ BOOL CDLGNewDevice::OnInitDialog()
 		nItem = m_list.InsertItem(0,str);
 		display(nItem,i);
 	}
-
 	ChooseEnable();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control

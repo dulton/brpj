@@ -8,6 +8,10 @@
 #include "BarcodeRecordDlg.h"
 extern CBarcodeRecordDlg *pCMainDlg;
 
+#include "DLGSettings.h"
+extern CDLGSettings DlgSettings;
+
+
 /*
 #pragma   warning(disable:4706)   
 #define   COMPILE_MULTIMON_STUBS   
@@ -444,25 +448,43 @@ BOOL CBSWndContainer::GetAutoAdjustPos()
 }
 /////////////////////////////////////////////////
 //¿ªÆôÔ¤ÀÀ
-void CBSWndContainer::SetWindPlayState(int screenNo,BOOL bFlag)
+void CBSWndContainer::SetCurWndPlayState(BOOL bFlag)
 {
-	if(GetPlayState(screenNo) == bFlag)
+	if(GetCurWndPlayState() == bFlag)
 		return;
 	if(bFlag == TRUE)
-		pCMainDlg->DlgPlaywin.StartPlay();
+//		pCMainDlg->DlgPlaywin.StartPlay();
+		;
 	else
 		pCMainDlg->DlgPlaywin.StopPlay();
 }
-BOOL CBSWndContainer::GetPlayState(int screenNo)
+BOOL CBSWndContainer::GetCurWndPlayState()
 {
-	return pCMainDlg->DlgPlaywin.m_video.m_bplay[screenNo];
+	return pCMainDlg->DlgPlaywin.GetCurWndPlayState();
+}
+
+/////////////////////////////////////////////////
+//¿ªÆôÂ¼Ïñ
+void CBSWndContainer::SetCurWndRecordState(BOOL bFlag)
+{
+	if(GetCurWndPlayState() == bFlag)
+		return;
+	if(bFlag == TRUE)
+		pCMainDlg->DlgPlaywin.StartRecord();
+	else
+		pCMainDlg->DlgPlaywin.StopRecord();
+}
+
+BOOL CBSWndContainer::GetCurWndRecordState()
+{
+	return pCMainDlg->DlgPlaywin.GetCurWndRecordState();
 }
 
 //////////////////////////////////////////////////
 //×¥ÅÄÍ¼Ïñ
 void CBSWndContainer::Capture()
 {
-	pCMainDlg->DlgPlaywin.CapturePic("D\\111.bmp");
+	pCMainDlg->DlgPlaywin.CapturePic();
 }
 
 //////////////////////////////////////////////////

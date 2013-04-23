@@ -7,6 +7,14 @@
 // DLGSettings.h : header file
 //
 
+//视频/图片命名规则定义
+#define DATETIME_PRODUCTNAME			0		//日期+产品名称
+#define DATETIME_BARCODE				1		//日期+一维码
+#define BARCODE_DATETIME				2		//一维码+日期
+#define PRODUCTNAME_DATETIME			3		//产品名称+日期
+#define DATETIME_PRODUCTNAME_BARCODE	4		//日期+产品名称+一维码
+#define BARCODE_DATETIME_PRODUCTNAME	5		//一维码+日期+产品名称
+
 /////////////////////////////////////////////////////////////////////////////
 // CDLGSettings dialog
 

@@ -56,20 +56,20 @@ BOOL CDLGSettings::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	CComboBox *p=(CComboBox *)GetDlgItem(IDC_COMBO_RECORD);
-	p->AddString(Language_ConvertString("Date-ProductName-Size"));
-	p->AddString(Language_ConvertString("Date-Barcode-Size"));
-	p->AddString(Language_ConvertString("Barcode-Date-Size"));
-	p->AddString(Language_ConvertString("ProductName-Date-Size"));
-	p->AddString(Language_ConvertString("Date-ProductName-Barcode-Size"));
-	p->AddString(Language_ConvertString("Barcode-Date-ProductName-Size"));
+	p->AddString(Language_ConvertString("Date-ProductName"));
+	p->AddString(Language_ConvertString("Date-Barcode"));
+	p->AddString(Language_ConvertString("Barcode-Date"));
+	p->AddString(Language_ConvertString("ProductName-Date"));
+	p->AddString(Language_ConvertString("Date-ProductName-Barcode"));
+	p->AddString(Language_ConvertString("Barcode-Date-ProductName"));
 	
 	p=(CComboBox *)GetDlgItem(IDC_COMBO_SHOTFRAME);
-	p->AddString(Language_ConvertString("Date-ProductName-Size"));
-	p->AddString(Language_ConvertString("Date-Barcode-Size"));
-	p->AddString(Language_ConvertString("Barcode-Date-Size"));
-	p->AddString(Language_ConvertString("ProductName-Date-Size"));
-	p->AddString(Language_ConvertString("Date-ProductName-Barcode-Size"));
-	p->AddString(Language_ConvertString("Barcode-Date-ProductName-Size"));
+	p->AddString(Language_ConvertString("Date-ProductName"));
+	p->AddString(Language_ConvertString("Date-Barcode"));
+	p->AddString(Language_ConvertString("Barcode-Date"));
+	p->AddString(Language_ConvertString("ProductName-Date"));
+	p->AddString(Language_ConvertString("Date-ProductName-Barcode"));
+	p->AddString(Language_ConvertString("Barcode-Date-ProductName"));
 
 	Read2Dlg();
 	UpdateData(FALSE);

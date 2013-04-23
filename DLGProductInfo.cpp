@@ -7,6 +7,7 @@
 
 #include "BarcodeRecordDlg.h"
 extern CBarcodeRecordDlg *pCMainDlg;
+extern bool IsChinese;
 
 
 #ifdef _DEBUG
@@ -29,6 +30,7 @@ CDLGProductInfo::CDLGProductInfo(CWnd* pParent /*=NULL*/)
 	curchoose=0;
 
 	//清空 产品
+	memset(&temp,0,sizeof(struct PRODUCT_INFO_ST));
 	for(int i=0;i<MAX_PLAYWIN;i++)
 		memset(&data[i],0,sizeof(struct PRODUCT_INFO_ST));
 }
@@ -93,51 +95,87 @@ void CDLGProductInfo::OnButtonOk()
 	}
 
 	//查询数据库
-	if(!pCMainDlg->SQLiteIO.Product_Read(m_barcode.GetBuffer(0),data[curchoose]))
-		MessageBox("This Product can not be found");
+	memset(&temp,0,sizeof(struct PRODUCT_INFO_ST));
+	if(!pCMainDlg->SQLiteIO.Product_Read(m_barcode.GetBuffer(0),temp))
+	{
+		if(IsChinese)
+			MessageBox("此产品无法找到");
+		else
+			MessageBox("This Product can not be found");
+	}
 	else
 	{
-		Display(curchoose);
+		DisplayLite(temp);
 	}
 }
 
+//外部选中窗口后调用此
 void CDLGProductInfo::Display(int i)
 {
-	if(data[i].nid >1)
+	DisplayLite(data[i]);
+}
+
+//清空函数
+void CDLGProductInfo::Clean(int i)
+{
+	memset(&data[i],0,sizeof(struct PRODUCT_INFO_ST));
+}
+
+//TEMP拷贝到DATA
+void CDLGProductInfo::temp2data(int i)
+{
+	memcpy(&data[i],&temp,sizeof(struct PRODUCT_INFO_ST));
+}
+
+//清空temp
+void CDLGProductInfo::CleanTemp()
+{
+	memset(&temp,0,sizeof(struct PRODUCT_INFO_ST));
+}
+
+//显示temp
+void CDLGProductInfo::DisplayTemp()
+{
+	DisplayLite(temp);
+}
+
+void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
+{
+	if(input.nid >0)
 	{
-		GetDlgItem(IDC_STATIC_RUNNUMBER)->SetWindowText(data[i].RunningNumber);     
-		GetDlgItem(IDC_STATIC_TAG)->SetWindowText(data[i].tag);           
-		GetDlgItem(IDC_STATIC_MAINC)->SetWindowText(data[i].MainCategory);         
-		GetDlgItem(IDC_STATIC_SUBC)->SetWindowText(data[i].SubCategory);          
-		GetDlgItem(IDC_STATIC_METAFIELD)->SetWindowText(data[i].MetaField);     
-		GetDlgItem(IDC_STATIC_COLORDESC)->SetWindowText(data[i].ColourDesc);     
-		GetDlgItem(IDC_STATIC_COLOR)->SetWindowText(data[i].Colour);         
-		GetDlgItem(IDC_STATIC_UNIT)->SetWindowText(data[i].Unit);          
-		GetDlgItem(IDC_STATIC_FACTORYITEM)->SetWindowText(data[i].FactoryItem);                   
-		GetDlgItem(IDC_STATIC_HMNUM)->SetWindowText(data[i].HmNum);         
-		GetDlgItem(IDC_STATIC_DESC)->SetWindowText(data[i].Description);   
+		GetDlgItem(IDC_STATIC_RUNNUMBER)->SetWindowText(input.RunningNumber);     
+		GetDlgItem(IDC_STATIC_TAG)->SetWindowText(input.tag);           
+		GetDlgItem(IDC_STATIC_MAINC)->SetWindowText(input.MainCategory);         
+		GetDlgItem(IDC_STATIC_SUBC)->SetWindowText(input.SubCategory);          
+		GetDlgItem(IDC_STATIC_METAFIELD)->SetWindowText(input.MetaField);     
+		GetDlgItem(IDC_STATIC_COLORDESC)->SetWindowText(input.ColourDesc);     
+		GetDlgItem(IDC_STATIC_COLOR)->SetWindowText(input.Colour);         
+		GetDlgItem(IDC_STATIC_UNIT)->SetWindowText(input.Unit);          
+		GetDlgItem(IDC_STATIC_FACTORYITEM)->SetWindowText(input.FactoryItem);                   
+		GetDlgItem(IDC_STATIC_HMNUM)->SetWindowText(input.HmNum);         
+		GetDlgItem(IDC_STATIC_DESC)->SetWindowText(input.Description);   
 
 		HBITMAP bi;
 
-		if(strlen(data[i].path1))
+		if(strlen(input.path1))
 		{
-			bi=pic1.LoadPicture(data[i].path1);
+			bi=pic1.LoadPicture(input.path1);
 			m_pic1.SetBitmap(bi);
 		}
 		else
 			m_pic1.SetBitmap(0);
 
-		if(strlen(data[i].path2))
+		if(strlen(input.path2))
 		{
-			bi=pic2.LoadPicture(data[i].path2);
+			bi=pic2.LoadPicture(input.path2);
 			m_pic2.SetBitmap(bi);
 		}
 		else
 			m_pic2.SetBitmap(0);
 
-		if(strlen(data[i].path3))
+		if(strlen(input.path3))
 		{
-			bi=pic3.LoadPicture(data[i].path3);
+			bi=pic3.LoadPicture(input.path3);
 			m_pic3.SetBitmap(bi);
 		}
 		else
@@ -161,6 +199,7 @@ void CDLGProductInfo::Display(int i)
 		m_pic3.SetBitmap(0);
 	}
 }
+
 
 HBRUSH CDLGProductInfo::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {

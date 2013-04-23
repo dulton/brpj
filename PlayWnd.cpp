@@ -69,7 +69,7 @@ LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			pContainer->SetActivePage(this);
 			{
 				pCMainDlg->DlgPlaywin.SetCurWindId(m_nWndID);
-				//DlgMain->DlgNormal.UpdateNormalWnd();
+				pCMainDlg->DlgPlaywin.UpdateWndProductInfo();
 			}
 			break;
 		case WM_LBUTTONDBLCLK:
@@ -91,8 +91,8 @@ void CPlayWnd::OnContextMenu(CWnd* pWnd, CPoint point)
 	CScreenPannel *pContainer = (CScreenPannel *)GetParent();
 	pContainer->SetActivePage(this);
 
-	int screenNo = pCMainDlg->DlgPlaywin.GetCurWindId();
-	BOOL iplay = pCMainDlg->DlgPlaywin.GetWindPlayState(screenNo);
+	BOOL iplay = pCMainDlg->DlgPlaywin.GetCurWndPlayState();
+	BOOL brecord = pCMainDlg->DlgPlaywin.GetCurWndRecordState();
 
 //	CContainerWnd *pContainer = (CContainerWnd *)GetParent();
 	CMenu menu;
@@ -100,12 +100,15 @@ void CPlayWnd::OnContextMenu(CWnd* pWnd, CPoint point)
 //	menu.AppendMenu(MF_STRING | pContainer->GetFullScreen()    ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_FULLSCREEN, NAME_MENU_FULLSCREEN);
 //	menu.AppendMenu(MF_STRING | pContainer->GetMultiScreen()    ? MF_CHECKED : MF_UNCHECKED, 	VIDEO_MENU_MULTISCREEN, NAME_MENU_MULTISCREEN);
 //	menu.AppendMenu(MF_STRING | pContainer->GetAutoAdjustPos() ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_AUTOADJUST, NAME_MENU_AUTOADJUST);
-	if(iplay == FALSE)
-		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTPLAY, NAME_MENU_STARTPLAY);
+//	if(iplay == FALSE)
+//		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTPLAY, NAME_MENU_STARTPLAY);
+//	else
+//		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPPLAY, NAME_MENU_STOPPLAY);
+
+	if(brecord == FALSE)
+		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTRECORD, NAME_MENU_STARTRECORD);
 	else
-		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPPLAY, NAME_MENU_STOPPLAY);
-//	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTRECORD, NAME_MENU_STARTRECORD);
-//	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPRECORD, NAME_MENU_STOPRECORD);
+		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPRECORD, NAME_MENU_STOPRECORD);
 	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_CAPTURE, NAME_MENU_CAPTURE);
 
 
@@ -141,26 +144,25 @@ void CPlayWnd::OnVideoMenu(UINT nID)
 		//pContainer->SetFullScreen(FALSE);
 		break;
 	case VIDEO_MENU_STARTPLAY:
-		{
-			int screenNo = pCMainDlg->DlgPlaywin.GetCurWindId();
-			pContainer->SetWindPlayState(screenNo,TRUE);
-			break;
-		}
+		pContainer->SetCurWndPlayState(TRUE);
+		break;
 	case VIDEO_MENU_STOPPLAY:
-		{
-			int screenNo = pCMainDlg->DlgPlaywin.GetCurWindId();
-			pContainer->SetWindPlayState(screenNo,FALSE);
-			break;
-		}
+		pContainer->SetCurWndPlayState(FALSE);
+		break;
+	case VIDEO_MENU_STARTRECORD:
+		pContainer->SetCurWndRecordState(TRUE);
+		break;
+	case VIDEO_MENU_STOPRECORD:
+		pContainer->SetCurWndRecordState(FALSE);
+		break;
 	case VIDEO_MENU_CAPTURE:
-		{
-			pContainer->Capture();
-			break;
-		}
+		pContainer->Capture();
+		break;
 	default:
 		break;
 	}
 }
+
 
 LRESULT CPlayWnd::OnRepaintWnd(WPARAM wParam, LPARAM lParam)
 {

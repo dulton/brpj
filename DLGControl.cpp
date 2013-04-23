@@ -80,20 +80,21 @@ void CDLGControl::AutoSize()
 void CDLGControl::OnButtonRecord() 
 {
 	// TODO: Add your control notification handler code here
-	pCMainDlg->DlgPlaywin.StartPlay();
+	pCMainDlg->DlgPlaywin.StartRecord();
 }
 
 void CDLGControl::OnButtonStop() 
 {
 	// TODO: Add your control notification handler code here
-	
+	pCMainDlg->DlgPlaywin.StopRecord();
 }
 
 void CDLGControl::OnButtonShotframe() 
 {
 	// TODO: Add your control notification handler code here
-	pCMainDlg->DlgPlaywin.CapturePic("D:\\111.bmp");
+	pCMainDlg->DlgPlaywin.CapturePic();
 }
+
 
 void CDLGControl::OnButtonSettings() 
 {
@@ -114,4 +115,13 @@ void CDLGControl::OnButtonIptree()
 	// TODO: Add your control notification handler code here
 
 	pCMainDlg->DlgNewDevice.DoModal();
+	for(int i=0;i<MAX_PLAYWIN;i++)
+	{
+		pCMainDlg->DlgPlaywin.StartPlay(i,\
+										pCMainDlg->DlgNewDevice.device[i].name,\
+										pCMainDlg->DlgNewDevice.device[i].ip,\
+										pCMainDlg->DlgNewDevice.device[i].port,\
+										pCMainDlg->DlgNewDevice.device[i].user,\
+										pCMainDlg->DlgNewDevice.device[i].psw);
+	}
 }
