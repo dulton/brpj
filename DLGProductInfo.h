@@ -52,6 +52,7 @@ public:
 	CPicture pic2;
 	CPicture pic3;
 	CFont TextFont;
+	UINT  m_recordtimer;
 
 	BOOL OnInitDialog();
 	void AutoSize();
@@ -61,10 +62,13 @@ public:
 	void DisplayTemp();
 	void temp2data(int i);
 	void DisplayLite(struct PRODUCT_INFO_ST &input);
+	void UpdateRecordTime();
 
 	int curchoose;
 	struct PRODUCT_INFO_ST data[MAX_PLAYWIN];
 	struct PRODUCT_INFO_ST temp;
+
+	HBITMAP bi;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -80,6 +84,8 @@ protected:
 	//{{AFX_MSG(CDLGProductInfo)
 	afx_msg void OnButtonOk();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

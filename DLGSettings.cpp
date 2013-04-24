@@ -19,8 +19,8 @@ CDLGSettings::CDLGSettings(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGSettings::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDLGSettings)
-	m_record = _T("D:\\\\record");
-	m_shotframe = _T("D:\\\\shotframe");
+	m_record = _T("D:\\record");
+	m_shotframe = _T("D:\\shotframe");
 	m_comboRecord = 0;
 	m_comboShotframe =0;
 	//}}AFX_DATA_INIT
@@ -57,19 +57,19 @@ BOOL CDLGSettings::OnInitDialog()
 
 	CComboBox *p=(CComboBox *)GetDlgItem(IDC_COMBO_RECORD);
 	p->AddString(Language_ConvertString("Date-ProductName"));
-	p->AddString(Language_ConvertString("Date-Barcode"));
-	p->AddString(Language_ConvertString("Barcode-Date"));
+	p->AddString(Language_ConvertString("Date-Carton Tag"));
+	p->AddString(Language_ConvertString("Carton Tag-Date"));
 	p->AddString(Language_ConvertString("ProductName-Date"));
-	p->AddString(Language_ConvertString("Date-ProductName-Barcode"));
-	p->AddString(Language_ConvertString("Barcode-Date-ProductName"));
+	p->AddString(Language_ConvertString("Date-ProductName-Carton Tag"));
+	p->AddString(Language_ConvertString("Carton Tag-Date-ProductName"));
 	
 	p=(CComboBox *)GetDlgItem(IDC_COMBO_SHOTFRAME);
 	p->AddString(Language_ConvertString("Date-ProductName"));
-	p->AddString(Language_ConvertString("Date-Barcode"));
-	p->AddString(Language_ConvertString("Barcode-Date"));
+	p->AddString(Language_ConvertString("Date-Carton Tag"));
+	p->AddString(Language_ConvertString("Carton Tag-Date"));
 	p->AddString(Language_ConvertString("ProductName-Date"));
-	p->AddString(Language_ConvertString("Date-ProductName-Barcode"));
-	p->AddString(Language_ConvertString("Barcode-Date-ProductName"));
+	p->AddString(Language_ConvertString("Date-ProductName-Carton Tag"));
+	p->AddString(Language_ConvertString("Carton Tag-Date-ProductName"));
 
 	Read2Dlg();
 	UpdateData(FALSE);

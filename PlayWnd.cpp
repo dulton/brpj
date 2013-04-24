@@ -54,8 +54,6 @@ BOOL CPlayWnd::OnEraseBkgnd(CDC* pDC)
 	return CWnd::OnEraseBkgnd(pDC);
 }
 
-
-
 LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	// TODO: Add your specialized code here and/or call the base class
@@ -70,13 +68,12 @@ LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				pCMainDlg->DlgPlaywin.SetCurWindId(m_nWndID);
 				pCMainDlg->DlgPlaywin.UpdateWndProductInfo();
+				BOOL bRecord = pCMainDlg->DlgPlaywin.GetCurWndRecordState();
+				pCMainDlg->DlgControl.UpdateBtnState(bRecord);
+
 			}
 			break;
 		case WM_LBUTTONDBLCLK:
-			{
-				//BOOL bMulti = pContainer->GetMultiScreen();
-				//pContainer->SetMultiScreen(!bMulti);
-			}
 			break;
 		default:
 			break;

@@ -65,6 +65,9 @@ BOOL CDLGControl::OnInitDialog()
 	
 	AutoSize();
 
+	GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_SHOTFRAME)->EnableWindow(FALSE);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -80,13 +83,17 @@ void CDLGControl::AutoSize()
 void CDLGControl::OnButtonRecord() 
 {
 	// TODO: Add your control notification handler code here
-	pCMainDlg->DlgPlaywin.StartRecord();
+	if(pCMainDlg->DlgPlaywin.StartRecord())
+	{
+		UpdateBtnState(TRUE);
+	}
 }
 
 void CDLGControl::OnButtonStop() 
 {
 	// TODO: Add your control notification handler code here
 	pCMainDlg->DlgPlaywin.StopRecord();
+	UpdateBtnState(FALSE);
 }
 
 void CDLGControl::OnButtonShotframe() 
@@ -123,5 +130,21 @@ void CDLGControl::OnButtonIptree()
 										pCMainDlg->DlgNewDevice.device[i].port,\
 										pCMainDlg->DlgNewDevice.device[i].user,\
 										pCMainDlg->DlgNewDevice.device[i].psw);
+	}
+}
+
+void CDLGControl::UpdateBtnState(BOOL brecord)
+{
+	if(brecord == TRUE)
+	{
+		GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON_SHOTFRAME)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_SHOTFRAME)->EnableWindow(FALSE);
 	}
 }

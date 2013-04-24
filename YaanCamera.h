@@ -12,14 +12,15 @@
 struct RECORD_INFO_ST
 {
 	HANDLE pthread;
-	int ThreadFlag;
+	bool ThreadFlag;
 
 	char RunningNumber[256];	
 	char tag[256];
 	char HmNum[256];
-	char Description[2560];		
+	char Description[2560];	
 
 	//起始时间
+	CTime starttime;
 	char stime[32];
 	//结束时间
 	char etime[32];
@@ -39,6 +40,7 @@ public:
 	BOOL        m_bplay[MAX_PLAYWIN];
 	BOOL        m_brecord[MAX_PLAYWIN];
 	struct RECORD_INFO_ST record[MAX_PLAYWIN];	//窗口录像信息
+	struct RECORD_INFO_ST ConvrtThread[PMAX_NUM];	//录像转换线程
 public:
 	void		SDKinit();
 	bool		StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd);

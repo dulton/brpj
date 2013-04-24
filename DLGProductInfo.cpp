@@ -16,6 +16,8 @@ extern bool IsChinese;
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define RECORD_TIMER 1
+
 /////////////////////////////////////////////////////////////////////////////
 // CDLGProductInfo dialog
 
@@ -28,6 +30,7 @@ CDLGProductInfo::CDLGProductInfo(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 
 	curchoose=0;
+	m_recordtimer = 0;
 
 	//清空 产品
 	memset(&temp,0,sizeof(struct PRODUCT_INFO_ST));
@@ -53,6 +56,8 @@ BEGIN_MESSAGE_MAP(CDLGProductInfo, CDialog)
 	//{{AFX_MSG_MAP(CDLGProductInfo)
 	ON_BN_CLICKED(IDC_BUTTON_OK, OnButtonOk)
 	ON_WM_CTLCOLOR()
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -68,10 +73,33 @@ BOOL CDLGProductInfo::OnInitDialog()
 	TextFont.CreatePointFont(350,_T("Arial Black"));
 	GetDlgItem(IDC_STATIC_RECORDTIME)->SetFont(&TextFont,true);
 
+	//定时500ms
+	m_recordtimer = SetTimer(RECORD_TIMER,500,NULL);
 
 	AutoSize();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+void CDLGProductInfo::OnTimer(UINT nIDEvent) 
+{
+	// TODO: Add your message handler code here and/or call default
+	
+	CDialog::OnTimer(nIDEvent);
+	if(nIDEvent == RECORD_TIMER)
+	{
+		UpdateRecordTime();
+	}
+}
+
+void CDLGProductInfo::OnDestroy() 
+{
+	CDialog::OnDestroy();
+	
+	// TODO: Add your message handler code here
+	if(m_recordtimer) 
+		KillTimer(m_recordtimer); 
+	m_recordtimer = 0;
 }
 
 void CDLGProductInfo::AutoSize()
@@ -90,7 +118,10 @@ void CDLGProductInfo::OnButtonOk()
 
 	if(m_barcode.IsEmpty())
 	{
-		MessageBox("Please Input Running Number or Carton TAG");
+		if(IsChinese)
+			MessageBox("请输入产品条形码");
+		else
+			MessageBox("Please Input Running Number or Carton TAG");
 		return ;
 	}
 
@@ -155,8 +186,6 @@ void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 		GetDlgItem(IDC_STATIC_HMNUM)->SetWindowText(input.HmNum);         
 		GetDlgItem(IDC_STATIC_DESC)->SetWindowText(input.Description);   
 
-		HBITMAP bi;
-
 		if(strlen(input.path1))
 		{
 			bi=pic1.LoadPicture(input.path1);
@@ -198,8 +227,23 @@ void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 		m_pic2.SetBitmap(0);
 		m_pic3.SetBitmap(0);
 	}
+	UpdateData(FALSE);
+	Invalidate(TRUE);
 }
 
+void CDLGProductInfo::UpdateRecordTime()
+{
+	char rtime[16];
+	if(pCMainDlg->DlgPlaywin.GetCurWndRecordState() == TRUE)
+	{
+		pCMainDlg->DlgPlaywin.GetCurWndRecordTime(rtime);		
+	}
+	else
+	{
+		strcpy(rtime,"00:00:00");
+	}
+	GetDlgItem(IDC_STATIC_RECORDTIME)->SetWindowText(rtime);
+}
 
 HBRUSH CDLGProductInfo::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {
@@ -209,10 +253,16 @@ HBRUSH CDLGProductInfo::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	switch(pWnd->GetDlgCtrlID())
 	{
 	case IDC_STATIC_RECORDTIME:
-		pDC->SetTextColor(RGB(255,0,0));break;
+		if(pCMainDlg->DlgPlaywin.GetCurWndRecordState())
+			pDC->SetTextColor(RGB(255,0,0));
+		else
+			pDC->SetTextColor(RGB(0,127,0));
+			break;
 	default:break;
 	}
 
 	// TODO: Return a different brush if the default is not desired
 	return hbr;
 }
+
+

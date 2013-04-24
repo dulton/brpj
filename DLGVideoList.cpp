@@ -92,8 +92,7 @@ BOOL CDLGVideoList::OnInitDialog()
 	m_list.InsertColumn(4, _T("Description" ), LVCFMT_LEFT, 220);
 	m_list.InsertColumn(5, _T("Start Time" ), LVCFMT_LEFT, 130);
 	m_list.InsertColumn(6, _T("End Time" ), LVCFMT_LEFT, 130);
-	m_list.InsertColumn(7, _T("File Size" ), LVCFMT_LEFT, 80);
-	m_list.InsertColumn(8, _T("File Path" ), LVCFMT_LEFT, 0);
+	m_list.InsertColumn(7, _T("File Path" ), LVCFMT_LEFT, 0);
 
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
@@ -183,7 +182,7 @@ void CDLGVideoList::OnButtonPlay()
 		return ;
 
 	char str[260];
-	m_list.GetItemText(ListChoose,8,str,260);
+	m_list.GetItemText(ListChoose,7,str,260);
 
 	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
 }
@@ -203,7 +202,7 @@ void CDLGVideoList::OnButtonDelete()
 	pCMainDlg->SQLiteIO.Video_Delete(nid);
 
 	//É¾³ýÎÄ¼þ
-	m_list.GetItemText(ListChoose,8,str,260);
+	m_list.GetItemText(ListChoose,7,str,260);
 	DeleteFile(str);
 
 	ListNow=0;
@@ -375,10 +374,10 @@ void CDLGVideoList::DisplayerList(void)
 			beglist->end_sec);
 		m_list.SetItemText(nItem,6,str);
 
-		sprintf(str,"%.2f MB",beglist->size/1024.0/1024.0);
-		m_list.SetItemText(nItem,7,str);
+	//	sprintf(str,"%.2f MB",beglist->size/1024.0/1024.0);
+	//	m_list.SetItemText(nItem,7,str);
 
-		m_list.SetItemText(nItem,8,beglist->path);
+		m_list.SetItemText(nItem,7,beglist->path);
 	
 	}
 
@@ -423,7 +422,7 @@ void CDLGVideoList::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO: Add your control notification handler code here
 	char str[260];
-	m_list.GetItemText(pNMIA->iItem,8,str,260);
+	m_list.GetItemText(pNMIA->iItem,7,str,260);
 	char cmdstr[512];
 
 	sprintf(cmdstr,"/e,/select,%s",str);

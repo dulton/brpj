@@ -98,7 +98,8 @@ public:
 
 	//视频信息表
 	void Video_CreateTable(void);
-	void Video_Add(struct PRODUCT_INFO_ST pInfo,char *starttime,char *endtime,char *path,unsigned long size);
+	void Video_Add(char *RunningNumber,char *tag,char *HmNum,char *Description,\
+				   char *starttime,char *endtime,char *path,unsigned long size);
 	void Video_Delete(unsigned long int nid);
 	unsigned long Video_GetCount(char *runnum,char *HmNum,char *Description,\
 								 char *starttime,char *endtime,int flag,char *sql);

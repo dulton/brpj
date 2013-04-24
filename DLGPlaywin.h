@@ -45,9 +45,11 @@ public:
 	//抓拍图像
 	void CapturePic();
 	//开始录像
-	void StartRecord();
+	bool StartRecord();
 	//停止录像
 	void StopRecord();
+	//获取当前窗口的录像时间
+	void GetCurWndRecordTime(char *rtime);
 	//更新窗口的产品信息
 	void UpdateWndProductInfo();
 // Overrides

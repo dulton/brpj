@@ -23,6 +23,7 @@ public:
 	//}}AFX_DATA
 	BOOL CDLGControl::OnInitDialog();
 	void AutoSize();
+	void UpdateBtnState(BOOL brecord);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

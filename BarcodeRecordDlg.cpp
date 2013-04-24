@@ -140,7 +140,7 @@ BOOL CBarcodeRecordDlg::OnInitDialog()
 	DlgProductInfo.ShowWindow(SW_SHOW);
 
 	//ÉèÖÃ×ÖÌå
-	TextFont.CreatePointFont(120,_T("Arial"));
+	TextFont.CreatePointFont(110,_T("Arial"));
 	GetDlgItem(IDC_STATIC_TITLE)->SetFont(&TextFont,true);
 	// TODO: Add extra initialization here
 	

@@ -168,15 +168,29 @@ void CDLGPlaywin::StopPlay()
 //抓拍图像
 void CDLGPlaywin::CapturePic()
 {
+	char str[128];
+	char *p;
+
 	if(pCMainDlg->DlgProductInfo.data[m_curScreen].nid > 0)
 	{
+		//如果描述长度过长
+		if(strlen( pCMainDlg->DlgProductInfo.data[m_curScreen].Description) < 100)
+		{
+			p = pCMainDlg->DlgProductInfo.data[m_curScreen].Description;
+		}
+		else
+		{
+			sprintf(str,"%100s",pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+			p=str;
+		}
+
 		char sRecFileName[260];
 		CTime nowtime=CTime::GetTickCount();
 
 		switch(DlgSettings.m_comboRecord)
 		{
 			case DATETIME_PRODUCTNAME:
-				sprintf(sRecFileName, "%s\\%4d-%2d-%2d %2d-%2d-%2d %s.bmp", \
+				sprintf(sRecFileName, "%s\\%04d-%02d-%02d %02d-%02d-%02d %s.bmp", \
 										DlgSettings.m_shotframe.GetBuffer(0), \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
@@ -184,10 +198,10 @@ void CDLGPlaywin::CapturePic()
 										nowtime.GetHour(), \
 										nowtime.GetMinute(), \
 										nowtime.GetSecond(), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+										p);
 				break;
 			case DATETIME_BARCODE:
-				sprintf(sRecFileName, "%s\\%4d-%2d-%2d %2d-%2d-%2d %s.bmp", \
+				sprintf(sRecFileName, "%s\\%04d-%02d-%02d %02d-%02d-%02d %s.bmp", \
 										DlgSettings.m_shotframe.GetBuffer(0), \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
@@ -198,7 +212,7 @@ void CDLGPlaywin::CapturePic()
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag);
 				break;
 			case BARCODE_DATETIME:
-				sprintf(sRecFileName, "%s\\%s %4d-%2d-%2d %2d-%2d-%2d.bmp", \
+				sprintf(sRecFileName, "%s\\%s %04d-%02d-%02d %02d-%02d-%02d.bmp", \
 										DlgSettings.m_shotframe.GetBuffer(0), \
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag, \
 										nowtime.GetYear(), \
@@ -209,9 +223,9 @@ void CDLGPlaywin::CapturePic()
 										nowtime.GetSecond());
 				break;
 			case PRODUCTNAME_DATETIME:
-				sprintf(sRecFileName, "%s\\%s %4d-%2d-%2d %2d-%2d-%2d.bmp", \
+				sprintf(sRecFileName, "%s\\%s %04d-%02d-%02d %02d-%02d-%02d.bmp", \
 										DlgSettings.m_shotframe.GetBuffer(0), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description, \
+										p, \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
 										nowtime.GetDay(), \
@@ -220,7 +234,7 @@ void CDLGPlaywin::CapturePic()
 										nowtime.GetSecond());
 				break;
 			case DATETIME_PRODUCTNAME_BARCODE:
-				sprintf(sRecFileName, "%s\\%4d-%2d-%2d %2d-%2d-%2d %s %s.bmp", \
+				sprintf(sRecFileName, "%s\\%04d-%02d-%02d %02d-%02d-%02d %s %s.bmp", \
 										DlgSettings.m_shotframe.GetBuffer(0), \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
@@ -228,11 +242,11 @@ void CDLGPlaywin::CapturePic()
 										nowtime.GetHour(), \
 										nowtime.GetMinute(), \
 										nowtime.GetSecond(), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description, \
+										p, \
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag);
 				break;
 			case BARCODE_DATETIME_PRODUCTNAME:
-				sprintf(sRecFileName, "%s\\%s %4d-%2d-%2d %2d-%2d-%2d %s.bmp", \
+				sprintf(sRecFileName, "%s\\%s %04d-%02d-%02d %02d-%02d-%02d %s.bmp", \
 										DlgSettings.m_shotframe.GetBuffer(0), \
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag, \
 										nowtime.GetYear(), \
@@ -241,7 +255,7 @@ void CDLGPlaywin::CapturePic()
 										nowtime.GetHour(), \
 										nowtime.GetMinute(), \
 										nowtime.GetSecond(), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+										p);
 				break;
 		}
 		m_video.CapturePic(m_curScreen,sRecFileName);
@@ -249,11 +263,25 @@ void CDLGPlaywin::CapturePic()
 }
 
 //开始录像
-void CDLGPlaywin::StartRecord()
+bool CDLGPlaywin::StartRecord()
 {
+	char str[128];
+	char *p;
+
 	if(pCMainDlg->DlgProductInfo.temp.nid > 0)
 	{
 		pCMainDlg->DlgProductInfo.temp2data(m_curScreen);
+
+		//如果描述长度过长
+		if(strlen( pCMainDlg->DlgProductInfo.data[m_curScreen].Description) < 100)
+		{
+			p = pCMainDlg->DlgProductInfo.data[m_curScreen].Description;
+		}
+		else
+		{
+			sprintf(str,"%100s",pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+			p=str;
+		}
 
 		char sRecFileName[260];
 		char tempFileName[260];
@@ -262,7 +290,7 @@ void CDLGPlaywin::StartRecord()
 		switch(DlgSettings.m_comboRecord)
 		{
 			case DATETIME_PRODUCTNAME:
-				sprintf(tempFileName, "%s\\%4d-%2d-%2d %2d-%2d-%2d %s", \
+				sprintf(tempFileName, "%s\\%04d-%02d-%02d %02d-%02d-%02d %s", \
 										DlgSettings.m_record.GetBuffer(0), \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
@@ -270,10 +298,10 @@ void CDLGPlaywin::StartRecord()
 										nowtime.GetHour(), \
 										nowtime.GetMinute(), \
 										nowtime.GetSecond(), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+										p);
 				break;
 			case DATETIME_BARCODE:
-				sprintf(tempFileName, "%s\\%4d-%2d-%2d %2d-%2d-%2d %s", \
+				sprintf(tempFileName, "%s\\%04d-%02d-%02d %02d-%02d-%02d %s", \
 										DlgSettings.m_record.GetBuffer(0), \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
@@ -284,7 +312,7 @@ void CDLGPlaywin::StartRecord()
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag);
 				break;
 			case BARCODE_DATETIME:
-				sprintf(tempFileName, "%s\\%s %4d-%2d-%2d %2d-%2d-%2d", \
+				sprintf(tempFileName, "%s\\%s %04d-%02d-%02d %02d-%02d-%02d", \
 										DlgSettings.m_record.GetBuffer(0), \
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag, \
 										nowtime.GetYear(), \
@@ -295,9 +323,9 @@ void CDLGPlaywin::StartRecord()
 										nowtime.GetSecond());
 				break;
 			case PRODUCTNAME_DATETIME:
-				sprintf(tempFileName, "%s\\%s %4d-%2d-%2d %2d-%2d-%2d", \
+				sprintf(tempFileName, "%s\\%s %04d-%02d-%02d %02d-%02d-%02d", \
 										DlgSettings.m_record.GetBuffer(0), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description, \
+										p, \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
 										nowtime.GetDay(), \
@@ -306,7 +334,7 @@ void CDLGPlaywin::StartRecord()
 										nowtime.GetSecond());
 				break;
 			case DATETIME_PRODUCTNAME_BARCODE:
-				sprintf(tempFileName, "%s\\%4d-%2d-%2d %2d-%2d-%2d %s %s", \
+				sprintf(tempFileName, "%s\\%04d-%02d-%02d %02d-%02d-%02d %s %s", \
 										DlgSettings.m_record.GetBuffer(0), \
 										nowtime.GetYear(), \
 										nowtime.GetMonth(), \
@@ -314,11 +342,11 @@ void CDLGPlaywin::StartRecord()
 										nowtime.GetHour(), \
 										nowtime.GetMinute(), \
 										nowtime.GetSecond(), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description, \
+										p, \
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag);
 				break;
 			case BARCODE_DATETIME_PRODUCTNAME:
-				sprintf(tempFileName, "%s\\%s %4d-%2d-%2d %2d-%2d-%2d %s", \
+				sprintf(tempFileName, "%s\\%s %04d-%02d-%02d %02d-%02d-%02d %s", \
 										DlgSettings.m_record.GetBuffer(0), \
 										pCMainDlg->DlgProductInfo.data[m_curScreen].tag, \
 										nowtime.GetYear(), \
@@ -327,7 +355,7 @@ void CDLGPlaywin::StartRecord()
 										nowtime.GetHour(), \
 										nowtime.GetMinute(), \
 										nowtime.GetSecond(), \
-										pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+										p);
 				break;
 		}
 		sprintf(sRecFileName,"%s.mp4",tempFileName);
@@ -335,25 +363,29 @@ void CDLGPlaywin::StartRecord()
 		if(ret == 0)
 		{
 			pCMainDlg->DlgProductInfo.Clean(m_curScreen);
+			return false;
 		}
 		else
 		{
-			sprintf(m_video.record[m_curScreen].stime,"%4d-%2d-%2d %2d:%2d:%2d", \
+			sprintf(m_video.record[m_curScreen].stime,"%4d-%02d-%02d %02d:%02d:%02d", \
 											nowtime.GetYear(), \
 											nowtime.GetMonth(), \
 											nowtime.GetDay(), \
 											nowtime.GetHour(), \
 											nowtime.GetMinute(), \
 											nowtime.GetSecond());
+			m_video.record[m_curScreen].starttime = nowtime;
 			strcpy(m_video.record[m_curScreen].MP4path,sRecFileName);
 			strcpy(m_video.record[m_curScreen].RunningNumber,pCMainDlg->DlgProductInfo.data[m_curScreen].RunningNumber);
 			strcpy(m_video.record[m_curScreen].tag,pCMainDlg->DlgProductInfo.data[m_curScreen].tag);
 			strcpy(m_video.record[m_curScreen].HmNum,pCMainDlg->DlgProductInfo.data[m_curScreen].HmNum);
-			strcpy(m_video.record[m_curScreen].Description,pCMainDlg->DlgProductInfo.data[m_curScreen].Description);
+			strcpy(m_video.record[m_curScreen].Description,p);
 			sprintf(m_video.record[m_curScreen].AVIpath,"%s.avi",tempFileName);
 			pCMainDlg->DlgProductInfo.CleanTemp();
+			return true;
 		}
 	}
+	return false;
 }
 
 //停止录像
@@ -361,7 +393,7 @@ void CDLGPlaywin::StopRecord()
 {
 	m_video.StopRecord(m_curScreen);
 	CTime nowtime=CTime::GetTickCount();
-	sprintf(m_video.record[m_curScreen].etime,"%4d-%2d-%2d %2d:%2d:%2d", \
+	sprintf(m_video.record[m_curScreen].etime,"%04d-%02d-%02d %02d:%02d:%02d", \
 												nowtime.GetYear(), \
 												nowtime.GetMonth(), \
 												nowtime.GetDay(), \
@@ -370,8 +402,14 @@ void CDLGPlaywin::StopRecord()
 												nowtime.GetSecond());
 	m_video.ConvertMp4ToAvi(m_video.record[m_curScreen]);
 	pCMainDlg->DlgProductInfo.Clean(m_curScreen);
+	pCMainDlg->DlgProductInfo.DisplayTemp();
+}
 
-
+void CDLGPlaywin::GetCurWndRecordTime(char *rtime)
+{
+	CTime nowtime=CTime::GetTickCount();
+	CTimeSpan ts = nowtime - m_video.record[m_curScreen].starttime;
+	sprintf(rtime,"%02d:%02d:%02d",ts.GetHours(),ts.GetMinutes(),ts.GetSeconds());
 }
 
 //更新窗口的产品信息
@@ -383,7 +421,6 @@ void CDLGPlaywin::UpdateWndProductInfo()
 	}
 	else
 	{
-		pCMainDlg->DlgProductInfo.CleanTemp();
 		pCMainDlg->DlgProductInfo.DisplayTemp();
 	}
 }

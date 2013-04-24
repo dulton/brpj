@@ -24,17 +24,24 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-struct RECORD_INFO_ST ConvrtThread[PMAX_NUM];	//录像转换线程
 
 //////////////////////////////////////////////////////////////
 CYaanCamera::CYaanCamera()
 {
-	for(int i=0;i<MAX_PLAYWIN;i++)
+	int i;
+	for(i=0;i<MAX_PLAYWIN;i++)
 	{
 		m_bplay[i] = FALSE;
 		m_brecord[i] = FALSE;
 		m_playhandle[i] = i;
+		memset(&record[i],0,sizeof(struct RECORD_INFO_ST));
 	}
+	for(i=0;i<PMAX_NUM;i++)
+	{
+		memset(&ConvrtThread[i],0,sizeof(struct RECORD_INFO_ST));
+		ConvrtThread[i].ThreadFlag=true;
+	}
+	
 }
 
 //////////////////////////////////////////////////////////////
@@ -87,6 +94,7 @@ bool CYaanCamera::StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *us
 	}
 	else
 	{
+		//LONG ret = VSNET_ClientGetState(m_playhandle[nCuWinID]);
 		m_bplay[nCuWinID] = TRUE;
 		VSNET_ClientSetWnd(m_playhandle[nCuWinID],hWnd);
 		VSNET_ClientMediaData(m_playhandle[nCuWinID],TRUE);
@@ -120,7 +128,10 @@ int CYaanCamera::StartRecord(int nCuWinID,LPCSTR filename)
 //	sprintf(sRecFileName, "%s%d%s", "C:\\test_", "1111", ".mp4");
 //	BOOL bSuc = VSNET_ClientStartMp4Capture(s_ChanSock[g_GlobeEnvi.m_iSelWndSn],sRecFileName);
 	int iRet=0;
-	iRet = VSNET_ClientStartMp4Capture(m_playhandle[nCuWinID],filename);
+	if(m_bplay[nCuWinID] == FALSE)
+		return 0;
+	else
+		iRet = VSNET_ClientStartMp4Capture(m_playhandle[nCuWinID],filename);
 	m_brecord[nCuWinID] = TRUE;
 	return iRet;
 }
@@ -129,6 +140,9 @@ int CYaanCamera::StartRecord(int nCuWinID,LPCSTR filename)
 int CYaanCamera::StopRecord(int nCuWinID)
 {
 	int iRet=0;
+	if(m_brecord[nCuWinID] == FALSE)
+		return FALSE;
+
 	iRet = VSNET_ClientStopMp4Capture(m_playhandle[nCuWinID]);
 	m_brecord[nCuWinID] = FALSE;
 	return iRet;
@@ -161,7 +175,16 @@ DWORD WINAPI ThreadPROC(LPVOID lpParameter)
 
 	if(zogMP4toAVI(pRecord->MP4path,pRecord->AVIpath))
 	{
-		///写数据库	
+		pCMainDlg->SQLiteIO.Video_Add(pRecord->RunningNumber,
+									  pRecord->tag,
+									  pRecord->HmNum,
+									  pRecord->Description,
+									  pRecord->stime,
+									  pRecord->etime,
+									  pRecord->AVIpath,
+									  pRecord->size);
+		//删除MP4文件
+		DeleteFile(pRecord->MP4path);
 	}
 	pRecord->ThreadFlag=true;
 	return 0;

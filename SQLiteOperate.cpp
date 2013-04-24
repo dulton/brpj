@@ -301,13 +301,13 @@ void CSqliteOperate::Video_CreateTable(void)
 }
 
 ////////////////////////////////////////////////////
-void CSqliteOperate::Video_Add(struct PRODUCT_INFO_ST pInfo,char *starttime,char *endtime,char *path,unsigned long size)
+void CSqliteOperate::Video_Add(char *RunningNumber,char *tag,char *HmNum,char *Description,\
+							   char *starttime,char *endtime,char *path,unsigned long size)
 {
 	CString sql;
 	sql.Format("insert into tb_video(RunningNumber,tag,HmNum,Description,stime,etime,size,path) \
 										values('%s', '%s', '%s', '%s', datetime('%s'), datetime('%s'), %d, '%s')",\
-										pInfo.RunningNumber,pInfo.tag,pInfo.HmNum,pInfo.Description,\
-										starttime,endtime,size,path);
+										RunningNumber,tag,HmNum,Description,starttime,endtime,size,path);
 	Sql_Execute(sql.GetBuffer(0));
 }
 
@@ -367,7 +367,7 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 
 	if((flag&0x01) != 0)
 	{	
-		tempSql.Format(_T(" where RunningNumber = '%s' or tag = '%s'"),runnum,runnum);
+		tempSql.Format(_T(" where RunningNumber like '%%%s%%' or tag like '%%%s%%'"),runnum,runnum);
 		wflag = true;
 		strSql = strSql + tempSql;
 		outSql = outSql + tempSql;
@@ -376,11 +376,11 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 	{
 		if(wflag)
 		{
-			tempSql.Format(_T(" and HmNum = '%s'"),HmNum);
+			tempSql.Format(_T(" and HmNum like '%%%s%%'"),HmNum);
 		}
 		else
 		{
-			tempSql.Format(_T(" where HmNum = '%s'"),HmNum);
+			tempSql.Format(_T(" where HmNum like '%%%s%%'"),HmNum);
 			wflag = true;
 		}
 		strSql = strSql + tempSql;
@@ -390,11 +390,11 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 	{
 		if(wflag)
 		{
-			tempSql.Format(_T(" and Description = '%s'"),Description);
+			tempSql.Format(_T(" and Description like '%%%s%%'"),Description);
 		}
 		else
 		{
-			tempSql.Format(_T(" where Description = '%s'"),Description);
+			tempSql.Format(_T(" where Description = '%%%s%%'"),Description);
 			wflag = true;
 		}
 		strSql = strSql + tempSql;
