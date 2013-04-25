@@ -124,15 +124,17 @@ void CYaanCamera::CapturePic(int nCuWinID,char *filename)
 //////////////////////////////////////////////////////////////
 int CYaanCamera::StartRecord(int nCuWinID,LPCSTR filename)
 {
-//	char sRecFileName[MAX_PATH];
-//	sprintf(sRecFileName, "%s%d%s", "C:\\test_", "1111", ".mp4");
-//	BOOL bSuc = VSNET_ClientStartMp4Capture(s_ChanSock[g_GlobeEnvi.m_iSelWndSn],sRecFileName);
 	int iRet=0;
 	if(m_bplay[nCuWinID] == FALSE)
+	{
 		return 0;
-	else
-		iRet = VSNET_ClientStartMp4Capture(m_playhandle[nCuWinID],filename);
-	m_brecord[nCuWinID] = TRUE;
+	}
+
+	iRet = VSNET_ClientStartMp4Capture(m_playhandle[nCuWinID],filename);
+	if(iRet != 0)
+	{
+		m_brecord[nCuWinID] = TRUE;
+	}
 	return iRet;
 }
 
