@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CDLGProductInfo
+LastClass=CBarcodeRecordDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "BarcodeRecord.h"
@@ -13,19 +13,19 @@ Class2=CBarcodeRecordDlg
 Class3=CAboutDlg
 
 ResourceCount=9
-Resource1=IDD_BARCODERECORD_DIALOG
+Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
-Resource3=IDD_SETTINGS
-Resource4=IDD_PLAYWIN
-Resource5=IDD_CONTROL
-Resource6=IDD_ABOUTBOX
+Resource3=IDD_VIDEOLIST
+Resource4=IDD_CONTROL
+Resource5=IDD_SETTINGS
+Resource6=IDD_PRODUCT_INFO
 Class4=CDLGProductList
-Resource7=IDD_VIDEOLIST
+Resource7=IDD_PLAYWIN
 Class5=CDLGVideoList
 Class6=CDLGControl
 Class7=CDLGPlaywin
 Class8=CDLGProductInfo
-Resource8=IDD_PRODUCT_INFO
+Resource8=IDD_BARCODERECORD_DIALOG
 Class9=CDLGSettings
 Class10=CDLGNewDevice
 Resource9=IDD_NEWDEVICE
@@ -43,7 +43,7 @@ ImplementationFile=BarcodeRecordDlg.cpp
 Filter=D
 BaseClass=CDialog
 VirtualFilter=dWC
-LastObject=IDC_TREE
+LastObject=CBarcodeRecordDlg
 
 [CLS:CAboutDlg]
 Type=0

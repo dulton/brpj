@@ -40,6 +40,7 @@ CYaanCamera::CYaanCamera()
 	{
 		memset(&ConvrtThread[i],0,sizeof(struct RECORD_INFO_ST));
 		ConvrtThread[i].ThreadFlag=true;
+		ConvrtThread[i].pthread=NULL;
 	}
 	
 }
@@ -147,6 +148,17 @@ int CYaanCamera::StopRecord(int nCuWinID)
 
 	iRet = VSNET_ClientStopMp4Capture(m_playhandle[nCuWinID]);
 	m_brecord[nCuWinID] = FALSE;
+
+	CTime nowtime=CTime::GetTickCount();
+	sprintf(record[nCuWinID].etime,"%04d-%02d-%02d %02d:%02d:%02d", \
+							nowtime.GetYear(), \
+							nowtime.GetMonth(), \
+							nowtime.GetDay(), \
+							nowtime.GetHour(), \
+							nowtime.GetMinute(), \
+							nowtime.GetSecond());
+	ConvertMp4ToAvi(record[nCuWinID]);
+
 	return iRet;
 }
 
@@ -168,13 +180,25 @@ bool zogMP4toAVI(char *src,char *dst)
 	return false;
 }
 
+void printffile(char *stra,char *strb,int i)
+{
+	/*
+	FILE *fp;
+	fp=fopen("aaaa.txt","a+");
+	if(fp)
+	{
+		fprintf(fp,"%s:%s %d\n",stra,strb,i);
+		fclose(fp);
+	}
+	*/
+}
 //转换线程
 DWORD WINAPI ThreadPROC(LPVOID lpParameter)
 {
 	RECORD_INFO_ST *pRecord = (RECORD_INFO_ST*)lpParameter;
 
 	pRecord->ThreadFlag=false;
-
+	printffile("ThreadPROC","in",0);
 	if(zogMP4toAVI(pRecord->MP4path,pRecord->AVIpath))
 	{
 		pCMainDlg->SQLiteIO.Video_Add(pRecord->RunningNumber,
@@ -188,19 +212,24 @@ DWORD WINAPI ThreadPROC(LPVOID lpParameter)
 		//删除MP4文件
 		DeleteFile(pRecord->MP4path);
 	}
+	printffile("ThreadPROC",pRecord->MP4path,0);
 	pRecord->ThreadFlag=true;
 	return 0;
 }
 
 void CYaanCamera::ConvertMp4ToAvi(struct RECORD_INFO_ST file)
 {
+	Sleep(1000);
 	for(int i=0;i<PMAX_NUM;i++)
 	{
 		if(ConvrtThread[i].ThreadFlag)
 		{
 			if(NULL!=ConvrtThread[i].pthread)
-				TerminateThread(ConvrtThread[i].pthread,0);
-	
+			{	TerminateThread(ConvrtThread[i].pthread,0);
+				printffile("TerminateThread","stop",i);
+			}
+
+
 			memcpy(ConvrtThread[i].AVIpath,file.AVIpath,260);
 			memcpy(ConvrtThread[i].MP4path,file.MP4path,260);
 			memcpy(ConvrtThread[i].stime,file.stime,32);
@@ -213,11 +242,25 @@ void CYaanCamera::ConvertMp4ToAvi(struct RECORD_INFO_ST file)
 			
 			ConvrtThread[i].pthread=NULL;
 			ConvrtThread[i].pthread=CreateThread(NULL,0,ThreadPROC,&ConvrtThread[i],0,NULL);
-				
+							printffile("CreateThread","c",i);
 			//线程满了
 			if(NULL==ConvrtThread[i].pthread)
+			{		printffile("CreateThread","break",i);
 				break;
+			}
 			break;
+		}
+	}
+}
+
+//等待线程释放
+void CYaanCamera::WaitConvrtThread()
+{
+	for(int i=0;i<PMAX_NUM;i++)
+	{
+		while(ConvrtThread[i].ThreadFlag == false)
+		{
+			Sleep(1000);
 		}
 	}
 }

@@ -32,6 +32,7 @@ public:
 	CString	m_ftp_port;
 	CString	m_ftp_psw;
 	CString	m_ftp_user;
+	BOOL	m_check_savenet;
 	//}}AFX_DATA
 	TCHAR SystemIniPath[ZOG_MAX_PATH_STR];
 	BOOL OnInitDialog();

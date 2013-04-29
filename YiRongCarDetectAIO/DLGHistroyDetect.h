@@ -99,6 +99,7 @@ public:
 	BOOL OnInitDialog();
 	//ÆÁ±Î²Ù×÷
 	void OnOK();
+	void DisplayNetPic(int iItem);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

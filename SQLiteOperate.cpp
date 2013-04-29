@@ -49,6 +49,8 @@ void CSqliteOperate::CloseDB()
 //Ö´ÐÐSQLÓï¾ä
 void CSqliteOperate::Sql_Execute(char *sql)
 {
+	if(m_pDB == 0)
+		return;
 	sqlite3_prepare_v2(m_pDB, sql, strlen(sql) + 1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);

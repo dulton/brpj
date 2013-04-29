@@ -50,6 +50,7 @@ public:
 	int         StartRecord(int nCuWinID,LPCSTR filename);
 	int         StopRecord(int nCuWinID);
 	void		ConvertMp4ToAvi(struct RECORD_INFO_ST file);
+	void		WaitConvrtThread();
 };
 
 #endif // !defined(AFX_VIDEOCHANNEL_H__D1736789_C3E0_4E20_88A2_304B89946F22__INCLUDED_)

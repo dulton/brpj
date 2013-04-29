@@ -369,14 +369,14 @@ void CDLGSetBlack::OnClickList(NMHDR* pNMHDR, LRESULT* pResult)
 	if(-1 == ListChoose)
 		return ;
 	//œ‘ æ
-	char str[260];
+	char str[ZOG_MAX_PATH_STR];
 	m_List.GetItemText(ListChoose,1,data.brand,256);
 	m_List.GetItemText(ListChoose,2,data.plate,256);
 	m_List.GetItemText(ListChoose,3,data.name,256);
 	m_List.GetItemText(ListChoose,4,data.Phone,256);
 	m_List.GetItemText(ListChoose,5,data.other,1024);
 
-	m_List.GetItemText(ListChoose,6,str,260);
+	m_List.GetItemText(ListChoose,6,str,ZOG_MAX_PATH_STR);
 	sscanf(str,"%d",&(data.nid));
 
 	Struct2M();

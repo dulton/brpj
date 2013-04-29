@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CYiRongCarDetectAIODlg
+LastClass=CDLGSetSystem
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "yirongcardetectaio.h"
@@ -32,32 +32,32 @@ Class20=CAboutDlg
 Class21=CYiRongCarDetectAIODlg
 
 ResourceCount=25
-Resource1=IDD_SET_ELECAR
-Resource2=IDR_MENU_RCTREE
-Resource3=IDD_NORMAL
-Resource4=IDD_SET_USER
-Resource5=IDD_PTZ
-Resource6=IDD_DEVICE_TREE
-Resource7=IDD_SET_SYSTEM
-Resource8=IDD_ADD_DEVICE
-Resource9=IDD_ABOUTBOX
-Resource10=IDD_HISTORY_VIDEO
-Resource11=IDD_SET_RECORD
-Resource12=IDD_OPEN_CLOSE_PREVIEW
-Resource13=IDD_LOGIN
-Resource14=IDD_BLACK_INOUT
-Resource15=IDD_WARNNING
-Resource16=IDD_HISTORY_REPORT
-Resource17=IDD_SET_CAR
-Resource18=IDD_SHORTCUT
-Resource19=IDD_SET_PTZ
-Resource20=IDD_SCREEN
-Resource21=IDD_SET_BLACK
-Resource22=IDR_MENU
+Resource1=IDD_BLACK_INOUT
+Resource2=IDD_DEVICE_TREE
+Resource3=IDD_HISTORY_VIDEO
+Resource4=IDD_YIRONGCARDETECTAIO_DIALOG
+Resource5=IDD_SET_PTZ
+Resource6=IDD_NORMAL
+Resource7=IDD_HISTORY_DETECT
+Resource8=IDD_SET_CAR
+Resource9=IDD_PTZ
+Resource10=IDD_SET_SYSTEM
+Resource11=IDD_SET_BLACK
+Resource12=IDR_MENU_RCTREE
+Resource13=IDR_MENU
+Resource14=IDD_ABOUTBOX
+Resource15=IDD_HISTORY_REPORT
+Resource16=IDD_LOGIN
+Resource17=IDD_SET_RECORD
+Resource18=IDD_SCREEN
+Resource19=IDD_SET_USER
+Resource20=IDD_OPEN_CLOSE_PREVIEW
+Resource21=IDD_ADD_DEVICE
+Resource22=IDD_WARNNING
 Class22=CDLGSetPTZ
-Resource23=IDD_HISTORY_DETECT
+Resource23=IDD_SET_ELECAR
 Class23=CDLGSetRecord
-Resource24=IDD_YIRONGCARDETECTAIO_DIALOG
+Resource24=IDD_SHORTCUT
 Class24=CDLGBlackInOut
 Resource25=IDR_MENU_RCTREE1
 
@@ -166,6 +166,9 @@ Type=0
 BaseClass=CDialog
 HeaderFile=DLGSetSystem.h
 ImplementationFile=DLGSetSystem.cpp
+Filter=D
+VirtualFilter=dWC
+LastObject=CDLGSetSystem
 
 [CLS:CDLGSetUser]
 Type=0
@@ -555,7 +558,7 @@ Control29=IDC_STATIC,button,1342177287
 [DLG:IDD_SET_SYSTEM]
 Type=1
 Class=CDLGSetSystem
-ControlCount=33
+ControlCount=34
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_STATIC,button,1342177287
@@ -589,6 +592,7 @@ Control30=IDC_STATIC,static,1342308352
 Control31=IDC_STATIC,static,1342308352
 Control32=IDC_STATIC,static,1342308352
 Control33=IDC_STATIC,static,1342308352
+Control34=IDC_CHECK_SAVENET,button,1342242819
 
 [DLG:IDD_SET_USER]
 Type=1

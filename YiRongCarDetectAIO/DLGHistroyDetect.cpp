@@ -5,6 +5,9 @@
 #include "yirongcardetectaio.h"
 #include "DLGHistroyDetect.h"
 
+#include "DLGSetSystem.h"
+extern CDLGSetSystem DlgSetSystem;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -115,6 +118,8 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 	m_list.InsertColumn(8, _T("车牌类型"), LVCFMT_LEFT, 100);
 	m_list.InsertColumn(9, _T("车身颜色"), LVCFMT_LEFT, 60);
 	m_list.InsertColumn(10, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_list.InsertColumn(11, _T("nid"), LVCFMT_LEFT, 0);
+	m_list.InsertColumn(12, _T("图片大小"), LVCFMT_LEFT, 0);
 #else
 	m_list.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
 	m_list.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
@@ -124,6 +129,8 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 	m_list.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
 	m_list.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
 	m_list.InsertColumn(7, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_list.InsertColumn(8, _T("nid"), LVCFMT_LEFT, 0);
+	m_list.InsertColumn(9, _T("图片大小"), LVCFMT_LEFT, 0);
 
 	//屏蔽车牌类型 车牌颜色 车身颜色
 	GetDlgItem(IDC_COMBO_PLATETYPE)->ShowWindow(FALSE);
@@ -382,11 +389,23 @@ void CDLGHistroyDetect::DisplayerList(void)
 		m_list.SetItemText(nItem,8,beglist->platetype);
 		m_list.SetItemText(nItem,9,beglist->carcolor);
 		m_list.SetItemText(nItem,10,beglist->path);
+	
+		sprintf(str,"%d",beglist->nid);
+		m_list.SetItemText(nItem,11,str);
+
+		sprintf(str,"%d",beglist->picsize);
+		m_list.SetItemText(nItem,12,str);
+	
 
 #else
 //电动车
 		m_list.SetItemText(nItem,7,beglist->path);
+	
+		sprintf(str,"%d",beglist->nid);
+		m_list.SetItemText(nItem,8,str);
 
+		sprintf(str,"%d",beglist->picsize);
+		m_list.SetItemText(nItem,9,str);
 #endif
 
 	}
@@ -481,17 +500,106 @@ void CDLGHistroyDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO: Add your control notification handler code here
-	char str[260];
+	char str[ZOG_MAX_PATH_STR];
 
+	//网络
+	if(DlgSetSystem.m_check_savenet)
+	{
+		DisplayNetPic(pNMIA->iItem);
+	}
+	else
+	{
+		//本地
 #if ALLTAB_DETECT_CAR_MODE
-//汽车
-	m_list.GetItemText(pNMIA->iItem,10,str,260);
+		//汽车
+		m_list.GetItemText(pNMIA->iItem,10,str,260);
 #else
-//电动车
-	m_list.GetItemText(pNMIA->iItem,7,str,260);
+		//电动车
+		m_list.GetItemText(pNMIA->iItem,7,str,260);
 #endif
-
-	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+		//网络模式
+		if(0==strcmp(str,"null"))
+			DisplayNetPic(pNMIA->iItem);
+		else
+			ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+	}
 
 	*pResult = 0;
+}
+
+void CDLGHistroyDetect::DisplayNetPic(int iItem)
+{
+	char str[ZOG_MAX_PATH_STR];
+	
+	unsigned long int nid;
+	unsigned long int size;
+	bool tempget;
+	
+	unsigned char *data=NULL;
+	
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	m_list.GetItemText(iItem,11,str,260);
+#else
+	//电动车
+	m_list.GetItemText(iItem,8,str,260);
+#endif
+	sscanf(str,"%d",&nid);
+	
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	m_list.GetItemText(iItem,12,str,260);
+#else
+	//电动车
+	m_list.GetItemText(iItem,9,str,260);
+#endif
+	sscanf(str,"%d",&size);
+	//获取数据 保存到临时文件
+	data=(unsigned char *)calloc(size,sizeof(unsigned char));
+	
+	switch(flag)
+	{
+	case HISTORY_DETECT_FLAG_CAR :
+#if ALLTAB_DETECT_CAR_MODE
+		//汽车
+		tempget=OracleIO.CAR_MatchResult_GetPicture(nid,data);
+#else
+		//电动车
+		tempget=OracleIO.ELECAR_MatchResult_GetPicture(nid,data);
+#endif
+		break;
+	case HISTORY_DETECT_FLAG_ALARM :
+#if ALLTAB_DETECT_CAR_MODE
+		//汽车
+		tempget=OracleIO.CAR_AlarmResult_GetPicture(nid,data);
+#else
+		//电动车
+		tempget=OracleIO.ELECAR_AlarmResult_GetPicture(nid,data);
+#endif
+		break;
+	default:
+		MessageBox("BOOL CDLGHistroyDetect::DisplayNetPic error",MESSAGEBOX_TITLE);
+		free(data);
+		return ;
+	}
+	
+	sprintf(str,"%s\\yrcdtempResultpic.jpg",DlgSetSystem.m_path_detect);
+	
+	if(tempget)
+	{
+		FILE *fp=NULL;
+		
+		fp=fopen(str,"wb");
+		if(fp)
+		{
+			fwrite(data,size,1,fp);
+			fclose(fp);
+			//保存后打开
+			ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+		}
+	}
+	
+	free(data);
+	data=NULL;
+	
 }

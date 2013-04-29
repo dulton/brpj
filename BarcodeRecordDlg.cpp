@@ -147,6 +147,7 @@ BOOL CBarcodeRecordDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+
 void CBarcodeRecordDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -205,10 +206,14 @@ void CBarcodeRecordDlg::OnOK()
 
 void CBarcodeRecordDlg::OnCancel() 
 {
-	// TODO: Add extra cleanup here
+	// TODO: Add extra cleanup here7
+	//等待转换线程结束
+	DlgPlaywin.StopRecord();
+	DlgPlaywin.m_video.WaitConvrtThread();
 	//关闭数据库
 	SQLiteIO.CloseDB();
-	Sleep(1000);
+	Sleep(100);
+
 	CDialog::OnCancel();
 }
 
@@ -286,3 +291,4 @@ void CBarcodeRecordDlg::UpdatePannelPosition()
 	//必须 样式=重叠，边框=调整大小
 	DlgPlaywin.MoveWindow(playwin_Rect);
 }
+

@@ -425,7 +425,7 @@ BEGIN
     CONTROL         "弹出图片",IDC_CHECK_ALARM_PIC,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,20,48,10
     CONTROL         "播放声音",IDC_CHECK_ALARM_WAV,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,67,20,48,10
+                    WS_TABSTOP,75,20,48,10
     LTEXT           "声音文件路径",IDC_STATIC,13,38,49,8
     EDITTEXT        IDC_EDIT_ALARM_WAV,67,35,228,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
@@ -461,6 +461,8 @@ BEGIN
     LTEXT           "端口",IDC_STATIC,14,181,17,8
     LTEXT           "用户名",IDC_STATIC,14,199,25,8
     LTEXT           "密码",IDC_STATIC,14,217,17,8
+    CONTROL         "识别结果保存到服务器",IDC_CHECK_SAVENET,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,137,20,96,10
 END
 
 IDD_WARNNING DIALOG DISCARDABLE  0, 0, 187, 63

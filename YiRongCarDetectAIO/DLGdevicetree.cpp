@@ -203,6 +203,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 	HTREEITEM hItem;
 	HTREEITEM childItem;
 	DlgAddDevice.AreaCount = OrgName.size();
+	iptotal = 0;
 
 	//É¾³ýËùÓÐµÄÊ÷
 	m_DeviceTree.DeleteAllItems();

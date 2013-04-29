@@ -458,7 +458,7 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	DlgNormal.MoveWindow(tab_Rect);
 	DlgPtz.MoveWindow(tab_Rect);
 
-	//列表
+	//列表`
 	CRect list_Rect;
 	list_Rect.top = m_clientRect.bottom-distance-list_height/* + 5*/;
 	list_Rect.bottom = m_clientRect.bottom-distance/* - 10*/;
@@ -1020,6 +1020,7 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 	m_ListCar.InsertColumn(9, _T("车身颜色"), LVCFMT_LEFT, 60);
 	m_ListCar.InsertColumn(10, _T("黑名单"), LVCFMT_LEFT, 50);
 	m_ListCar.InsertColumn(11, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(12, _T("服务器模式"), LVCFMT_LEFT, 0);
 
 #else
 
@@ -1032,6 +1033,7 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 	m_ListCar.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
 	m_ListCar.InsertColumn(7, _T("黑名单"), LVCFMT_LEFT, 50);
 	m_ListCar.InsertColumn(8, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(9, _T("服务器模式"), LVCFMT_LEFT, 0);
 
 #endif
 	m_ListCar.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);

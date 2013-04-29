@@ -24,15 +24,16 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_check_alarmwav = FALSE;
 	m_check_ftp = FALSE;
 	m_recordfull = 1;
-	m_path_alarmwav = _T("D:\\\\sound");
-	m_path_capbmp = _T("D:\\\\YRCapturePic");
-	m_path_detect = _T("D:\\\\YRCarDetectResult");
-	m_path_record = _T("D:\\\\YRRecord");
+	m_path_alarmwav = _T("D:\\sound");
+	m_path_capbmp = _T("D:\\YRCapturePic");
+	m_path_detect = _T("D:\\YRCarDetectResult");
+	m_path_record = _T("D:\\YRRecord");
 	m_record_cuttime = 20;
 	m_ftp_ip = _T("");
 	m_ftp_port = _T("");
 	m_ftp_psw = _T("");
 	m_ftp_user = _T("");
+	m_check_savenet = FALSE;
 	//}}AFX_DATA_INIT
 
 }
@@ -62,6 +63,7 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_ftp_psw, 32);
 	DDX_Text(pDX, IDC_EDIT_FTP_USER, m_ftp_user);
 	DDV_MaxChars(pDX, m_ftp_user, 32);
+	DDX_Check(pDX, IDC_CHECK_SAVENET, m_check_savenet);
 	//}}AFX_DATA_MAP
 }
 
@@ -260,6 +262,7 @@ void CDLGSetSystem::readini(char *path)
 	int	check_alarmpic;
 	int	check_alarmwav;
 	int	check_ftp;
+	int check_savenet;
 	int		recordfull;
 	char	path_alarmwav[ZOG_MAX_PATH_STR]="";
 	char	path_capbmp[ZOG_MAX_PATH_STR]="";
@@ -276,6 +279,8 @@ void CDLGSetSystem::readini(char *path)
 		m_check_alarmpic=check_alarmpic;
 	if(GetPrivateProfileStruct("Alarm", "CheckWav", &check_alarmwav, sizeof(int), path))
 		m_check_alarmwav=check_alarmwav;
+	if(GetPrivateProfileStruct("Alarm", "CheckSaveNet", &check_savenet, sizeof(int), path))
+		m_check_savenet=check_savenet;
 	if(GetPrivateProfileString("Alarm", "PathAlarmWav", "", path_alarmwav, ZOG_MAX_PATH_STR, path))
 		m_path_alarmwav=path_alarmwav;
 	if(GetPrivateProfileString("Alarm", "PathDetect", "", path_detect, ZOG_MAX_PATH_STR, path))
@@ -317,6 +322,8 @@ void CDLGSetSystem::writeini(char *path)
 	////////////////////////////////////
 	WritePrivateProfileStruct("Alarm", "CheckPic", &m_check_alarmpic, sizeof(int), path);
 	WritePrivateProfileStruct("Alarm", "CheckWav", &m_check_alarmwav, sizeof(int), path);
+	WritePrivateProfileStruct("Alarm", "CheckSaveNet", &m_check_savenet, sizeof(int), path);
+	
 	WritePrivateProfileString("Alarm", "PathAlarmWav", m_path_alarmwav.GetBuffer(0),path);
 	WritePrivateProfileString("Alarm", "PathDetect", m_path_detect.GetBuffer(0),path);
 	////////////////////////////////////

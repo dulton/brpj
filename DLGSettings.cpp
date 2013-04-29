@@ -56,20 +56,12 @@ BOOL CDLGSettings::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	CComboBox *p=(CComboBox *)GetDlgItem(IDC_COMBO_RECORD);
-	p->AddString(Language_ConvertString("Date-ProductName"));
-	p->AddString(Language_ConvertString("Date-Carton Tag"));
-	p->AddString(Language_ConvertString("Carton Tag-Date"));
-	p->AddString(Language_ConvertString("ProductName-Date"));
-	p->AddString(Language_ConvertString("Date-ProductName-Carton Tag"));
-	p->AddString(Language_ConvertString("Carton Tag-Date-ProductName"));
+	p->AddString(Language_ConvertString("HmNum-FactoryItem-DateTime-ScreenNo"));
+	p->AddString(Language_ConvertString("FactoryItem-HmNum-DateTime-ScreenNo"));
 	
 	p=(CComboBox *)GetDlgItem(IDC_COMBO_SHOTFRAME);
-	p->AddString(Language_ConvertString("Date-ProductName"));
-	p->AddString(Language_ConvertString("Date-Carton Tag"));
-	p->AddString(Language_ConvertString("Carton Tag-Date"));
-	p->AddString(Language_ConvertString("ProductName-Date"));
-	p->AddString(Language_ConvertString("Date-ProductName-Carton Tag"));
-	p->AddString(Language_ConvertString("Carton Tag-Date-ProductName"));
+	p->AddString(Language_ConvertString("HmNum-FactoryItem-DateTime-ScreenNo"));
+	p->AddString(Language_ConvertString("FactoryItem-HmNum-DateTime-ScreenNo"));
 
 	Read2Dlg();
 	UpdateData(FALSE);

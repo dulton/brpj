@@ -429,6 +429,7 @@
 #define IDC_STATIC_PSW                  1316
 #define IDC_BUTTON_PTZ                  1317
 #define IDC_STATIC_RECT                 1318
+#define IDC_CHECK_SAVENET               1320
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -471,7 +472,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
 #define _APS_NEXT_COMMAND_VALUE         32817
-#define _APS_NEXT_CONTROL_VALUE         1319
+#define _APS_NEXT_CONTROL_VALUE         1321
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

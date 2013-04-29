@@ -37,7 +37,7 @@ struct HISTORY_VIDEO_ST
 	char ip[32];	//IP地址
 	unsigned long int filesize;	//文件大小
 	//文件路径
-	char path[260];
+	char path[ZOG_MAX_PATH_STR];
 };
 
 

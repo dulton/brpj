@@ -25,7 +25,7 @@ public:
 	//}}AFX_DATA
 
 	int flag;
-	char path[260];
+	char path[ZOG_MAX_PATH_STR];
 
 	BOOL OnInitDialog();
 	//ÆÁ±Î²Ù×÷

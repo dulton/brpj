@@ -380,9 +380,9 @@ int CCarDetect::Result()
 	char tempstr[100]={0};
 
 	char str[260];
-	char pathstr[260];
+	char pathstr[ZOG_MAX_PATH_STR];
 	char timestr[100];
-	char dirstr[260];
+	char dirstr[ZOG_MAX_PATH_STR];
 
 	int nItem;
 
@@ -504,26 +504,46 @@ int CCarDetect::Result()
 					fwrite(Jpg,JpgSize,1,fp);
 					fclose(fp);
 				}
-				//写数据库
-				if(
-					OracleIO.CAR_MatchResult_AddNew(
-					&alarmflag,
-					camid,
-					CarInfo[i].PlateType,
-					CarInfo[i].PlateColor,	
-					CarDirection(CarInfo[i].Direction),
-					CarInfo[i].CarColor,
-					CarInfo[i].Str,
-					CarInfo[i].Reliability,	
-					pathstr,
-					JpgSize,Jpg)
-					)
+				
+				bool tempadd;
+				//网络保存
+				if(DlgSetSystem.m_check_savenet)
+				{
+					//写数据库
+					tempadd=OracleIO.CAR_MatchResult_AddNew(
+						&alarmflag,
+						camid,
+						CarInfo[i].PlateType,
+						CarInfo[i].PlateColor,	
+						CarDirection(CarInfo[i].Direction),
+						CarInfo[i].CarColor,
+						CarInfo[i].Str,
+						CarInfo[i].Reliability,	
+						"null",
+						JpgSize,Jpg);
+				}
+				else
+				{
+					//本地保存
+					tempadd=OracleIO.CAR_MatchResult_AddNew(
+						&alarmflag,
+						camid,
+						CarInfo[i].PlateType,
+						CarInfo[i].PlateColor,	
+						CarDirection(CarInfo[i].Direction),
+						CarInfo[i].CarColor,
+						CarInfo[i].Str,
+						CarInfo[i].Reliability,	
+						pathstr,
+						JpgSize,Jpg);
+				
+				}
+				if(tempadd)
 				{
 					//插入列表
 					if(DlgMain->m_ListCarTotal >=200)
 					{
-						DlgMain->m_ListCar.DeleteAllItems();
-						DlgMain->m_ListCarTotal=0;
+						CleanList();
 					}
 					
 					(DlgMain->m_ListCarTotal)++;
@@ -552,6 +572,11 @@ int CCarDetect::Result()
 						DlgMain->m_ListCar.SetItemText(nItem,10,	"否");
 					
 					DlgMain->m_ListCar.SetItemText(nItem,11,	pathstr);
+			
+					if(DlgSetSystem.m_check_savenet)
+						DlgMain->m_ListCar.SetItemText(nItem,12,	"是");
+					else
+						DlgMain->m_ListCar.SetItemText(nItem,12,	"否");
 				}
 				else
 				{
@@ -575,23 +600,39 @@ int CCarDetect::Result()
 					fwrite(Jpg,JpgSize,1,fp);
 					fclose(fp);
 				}
-				//写数据库
-				if(
-					OracleIO.ELECAR_MatchResult_AddNew(
-					&alarmflag,
-					camid,
-					CarDirection(CarInfo[i].Direction),
-					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
-					CarInfo[i].Reliability,	
-					pathstr,
-					JpgSize,Jpg)
-					)
+
+				bool tempadd;
+				//网络保存
+				if(DlgSetSystem.m_check_savenet)
+				{
+					//写数据库
+					tempadd=OracleIO.ELECAR_MatchResult_AddNew(
+						&alarmflag,
+						camid,
+						CarDirection(CarInfo[i].Direction),
+						&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+						CarInfo[i].Reliability,	
+						"null",
+						JpgSize,Jpg);
+				}
+				else
+				{
+					//保存本地
+					tempadd=OracleIO.ELECAR_MatchResult_AddNew(
+						&alarmflag,
+						camid,
+						CarDirection(CarInfo[i].Direction),
+						&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+						CarInfo[i].Reliability,	
+						pathstr,
+						JpgSize,Jpg);
+				}
+				if(tempadd)
 				{
 					//插入列表
 					if(DlgMain->m_ListCarTotal >=200)
 					{
-						DlgMain->m_ListCar.DeleteAllItems();
-						DlgMain->m_ListCarTotal=0;
+						CleanList();
 					}
 
 					(DlgMain->m_ListCarTotal)++;
@@ -617,6 +658,11 @@ int CCarDetect::Result()
 						DlgMain->m_ListCar.SetItemText(nItem,7,	"否");
 					
 					DlgMain->m_ListCar.SetItemText(nItem,8,	pathstr);
+		
+					if(DlgSetSystem.m_check_savenet)
+						DlgMain->m_ListCar.SetItemText(nItem,9,	"是");
+					else
+						DlgMain->m_ListCar.SetItemText(nItem,9,	"否");
 				}
 				else
 				{
@@ -733,6 +779,46 @@ int CCarDetect::Result()
 		}
 	}
 	return tempstate;
+}
+
+void CCarDetect::CleanList(void)
+{
+	int total;
+	char str[260];
+	total=DlgMain->m_ListCar.GetItemCount();
+	
+	//网络保存 则一并删除文件
+	if(DlgSetSystem.m_check_savenet)
+	{
+		for(int i=0;i<total;i++)
+		{
+#if ALLTAB_DETECT_CAR_MODE
+			//汽车
+			DlgMain->m_ListCar.GetItemText(i,12,str,260);
+#else
+			//电动车
+			DlgMain->m_ListCar.GetItemText(i,9,str,260);
+#endif	
+			//本地模式就不用删
+			if(0==strcmp(str,"否"))
+				continue;
+			
+			//删除文件
+#if ALLTAB_DETECT_CAR_MODE
+			//汽车
+			DlgMain->m_ListCar.GetItemText(i,11,str,260);
+#else
+			//电动车
+			DlgMain->m_ListCar.GetItemText(i,8,str,260);
+#endif	
+			DeleteFile(str);
+			
+		}	
+	}
+
+	DlgMain->m_ListCar.DeleteAllItems();
+	DlgMain->m_ListCarTotal=0;
+	
 }
 
 

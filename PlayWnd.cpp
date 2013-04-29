@@ -74,7 +74,11 @@ LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case WM_LBUTTONDBLCLK:
-			break;
+			{
+				BOOL bMulti = pContainer->GetMultiScreen();
+				pContainer->SetMultiScreen(!bMulti);
+				break;
+			}
 		default:
 			break;
 		}

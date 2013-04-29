@@ -102,6 +102,8 @@ public:
 	void SetCarColor();
 	void SetAll();
 
+	void CleanList(void);
+
 	void Stop();
 	void Start(int format,unsigned char *image,int w,int h,int size);
 	int Result();
