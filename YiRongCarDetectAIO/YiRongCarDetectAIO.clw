@@ -2,13 +2,13 @@
 
 [General Info]
 Version=1
-LastClass=CDLGSetSystem
+LastClass=CDLGAnalyseFlowrate
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "yirongcardetectaio.h"
 LastPage=0
 
-ClassCount=24
+ClassCount=25
 Class1=CDLGAddArea
 Class2=CDLGAddDevice
 Class3=CDLGdevicetree
@@ -31,35 +31,37 @@ Class19=CYiRongCarDetectAIOApp
 Class20=CAboutDlg
 Class21=CYiRongCarDetectAIODlg
 
-ResourceCount=25
-Resource1=IDD_ABOUTBOX
-Resource2=IDD_SCREEN
-Resource3=IDD_SET_SYSTEM
-Resource4=IDD_PTZ
-Resource5=IDR_MENU
-Resource6=IDD_DEVICE_TREE
-Resource7=IDD_BLACK_INOUT
-Resource8=IDD_YIRONGCARDETECTAIO_DIALOG
-Resource9=IDD_LOGIN
-Resource10=IDD_HISTORY_DETECT
-Resource11=IDD_ADD_DEVICE
-Resource12=IDR_MENU_RCTREE
-Resource13=IDD_SET_RECORD
-Resource14=IDD_OPEN_CLOSE_PREVIEW
-Resource15=IDD_SET_PTZ
-Resource16=IDD_SET_USER
-Resource17=IDD_SHORTCUT
-Resource18=IDD_SET_ELECAR
-Resource19=IDD_WARNNING
-Resource20=IDD_SET_BLACK
-Resource21=IDD_SET_CAR
-Resource22=IDD_HISTORY_REPORT
+ResourceCount=26
+Resource1=IDR_MENU_RCTREE1
+Resource2=IDD_ADD_DEVICE
+Resource3=IDD_SET_USER
+Resource4=IDD_SET_BLACK
+Resource5=IDD_NORMAL
+Resource6=IDD_HISTORY_VIDEO
+Resource7=IDD_PTZ
+Resource8=IDD_OPEN_CLOSE_PREVIEW
+Resource9=IDD_SET_SYSTEM
+Resource10=IDD_SET_RECORD
+Resource11=IDD_DEVICE_TREE
+Resource12=IDD_SCREEN
+Resource13=IDD_ABOUTBOX
+Resource14=IDD_ANALYSE_FLOWRATE
+Resource15=IDR_MENU_RCTREE
+Resource16=IDR_MENU
+Resource17=IDD_SET_ELECAR
+Resource18=IDD_SET_CAR
+Resource19=IDD_HISTORY_DETECT
+Resource20=IDD_HISTORY_REPORT
+Resource21=IDD_WARNNING
+Resource22=IDD_SHORTCUT
 Class22=CDLGSetPTZ
-Resource23=IDD_HISTORY_VIDEO
+Resource23=IDD_SET_PTZ
 Class23=CDLGSetRecord
-Resource24=IDD_NORMAL
+Resource24=IDD_YIRONGCARDETECTAIO_DIALOG
 Class24=CDLGBlackInOut
-Resource25=IDR_MENU_RCTREE1
+Resource25=IDD_LOGIN
+Class25=CDLGAnalyseFlowrate
+Resource26=IDD_BLACK_INOUT
 
 [CLS:CDLGAddArea]
 Type=0
@@ -827,4 +829,34 @@ BaseClass=CDialog
 Filter=D
 LastObject=CDLGBlackInOut
 VirtualFilter=dWC
+
+[DLG:IDD_ANALYSE_FLOWRATE]
+Type=1
+Class=CDLGAnalyseFlowrate
+ControlCount=16
+Control1=IDC_LIST,SysListView32,1350631437
+Control2=IDC_STATIC,static,1342308352
+Control3=IDC_STATIC,static,1342308352
+Control4=IDC_DATETIMEPICKER_STARTMON,SysDateTimePick32,1342242852
+Control5=IDC_DATETIMEPICKER_ENDMON,SysDateTimePick32,1342242852
+Control6=IDC_DATETIMEPICKER_STARTHOUR,SysDateTimePick32,1342242857
+Control7=IDC_DATETIMEPICKER_ENDHOUR,SysDateTimePick32,1342242857
+Control8=IDC_STATIC,static,1342177287
+Control9=IDC_BUTTON_SEARCH_ALL,button,1342242816
+Control10=IDC_EDIT_NAME,edit,1350631552
+Control11=IDC_STATIC,static,1342308352
+Control12=IDC_STATIC,static,1342308352
+Control13=IDC_EDIT_IP,edit,1350631552
+Control14=IDC_BUTTON_SEARCH_SINGLE,button,1342242816
+Control15=IDC_STATIC,static,1342177287
+Control16=IDC_DATETIMEPICKER_DAY,SysDateTimePick32,1342242852
+
+[CLS:CDLGAnalyseFlowrate]
+Type=0
+HeaderFile=DLGAnalyseFlowrate.h
+ImplementationFile=DLGAnalyseFlowrate.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=IDC_LIST
 

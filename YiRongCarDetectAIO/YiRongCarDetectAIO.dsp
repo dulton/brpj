@@ -111,6 +111,10 @@ SOURCE=.\DLGAddDevice.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DLGAnalyseFlowrate.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DLGBlackInOut.cpp
 # End Source File
 # Begin Source File
@@ -199,6 +203,10 @@ SOURCE=.\IO.CPP
 # End Source File
 # Begin Source File
 
+SOURCE=.\ListCtrlEx.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\myCamera.cpp
 # End Source File
 # Begin Source File
@@ -253,6 +261,10 @@ SOURCE=.\DLGAddArea.h
 # Begin Source File
 
 SOURCE=.\DLGAddDevice.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DLGAnalyseFlowrate.h
 # End Source File
 # Begin Source File
 
@@ -341,6 +353,10 @@ SOURCE=.\HaiKangSDK.h
 # Begin Source File
 
 SOURCE=.\IO.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\ListCtrlEx.h
 # End Source File
 # Begin Source File
 

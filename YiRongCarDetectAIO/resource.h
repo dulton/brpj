@@ -185,15 +185,18 @@
 #define IDB_TAB_PTZ_CLOSE               335
 #define IDB_TAB_TREE                    336
 #define IDB_TAB_TREE_CLOSE              337
+#define IDD_ANALYSE_FLOWRATE            340
 #define IDC_TAB_MAIN                    1000
 #define IDC_LIST_CAR                    1002
 #define IDC_BUTTON1                     1003
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_BUTTON_STOP                 1003
 #define IDC_BUTTON_TREE                 1003
+#define IDC_BUTTON_SEARCH_ALL           1003
 #define IDC_BUTTON2                     1004
 #define IDC_BUTTON_OPENCHANNEL          1004
 #define IDC_BUTTON_NORMAL               1004
+#define IDC_BUTTON_SEARCH_SINGLE        1004
 #define IDC_BUTTON4                     1006
 #define IDC_BUTTON_CLOSE_PREVIEW_ALL    1006
 #define IDC_TREE_DEVICE                 1008
@@ -292,6 +295,7 @@
 #define IDC_DATETIMEPICKER_STARTHOUR    1076
 #define IDC_DATETIMEPICKER_ENDHOUR      1077
 #define IDC_CHECK_WEEK                  1078
+#define IDC_DATETIMEPICKER_DAY          1078
 #define IDC_BUTTON_SEARCH               1079
 #define IDC_BUTTON_PLAY                 1080
 #define IDC_BUTTON_FIRST                1082
@@ -471,9 +475,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        339
+#define _APS_NEXT_RESOURCE_VALUE        342
 #define _APS_NEXT_COMMAND_VALUE         32817
-#define _APS_NEXT_CONTROL_VALUE         1321
+#define _APS_NEXT_CONTROL_VALUE         1322
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

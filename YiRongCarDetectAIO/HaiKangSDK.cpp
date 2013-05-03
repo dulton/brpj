@@ -215,6 +215,12 @@ void CHaikangSDK::StopPlay(int screenNo)
 	NET_DVR_StopRealPlay(m_RealHandle[screenNo]);
 	//注销用户
 	NET_DVR_Logout_V30(m_LoginHandle[screenNo]);
+
+#if OPEN_CARDETECT_CODE 	
+	//停止识别
+	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+#endif
+
 }
 
 void CHaikangSDK::Capture(int screenNo,char *filename)

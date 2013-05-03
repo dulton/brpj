@@ -18,6 +18,7 @@ extern CDLGLogin DlgLogin;
 #include "DLGHistoryReport.h"
 #include "DLGSetPTZ.h"
 #include "DLGSetRecord.h"
+#include "DLGAnalyseFlowrate.h"
 
 ////////////////////////////////////////
 #if	ALLTAB_DETECT_CAR_MODE
@@ -983,8 +984,8 @@ void CYiRongCarDetectAIODlg::OnMenuitemSetPtz()
 void CYiRongCarDetectAIODlg::OnMenuitemCarstream() 
 {
 	// TODO: Add your command handler code here
-//	MessageBox("车流量");
-	
+	CDLGAnalyseFlowrate DlgAnalyseFlowrate;
+	DlgAnalyseFlowrate.DoModal();
 }
 //////////////菜单项///////////关于//////////////////////////////////////
 //关于

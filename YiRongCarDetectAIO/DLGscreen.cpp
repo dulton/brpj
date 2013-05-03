@@ -23,7 +23,7 @@ CDLGscreen::CDLGscreen(CWnd* pParent /*=NULL*/)
 	m_curScreen = 0;
 	//}}AFX_DATA_INIT
 	/*
-	for(int i=0;i<16;i++)
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		CarSet[i].RedRect=1;
 		CarSet[i].Deskew=1;

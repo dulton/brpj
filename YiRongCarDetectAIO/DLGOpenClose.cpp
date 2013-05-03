@@ -289,7 +289,7 @@ void CDLGOpenClose::OpenListPreview(void)
 			if(strlen(str))
 			{
 				sscanf(str,"%d",&m_winno);
-				if(m_winno >16 || m_winno <1)
+				if(m_winno > MAX_DEVICE_NUM || m_winno <1)
 				{
 					m_winno=0;
 					return;
@@ -496,7 +496,7 @@ void CDLGOpenClose::OnClickList(NMHDR* pNMHDR, LRESULT* pResult)
 		if(strlen(str))
 		{
 			sscanf(str,"%d",&m_winno);
-			if(m_winno >16 || m_winno <1)
+			if(m_winno >MAX_DEVICE_NUM || m_winno <1)
 				m_winno=0;
 		}
 		else

@@ -15,9 +15,12 @@
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
+#include <afxdisp.h>        // MFC Automation classes
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>			// MFC support for Windows Common Controls
+#include <afxtempl.h>
 #endif // _AFX_NO_AFXCMN_SUPPORT
+
 
 
 // ÔÆÌ¨¿ØÖÆÃüÁî
