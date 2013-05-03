@@ -313,7 +313,8 @@ void CDLGOpenClose::OpenListPreview(void)
 											DlgMain->DlgDeviceTree.iplist[camID].user.GetBuffer(0),
 											DlgMain->DlgDeviceTree.iplist[camID].psw.GetBuffer(0),
 											m_winno,
-											0);
+											0,
+											DlgMain->DlgDeviceTree.iplist[camID].venderID);
 					if(ret)
 					{
 						DlgMain->DlgNormal.ChangePreviewFontPic(true);

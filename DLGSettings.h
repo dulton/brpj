@@ -27,6 +27,7 @@ public:
 	CString	m_shotframe;
 	int		m_comboRecord;
 	int		m_comboShotframe;
+	int		m_time;
 	//}}AFX_DATA
 
 	BOOL OnInitDialog();

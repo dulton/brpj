@@ -200,7 +200,7 @@ HCURSOR CBarcodeRecordDlg::OnQueryDragIcon()
 void CBarcodeRecordDlg::OnOK() 
 {
 	// TODO: Add extra validation here
-	
+	DlgProductInfo.OnButtonOk();
 
 }
 

@@ -67,9 +67,9 @@ LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			pContainer->SetActivePage(this);
 			{
 				pCMainDlg->DlgPlaywin.SetCurWindId(m_nWndID);
-				pCMainDlg->DlgPlaywin.UpdateWndProductInfo();
-				BOOL bRecord = pCMainDlg->DlgPlaywin.GetCurWndRecordState();
-				pCMainDlg->DlgControl.UpdateBtnState(bRecord);
+//				pCMainDlg->DlgPlaywin.UpdateWndProductInfo();
+//				BOOL bRecord = pCMainDlg->DlgPlaywin.GetCurWndRecordState();
+//				pCMainDlg->DlgControl.UpdateBtnState(bRecord);
 
 			}
 			break;
@@ -106,11 +106,11 @@ void CPlayWnd::OnContextMenu(CWnd* pWnd, CPoint point)
 //	else
 //		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPPLAY, NAME_MENU_STOPPLAY);
 
-	if(brecord == FALSE)
-		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTRECORD, NAME_MENU_STARTRECORD);
-	else
-		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPRECORD, NAME_MENU_STOPRECORD);
-	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_CAPTURE, NAME_MENU_CAPTURE);
+//	if(brecord == FALSE)
+//		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTRECORD, NAME_MENU_STARTRECORD);
+//	else
+//		menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPRECORD, NAME_MENU_STOPRECORD);
+//	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_CAPTURE, NAME_MENU_CAPTURE);
 
 
 	TrackPopupMenu( 

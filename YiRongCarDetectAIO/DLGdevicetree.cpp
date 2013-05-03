@@ -187,7 +187,13 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 		}
 		else
 		{
-			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,DlgAddDevice.m_CamName,DlgAddDevice.m_CamIpAddr,DlgAddDevice.m_CamPort,DlgAddDevice.m_CamUser,DlgAddDevice.m_CamPsw);
+			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,\
+				DlgAddDevice.m_CamName,\
+				DlgAddDevice.m_CamIpAddr,\
+				DlgAddDevice.m_CamPort,\
+				DlgAddDevice.m_CamUser,\
+				DlgAddDevice.m_CamPsw,
+				DlgAddDevice.VenderComboCur);
 		}
 		OnMenuitemUpdate();
 	}
@@ -229,6 +235,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].psw = CameraList[j].psw;
 			iplist[iptotal].user = CameraList[j].user;
 			iplist[iptotal].Parent_item = hItem;
+			iplist[iptotal].venderID = CameraList[j].venderID;
 			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,hItem);		//添加设备节点
 			iplist[iptotal].item = childItem;
 			iptotal++;
@@ -282,9 +289,17 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.m_CamName = iplist[i].name;
 				DlgAddDevice.m_CamPsw = iplist[i].psw;
 				DlgAddDevice.m_CamUser = iplist[i].user;
+				DlgAddDevice.VenderComboCur = iplist[i].venderID;
 				if(DlgAddDevice.DoModal() == IDOK)
 				{
-					OracleIO.DEVICE_UpdateCameraInfo(iplist[i].camID,DlgAddDevice.m_CamArea,DlgAddDevice.m_CamName,DlgAddDevice.m_CamIpAddr,DlgAddDevice.m_CamPort,DlgAddDevice.m_CamUser,DlgAddDevice.m_CamPsw);
+					OracleIO.DEVICE_UpdateCameraInfo(iplist[i].camID,\
+						DlgAddDevice.m_CamArea,\
+						DlgAddDevice.m_CamName,\
+						DlgAddDevice.m_CamIpAddr,\
+						DlgAddDevice.m_CamPort,\
+						DlgAddDevice.m_CamUser,\
+						DlgAddDevice.m_CamPsw,\
+						DlgAddDevice.VenderComboCur);
 					OnMenuitemUpdate();
 				}
 				break;
@@ -386,7 +401,8 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				iplist[ItemCount].user.GetBuffer(0),
 				iplist[ItemCount].psw.GetBuffer(0),
 				screenNo,
-				1);
+				0,
+				iplist[ItemCount].venderID);
 		}
 	}
 	*pResult = 0;

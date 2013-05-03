@@ -16,11 +16,14 @@
 
 #include "CarDetect.h"
 
+/*
 #if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
 #include "DahuaSDK.h"
 #else if(ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
 #include "HaiKangSDK.h"
 #endif
+*/
+#include "myCamera.h"
 
 //设备信息
 struct DEVICE_INFO 
@@ -37,6 +40,7 @@ struct DEVICE_INFO
 	bool enableDetect;
 	long playHandle;
 	bool enableAlarm;
+	int  venderID;				//0---海康,1---大华
 };
 
 
@@ -69,12 +73,14 @@ public:
 	CCarDetect	CarDetect[MAX_DEVICE_NUM];
 #endif
 
-
+/*
 #if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
 	CDahuaSDK     m_video;
 #else if(ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
 	CHaikangSDK   m_video;
 #endif
+*/
+	CMyCamera   m_video;
 
 	//当前显示画面序号
 	int m_curScreen;
@@ -108,7 +114,8 @@ public:
 	void DeleteDevice(CString sip);
 
 	void SwitchMultiWnd(int nSplit);
-	bool StartPlay(int id,char *area,char *name,char *ip,int port,char *user,char *psw,int subtype,int screenNo);
+	bool StartPlay(int id,char *area,char *name,char *ip,int port,
+		char *user,char *psw,int subtype,int screenNo,int venderID);
 	void StopPlay(int screenNo);
 	void Capture(long pHandle,char *filename);
 

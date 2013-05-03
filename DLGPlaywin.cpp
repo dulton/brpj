@@ -296,7 +296,7 @@ void CDLGPlaywin::StopRecord()
 		m_video.StopRecord(i);
 		pCMainDlg->DlgProductInfo.Clean(i);
 	}
-	pCMainDlg->DlgProductInfo.DisplayTemp();
+//	pCMainDlg->DlgProductInfo.DisplayTemp();
 }
 
 void CDLGPlaywin::GetCurWndRecordTime(char *rtime)

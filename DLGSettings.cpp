@@ -23,6 +23,7 @@ CDLGSettings::CDLGSettings(CWnd* pParent /*=NULL*/)
 	m_shotframe = _T("D:\\shotframe");
 	m_comboRecord = 0;
 	m_comboShotframe =0;
+	m_time = 10;
 	//}}AFX_DATA_INIT
 }
 
@@ -37,6 +38,8 @@ void CDLGSettings::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_shotframe, 260);
 	DDX_CBIndex(pDX, IDC_COMBO_RECORD, m_comboRecord);
 	DDX_CBIndex(pDX, IDC_COMBO_SHOTFRAME, m_comboShotframe);
+	DDX_Text(pDX, IDC_EDIT_TIME, m_time);
+	DDV_MinMaxInt(pDX, m_time, 1, 60);
 	//}}AFX_DATA_MAP
 }
 
@@ -163,6 +166,7 @@ void CDLGSettings::readini(char *path)
 {
 	int	check_record;
 	int	check_shotframe;
+	int	edit_time;
 
 	char	path_record[ZOG_MAX_PATH_STR]="";
 	char	path_shotframe[ZOG_MAX_PATH_STR]="";
@@ -173,6 +177,9 @@ void CDLGSettings::readini(char *path)
 		m_comboRecord=check_record;
 	if(GetPrivateProfileStruct("Shotframe", "combo", &check_shotframe, sizeof(int), path))
 		m_comboShotframe=check_shotframe;
+
+	if(GetPrivateProfileStruct("Record", "time", &edit_time, sizeof(int), path))
+		m_time=edit_time;
 
 	if(GetPrivateProfileString("Record", "Path", "", path_record, ZOG_MAX_PATH_STR, path))
 		m_record=path_record;
@@ -188,6 +195,8 @@ void CDLGSettings::writeini(char *path)
 {
 	WritePrivateProfileStruct("Record", "combo", &m_comboRecord, sizeof(int), path);
 	WritePrivateProfileStruct("Shotframe", "combo", &m_comboShotframe, sizeof(int), path);
+
+	WritePrivateProfileStruct("Record", "time", &m_time, sizeof(int), path);
 
 	WritePrivateProfileString("Record", "Path", m_record.GetBuffer(0),path);
 	WritePrivateProfileString("Shotframe", "Path", m_shotframe.GetBuffer(0),path);

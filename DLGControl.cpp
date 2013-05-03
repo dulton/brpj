@@ -65,6 +65,7 @@ BOOL CDLGControl::OnInitDialog()
 	
 	AutoSize();
 
+	GetDlgItem(IDC_BUTTON_RECORD)->ShowWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_SHOTFRAME)->EnableWindow(FALSE);
 
@@ -137,13 +138,13 @@ void CDLGControl::UpdateBtnState(BOOL brecord)
 {
 	if(brecord == TRUE)
 	{
-		GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(FALSE);
+//		GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(TRUE);
 		GetDlgItem(IDC_BUTTON_SHOTFRAME)->EnableWindow(TRUE);
 	}
 	else
 	{
-		GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(TRUE);
+//		GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(TRUE);
 		GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_SHOTFRAME)->EnableWindow(FALSE);
 	}

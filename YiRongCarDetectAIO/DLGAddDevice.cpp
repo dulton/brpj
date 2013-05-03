@@ -30,6 +30,7 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	AreaComboCur = 0;
 	m_CamPort = 0;
 	AddAreaFlag = false;
+	VenderComboCur = 0;
 	//}}AFX_DATA_INIT
 }
 
@@ -38,6 +39,7 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGAddDevice)
+	DDX_Control(pDX, IDC_COMBO_CAMVENDER, m_camVender);
 	DDX_Control(pDX, IDC_COMBO_CAMAREA, m_AreaComboCtrl);
 	DDX_Text(pDX, IDC_EDIT_CAM_IPADDR, m_CamIpAddr);
 	DDX_Text(pDX, IDC_EDIT_CAM_NAME, m_CamName);
@@ -74,6 +76,10 @@ BOOL CDLGAddDevice::OnInitDialog()
 		}
 	}
 	comboctrl->SetCurSel(AreaComboCur);
+	
+	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_CAMVENDER);
+	comboctrl->SetCurSel(VenderComboCur);
+
 	this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("");
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -84,6 +90,8 @@ void CDLGAddDevice::OnOK()
 {
 	// TODO: Add extra validation here
 	AreaComboCur = m_AreaComboCtrl.GetCurSel();
+	VenderComboCur = m_camVender.GetCurSel();
+
 	UpdateData(TRUE);
 	if(AddAreaFlag == false)
 	{

@@ -68,14 +68,15 @@
 #define IDC_STATIC_PLAYWIN              1076
 #define IDC_BUTTON_MODIFY               1077
 #define IDC_BUTTON_CLEAN                1078
+#define IDC_EDIT_TIME                   1079
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        139
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1079
+#define _APS_NEXT_CONTROL_VALUE         1081
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

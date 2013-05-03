@@ -24,7 +24,7 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_check_alarmwav = FALSE;
 	m_check_ftp = FALSE;
 	m_recordfull = 1;
-	m_path_alarmwav = _T("D:\\sound");
+	m_path_alarmwav = _T("bj.wav");
 	m_path_capbmp = _T("D:\\YRCapturePic");
 	m_path_detect = _T("D:\\YRCarDetectResult");
 	m_path_record = _T("D:\\YRRecord");
@@ -92,8 +92,8 @@ BOOL CDLGSetSystem::OnInitDialog()
 void CDLGSetSystem::OnButtonAlarmWav() 
 {
 	// TODO: Add your control notification handler code here
-	char szFilter[]="*.wav";
-	CFileDialog dlg(TRUE,"*.*","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
+	char szFilter[]="wav Files (*.wav)|*.wav||";
+	CFileDialog dlg(TRUE,"wav","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)
 	{
@@ -197,8 +197,9 @@ void CDLGSetSystem::OnCancel()
 void CDLGSetSystem::Read2Dlg() 
 {
 	//测试文件是否存在
-	FILE *fp;
-	if(fp=fopen(SystemIniPath,"r"))
+	FILE *fp=NULL;
+	fp=fopen(SystemIniPath,"r");
+	if(fp)
 		fclose(fp);
 	else
 	{

@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 tinyxmlSTLvc6UTF8Mtd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -187,11 +187,19 @@ SOURCE=.\DLGWarnning.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ExButton.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\HaiKangSDK.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\IO.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\myCamera.cpp
 # End Source File
 # Begin Source File
 
@@ -324,11 +332,19 @@ SOURCE=.\DLGWarnning.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ExButton.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\HaiKangSDK.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\IO.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\myCamera.h
 # End Source File
 # Begin Source File
 

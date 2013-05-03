@@ -180,6 +180,7 @@ void CDLGscreen::GetCurWindCamInfo(int nCuWinID,struct DEVICE_INFO &Info)
 	Info.psw = m_videoInfo[nCuWinID].psw;
 	Info.subtype = m_videoInfo[nCuWinID].subtype;
 	Info.user= m_videoInfo[nCuWinID].user;
+	Info.venderID = m_videoInfo[nCuWinID].venderID;
 }
 
 //开启/关闭车牌识别
@@ -230,7 +231,8 @@ void CDLGscreen::CarDetectSet(void)
 }
 
 //开始播放
-bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,char *user,char *psw,int screenNo,int subtype)
+bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
+						   char *user,char *psw,int screenNo,int subtype,int venderID)
 {
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
 	if (!pWnd)
@@ -238,7 +240,7 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,char *
 		return false;
 	}
 
-	bool ret = m_video.StartPlay(screenNo,name, ip, port, user, psw, pWnd->m_hWnd, subtype);
+	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, user, psw, pWnd->m_hWnd, subtype);
 	if(ret)
 	{
 		m_videoInfo[screenNo].subtype = subtype;		//主码流
@@ -251,6 +253,7 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,char *
 		m_videoInfo[screenNo].port = port;
 		m_videoInfo[screenNo].camID = id;
 		m_videoInfo[screenNo].playHandle = m_video.m_RealHandle[screenNo];
+		m_videoInfo[screenNo].venderID = venderID;
 	}
 	return ret;
 
@@ -261,7 +264,7 @@ void CDLGscreen::StopPlay(int screenNo)
 {
 	m_videoInfo[screenNo].isplay = false;
 
-	m_video.StopPlay(screenNo);
+	m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
 
 
 #if OPEN_CARDETECT_CODE 
@@ -280,7 +283,7 @@ void CDLGscreen::StopPlay(int screenNo)
 //抓拍图像
 void CDLGscreen::Capture(long pHandle,char *filename)
 {
-	m_video.Capture(pHandle,filename);
+	m_video.Capture(m_videoInfo[m_curScreen].venderID,pHandle,filename);
 }
 
 //删除设备

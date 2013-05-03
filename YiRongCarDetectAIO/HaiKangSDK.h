@@ -21,7 +21,7 @@ public:
 	//通过port获取到窗口号
 	int GetPortWndindex(long lport);
 
-private:
+
 	long m_LoginHandle[MAX_DEVICE_NUM];
 };
 

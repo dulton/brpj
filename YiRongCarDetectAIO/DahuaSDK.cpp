@@ -9,7 +9,7 @@
 extern CYiRongCarDetectAIODlg *DlgMain;
 
 
-#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
+//#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
 
 #include"dahuaSDK/dhnetsdk.h"
 #pragma comment( lib, "dahuaSDK/dhnetsdk.lib")
@@ -149,7 +149,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 				
 				strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
 					DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
-				
+				//ÑÕÉ«LC_VIDEO_FORMAT_I420
 				DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_I420,\
 					pBuffer,w,h,dwBufSize);
 				
@@ -469,4 +469,4 @@ void CDahuaSDK::GetConnectError(char *name,int error,int flag)
 }
 
 
-#endif
+//#endif

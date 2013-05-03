@@ -11,14 +11,13 @@
 #include "YiRongCarDetectAIODlg.h"
 extern CYiRongCarDetectAIODlg *DlgMain;
 
-#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
+//#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
 
 #include "haikangSDK/HCNetSDK.h"
 #include "haikangSDK/plaympeg4.h"
 
 #pragma comment(lib, "haikangSDK/HCNetSDK.lib")
 #pragma comment(lib, "haikangSDK/PlayCtrl.lib")
-
 
 /*********************************************************
   Function:	DisplayCBFun
@@ -29,7 +28,7 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 **********************************************************/
 void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,long nHeight,long nStamp,long nType,long nReserved)
 {
-	int screenNo = DlgMain->DlgScreen.m_video.GetPortWndindex(nPort);
+	int screenNo = DlgMain->DlgScreen.m_video.m_haikang.GetPortWndindex(nPort);
 	if(screenNo<0)
 		return;
 	//在这做识别
@@ -55,8 +54,8 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 	
 	strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
 		DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
-	
-	DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_I420,\
+	//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
+	DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
 		(unsigned char *)pBuf,nWidth,nHeight,nSize);
 	
 	DlgMain->DlgScreen.CarDetect[screenNo].Result();
@@ -84,7 +83,7 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 		{
 			if (PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
 			{
-				DlgMain->DlgScreen.m_video.m_lPort[screenNo] = lPort;
+				DlgMain->DlgScreen.m_video.m_haikang.m_lPort[screenNo] = lPort;
 			}
 		}
 		//m_iPort = lPort; //第一次回调的是系统头，将获取的播放库port号赋值给全局port，下次回调数据时即使用此port号播放
@@ -232,7 +231,7 @@ void CHaikangSDK::Capture(int screenNo,char *filename)
 
 int CHaikangSDK::GetPortWndindex(long lport)
 {
-	int Wndindex;
+	int Wndindex=0;
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		if(m_lPort[i] == lport)
@@ -242,4 +241,4 @@ int CHaikangSDK::GetPortWndindex(long lport)
 	return -1;
 }
 
-#endif
+//#endif

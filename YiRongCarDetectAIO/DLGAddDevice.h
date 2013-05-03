@@ -19,6 +19,8 @@ public:
 	int  AreaCount;
 	int  AreaComboCur;
 	bool AddAreaFlag;
+	int  VenderComboCur;
+
 public:
 	CDLGAddDevice(CWnd* pParent = NULL);   // standard constructor
 
@@ -26,6 +28,7 @@ public:
 	//{{AFX_DATA(CDLGAddDevice)
 	enum { IDD = IDD_ADD_DEVICE };
 	CComboBox	m_AreaComboCtrl;
+	CComboBox	m_camVender;
 	CString	m_CamIpAddr;
 	CString	m_CamName;
 	CString	m_CamPsw;

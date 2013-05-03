@@ -35,6 +35,7 @@ public:
 	BOOL	m_check_savenet;
 	//}}AFX_DATA
 	TCHAR SystemIniPath[ZOG_MAX_PATH_STR];
+
 	BOOL OnInitDialog();
 
 

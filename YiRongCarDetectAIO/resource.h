@@ -359,6 +359,7 @@
 #define IDC_EDIT_ADDAREA                1217
 #define IDC_COMBO_CAMAREA               1218
 #define IDC_BUTTON_ADDAREA              1219
+#define IDC_COMBO_CAMVENDER             1220
 #define IDC_EDIT3                       1240
 #define IDC_EDIT_PLATE                  1240
 #define IDC_STATIC_ADDAREA_NOTE         1245
@@ -470,7 +471,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        338
+#define _APS_NEXT_RESOURCE_VALUE        339
 #define _APS_NEXT_COMMAND_VALUE         32817
 #define _APS_NEXT_CONTROL_VALUE         1321
 #define _APS_NEXT_SYMED_VALUE           101

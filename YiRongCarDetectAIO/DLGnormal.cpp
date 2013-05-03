@@ -590,7 +590,8 @@ void CDLGnormal::StartPlay(int screenNo)
 							CameraInfo.user.GetBuffer(0),
 							CameraInfo.psw.GetBuffer(0),
 							screenNo,
-							m_stream);
+							m_stream,
+							CameraInfo.venderID);
 		if(ret)
 		{
 			ChangePreviewFontPic(true);

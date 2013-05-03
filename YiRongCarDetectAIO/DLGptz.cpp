@@ -112,6 +112,19 @@ void CDLGptz::AutoSize()
 	Invalidate();
 }
 
+void CDLGptz::InitPtzCommand()
+{
+	m_auto.SetButtonCommand(PTZ_CONTROL_AUTO);
+	m_up.SetButtonCommand(PTZ_CONTROL_UP);
+	m_down.SetButtonCommand(PTZ_CONTROL_DOWN);
+	m_left.SetButtonCommand(PTZ_CONTROL_LEFT);
+	m_right.SetButtonCommand(PTZ_CONTROL_RIGHT);
+	m_upleft.SetButtonCommand(PTZ_CONTROL_UPLEFT);
+	m_upright.SetButtonCommand(PTZ_CONTROL_UPRIGHT);
+	m_downleft.SetButtonCommand(PTZ_CONTROL_DOWNLEFT);
+	m_downright.SetButtonCommand(PTZ_CONTROL_DOWNRIGHT);
+}
+
 void CDLGptz::ButtonBMP() 
 {
 

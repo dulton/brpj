@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 // DLGSetPTZ.h : header file
 //
-
+#include "ExButton.h"
 /////////////////////////////////////////////////////////////////////////////
 // CDLGSetPTZ dialog
 
@@ -20,25 +20,25 @@ public:
 	//{{AFX_DATA(CDLGSetPTZ)
 	enum { IDD = IDD_SET_PTZ };
 
-	CBitmapButton	m_auto;
-	CBitmapButton	m_go;
-	CBitmapButton	m_set;
-	CBitmapButton	m_down;
-	CBitmapButton	m_downleft;
-	CBitmapButton	m_downright;
-	CBitmapButton	m_focussub;
-	CBitmapButton	m_focusadd;
-	CBitmapButton	m_irisadd;
-	CBitmapButton	m_irissub;
-	CBitmapButton	m_left;
-	CBitmapButton	m_right;
-	CBitmapButton	m_speedadd;
-	CBitmapButton	m_speedsub;
-	CBitmapButton	m_up;
-	CBitmapButton	m_zoomsub;
-	CBitmapButton	m_zoomadd;
-	CBitmapButton	m_upright;
-	CBitmapButton	m_upleft;
+	CExButton	m_auto;
+	CExButton	m_go;
+	CExButton	m_set;
+	CExButton	m_down;
+	CExButton	m_downleft;
+	CExButton	m_downright;
+	CExButton	m_focussub;
+	CExButton	m_focusadd;
+	CExButton	m_irisadd;
+	CExButton	m_irissub;
+	CExButton	m_left;
+	CExButton	m_right;
+	CExButton	m_speedadd;
+	CExButton	m_speedsub;
+	CExButton	m_up;
+	CExButton	m_zoomsub;
+	CExButton	m_zoomadd;
+	CExButton	m_upright;
+	CExButton	m_upleft;
 
 	int		m_edit_speed;
 	int		m_edit_set;

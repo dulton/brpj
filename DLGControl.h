@@ -24,7 +24,8 @@ public:
 	BOOL CDLGControl::OnInitDialog();
 	void AutoSize();
 	void UpdateBtnState(BOOL brecord);
-
+	afx_msg void OnButtonRecord();
+	afx_msg void OnButtonStop();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGControl)
@@ -37,8 +38,6 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDLGControl)
-	afx_msg void OnButtonRecord();
-	afx_msg void OnButtonStop();
 	afx_msg void OnButtonShotframe();
 	afx_msg void OnButtonSettings();
 	afx_msg void OnButtonVideolist();

@@ -65,6 +65,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 	//当前路径
 	GetCurrentDirectory(ZOG_MAX_PATH_STR, CurrentDir);
 	sprintf(DlgSetSystem.SystemIniPath,"%s\\systeminfo.ini",CurrentDir);
+	
 	//ZOGNA//UP
 	//读系统配置表
 	DlgSetSystem.Read2Dlg();
@@ -179,6 +180,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 	DlgLogin.CurrentUser.detect=1;
 	DlgLogin.CurrentUser.detectset=1;
 #endif
+
 
 	//主界面
 	CYiRongCarDetectAIODlg dlg;

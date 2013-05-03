@@ -2,6 +2,10 @@
 #include "yirongcardetectaio.h"
 
 #include "CarDetect.h"
+//////////////////////////
+//WAV声音
+#include "mmsystem.h"
+#pragma comment(lib,"winmm.lib") 
 
 //////////////////////
 #include "YiRongCarDetectAIODlg.h"
@@ -85,6 +89,9 @@ CCarDetect::CCarDetect()
 	//车身颜色识别标志，0:不识别，1:识别
 	CarSet.CarColor=1;
 
+	/////////////////////////////////////
+	cam_name[0]=0;
+	l_ipaddr[0]=0;	
 }
 
 CCarDetect::~CCarDetect()
@@ -653,6 +660,9 @@ int CCarDetect::Result()
 						DlgMain->m_ListCar.SetItemText(nItem,7,	"是");
 						if(DlgSetSystem.m_check_alarmpic)
 							ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
+						//报警声音
+						if(DlgSetSystem.m_check_alarmwav)
+							PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
 					}
 					else
 						DlgMain->m_ListCar.SetItemText(nItem,7,	"否");
@@ -825,9 +835,12 @@ void CCarDetect::CleanList(void)
 //停止画面
 void CCarDetect::Stop()
 {
-	errorprintf("识别停止成功");
+
 	if(1==State)
+	{
 		lc_plate_analysis_destroy(CarHandle);
+		errorprintf("识别停止成功");
+	}
 
 	CarHandle=NULL;
 	State=-1;

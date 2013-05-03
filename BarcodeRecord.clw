@@ -2,32 +2,33 @@
 
 [General Info]
 Version=1
-LastClass=CBarcodeRecordDlg
+LastClass=CDLGSettings
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "BarcodeRecord.h"
 
-ClassCount=10
+ClassCount=11
 Class1=CBarcodeRecordApp
 Class2=CBarcodeRecordDlg
 Class3=CAboutDlg
 
 ResourceCount=9
-Resource1=IDD_ABOUTBOX
+Resource1=IDD_PRODUCT_INFO
 Resource2=IDR_MAINFRAME
 Resource3=IDD_VIDEOLIST
-Resource4=IDD_CONTROL
-Resource5=IDD_SETTINGS
-Resource6=IDD_PRODUCT_INFO
+Resource4=IDD_BARCODERECORD_DIALOG
+Resource5=IDD_CONTROL
+Resource6=IDD_SETTINGS
 Class4=CDLGProductList
 Resource7=IDD_PLAYWIN
 Class5=CDLGVideoList
 Class6=CDLGControl
 Class7=CDLGPlaywin
 Class8=CDLGProductInfo
-Resource8=IDD_BARCODERECORD_DIALOG
+Resource8=IDD_ABOUTBOX
 Class9=CDLGSettings
 Class10=CDLGNewDevice
+Class11=a1111111
 Resource9=IDD_NEWDEVICE
 
 [CLS:CBarcodeRecordApp]
@@ -40,7 +41,7 @@ Filter=N
 Type=0
 HeaderFile=BarcodeRecordDlg.h
 ImplementationFile=BarcodeRecordDlg.cpp
-Filter=D
+Filter=W
 BaseClass=CDialog
 VirtualFilter=dWC
 LastObject=CBarcodeRecordDlg
@@ -197,7 +198,7 @@ VirtualFilter=dWC
 [DLG:IDD_SETTINGS]
 Type=1
 Class=CDLGSettings
-ControlCount=12
+ControlCount=15
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_EDIT_SHOTFRAME,edit,1484849280
@@ -210,6 +211,9 @@ Control9=IDC_COMBO_RECORD,combobox,1344339971
 Control10=IDC_STATIC,static,1342308352
 Control11=IDC_COMBO_SHOTFRAME,combobox,1344339971
 Control12=IDC_STATIC,static,1342308352
+Control13=IDC_STATIC,static,1342308864
+Control14=IDC_EDIT_TIME,edit,1350639744
+Control15=IDC_STATIC,static,1342308864
 
 [CLS:CDLGSettings]
 Type=0
@@ -217,7 +221,7 @@ HeaderFile=DLGSettings.h
 ImplementationFile=DLGSettings.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_COMBO_RECORD
+LastObject=IDC_EDIT_TIME
 VirtualFilter=dWC
 
 [DLG:IDD_NEWDEVICE]
@@ -248,5 +252,14 @@ ImplementationFile=DLGNewDevice.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=CDLGNewDevice
+VirtualFilter=dWC
+
+[CLS:a1111111]
+Type=0
+HeaderFile=a1111111.h
+ImplementationFile=a1111111.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=a1111111
 VirtualFilter=dWC
 

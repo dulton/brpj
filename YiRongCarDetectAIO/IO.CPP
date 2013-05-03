@@ -221,7 +221,8 @@ bool IO::DEVICE_DeleteArea(int areaID)
 }
 
 
-bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,CString user,CString password)
+bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,
+							 CString user,CString password,long venderID)
 {
 	CString strSql;
 	strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
@@ -248,6 +249,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 		m_pRecordsetPtr->PutCollect("spwd", _variant_t(password));
 		m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
 		m_pRecordsetPtr->PutCollect("ncamera", _variant_t(ncamera));
+		m_pRecordsetPtr->PutCollect("svenderid", _variant_t(venderID));
 
 		m_pRecordsetPtr->Update();
 		m_pRecordsetPtr->Close(); 
@@ -288,10 +290,12 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		variant_t user = m_pRecordsetPtr->GetCollect("suser");
 		variant_t password = m_pRecordsetPtr->GetCollect("spwd");
 		variant_t ncamera = m_pRecordsetPtr->GetCollect("ncamera");
+		variant_t venderID = m_pRecordsetPtr->GetCollect("svenderid");
 
 		IPLIST CameraInfo;
 		CameraInfo.area = AreaName;
 		CameraInfo.camID = ncamera;
+		CameraInfo.venderID = venderID;
 		if(sip.vt != NULL && sip !=temp)
 		{
 			CameraInfo.ip = sip.bstrVal;
@@ -341,7 +345,8 @@ bool IO::DEVICE_DeleteCameraWithAreaID(int AreaID)
 	return true;
 }
 
-bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,CString user,CString password)
+bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,
+								 CString user,CString password,long venderID)
 {
 	CString strSql;
 	strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
@@ -354,7 +359,7 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 	long nid = a;
 	strSql.Format(_T("update tb_device set scameraname='%s',\
 					sipserver='%s',sport=%d,suser='%s',spwd='%s',\
-					nid=%d where ncamera=%d"), CamName,sip,port,user,password,nid,CamID);
+					nid=%d,svenderid = %d where ncamera=%d"), CamName,sip,port,user,password,nid,CamID);
 
 	_variant_t RecordAffected;
 	m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -795,7 +800,7 @@ bool IO::CAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 {
 	CString strsql;
 
-	strsql.Format(_T("select bpicture from tb_match_result_car where bpicture is not null and nid=5d"),NID);
+	strsql.Format(_T("select bpicture from tb_match_result_car where bpicture is not null and nid=%d"),NID);
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 
@@ -827,7 +832,7 @@ bool IO::CAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 {
 	CString strsql;
 
-	strsql.Format(_T("select bpicture from tb_alarm_car where bpicture is not null and nid=5d"),NID);
+	strsql.Format(_T("select bpicture from tb_alarm_car where bpicture is not null and nid=%d"),NID);
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 
@@ -1430,7 +1435,7 @@ bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 {
 	CString strsql;
 
-	strsql.Format(_T("select bpicture from tb_match_result_vehicle where bpicture is not null and nid=5d"),NID);
+	strsql.Format(_T("select bpicture from tb_match_result_vehicle where bpicture is not null and nid=%d"),NID);
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 
@@ -1462,7 +1467,7 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 {
 	CString strsql;
 
-	strsql.Format(_T("select bpicture from tb_alarm_vehicle where bpicture is not null and nid=5d"),NID);
+	strsql.Format(_T("select bpicture from tb_alarm_vehicle where bpicture is not null and nid=%d"),NID);
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 

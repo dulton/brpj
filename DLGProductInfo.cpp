@@ -9,6 +9,8 @@
 extern CBarcodeRecordDlg *pCMainDlg;
 extern bool IsChinese;
 
+#include "DLGSettings.h"
+extern CDLGSettings DlgSettings;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -88,7 +90,7 @@ void CDLGProductInfo::OnTimer(UINT nIDEvent)
 	CDialog::OnTimer(nIDEvent);
 	if(nIDEvent == RECORD_TIMER)
 	{
-		UpdateRecordTime();
+		RecordTimerEvent();
 	}
 }
 
@@ -109,6 +111,13 @@ void CDLGProductInfo::AutoSize()
 
 
 	Invalidate();
+}
+
+void CDLGProductInfo::OnOK() 
+{
+	// TODO: Add extra validation here
+	OnButtonOk();
+
 }
 
 void CDLGProductInfo::OnButtonOk() 
@@ -137,6 +146,8 @@ void CDLGProductInfo::OnButtonOk()
 	else
 	{
 		DisplayLite(temp);
+		pCMainDlg->DlgControl.OnButtonStop();
+		pCMainDlg->DlgControl.OnButtonRecord();
 	}
 }
 
@@ -231,7 +242,7 @@ void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 	Invalidate(TRUE);
 }
 
-void CDLGProductInfo::UpdateRecordTime()
+void CDLGProductInfo::RecordTimerEvent()
 {
 	char rtime[16];
 	if(pCMainDlg->DlgPlaywin.GetCurWndRecordState() == TRUE)
@@ -243,6 +254,12 @@ void CDLGProductInfo::UpdateRecordTime()
 		strcpy(rtime,"00:00:00");
 	}
 	GetDlgItem(IDC_STATIC_RECORDTIME)->SetWindowText(rtime);
+	int rhour,rmin,rsec;
+	sscanf(rtime,"%2d:%2d:%2d",&rhour,&rmin,&rsec);
+	if(rmin == DlgSettings.m_time)
+	{
+		pCMainDlg->DlgControl.OnButtonStop();
+	}
 }
 
 HBRUSH CDLGProductInfo::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 

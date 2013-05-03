@@ -62,7 +62,7 @@ public:
 	void DisplayTemp();
 	void temp2data(int i);
 	void DisplayLite(struct PRODUCT_INFO_ST &input);
-	void UpdateRecordTime();
+	void RecordTimerEvent();
 
 	int curchoose;
 	struct PRODUCT_INFO_ST data[MAX_PLAYWIN];
@@ -70,6 +70,7 @@ public:
 
 	HBITMAP bi;
 
+	afx_msg void OnButtonOk();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGProductInfo)
@@ -82,10 +83,11 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDLGProductInfo)
-	afx_msg void OnButtonOk();
+
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDestroy();
+	virtual void OnOK();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

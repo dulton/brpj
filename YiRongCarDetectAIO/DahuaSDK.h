@@ -90,7 +90,6 @@ public:
 	void GetConnectError(char *name,int error,int flag);
 	
 
-private:
 	long m_LoginHandle[MAX_DEVICE_NUM];
 };
 
