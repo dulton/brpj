@@ -26,25 +26,25 @@
 // 云台控制命令
 typedef enum _PTZ_Command
 {
-	PTZ_CONTROL_AUTO = 0,						// 自动
-	PTZ_CONTROL_UP,								//上
+	PTZ_CONTROL_UP = 0,							//上
 	PTZ_CONTROL_DOWN,							// 下
 	PTZ_CONTROL_LEFT,							// 左
 	PTZ_CONTROL_RIGHT,							// 右
-	PTZ_CONTROL_UPLEFT,							// 左上
-	PTZ_CONTROL_UPRIGHT,						// 右上
-	PTZ_CONTROL_DOWNLEFT,						// 左下
-	PTZ_CONTROL_DOWNRIGHT,						// 右下
+	PTZ_CONTROL_ZOOM_ADD,						// 变倍+
+	PTZ_CONTROL_ZOOM_SUB,						// 变倍-
 	PTZ_CONTROL_FOCUS_ADD,						// 调焦+
 	PTZ_CONTROL_FOCUS_SUB,						// 调焦-
 	PTZ_CONTROL_IRIS_ADD,						// 光圈+
 	PTZ_CONTROL_IRIS_SUB,						// 光圈-
-	PTZ_CONTROL_ZOOM_ADD,						// 变倍+
-	PTZ_CONTROL_ZOOM_SUB,						// 变倍+
-	PTZ_CONTROL_POINT_SET,						// 预设点设置
 	PTZ_CONTROL_POINT_MOVE,						// 跳转到预设点
+	PTZ_CONTROL_POINT_SET,						// 预设点设置
+	PTZ_CONTROL_UPLEFT,							// 左上
+	PTZ_CONTROL_UPRIGHT,						// 右上
+	PTZ_CONTROL_DOWNLEFT,						// 左下
+	PTZ_CONTROL_DOWNRIGHT,						// 右下
 	PTZ_CONTROL_SPEED_ADD,						// 云台速度+
 	PTZ_CONTROL_SPEED_SUB,						// 云台速度-
+	PTZ_CONTROL_AUTO,							// 自动
 } PTZ_Command;
 
 //摄像机厂商定义
@@ -56,7 +56,7 @@ typedef enum _PTZ_Command
 #define ALLTAB_CAMERA_INC_TYPE CAMERA_INC_HAIKANG
 
 //汽车模式 1 电动车模式 0
-#define ALLTAB_DETECT_CAR_MODE 1
+#define ALLTAB_DETECT_CAR_MODE 0
 
 //开启识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_CARDETECT_CODE 0

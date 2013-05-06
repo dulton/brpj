@@ -5,6 +5,13 @@
 #include "DahuaSDK.h"
 #include "HaiKangSDK.h"
 
+//0---º£¿µ,1---´ó»ª
+enum DEVICE_VENDERID_ENUM
+{
+	VENDER_TYPE_HAIKANG=0, 
+	VENDER_TYPE_DAHUA=1, 
+	VENDER_TYPE_YAAN=2, 
+};
 
 
 class CMyCamera
@@ -21,6 +28,7 @@ public:
 	bool StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype);
 	void StopPlay(int venderID,int screenNo);
 	void Capture(int venderID,int screenNo,char *filename);
+	void PtzControl(int venderID, int screenNo, int type, BOOL dwStop, int param);
 
 private:
 	long m_LoginHandle[MAX_DEVICE_NUM];

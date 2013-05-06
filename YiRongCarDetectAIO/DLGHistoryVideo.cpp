@@ -41,7 +41,7 @@ void CDLGHistoryVideo::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGHistoryVideo)
-	DDX_Control(pDX, IDC_LIST, m_list);
+	DDX_Control(pDX, IDC_LIST, m_List);
 	DDX_Text(pDX, IDC_EDIT_PAGE, m_page);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_name);
 	DDV_MaxChars(pDX, m_name, 260);
@@ -75,15 +75,15 @@ BOOL CDLGHistoryVideo::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_list.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(1, _T("设备名称" ), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(2, _T("IP地址"), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(3, _T("文件大小"), LVCFMT_LEFT, 90);
-	m_list.InsertColumn(4, _T("起始时间"), LVCFMT_LEFT, 90);
-	m_list.InsertColumn(5, _T("结束时间"), LVCFMT_LEFT, 90);
-	m_list.InsertColumn(6, _T("文件路径"), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 50);
+	m_List.InsertColumn(1, _T("设备名称" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(2, _T("IP地址"), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(3, _T("文件大小"), LVCFMT_LEFT, 90);
+	m_List.InsertColumn(4, _T("起始时间"), LVCFMT_LEFT, 90);
+	m_List.InsertColumn(5, _T("结束时间"), LVCFMT_LEFT, 90);
+	m_List.InsertColumn(6, _T("文件路径"), LVCFMT_LEFT, 140);
 
-	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control

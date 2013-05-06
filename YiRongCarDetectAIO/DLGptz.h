@@ -48,6 +48,8 @@ public:
 	void AutoSize();
 	void ButtonBMP();
 	void InitPtzCommand();
+
+	void SendPtzControl(int type, BOOL dwStop);   //ÔÆÌ¨¿ØÖÆ²Ù×÷
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGptz)

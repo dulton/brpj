@@ -19,10 +19,17 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGAnalyseFlowrate)
 	enum { IDD = IDD_ANALYSE_FLOWRATE };
-	CListCtrlEx	m_list;
+	CListCtrlEx	m_List;
+	CString	m_ip;
+	CTime	m_StartMon;
+	CTime	m_StartHour;
+	CTime	m_EndMon;
+	CTime	m_EndHour;
+	CTime	m_Day;
 	//}}AFX_DATA
 
 	BOOL OnInitDialog();
+	unsigned long int GetCount(char *ip,char *stime,char*etime);
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGAnalyseFlowrate)

@@ -76,7 +76,7 @@ int zogSize2WH(long int size,int *w,int *h)
 ///////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall DisConnectFunc(LONG lLoginID, char *pchDVRIP, LONG nDVRPort, DWORD dwUser)
 {
-	;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -176,6 +176,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 ///////////////////////////////////////////////////////////////////////////////////////////
 CDahuaSDK::CDahuaSDK()
 {
+	m_bPTZCtrl = FALSE;
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		m_LoginHandle[i] = 0;
@@ -257,6 +258,104 @@ void CDahuaSDK::StopPlay(int screenNo)
 		CLIENT_Logout(m_LoginHandle[screenNo]);
 		m_LoginHandle[screenNo] = 0;
 	}
+}
+
+bool CDahuaSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd)
+{
+	NET_DEVICEINFO stDevInfo = {0};
+	int nError = 0;
+	int nChannelID = 0; // 预览通道号
+
+	m_ptzLoginHandle = CLIENT_Login(sip, nPort, user, psw, &stDevInfo, &nError);
+
+	if (m_ptzLoginHandle != 0)
+	{
+		//开启预览
+		m_ptzRealHandle = CLIENT_RealPlayEx(m_ptzLoginHandle, nChannelID, hWnd, DH_RType_Realplay_0);
+		if (m_ptzRealHandle == 0)
+		{
+			return false;
+		}
+
+		// 设置回调函数处理数据
+		CLIENT_SetRealDataCallBackEx(m_ptzRealHandle, NULL, 0, 0x00000006);
+		return true;
+	}
+	return false;
+}
+
+void CDahuaSDK::PtzStopPlay()
+{
+	if(m_ptzRealHandle != 0)
+	{
+		//关闭预览
+		CLIENT_StopRealPlayEx(m_ptzRealHandle);
+		m_ptzRealHandle = 0;
+	}
+	if(m_ptzLoginHandle != 0)
+	{
+		//注销用户
+		CLIENT_Logout(m_ptzLoginHandle);
+		m_ptzLoginHandle = 0;
+	}
+}
+
+void CDahuaSDK::PtzControl(long lLoginID, int type, BOOL dwStop, int param)
+{
+	BOOL ret;
+	if (dwStop)
+	{
+		if(!m_bPTZCtrl)
+		{
+			goto exitPTZCtrl;
+		}
+	}
+	if(lLoginID == 0)
+	{
+		goto exitPTZCtrl;
+	}
+
+	switch(type)
+	{
+		case PTZ_CONTROL_UP:
+		case PTZ_CONTROL_DOWN:
+		case PTZ_CONTROL_LEFT:
+		case PTZ_CONTROL_RIGHT:
+		case PTZ_CONTROL_ZOOM_ADD:
+		case PTZ_CONTROL_ZOOM_SUB:
+		case PTZ_CONTROL_FOCUS_ADD:
+		case PTZ_CONTROL_FOCUS_SUB:
+		case PTZ_CONTROL_IRIS_ADD:
+		case PTZ_CONTROL_IRIS_SUB:
+		case PTZ_CONTROL_POINT_MOVE:
+		case PTZ_CONTROL_POINT_SET:
+			ret = CLIENT_DHPTZControl(lLoginID, 0, type, 0, (BYTE)param, 0, dwStop);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_UPLEFT:
+		case PTZ_CONTROL_UPRIGHT:
+		case PTZ_CONTROL_DOWNLEFT:
+		case PTZ_CONTROL_DOWNRIGHT:
+			ret = CLIENT_DHPTZControl(lLoginID, 0, type+21, (BYTE)param, (BYTE)param, 0, dwStop);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_SPEED_ADD:
+			break;
+		case PTZ_CONTROL_SPEED_SUB:
+			break;
+		case PTZ_CONTROL_AUTO:
+			break;
+	}
+	if(!ret)
+	{
+		//MessageBox(ConvertString(MSG_DEMODLG_PTZCTRLFAILED));
+		goto exitPTZCtrl;
+	}
+	return;
+
+exitPTZCtrl:
+	m_bPTZCtrl = FALSE;
+	return;
 }
 
 void CDahuaSDK::Capture(long pHandle,char *filename)

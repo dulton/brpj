@@ -278,6 +278,11 @@ void CDLGscreen::StopPlay(int screenNo)
 		pWnd->PostMessage(VIDEO_REPAINT);
 	}
 }
+//ÔÆÌ¨¿ØÖÆ
+void CDLGscreen::PtzControl(int type, BOOL dwStop, int param)
+{
+	m_video.PtzControl(m_videoInfo[m_curScreen].venderID,m_curScreen,type,dwStop,param);
+}
 
 
 //×¥ÅÄÍ¼Ïñ

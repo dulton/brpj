@@ -8,6 +8,11 @@
 #include "DLGLogin.h"
 extern CDLGLogin DlgLogin;
 
+//////////////////////////////////
+#include "YiRongCarDetectAIODlg.h"
+extern CYiRongCarDetectAIODlg *DlgMain;
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -22,8 +27,8 @@ CDLGptz::CDLGptz(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGptz::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDLGptz)
-	m_edit_speed = 0;
-	m_edit_set = 0;
+	m_edit_speed = 5;
+	m_edit_set = 1;
 	//}}AFX_DATA_INIT
 }
 
@@ -54,7 +59,9 @@ void CDLGptz::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_UPLEFT, m_upleft);
 
 	DDX_Text(pDX, IDC_EDIT_SPEED, m_edit_speed);
+	DDV_MinMaxInt(pDX, m_edit_speed, 1, 8);
 	DDX_Text(pDX, IDC_EDIT_SET, m_edit_set);
+	DDV_MinMaxInt(pDX, m_edit_set, 1, 99);
 	//}}AFX_DATA_MAP
 }
 
@@ -90,6 +97,9 @@ END_MESSAGE_MAP()
 BOOL CDLGptz::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	InitPtzCommand();
+
 	//贴图片
 	ButtonBMP();
 
@@ -113,16 +123,27 @@ void CDLGptz::AutoSize()
 }
 
 void CDLGptz::InitPtzCommand()
-{
-	m_auto.SetButtonCommand(PTZ_CONTROL_AUTO);
-	m_up.SetButtonCommand(PTZ_CONTROL_UP);
-	m_down.SetButtonCommand(PTZ_CONTROL_DOWN);
-	m_left.SetButtonCommand(PTZ_CONTROL_LEFT);
-	m_right.SetButtonCommand(PTZ_CONTROL_RIGHT);
-	m_upleft.SetButtonCommand(PTZ_CONTROL_UPLEFT);
-	m_upright.SetButtonCommand(PTZ_CONTROL_UPRIGHT);
-	m_downleft.SetButtonCommand(PTZ_CONTROL_DOWNLEFT);
-	m_downright.SetButtonCommand(PTZ_CONTROL_DOWNRIGHT);
+{		
+
+	m_auto.SetButtonCommand(PTZ_CONTROL_AUTO,NORMAL_PTZ_FLAG);
+	m_up.SetButtonCommand(PTZ_CONTROL_UP,NORMAL_PTZ_FLAG);
+	m_down.SetButtonCommand(PTZ_CONTROL_DOWN,NORMAL_PTZ_FLAG);
+	m_left.SetButtonCommand(PTZ_CONTROL_LEFT,NORMAL_PTZ_FLAG);
+	m_right.SetButtonCommand(PTZ_CONTROL_RIGHT,NORMAL_PTZ_FLAG);
+	m_upleft.SetButtonCommand(PTZ_CONTROL_UPLEFT,NORMAL_PTZ_FLAG);
+	m_upright.SetButtonCommand(PTZ_CONTROL_UPRIGHT,NORMAL_PTZ_FLAG);
+	m_downleft.SetButtonCommand(PTZ_CONTROL_DOWNLEFT,NORMAL_PTZ_FLAG);
+	m_downright.SetButtonCommand(PTZ_CONTROL_DOWNRIGHT,NORMAL_PTZ_FLAG);
+	m_focusadd.SetButtonCommand(PTZ_CONTROL_FOCUS_ADD,NORMAL_PTZ_FLAG);
+	m_focussub.SetButtonCommand(PTZ_CONTROL_FOCUS_SUB,NORMAL_PTZ_FLAG);
+	m_irisadd.SetButtonCommand(PTZ_CONTROL_IRIS_ADD,NORMAL_PTZ_FLAG);
+	m_irissub.SetButtonCommand(PTZ_CONTROL_IRIS_SUB,NORMAL_PTZ_FLAG);
+	m_zoomadd.SetButtonCommand(PTZ_CONTROL_ZOOM_ADD,NORMAL_PTZ_FLAG);
+	m_zoomsub.SetButtonCommand(PTZ_CONTROL_ZOOM_SUB,NORMAL_PTZ_FLAG);
+	m_set.SetButtonCommand(PTZ_CONTROL_POINT_SET,NORMAL_PTZ_FLAG);
+	m_go.SetButtonCommand(PTZ_CONTROL_POINT_MOVE,NORMAL_PTZ_FLAG);
+	m_speedadd.SetButtonCommand(PTZ_CONTROL_SPEED_ADD,NORMAL_PTZ_FLAG);
+	m_speedsub.SetButtonCommand(PTZ_CONTROL_SPEED_SUB,NORMAL_PTZ_FLAG);
 }
 
 void CDLGptz::ButtonBMP() 
@@ -214,6 +235,49 @@ void CDLGptz::OnPaint()
 	CDialog::OnPaint();
 }
 
+//云台控制操作
+void CDLGptz::SendPtzControl(int type, BOOL dwStop)
+{
+	UpdateData(TRUE);
+	BOOL b = FALSE;
+	int nParam = 0;
+
+	if(dwStop == FALSE)
+	{
+		if(type == PTZ_CONTROL_SPEED_ADD)
+		{
+			if(m_edit_speed < 8)
+			{
+				m_edit_speed ++;
+				UpdateData(FALSE);
+			}
+		}
+		
+		if(type == PTZ_CONTROL_SPEED_SUB)
+		{
+			if(m_edit_speed > 1)
+			{
+				m_edit_speed --;
+				UpdateData(FALSE);
+			}
+		}
+	}
+	if(type == PTZ_CONTROL_POINT_MOVE || type == PTZ_CONTROL_POINT_SET)
+	{
+	//	nParam = GetDlgItemInt(IDC_EDIT_SET, &b, FALSE);
+	
+		nParam =m_edit_set;
+	}
+	else
+	{
+	//	nParam = GetDlgItemInt(IDC_EDIT_SPEED, &b, FALSE);
+		nParam= m_edit_speed;
+	}
+	if (b)
+	{
+		DlgMain->DlgScreen.PtzControl(type,nParam,dwStop);
+	}
+}
 
 
 
@@ -221,202 +285,103 @@ void CDLGptz::OnPaint()
 void CDLGptz::OnUpleft() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnUp() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnUpright() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnLeft() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnAuto() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnRight() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnDownleft() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnDown() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnDownright() 
 {
 	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
 }
 
 void CDLGptz::OnFocusAdd() 
 {
-	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnIrisAdd() 
 {
-	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnZoomAdd() 
 {
-	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnFocusSub() 
 {
-	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnIrisSub() 
 {
-	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnZoomSub() 
 {
-	// TODO: Add your control notification handler code here
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
+
 }
 
 void CDLGptz::OnButtonSet() 
 {
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
-	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	m_edit_set = 0;
 
 }
 
 void CDLGptz::OnButtonGo() 
 {
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
-	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	m_edit_set = 0;
 }
 
 void CDLGptz::OnSpeedSub() 
 {
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
 	// TODO: Add your control notification handler code here
-	
-	m_edit_speed = 0;
-	UpdateData(FALSE);
-				
 }
 
 void CDLGptz::OnSpeedAdd() 
 {
-	if(!DlgLogin.CurrentUser.ptz)
-	{
-		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-		return ;
-	}
 	// TODO: Add your control notification handler code here
-	m_edit_speed = 0;
-	UpdateData(FALSE);
 }
 
 

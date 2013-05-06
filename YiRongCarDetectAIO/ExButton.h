@@ -10,14 +10,25 @@
 /////////////////////////////////////////////////////////////////////////////
 // CExButton window
 
+enum PTZ_FLAG_ENUM
+{
+	NORMAL_PTZ_FLAG=1,
+	SET_PTZ_FLAG=2
+};
+
 class CExButton : public CBitmapButton
 {
 	DWORD  m_dwPTZCommand;
+
+	//1== normal ptz 常规里的云台
+	//2==set ptz 云台设置
+	int ptzflag; 
+
 // Construction
 public:
 	CExButton();
 
-	void   SetButtonCommand(DWORD dwPTZCommand);
+	void   SetButtonCommand(DWORD dwPTZCommand,int flag);
 
 // Attributes
 public:

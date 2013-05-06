@@ -43,7 +43,7 @@ void CDLGHistoryReport::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGHistoryReport)
 		// NOTE: the ClassWizard will add DDX and DDV calls here
-	DDX_Control(pDX, IDC_LIST, m_list);
+	DDX_Control(pDX, IDC_LIST, m_List);
 	DDX_Text(pDX, IDC_EDIT_PAGE, m_page);
 	DDX_Text(pDX, IDC_EDIT_USER, m_user);
 	DDV_MaxChars(pDX, m_user, 32);
@@ -74,12 +74,12 @@ BOOL CDLGHistoryReport::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_list.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(1, _T("用户名" ), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(2, _T("时间"), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(3, _T("日志信息"), LVCFMT_LEFT, 380);
+	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
+	m_List.InsertColumn(1, _T("用户名" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(2, _T("时间"), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(3, _T("日志信息"), LVCFMT_LEFT, 380);
 
-	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -93,7 +93,7 @@ void CDLGHistoryReport::OnOK()
 void CDLGHistoryReport::DisplayerList(void)
 {
 	list_history_report.clear();
-	m_list.DeleteAllItems();
+	m_List.DeleteAllItems();
 	GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
 
 	if(0==ListTotal)
@@ -119,10 +119,10 @@ void CDLGHistoryReport::DisplayerList(void)
 	for(beglist=list_history_report.begin();beglist!=list_history_report.end();beglist++)
 	{
 		sprintf(str,"%07d",ListNow+1+i);
-		nItem = m_list.InsertItem(0,str);
+		nItem = m_List.InsertItem(0,str);
 		i++;
 
-		m_list.SetItemText(nItem,1,beglist->user);
+		m_List.SetItemText(nItem,1,beglist->user);
 
 		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
 			beglist->year,
@@ -132,9 +132,9 @@ void CDLGHistoryReport::DisplayerList(void)
 			beglist->min,
 			beglist->sec);
 
-		m_list.SetItemText(nItem,2,str);
+		m_List.SetItemText(nItem,2,str);
 
-		m_list.SetItemText(nItem,3,beglist->str);
+		m_List.SetItemText(nItem,3,beglist->str);
 	}
 
 	if(ListTotal%HISTORY_REPORT_PAGE_MAX_NUM)

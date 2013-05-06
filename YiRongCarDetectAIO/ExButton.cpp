@@ -4,7 +4,14 @@
 #include "stdafx.h"
 #include "ExButton.h"
 #include "YiRongCarDetectAIO.h"
+
 #include "YiRongCarDetectAIODlg.h"
+extern CYiRongCarDetectAIODlg *DlgMain;
+
+#include "DLGLogin.h"
+extern CDLGLogin DlgLogin;
+
+#include "DLGSetPTZ.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,6 +25,7 @@ static char THIS_FILE[] = __FILE__;
 CExButton::CExButton()
 {
 	m_dwPTZCommand = -1;
+	ptzflag=0;
 }
 
 CExButton::~CExButton()
@@ -34,18 +42,20 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CExButton message handlers
-void CExButton::SetButtonCommand(DWORD dwPTZCommand)
+void CExButton::SetButtonCommand(DWORD dwPTZCommand,int flag)
 {
 	m_dwPTZCommand = dwPTZCommand;
+	ptzflag=flag;
+
 }
 
 void CExButton::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-//	if(!DlgLogin.CurrentUser.ptz)
-//	{
-//		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
-//		return ;
-//	}
+	if(!DlgLogin.CurrentUser.ptz)
+	{
+		MessageBox("无 云台设置 权限，请联系管理员",MESSAGEBOX_TITLE);
+		return ;
+	}
 
 	CBitmapButton::OnLButtonDown(nFlags, point);
 
@@ -53,7 +63,19 @@ void CExButton::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		return;
 	}
-//	((CPTZPannel*)GetParent())->SendPtzControl(m_dwPTZCommand,FALSE);
+
+	switch(ptzflag)
+	{
+	case NORMAL_PTZ_FLAG:
+		DlgMain->DlgPtz.SendPtzControl(m_dwPTZCommand,FALSE);
+		break;
+	case SET_PTZ_FLAG:
+		((CDLGSetPTZ*)GetParent())->SendPtzControl(m_dwPTZCommand,FALSE);
+		break;
+	default:
+		break;
+	}
+
 	TRACE("START\n");
 }
 
@@ -65,6 +87,18 @@ void CExButton::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		return;		
 	}
-//	((CPTZPannel*)GetParent())->SendPtzControl(m_dwPTZCommand,TRUE);
+
+	switch(ptzflag)
+	{
+	case NORMAL_PTZ_FLAG:
+		DlgMain->DlgPtz.SendPtzControl(m_dwPTZCommand,TRUE);
+		break;
+	case SET_PTZ_FLAG:
+		((CDLGSetPTZ*)GetParent())->SendPtzControl(m_dwPTZCommand,TRUE);
+		break;
+	default:
+		break;
+	}
+
 	TRACE("STOP\n");
 }

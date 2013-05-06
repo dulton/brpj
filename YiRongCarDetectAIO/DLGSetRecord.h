@@ -30,7 +30,7 @@ public:
 	enum { IDD = IDD_SET_RECORD };
 	CComboBox	m_cam;
 	CComboBox	m_area;
-	CListCtrl	m_list;
+	CListCtrl	m_List;
 	CTime	m_StartMon;
 	CTime	m_StartHour;
 	CTime	m_EndMon;

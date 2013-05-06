@@ -67,7 +67,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGHistroyDetect)
 	enum { IDD = IDD_HISTORY_DETECT };
-	CListCtrl	m_list;
+	CListCtrl	m_List;
 	CString	m_ip;
 	CString	m_name;
 	int		m_page;

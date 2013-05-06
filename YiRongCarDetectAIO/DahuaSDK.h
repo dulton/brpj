@@ -81,16 +81,20 @@ public:
 	CDahuaSDK();
 	virtual ~CDahuaSDK();
 	long m_RealHandle[MAX_DEVICE_NUM];
+	long m_LoginHandle[MAX_DEVICE_NUM];
+	BOOL m_bPTZCtrl;
+	long m_ptzRealHandle;
+	long m_ptzLoginHandle;
 
 	void SDKInit();
 	bool StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype);
 	void StopPlay(int screenNo);
 	void Capture(long pHandle,char *filename);
+	bool PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd);
+	void PtzStopPlay();
+	void PtzControl(long lLoginID, int type, BOOL dwStop, int param);
 	char *RuntimeMessage(void);
 	void GetConnectError(char *name,int error,int flag);
-	
-
-	long m_LoginHandle[MAX_DEVICE_NUM];
 };
 
 

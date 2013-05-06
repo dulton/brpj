@@ -5,6 +5,11 @@
 #include "yirongcardetectaio.h"
 #include "DLGSetPTZ.h"
 
+//////////////////////////////////
+#include "YiRongCarDetectAIODlg.h"
+extern CYiRongCarDetectAIODlg *DlgMain;
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -19,8 +24,8 @@ CDLGSetPTZ::CDLGSetPTZ(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGSetPTZ::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDLGSetPTZ)
-	m_edit_speed = 0;
-	m_edit_set = 0;
+	m_edit_speed = 5;
+	m_edit_set = 1;
 	//}}AFX_DATA_INIT
 }
 
@@ -29,7 +34,7 @@ void CDLGSetPTZ::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGSetPTZ)
-
+	DDX_Control(pDX, IDC_STATIC_VIDEO, m_video);
 	DDX_Control(pDX, IDC_AUTO, m_auto);
 	DDX_Control(pDX, IDC_BUTTON_GO, m_go);
 	DDX_Control(pDX, IDC_BUTTON_SET, m_set);
@@ -51,7 +56,9 @@ void CDLGSetPTZ::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_UPLEFT, m_upleft);
 
 	DDX_Text(pDX, IDC_EDIT_SPEED, m_edit_speed);
+	DDV_MinMaxInt(pDX, m_edit_speed, 1, 8);
 	DDX_Text(pDX, IDC_EDIT_SET, m_edit_set);
+	DDV_MinMaxInt(pDX, m_edit_set, 1, 99);
 	//}}AFX_DATA_MAP
 }
 
@@ -79,6 +86,7 @@ BEGIN_MESSAGE_MAP(CDLGSetPTZ, CDialog)
 	ON_BN_CLICKED(IDC_SPEED_SUB, OnSpeedSub)
 	ON_BN_CLICKED(IDC_SPEED_ADD, OnSpeedAdd)
 	ON_WM_CTLCOLOR()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -89,16 +97,107 @@ BOOL CDLGSetPTZ::OnInitDialog()
 	CDialog::OnInitDialog();
 	//贴图片
 	ButtonBMP();
-
+	InitPtzCommand();
 //用来修改透明字
 //RECT p;
 //	GetDlgItem(IDC_STATIC_RECT)->GetWindowRect(&p);
 
-	
+	GetDlgItem(IDC_STATIC_AEAR)->SetWindowText(curCamInfo.area);
+	GetDlgItem(IDC_STATIC_CAM)->SetWindowText(curCamInfo.name);
+	GetDlgItem(IDC_STATIC_IP)->SetWindowText(curCamInfo.ip);
+	switch(curCamInfo.venderID)
+	{
+		case 0:		//海康
+			DlgMain->DlgScreen.m_video.m_haikang.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
+																curCamInfo.port,\
+																curCamInfo.user.GetBuffer(0),\
+																curCamInfo.psw.GetBuffer(0),\
+																m_video.m_hWnd);
+			break;
+		case 1:		//大华
+			DlgMain->DlgScreen.m_video.m_dahua.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
+																curCamInfo.port,\
+																curCamInfo.user.GetBuffer(0),\
+																curCamInfo.psw.GetBuffer(0),\
+																m_video.m_hWnd);
+			break;
+		default:
+			break;
+	}
+
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+
+void CDLGSetPTZ::InitPtzCommand()
+{
+	m_auto.SetButtonCommand(PTZ_CONTROL_AUTO,SET_PTZ_FLAG);
+	m_up.SetButtonCommand(PTZ_CONTROL_UP,SET_PTZ_FLAG);
+	m_down.SetButtonCommand(PTZ_CONTROL_DOWN,SET_PTZ_FLAG);
+	m_left.SetButtonCommand(PTZ_CONTROL_LEFT,SET_PTZ_FLAG);
+	m_right.SetButtonCommand(PTZ_CONTROL_RIGHT,SET_PTZ_FLAG);
+	m_upleft.SetButtonCommand(PTZ_CONTROL_UPLEFT,SET_PTZ_FLAG);
+	m_upright.SetButtonCommand(PTZ_CONTROL_UPRIGHT,SET_PTZ_FLAG);
+	m_downleft.SetButtonCommand(PTZ_CONTROL_DOWNLEFT,SET_PTZ_FLAG);
+	m_downright.SetButtonCommand(PTZ_CONTROL_DOWNRIGHT,SET_PTZ_FLAG);
+	m_focusadd.SetButtonCommand(PTZ_CONTROL_FOCUS_ADD,SET_PTZ_FLAG);
+	m_focussub.SetButtonCommand(PTZ_CONTROL_FOCUS_SUB,SET_PTZ_FLAG);
+	m_irisadd.SetButtonCommand(PTZ_CONTROL_IRIS_ADD,SET_PTZ_FLAG);
+	m_irissub.SetButtonCommand(PTZ_CONTROL_IRIS_SUB,SET_PTZ_FLAG);
+	m_zoomadd.SetButtonCommand(PTZ_CONTROL_ZOOM_ADD,SET_PTZ_FLAG);
+	m_zoomsub.SetButtonCommand(PTZ_CONTROL_ZOOM_SUB,SET_PTZ_FLAG);
+	m_set.SetButtonCommand(PTZ_CONTROL_POINT_SET,SET_PTZ_FLAG);
+	m_go.SetButtonCommand(PTZ_CONTROL_POINT_MOVE,SET_PTZ_FLAG);
+	m_speedadd.SetButtonCommand(PTZ_CONTROL_SPEED_ADD,SET_PTZ_FLAG);
+	m_speedsub.SetButtonCommand(PTZ_CONTROL_SPEED_SUB,SET_PTZ_FLAG);
+}
+
+//云台控制操作
+void CDLGSetPTZ::SendPtzControl(int type, BOOL dwStop)
+{
+	UpdateData(TRUE);
+	BOOL b = FALSE;
+	int nParam = 0;
+
+	if(dwStop == FALSE)
+	{
+		if(type == PTZ_CONTROL_SPEED_ADD)
+		{
+			if(m_edit_speed < 8)
+			{
+				m_edit_speed ++;
+				UpdateData(FALSE);
+			}
+		}
+		
+		if(type == PTZ_CONTROL_SPEED_SUB)
+		{
+			if(m_edit_speed > 1)
+			{
+				m_edit_speed --;
+				UpdateData(FALSE);
+			}
+		}
+	}
+
+	if(type == PTZ_CONTROL_POINT_MOVE || type == PTZ_CONTROL_POINT_SET)
+	{
+	//	nParam = GetDlgItemInt(IDC_EDIT_SET, &b, FALSE);
+	
+		nParam =m_edit_set;
+	}
+	else
+	{
+	//	nParam = GetDlgItemInt(IDC_EDIT_SPEED, &b, FALSE);
+		nParam= m_edit_speed;
+	}
+	if (b)
+	{
+		DlgMain->DlgScreen.PtzControl(type,nParam,dwStop);
+	}
+}
 
 void CDLGSetPTZ::ButtonBMP() 
 {
@@ -189,6 +288,23 @@ void CDLGSetPTZ::OnPaint()
 	CDialog::OnPaint();
 }
 
+void CDLGSetPTZ::OnDestroy() 
+{
+	CDialog::OnDestroy();
+	
+	// TODO: Add your message handler code here
+	switch(curCamInfo.venderID)
+	{
+		case 0:		//海康
+			DlgMain->DlgScreen.m_video.m_haikang.PtzStopPlay();
+			break;
+		case 1:		//大华
+			DlgMain->DlgScreen.m_video.m_dahua.PtzStopPlay();
+			break;
+		default:
+			break;
+	}
+}
 
 //按键事件响应///////////////////////////////
 void CDLGSetPTZ::OnUpleft() 
@@ -277,38 +393,26 @@ void CDLGSetPTZ::OnIrisSub()
 void CDLGSetPTZ::OnZoomSub() 
 {
 	// TODO: Add your control notification handler code here
-	
+
 }
 
 void CDLGSetPTZ::OnButtonSet() 
 {
-	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	m_edit_set = 0;
 
 }
 
 void CDLGSetPTZ::OnButtonGo() 
 {
-	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	m_edit_set = 0;
+
 }
 
 void CDLGSetPTZ::OnSpeedSub() 
 {
-	// TODO: Add your control notification handler code here
-	
-	m_edit_speed = 0;
-	UpdateData(FALSE);
 				
 }
 
 void CDLGSetPTZ::OnSpeedAdd() 
 {
-	// TODO: Add your control notification handler code here
-	m_edit_speed = 0;
-	UpdateData(FALSE);
 }
 
 HBRUSH CDLGSetPTZ::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 

@@ -50,7 +50,7 @@ void CDLGSetRecord::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CDLGSetRecord)
 	DDX_Control(pDX, IDC_COMBO_CAM, m_cam);
 	DDX_Control(pDX, IDC_COMBO_AREA, m_area);
-	DDX_Control(pDX, IDC_LIST, m_list);
+	DDX_Control(pDX, IDC_LIST, m_List);
 	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER_STARTMON, m_StartMon);
 	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER_STARTHOUR, m_StartHour);
 	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER_ENDMON, m_EndMon);
@@ -91,11 +91,11 @@ BOOL CDLGSetRecord::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_list.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(4, _T("起始时间"), LVCFMT_LEFT, 90);
-	m_list.InsertColumn(5, _T("结束时间"), LVCFMT_LEFT, 90);
+	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 50);
+	m_List.InsertColumn(4, _T("起始时间"), LVCFMT_LEFT, 90);
+	m_List.InsertColumn(5, _T("结束时间"), LVCFMT_LEFT, 90);
 
-	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
+	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
 
 	// TODO: Add extra initialization here
 	//添加设备列表的区域
@@ -125,7 +125,7 @@ void CDLGSetRecord::DisplayerList(void)
 
 	char str[128];
 
-	m_list.DeleteAllItems();
+	m_List.DeleteAllItems();
 
 	for(beglist=list_record.begin();beglist!=list_record.end();beglist++)
 	{

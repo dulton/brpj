@@ -44,7 +44,7 @@ public:
 	//{{AFX_DATA(CDLGHistoryReport)
 	enum { IDD = IDD_HISTORY_REPORT };
 		// NOTE: the ClassWizard will add data members here
-	CListCtrl	m_list;
+	CListCtrl	m_List;
 	int		m_page;
 	CString	m_user;
 	CTime	m_StartMon;

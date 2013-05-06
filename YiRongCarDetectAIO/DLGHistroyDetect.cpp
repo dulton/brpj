@@ -52,7 +52,7 @@ void CDLGHistroyDetect::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGHistroyDetect)
-	DDX_Control(pDX, IDC_LIST, m_list);
+	DDX_Control(pDX, IDC_LIST, m_List);
 	DDX_Text(pDX, IDC_EDIT_IP, m_ip);
 	DDV_MaxChars(pDX, m_ip, 32);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_name);
@@ -107,30 +107,35 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 	}
 
 #if ALLTAB_DETECT_CAR_MODE
-	m_list.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
-	m_list.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
-	m_list.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
-	m_list.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_list.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
-	m_list.InsertColumn(8, _T("车牌类型"), LVCFMT_LEFT, 100);
-	m_list.InsertColumn(9, _T("车身颜色"), LVCFMT_LEFT, 60);
-	m_list.InsertColumn(10, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_list.InsertColumn(11, _T("nid"), LVCFMT_LEFT, 0);
-	m_list.InsertColumn(12, _T("图片大小"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
+	m_List.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
+	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
+	m_List.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(8, _T("车牌类型"), LVCFMT_LEFT, 100);
+	m_List.InsertColumn(9, _T("车身颜色"), LVCFMT_LEFT, 60);
+	m_List.InsertColumn(10, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(11, _T("nid"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(12, _T("图片大小"), LVCFMT_LEFT, 0);
+	
+	GetDlgItem(IDC_COMBO_PLATETYPE)->ShowWindow(TRUE);
+	GetDlgItem(IDC_COMBO_PLATECOLOR)->ShowWindow(TRUE);
+	GetDlgItem(IDC_COMBO_CARCOLOR)->ShowWindow(TRUE);
+
 #else
-	m_list.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
-	m_list.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
-	m_list.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_list.InsertColumn(7, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_list.InsertColumn(8, _T("nid"), LVCFMT_LEFT, 0);
-	m_list.InsertColumn(9, _T("图片大小"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
+	m_List.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
+	m_List.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(7, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(8, _T("nid"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(9, _T("图片大小"), LVCFMT_LEFT, 0);
 
 	//屏蔽车牌类型 车牌颜色 车身颜色
 	GetDlgItem(IDC_COMBO_PLATETYPE)->ShowWindow(FALSE);
@@ -138,7 +143,7 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 	GetDlgItem(IDC_COMBO_CARCOLOR)->ShowWindow(FALSE);
 #endif
 
-	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -306,7 +311,7 @@ void CDLGHistroyDetect::OnButtonSearch()
 void CDLGHistroyDetect::DisplayerList(void)
 {
 	list_history_detect.clear();
-	m_list.DeleteAllItems();
+	m_List.DeleteAllItems();
 	GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
 
 	if(0==ListTotal)
@@ -362,7 +367,7 @@ void CDLGHistroyDetect::DisplayerList(void)
 	for(beglist=list_history_detect.begin();beglist!=list_history_detect.end();beglist++)
 	{
 		sprintf(str,"%07d",ListNow+1+i);
-		nItem = m_list.InsertItem(0,str);
+		nItem = m_List.InsertItem(0,str);
 		i++;
 
 		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
@@ -372,40 +377,39 @@ void CDLGHistroyDetect::DisplayerList(void)
 			beglist->hour,
 			beglist->min,
 			beglist->sec);
-		m_list.SetItemText(nItem,1,str);
+		m_List.SetItemText(nItem,1,str);
 
-		m_list.SetItemText(nItem,2,beglist->name);
-		m_list.SetItemText(nItem,3,beglist->ip);
-		m_list.SetItemText(nItem,4,beglist->plate);
+		m_List.SetItemText(nItem,2,beglist->name);
+		m_List.SetItemText(nItem,3,beglist->ip);
+		m_List.SetItemText(nItem,4,beglist->plate);
 	
 		sprintf(str,"%d",beglist->reliability);
-		m_list.SetItemText(nItem,5,str);
+		m_List.SetItemText(nItem,5,str);
 
-		m_list.SetItemText(nItem,6,beglist->direction);
+		m_List.SetItemText(nItem,6,beglist->direction);
 
 #if ALLTAB_DETECT_CAR_MODE
 //汽车
-		m_list.SetItemText(nItem,7,beglist->platecolor);
-		m_list.SetItemText(nItem,8,beglist->platetype);
-		m_list.SetItemText(nItem,9,beglist->carcolor);
-		m_list.SetItemText(nItem,10,beglist->path);
+		m_List.SetItemText(nItem,7,beglist->platecolor);
+		m_List.SetItemText(nItem,8,beglist->platetype);
+		m_List.SetItemText(nItem,9,beglist->carcolor);
+		m_List.SetItemText(nItem,10,beglist->path);
 	
 		sprintf(str,"%d",beglist->nid);
-		m_list.SetItemText(nItem,11,str);
+		m_List.SetItemText(nItem,11,str);
 
 		sprintf(str,"%d",beglist->picsize);
-		m_list.SetItemText(nItem,12,str);
+		m_List.SetItemText(nItem,12,str);
 	
-
 #else
 //电动车
-		m_list.SetItemText(nItem,7,beglist->path);
+		m_List.SetItemText(nItem,7,beglist->path);
 	
 		sprintf(str,"%d",beglist->nid);
-		m_list.SetItemText(nItem,8,str);
+		m_List.SetItemText(nItem,8,str);
 
 		sprintf(str,"%d",beglist->picsize);
-		m_list.SetItemText(nItem,9,str);
+		m_List.SetItemText(nItem,9,str);
 #endif
 
 	}
@@ -512,10 +516,10 @@ void CDLGHistroyDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 		//本地
 #if ALLTAB_DETECT_CAR_MODE
 		//汽车
-		m_list.GetItemText(pNMIA->iItem,10,str,260);
+		m_List.GetItemText(pNMIA->iItem,10,str,260);
 #else
 		//电动车
-		m_list.GetItemText(pNMIA->iItem,7,str,260);
+		m_List.GetItemText(pNMIA->iItem,7,str,260);
 #endif
 		//网络模式
 		if(0==strcmp(str,"null"))
@@ -539,20 +543,22 @@ void CDLGHistroyDetect::DisplayNetPic(int iItem)
 	
 #if ALLTAB_DETECT_CAR_MODE
 	//汽车
-	m_list.GetItemText(iItem,11,str,260);
+	m_List.GetItemText(iItem,11,str,260);
 #else
 	//电动车
-	m_list.GetItemText(iItem,8,str,260);
+	m_List.GetItemText(iItem,8,str,260);
 #endif
+
 	sscanf(str,"%d",&nid);
 	
 #if ALLTAB_DETECT_CAR_MODE
 	//汽车
-	m_list.GetItemText(iItem,12,str,260);
+	m_List.GetItemText(iItem,12,str,260);
 #else
 	//电动车
-	m_list.GetItemText(iItem,9,str,260);
+	m_List.GetItemText(iItem,9,str,260);
 #endif
+
 	sscanf(str,"%d",&size);
 	//获取数据 保存到临时文件
 	data=(unsigned char *)calloc(size,sizeof(unsigned char));

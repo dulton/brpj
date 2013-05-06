@@ -25,6 +25,15 @@
 */
 #include "myCamera.h"
 
+/*
+//0---海康,1---大华
+enum DEVICE_VENDERID_ENUM
+{
+	VENDER_TYPE_HAIKANG=0, 
+	VENDER_TYPE_DAHUA=1, 
+	VENDER_TYPE_YAAN=2, 
+};
+*/
 //设备信息
 struct DEVICE_INFO 
 {
@@ -118,7 +127,8 @@ public:
 		char *user,char *psw,int subtype,int screenNo,int venderID);
 	void StopPlay(int screenNo);
 	void Capture(long pHandle,char *filename);
-
+	//云台控制
+	void PtzControl(int type, BOOL dwStop, int param);
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGscreen)

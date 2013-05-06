@@ -1,6 +1,6 @@
 
 #include "stdafx.h"
-#include "myCamera.H"
+#include "myCamera.h"
 
 CMyCamera::CMyCamera()
 {
@@ -22,7 +22,7 @@ void CMyCamera::SDKInit()
 bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype)
 {
 	bool ret = false;
-	if(venderID == 0)
+	if(venderID == VENDER_TYPE_HAIKANG)
 	{
 		ret = m_haikang.StartPlay(screenNo,name, sip, nPort, user, psw, hWnd, subtype);
 		if(ret)
@@ -45,7 +45,7 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 
 void CMyCamera::StopPlay(int venderID,int screenNo)
 {
-	if(venderID == 0)
+	if(venderID == VENDER_TYPE_HAIKANG)
 	{
 		m_haikang.StopPlay(screenNo);
 	}
@@ -59,7 +59,7 @@ void CMyCamera::StopPlay(int venderID,int screenNo)
 
 void CMyCamera::Capture(int venderID,int screenNo,char *filename)
 {
-	if(venderID == 0)
+	if(venderID == VENDER_TYPE_HAIKANG)
 	{
 		m_haikang.Capture(screenNo,filename);
 	}
@@ -70,3 +70,14 @@ void CMyCamera::Capture(int venderID,int screenNo,char *filename)
 }
 
 
+void CMyCamera::PtzControl(int venderID, int screenNo, int type, BOOL dwStop, int param)
+{
+	if(venderID == VENDER_TYPE_HAIKANG)
+	{
+		m_haikang.PtzControl(m_RealHandle[screenNo],type,dwStop,param);
+	}
+	else
+	{
+		m_dahua.PtzControl(m_LoginHandle[screenNo],type,dwStop,param);
+	}
+}

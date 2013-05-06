@@ -50,7 +50,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGHistoryVideo)
 	enum { IDD = IDD_HISTORY_VIDEO };
-	CListCtrl	m_list;
+	CListCtrl	m_List;
 	int		m_page;
 	CString	m_name;
 	CString	m_ip;

@@ -976,7 +976,10 @@ void CYiRongCarDetectAIODlg::OnMenuitemSetPtz()
 		return ;
 	}
 
+	int screenNo = DlgScreen.GetCurWindId();
+
 	CDLGSetPTZ DlgSetPtz;
+	DlgScreen.GetCurWindCamInfo(screenNo,DlgSetPtz.curCamInfo);
 	DlgSetPtz.DoModal();
 }
 //////////////²Ëµ¥Ïî///////////·ÖÎö/////////////////////////////////

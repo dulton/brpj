@@ -21,6 +21,7 @@ class CListCtrlEx : public CListCtrl
 	DWORD	m_StyleEx;
 	DWORD	m_BKcolor;
 	DWORD	m_color;
+	unsigned long int m_max;
 public:
 	CListCtrlEx();
 	virtual ~CListCtrlEx();
@@ -29,6 +30,7 @@ public:
 	void InitProgressStyle(DWORD style);
 	void InitProgressStyleEx(DWORD styleEx);
 	void InitProgressColor(DWORD color,DWORD BKcolor);
+	void InitProgressMax(unsigned long int max);
 
 
 protected:

@@ -1,0 +1,22 @@
+
+汽车电动车 各写一个函数
+
+=========================================
+传入 摄像头NID 和起始时间 和结束时间。返回该时间的识别结果表中的识别图片个数
+
+如果有值 返回值  
+如果无值 返回0
+不可以返回负数
+unsigned long int 统计(unsigned long int NID,char * STARTTIME,char * ENDTIME);
+
+
+=======================================
+下面仅写一个函数
+
+//传入IP字符串 传出该IP的NID和摄像头名称
+//如果没有找到（使用 == 条件查找） 返回FALSE  找到返回TRUE 并且传出NID和摄像头名称
+bool 获取摄像头NID(char * ip,char *name,unsigned long int &nid);
+
+
+
+

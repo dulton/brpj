@@ -141,6 +141,8 @@ CHaikangSDK::CHaikangSDK()
 		m_RealHandle[i] = -1;
 		m_lPort[i] = -1;
 	}
+	m_ptzRealHandle = -1;
+	m_ptzLoginHandle = -1;
 	SDKInit();
 }
 
@@ -148,6 +150,8 @@ CHaikangSDK::~CHaikangSDK()
 {
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 		StopPlay(i);
+
+	PtzStopPlay();
 	NET_DVR_Cleanup();
 }
 
@@ -174,7 +178,7 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *us
 	{
 		//DlgMain->ShowCameraMessage(name,"Login error!",flag);
 		printf("Login error, %d\n", NET_DVR_GetLastError());
-		NET_DVR_Cleanup();
+		//NET_DVR_Cleanup();
 		return false;
 	}
 
@@ -202,7 +206,7 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *us
 		//DlgMain->ShowCameraMessage(name,"Play error!",flag);
 		printf("NET_DVR_RealPlay_V30 error\n");
 		NET_DVR_Logout(m_LoginHandle[screenNo]);
-		NET_DVR_Cleanup();
+	//	NET_DVR_Cleanup();
 		m_LoginHandle[screenNo] = -1;
 		return false;
 	}
@@ -221,6 +225,121 @@ void CHaikangSDK::StopPlay(int screenNo)
 	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
 #endif
 
+}
+
+void CHaikangSDK::PtzControl(LONG lRealHandle, int type, BOOL dwStop, int param)
+{
+	BOOL ret;
+	if (dwStop)
+	{
+		if(!m_bPTZCtrl)
+		{
+			goto exitPTZCtrl;
+		}
+	}
+	if(lRealHandle == 0)
+	{
+		goto exitPTZCtrl;
+	}
+
+	switch(type)
+	{
+		case PTZ_CONTROL_UP:
+		case PTZ_CONTROL_DOWN:
+		case PTZ_CONTROL_LEFT:
+		case PTZ_CONTROL_RIGHT:
+			ret = NET_DVR_PTZControlWithSpeed(lRealHandle, type+21, dwStop, param);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_ZOOM_ADD:
+		case PTZ_CONTROL_ZOOM_SUB:
+		case PTZ_CONTROL_FOCUS_ADD:
+		case PTZ_CONTROL_FOCUS_SUB:
+		case PTZ_CONTROL_IRIS_ADD:
+		case PTZ_CONTROL_IRIS_SUB:
+			ret = NET_DVR_PTZControlWithSpeed(lRealHandle, type+7, dwStop, param);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_POINT_MOVE:
+			ret = NET_DVR_PTZControlWithSpeed(lRealHandle, GOTO_PRESET, dwStop, param);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_POINT_SET:
+			ret = NET_DVR_PTZControlWithSpeed(lRealHandle, SET_PRESET, dwStop, param);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_UPLEFT:
+		case PTZ_CONTROL_UPRIGHT:
+		case PTZ_CONTROL_DOWNLEFT:
+		case PTZ_CONTROL_DOWNRIGHT:
+			ret = NET_DVR_PTZControlWithSpeed(lRealHandle, type+16, dwStop, param);
+			m_bPTZCtrl = !dwStop;
+			break;
+		case PTZ_CONTROL_SPEED_ADD:
+			break;
+		case PTZ_CONTROL_SPEED_SUB:
+			break;
+		case PTZ_CONTROL_AUTO:
+			ret = NET_DVR_PTZControlWithSpeed(lRealHandle, PAN_AUTO, dwStop, param);
+			m_bPTZCtrl = !dwStop;
+			break;
+	}
+	if(!ret)
+	{
+		//MessageBox(ConvertString(MSG_DEMODLG_PTZCTRLFAILED));
+		goto exitPTZCtrl;
+	}
+	return;
+
+exitPTZCtrl:
+	m_bPTZCtrl = FALSE;
+	return;
+}
+
+bool CHaikangSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd)
+{
+	//---------------------------------------
+	// 注册设备
+	NET_DVR_DEVICEINFO_V30 struDeviceInfo;
+	m_ptzLoginHandle = NET_DVR_Login_V30(sip, nPort, user, psw, &struDeviceInfo);
+	if (m_ptzLoginHandle < 0)
+	{
+		return false;
+	}
+
+	//---------------------------------------
+	//启动预览并设置回调数据流
+	NET_DVR_CLIENTINFO ClientInfo = {0};
+	//需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+	ClientInfo.hPlayWnd = hWnd;
+	ClientInfo.lChannel = 1;		//预览通道号
+	//主码流
+	ClientInfo.lLinkMode = 0;
+	ClientInfo.sMultiCastIP = NULL;	//多播地址，需要多播预览时配置
+	BOOL bPreviewBlock = false;
+
+	m_ptzRealHandle = NET_DVR_RealPlay_V30(m_ptzLoginHandle, &ClientInfo, NULL, this, 0);
+	if (m_ptzRealHandle < 0)
+	{
+		NET_DVR_Logout(m_ptzLoginHandle);
+		m_ptzLoginHandle = -1;
+		return false;
+	}
+	return true;
+}
+
+void CHaikangSDK::PtzStopPlay()
+{
+	//关闭预览
+	if(m_ptzRealHandle != -1)
+	{
+		NET_DVR_StopRealPlay(m_ptzRealHandle);
+	}
+	//注销用户
+	if(m_ptzLoginHandle != -1)
+	{
+		NET_DVR_Logout_V30(m_ptzLoginHandle);
+	}
 }
 
 void CHaikangSDK::Capture(int screenNo,char *filename)

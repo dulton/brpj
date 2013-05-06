@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 IMPLEMENT_DYNAMIC(CListCtrlEx, CListCtrl)
-CListCtrlEx::CListCtrlEx() :m_ProgressValueColumn(0),m_ProgressColumn(1),m_Style(NULL),m_StyleEx(NULL)
+CListCtrlEx::CListCtrlEx() :m_ProgressValueColumn(0),m_ProgressColumn(1),m_Style(NULL),m_StyleEx(NULL),m_max(100)
 {
 	m_BKcolor=RGB(0,0,0);
 	m_color=RGB(255,0,0);
@@ -91,14 +91,19 @@ void CListCtrlEx::OnPaint()
 		int Percent=atoi(Data);
 
 		// set the position on the control
+
+		pControl->SetRange32(0,m_max);
 		pControl->SetPos(Percent);
 		pControl->ShowWindow(SW_SHOWNORMAL);
 		// add them to the list
 		m_ProgressList.Add(pControl);
 
-		//设置前景背景色
+		//设置前景色
 		pControl->SendMessage(PBM_SETBARCOLOR, 0, m_color);   
-		pControl->SendMessage(PBM_SETBKCOLOR, 0, m_BKcolor); 
+	//	pControl->SendMessage(PBM_SETBKCOLOR, 0, m_BKcolor); 
+		//背景色 使用LISTCTRL的背景色
+		pControl->SendMessage(PBM_SETBKCOLOR, 0, GetBkColor()); 
+	
 		//风格
 		pControl->ModifyStyleEx(m_StyleEx,0); 
 
@@ -129,4 +134,9 @@ void CListCtrlEx::InitProgressColor(DWORD color,DWORD BKcolor)
 {
 	m_BKcolor=BKcolor;
 	m_color=color;
+}
+
+void CListCtrlEx::InitProgressMax(unsigned long int max)
+{
+	m_max=max;
 }

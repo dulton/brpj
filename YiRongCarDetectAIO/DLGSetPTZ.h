@@ -7,6 +7,7 @@
 // DLGSetPTZ.h : header file
 //
 #include "ExButton.h"
+#include "DLGscreen.h"
 /////////////////////////////////////////////////////////////////////////////
 // CDLGSetPTZ dialog
 
@@ -20,6 +21,7 @@ public:
 	//{{AFX_DATA(CDLGSetPTZ)
 	enum { IDD = IDD_SET_PTZ };
 
+	CStatic	m_video;
 	CExButton	m_auto;
 	CExButton	m_go;
 	CExButton	m_set;
@@ -46,7 +48,10 @@ public:
 	BOOL	OnInitDialog();
 	void AutoSize();
 	void ButtonBMP();
+	void InitPtzCommand();
+	struct DEVICE_INFO curCamInfo;
 
+	void SendPtzControl(int type, BOOL dwStop);
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGSetPTZ)
@@ -80,6 +85,7 @@ protected:
 	afx_msg void OnSpeedSub();
 	afx_msg void OnSpeedAdd();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
