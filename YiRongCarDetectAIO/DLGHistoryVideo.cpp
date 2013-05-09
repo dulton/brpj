@@ -5,11 +5,20 @@
 #include "yirongcardetectaio.h"
 #include "DLGHistoryVideo.h"
 
+#include "DLGscreen.h"
+
+#include "DLGSetSystem.h"
+extern CDLGSetSystem DlgSetSystem;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+
+extern IO OracleIO;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGHistoryVideo dialog
@@ -66,6 +75,8 @@ BEGIN_MESSAGE_MAP(CDLGHistoryVideo, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_LAST, OnButtonLast)
 	ON_BN_CLICKED(IDC_BUTTON_JUMP, OnButtonJump)
 	ON_NOTIFY(NM_CLICK, IDC_LIST, OnClickList)
+	ON_BN_CLICKED(IDC_BUTTON_DELETE, OnButtonDelete)
+	ON_NOTIFY(LVN_ITEMACTIVATE, IDC_LIST,OnLvnItemActivateList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -75,16 +86,20 @@ BOOL CDLGHistoryVideo::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 50);
+	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
 	m_List.InsertColumn(1, _T("设备名称" ), LVCFMT_LEFT, 140);
 	m_List.InsertColumn(2, _T("IP地址"), LVCFMT_LEFT, 140);
-	m_List.InsertColumn(3, _T("文件大小"), LVCFMT_LEFT, 90);
-	m_List.InsertColumn(4, _T("起始时间"), LVCFMT_LEFT, 90);
-	m_List.InsertColumn(5, _T("结束时间"), LVCFMT_LEFT, 90);
-	m_List.InsertColumn(6, _T("文件路径"), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(3, _T("文件格式"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(4, _T("文件大小"), LVCFMT_LEFT, 90);
+	m_List.InsertColumn(5, _T("起始时间"), LVCFMT_LEFT, 130);
+	m_List.InsertColumn(6, _T("结束时间"), LVCFMT_LEFT, 130);
+	m_List.InsertColumn(7, _T("文件路径"), LVCFMT_LEFT, 50);
+	m_List.InsertColumn(8, _T("编号"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(9, _T("厂家"), LVCFMT_LEFT, 0);
 
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
+	ChooseEnable();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -96,64 +111,95 @@ void CDLGHistoryVideo::OnOK()
 
 void CDLGHistoryVideo::DisplayerList(void)
 {
+	list_history_video.clear();
+	m_List.DeleteAllItems();
+	GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
+	ListChoose=-1;
+	if(0==ListTotal)
+		return ;
+
+	unsigned long int si,ei;
+
+	si=ListNow+1;
+	if((ListNow+HISTORY_VIDEO_PAGE_MAX_NUM) < ListTotal)
+		ei=ListNow+HISTORY_VIDEO_PAGE_MAX_NUM ;
+	else
+		ei=ListTotal;
+	//查询
+	OracleIO.VIDEO_Read(SqlStr,searchFlag,si,ei,list_history_video);
+	//显示
 	int nItem;
+	char str[128];
+	int i=0;
 
 	list<struct HISTORY_VIDEO_ST>::iterator beglist;
 
-	char timestr[128];
-
-	int i;
-	int total=0;
-
-//	list_history_video.DeleteAllItems();
-
-	beglist=list_history_video.begin();
-	for(i=0;i<ListNow;i++)
+	for(beglist=list_history_video.begin();beglist!=list_history_video.end();beglist++)
 	{
-		beglist++;
-	}
-
-	for(NULL;(beglist!=list_history_video.end()) && (total < HISTORY_VIDEO_PAGE_MAX_NUM);beglist++)
-	{
-		/*
-		sprintf(timestr,"%05d",total+ListNow+1);
-		nItem = m_zogHistoryList.InsertItem(0,timestr);
-
-		sprintf(timestr,"%04d-%02d-%02d  %02d:%02d:%02d",
-			beglist->year,
-			beglist->mon,
-			beglist->day,
-			beglist->hour,
-			beglist->min,
-			beglist->sec);
-*/
-		total++;
-	}
-/*
-	sprintf(timestr,"共%d条",ListTotal);
-	GetDlgItem(IDC_STATIC_TOTAL)->SetWindowText(timestr);
+		sprintf(str,"%07d",ListNow+1+i);
+		nItem = m_List.InsertItem(0,str);
+		i++;
 	
-	sprintf(timestr,"%d/%d",ListNow/HL_PAGE_MAX_NUM+1,ListTotal/HL_PAGE_MAX_NUM+1);
-	GetDlgItem(IDC_STATIC_PAGE)->SetWindowText(timestr);
-	*/
+		m_List.SetItemText(nItem,1,beglist->name);
+		m_List.SetItemText(nItem,2,beglist->ip);
+		m_List.SetItemText(nItem,3,beglist->format);
+
+		sprintf(str,"%d",beglist->size);
+		m_List.SetItemText(nItem,4,str);
+
+		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
+			beglist->StartYear,
+			beglist->StartMon,
+			beglist->StartDay,
+			beglist->StartHour,
+			beglist->StartMin,
+			beglist->StartSec);
+		m_List.SetItemText(nItem,5,str);
+
+		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
+			beglist->EndYear,
+			beglist->EndMon,
+			beglist->EndDay,
+			beglist->EndHour,
+			beglist->EndMin,
+			beglist->EndSec);
+		m_List.SetItemText(nItem,6,str);
+
+		m_List.SetItemText(nItem,7,beglist->path);
+
+		sprintf(str,"%d",beglist->nid);
+		m_List.SetItemText(nItem,8,str);
+
+		sprintf(str,"%d",beglist->venderID);
+		m_List.SetItemText(nItem,9,str);
+	}
+
+	if(ListTotal%HISTORY_VIDEO_PAGE_MAX_NUM)
+	{
+		sprintf(str,"共%d条 %d/%d页",
+			ListTotal,
+			ListNow/HISTORY_VIDEO_PAGE_MAX_NUM+1,ListTotal/HISTORY_VIDEO_PAGE_MAX_NUM+1);
+	}
+	else
+	{
+		sprintf(str,"共%d条 %d/%d页",
+			ListTotal,
+			ListNow/HISTORY_VIDEO_PAGE_MAX_NUM+1,ListTotal/HISTORY_VIDEO_PAGE_MAX_NUM);
+	}
+	GetDlgItem(IDC_STATIC_INFO)->SetWindowText(str);
+
+	ChooseEnable();
+
 }
 
 void CDLGHistoryVideo::OnButtonSearch() 
 {
-	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
 
-/*
-	CTime	StartT(m_TimeStartMon.GetYear(),m_TimeStartMon.GetMonth(),m_TimeStartMon.GetDay(),	\
-		m_TimeStartHour.GetHour(),m_TimeStartHour.GetMinute(),m_TimeStartHour.GetSecond());
-
-	CTime	EndT(m_TimeEndMon.GetYear(),m_TimeEndMon.GetMonth(),m_TimeEndMon.GetDay(),	\
-		m_TimeEndHour.GetHour(),m_TimeEndHour.GetMinute(),m_TimeEndHour.GetSecond());
-*/
 	char STime[32]={0};
 	char ETime[32]={0};
 
-	sprintf(STime,"%04d%02d%02d%02d%02d%02d",		
+	sprintf(STime,"%04d-%02d-%02d %02d:%02d:%02d",		
 		m_StartMon.GetYear(),
 		m_StartMon.GetMonth(),
 		m_StartMon.GetDay(),
@@ -161,7 +207,7 @@ void CDLGHistoryVideo::OnButtonSearch()
 		m_StartHour.GetMinute(),
 		m_StartHour.GetSecond());
 
-	sprintf(ETime,"%04d%02d%02d%02d%02d%02d",		
+	sprintf(ETime,"%04d-%02d-%02d %02d:%02d:%02d",	
 		m_EndMon.GetYear(),
 		m_EndMon.GetMonth(),
 		m_EndMon.GetDay(),
@@ -170,89 +216,138 @@ void CDLGHistoryVideo::OnButtonSearch()
 		m_EndHour.GetSecond());
 
 	ListTotal=0;
+
+	searchFlag=0;
+	if(!m_name.IsEmpty())
+	{
+		searchFlag |= 0x01;
+	}
+	if(!m_ip.IsEmpty())
+	{
+		searchFlag |= 0x02;
+	}
+	if(m_CheckTime)
+	{
+		searchFlag |= 0x04;
+	}
+
+	memset(SqlStr,0,1024);
+	ListTotal=OracleIO.VIDEO_GetNum(m_name.GetBuffer(0),
+								   m_ip.GetBuffer(0),
+								   STime,ETime,
+								   searchFlag,
+								   SqlStr);
 	ListNow=0;
-
-	/*
-	zoglisthistory.clear();
-
-	/////////获取
-	unsigned char getFlag = 0;
-
-	if(m_TimeFlag)
-	{
-		getFlag |= 0x01;
-	}
-	if(m_BlackFlag)
-	{
-		getFlag |= 0x02;
-	}
-	if(m_CarnumberFlag && (!m_CarNumber.IsEmpty()))
-	{
-		getFlag |= 0x04;
-	}
-	if(m_IPflag && (!m_IPaddr.IsEmpty()))
-	{
-		getFlag |= 0x08;
-	}
-	//USHOW
-	//m_maindlg->pio.getHistoryCarList(getFlag,zoglisthistory,STime,ETime,m_CarNumber.GetBuffer(),m_IPaddr.GetBuffer());
-	////////
-
-	ListTotal=zoglisthistory.size();
 	DisplayerList();
-	*/
+}
+
+void CDLGHistoryVideo::ChooseEnable(void)
+{
+	if(-1!=ListChoose)
+	{
+		GetDlgItem(IDC_BUTTON_PLAY)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON_DELETE)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_PLAY)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_DELETE)->EnableWindow(FALSE);
+	}
 }
 
 void CDLGHistoryVideo::OnButtonPlay() 
 {
 	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
+	if(ListChoose<0)
+		return ;
 
+	int venderID;
+	char str[260];
+	m_List.GetItemText(ListChoose,9,str,260);
+	sscanf(str,"%d",&venderID);
+
+	m_List.GetItemText(ListChoose,7,str,260);
+		// TODO: Add your message handler code here
+	switch(venderID)
+	{
+	case VENDER_TYPE_HAIKANG:		//海康
+		ShellExecute(this->m_hWnd,
+			"open",
+			DlgSetSystem.m_path_haikang,
+			str,
+			NULL,SW_NORMAL);
+		break;
+	case VENDER_TYPE_DAHUA:		//大华
+		ShellExecute(this->m_hWnd,
+			"open",
+			DlgSetSystem.m_path_dahua,
+			str,
+			NULL,SW_NORMAL);
+		break;
+	case VENDER_TYPE_YAAN:
+		ShellExecute(this->m_hWnd,
+			"open",
+			DlgSetSystem.m_path_yaan,
+			str,
+			NULL,SW_NORMAL);
+		break;
+	default:
+		break;
+	}
 }
 
 void CDLGHistoryVideo::OnButtonFirst() 
 {
 	// TODO: Add your control notification handler code here
+	if(0==ListTotal)
+		return ;
+
 	ListNow=0;
 	DisplayerList();
-	
-	ListChoose=-1;
 }
 
 void CDLGHistoryVideo::OnButtonPrevious() 
 {
 	// TODO: Add your control notification handler code here
+	if(0==ListTotal)
+		return ;
+
 	if((ListNow-HISTORY_VIDEO_PAGE_MAX_NUM) >= 0)
 		ListNow-=HISTORY_VIDEO_PAGE_MAX_NUM;
 
 	DisplayerList();
-
-		ListChoose=-1;
 }
 
 void CDLGHistoryVideo::OnButtonNext() 
 {
 	// TODO: Add your control notification handler code here
+	if(0==ListTotal)
+		return ;
+
 	if((ListNow+HISTORY_VIDEO_PAGE_MAX_NUM) < ListTotal)
 		ListNow+=HISTORY_VIDEO_PAGE_MAX_NUM;
 
 	DisplayerList();
-		ListChoose=-1;
 }
 
 void CDLGHistoryVideo::OnButtonLast() 
 {
 	// TODO: Add your control notification handler code here
+	if(0==ListTotal)
+		return ;
+
 	while((ListNow+HISTORY_VIDEO_PAGE_MAX_NUM) < ListTotal)
 		ListNow+=HISTORY_VIDEO_PAGE_MAX_NUM;
 
 	DisplayerList();
-	ListChoose=-1;
 }
 
 void CDLGHistoryVideo::OnButtonJump() 
 {
 	// TODO: Add your control notification handler code here
+	if(0==ListTotal)
+		return ;
+
 	UpdateData(TRUE);
 
 	if((m_page>=1)
@@ -266,9 +361,12 @@ void CDLGHistoryVideo::OnButtonJump()
 			ListNow+=HISTORY_VIDEO_PAGE_MAX_NUM;
 
 		DisplayerList();
-		ListChoose=-1;
 	}
+	else
+		MessageBox("不在页面范围",MESSAGEBOX_TITLE);
+
 }
+
 
 void CDLGHistoryVideo::OnClickList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
@@ -276,6 +374,53 @@ void CDLGHistoryVideo::OnClickList(NMHDR* pNMHDR, LRESULT* pResult)
 	NM_LISTVIEW* p=	(NM_LISTVIEW *)pNMHDR;
 	//选中的赋值
 	ListChoose= p->iItem;
-	
+	//没中
+	if(ListChoose <0 )
+		ListChoose=-1 ;
+
+	ChooseEnable();
+
 	*pResult = 0;
+}
+
+void CDLGHistoryVideo::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	char str[260];
+	m_List.GetItemText(pNMIA->iItem,7,str,260);
+	char cmdstr[512];
+
+	sprintf(cmdstr,"/e,/select,%s",str);
+
+	//打开文件所在的文件夹
+	ShellExecute(this->m_hWnd,
+		"open",
+		"explorer.exe",
+		cmdstr,
+		NULL,SW_NORMAL);
+
+	*pResult = 0;
+}
+
+void CDLGHistoryVideo::OnButtonDelete() 
+{
+	// TODO: Add your control notification handler code here
+	if(ListChoose<0)
+		return ;
+
+	//删除数据库
+	unsigned long int nid;
+	char str[260];
+	m_List.GetItemText(ListChoose,8,str,260);
+
+	sscanf(str,"%d",&nid);
+	OracleIO.VIDEO_DeleteVideo(nid);
+
+	//删除文件
+	m_List.GetItemText(ListChoose,7,str,260);
+	DeleteFile(str);
+
+	ListNow=0;
+	DisplayerList();
 }

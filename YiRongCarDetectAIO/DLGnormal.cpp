@@ -425,19 +425,52 @@ void CDLGnormal::OnButtonCloseDetectAll()
 void CDLGnormal::OnButtonOpenRecord() 
 {
 	// TODO: Add your control notification handler code here
-	
+		// TODO: Add your control notification handler code here
+	if(!DlgLogin.CurrentUser.record)
+	{
+		MessageBox("无 录像 权限，请联系管理员",MESSAGEBOX_TITLE);
+		return ;
+	}
+	// TODO: Add your control notification handler code here
+	int curSreen = DlgMain->DlgScreen.GetCurWindId();
+//	bool bEnable = DlgMain->DlgScreen.GetAlarmState(curSreen);
+//	if(bEnable)
+	{
+		CloseRecord(curSreen);
+	}
+//	else
+	{
+		OpenRecord(curSreen);
+	}	
 }
 
 void CDLGnormal::OnButtonOpenRecordAll() 
 {
 	// TODO: Add your control notification handler code here
-	
+	if(!DlgLogin.CurrentUser.record)
+	{
+		MessageBox("无 录像 权限，请联系管理员",MESSAGEBOX_TITLE);
+		return ;
+	}
+	// TODO: Add your control notification handler code here
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		OpenRecord(i);
+	}
 }
 
 void CDLGnormal::OnButtonCloseRecordAll() 
 {
+	if(!DlgLogin.CurrentUser.record)
+	{
+		MessageBox("无 录像 权限，请联系管理员",MESSAGEBOX_TITLE);
+		return ;
+	}
 	// TODO: Add your control notification handler code here
-	
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		CloseRecord(i);
+	}
 }
 //改变报警字和改变图片
 void CDLGnormal::ChangeAlarmFontPic(bool start) 
@@ -459,6 +492,27 @@ void CDLGnormal::ChangeAlarmFontPic(bool start)
 		DlgMain->DlgShortCut.AlarmBMP();
 	}
 	m_b_alarm_open.Invalidate();
+}
+//改变报警字和改变图片
+void CDLGnormal::ChangeRecordFontPic(bool start) 
+{
+	if(start)
+	{
+	//	GetDlgItem(IDC_BUTTON_OPEN_RECORD)->SetWindowTextA("关闭录像");
+		m_b_record_open.LoadBitmaps(IDB_NORMAL_RECORD_CLOSE,IDB_NORMAL_RECORD_CLOSE_PUSH,NULL,NULL);
+
+		DlgMain->DlgShortCut.RecordEnable=TRUE;
+		DlgMain->DlgShortCut.RecordBMP();
+	}
+	else
+	{
+	//	GetDlgItem(IDC_BUTTON_OPEN_RECORD)->SetWindowTextA("开启录像");
+		m_b_record_open.LoadBitmaps(IDB_NORMAL_RECORD_OPEN,IDB_NORMAL_RECORD_OPEN_PUSH,NULL,NULL);
+	
+		DlgMain->DlgShortCut.RecordEnable=FALSE;
+		DlgMain->DlgShortCut.RecordBMP();
+	}
+	m_b_record_open.Invalidate();
 }
 
 void CDLGnormal::OnButtonOpenAlarm() 
@@ -543,7 +597,6 @@ void CDLGnormal::OnButtonSetBlack()
 void CDLGnormal::OnButtonHistoryVideo() 
 {
 	// TODO: Add your control notification handler code here
-	
 	DlgMain->OnMenuitemHistoryVideo();
 }
 
@@ -641,6 +694,24 @@ void CDLGnormal::CloseAlarm(int screenNo)
 	ChangeAlarmFontPic(false);
 }
 
+bool CDLGnormal::OpenRecord(int screenNo)
+{
+//	bool isplay = DlgMain->DlgScreen.GetCurWindPlayState(screenNo);
+//	if(isplay)				//正在播放
+	{
+//		DlgMain->DlgScreen.EnableAlarm(screenNo,true);
+		ChangeRecordFontPic(true);
+		return true;
+	}
+	return false;
+}
+
+void CDLGnormal::CloseRecord(int screenNo)
+{
+//	DlgMain->DlgScreen.EnableAlarm(screenNo,false);
+	ChangeRecordFontPic(false);
+}
+
 void CDLGnormal::Capture(int screenNo)
 {
 	CString pathstr = "";
@@ -658,6 +729,5 @@ void CDLGnormal::Capture(int screenNo)
 					nowtime.GetSecond(),
 					GetTickCount());
 
-	long curHandle = DlgMain->DlgScreen.GetCurWindPlayHandle(screenNo);
-	DlgMain->DlgScreen.Capture(curHandle,pathstr.GetBuffer(0));
+	DlgMain->DlgScreen.Capture(pathstr.GetBuffer(0));
 }

@@ -191,6 +191,8 @@ CDahuaSDK::~CDahuaSDK()
 	{
 		StopPlay(i);
 	}
+
+	PtzStopPlay();
 	//ÊÍ·ÅSDK×ÊÔ´
 	CLIENT_Cleanup();
 }

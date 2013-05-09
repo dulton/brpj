@@ -6,39 +6,43 @@
 #endif // _MSC_VER > 1000
 // DLGHistoryVideo.h : header file
 //
-
+#include "IO.h"
 /////////////////////////////////////////////////////////////////////////////
 // CDLGHistoryVideo dialog
 #include <vector>
 #include <list>
 using namespace::std;
 
-#define HISTORY_VIDEO_PAGE_MAX_NUM 50
+#define HISTORY_VIDEO_PAGE_MAX_NUM 40
 
+/*
 //命名太长会出错
 struct HISTORY_VIDEO_ST
 {
-	//起始时间
-	int start_year;
-	int start_mon;
-	int start_day;
-	int start_hour;
-	int start_min;
-	int start_sec;
-	//结束时间
-	int end_year;
-	int end_mon;
-	int end_day;
-	int end_hour;
-	int end_min;
-	int end_sec;
-
-	char name[260];	//设备名称
+	unsigned long int nid;
+	char name[260];	//摄像头名称
 	char ip[32];	//IP地址
-	unsigned long int filesize;	//文件大小
-	//文件路径
-	char path[ZOG_MAX_PATH_STR];
+	int venderID;	//厂家
+	char format[8];	//后缀MP4 AVI 格式
+	unsigned long int size;	//文件大小
+	char path[260];
+
+	//时间
+	int StartYear;
+	int StartMon;
+	int StartDay;
+	int StartHour;
+	int StartMin;
+	int StartSec;
+	//时间
+	int EndYear;
+	int EndMon;
+	int EndDay;
+	int EndHour;
+	int EndMin;
+	int EndSec;
 };
+*/
 
 
 class CDLGHistoryVideo : public CDialog
@@ -69,12 +73,14 @@ public:
 	int ListChoose;
 	void DisplayerList(void);
 
+	int searchFlag;
 	//用来存放SQL语句的函数
 	char SqlStr[1024];
 
 	BOOL OnInitDialog();
 	//屏蔽操作
 	void OnOK();
+	void ChooseEnable();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -96,6 +102,8 @@ protected:
 	afx_msg void OnButtonLast();
 	afx_msg void OnButtonJump();
 	afx_msg void OnClickList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnButtonDelete();
+	afx_msg void OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

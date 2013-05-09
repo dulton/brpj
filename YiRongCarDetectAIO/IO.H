@@ -13,6 +13,32 @@
 #import "msado15.dll" no_namespace rename("EOF","adoEOF")       //引入ADO类型库
 using namespace::std;
 
+struct HISTORY_VIDEO_ST
+{
+	unsigned long int nid;
+	char name[260];	//摄像头名称
+	char ip[32];	//IP地址
+	int venderID;	//厂家
+	char format[8];	//后缀MP4 AVI 格式
+	unsigned long int size;	//文件大小
+	char path[260];
+
+	//时间
+	int StartYear;
+	int StartMon;
+	int StartDay;
+	int StartHour;
+	int StartMin;
+	int StartSec;
+	//时间
+	int EndYear;
+	int EndMon;
+	int EndDay;
+	int EndHour;
+	int EndMin;
+	int EndSec;
+};
+
 //命名太长会出错
 struct HISTORY_REPORT_ST
 {
@@ -238,6 +264,12 @@ public:
 	bool ELECAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black);
 	bool ELECAR_BlackTable_DeleteAll(void);
 
+	/**************************历史视频表*******************************/
+	bool VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
+							unsigned long int size,char *stime,char *etime,char *path);
+	bool VIDEO_DeleteVideo(unsigned long int nid);
+	unsigned long VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr);
+	bool VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_VIDEO_ST> &Videolist);
 
 	/*********************与平台连接的IO****************************/
 #if YRVM_PINGTAI_MODE

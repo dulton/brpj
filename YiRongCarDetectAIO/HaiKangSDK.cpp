@@ -176,7 +176,7 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *us
 	m_LoginHandle[screenNo] = NET_DVR_Login_V30(sip, nPort, user, psw, &struDeviceInfo);
 	if (m_LoginHandle[screenNo] < 0)
 	{
-		//DlgMain->ShowCameraMessage(name,"Login error!",flag);
+		DlgMain->ShowCameraMessage(name,"Login error!",FALSE);
 		printf("Login error, %d\n", NET_DVR_GetLastError());
 		//NET_DVR_Cleanup();
 		return false;
@@ -203,7 +203,7 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *us
 	m_RealHandle[screenNo] = NET_DVR_RealPlay_V30(m_LoginHandle[screenNo], &ClientInfo, g_RealDataCallBack_V30, this, 0);
 	if (m_RealHandle[screenNo] < 0)
 	{
-		//DlgMain->ShowCameraMessage(name,"Play error!",flag);
+		DlgMain->ShowCameraMessage(name,"Play error!",FALSE);
 		printf("NET_DVR_RealPlay_V30 error\n");
 		NET_DVR_Logout(m_LoginHandle[screenNo]);
 	//	NET_DVR_Cleanup();

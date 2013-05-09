@@ -240,6 +240,11 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
 		return false;
 	}
 
+	if(m_videoInfo[screenNo].isplay == true)
+	{
+		StopPlay(screenNo);
+	}
+
 	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, user, psw, pWnd->m_hWnd, subtype);
 	if(ret)
 	{
@@ -284,11 +289,23 @@ void CDLGscreen::PtzControl(int type, BOOL dwStop, int param)
 	m_video.PtzControl(m_videoInfo[m_curScreen].venderID,m_curScreen,type,dwStop,param);
 }
 
+//¿ªÊ¼Â¼Ïñ
+void CDLGscreen::StartRecord(int screenNo,char *filename)
+{
+	m_video.StartRecord(m_videoInfo[m_curScreen].venderID,screenNo,filename);
+}
+
+//Í£Ö¹Â¼Ïñ
+void CDLGscreen::StopRecord(int screenNo)
+{
+	m_video.StopRecord(m_videoInfo[m_curScreen].venderID,screenNo);
+}
+
 
 //×¥ÅÄÍ¼Ïñ
-void CDLGscreen::Capture(long pHandle,char *filename)
+void CDLGscreen::Capture(char *filename)
 {
-	m_video.Capture(m_videoInfo[m_curScreen].venderID,pHandle,filename);
+	m_video.Capture(m_videoInfo[m_curScreen].venderID,m_videoInfo[m_curScreen].playHandle,filename);
 }
 
 //É¾³ýÉè±¸

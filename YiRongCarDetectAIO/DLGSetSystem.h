@@ -33,6 +33,9 @@ public:
 	CString	m_ftp_psw;
 	CString	m_ftp_user;
 	BOOL	m_check_savenet;
+	CString	m_path_dahua;
+	CString	m_path_haikang;
+	CString	m_path_yaan;
 	//}}AFX_DATA
 	TCHAR SystemIniPath[ZOG_MAX_PATH_STR];
 
@@ -66,6 +69,9 @@ protected:
 	afx_msg void OnButtonDetectDir();
 	afx_msg void OnButtonRecordDir();
 	afx_msg void OnButtonCapbmpDir();
+	afx_msg void OnButtonHaikangPath();
+	afx_msg void OnButtonDahuaPath();
+	afx_msg void OnButtonYaanPath();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

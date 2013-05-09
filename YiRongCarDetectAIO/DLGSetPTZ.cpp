@@ -107,15 +107,22 @@ BOOL CDLGSetPTZ::OnInitDialog()
 	GetDlgItem(IDC_STATIC_IP)->SetWindowText(curCamInfo.ip);
 	switch(curCamInfo.venderID)
 	{
-		case 0:		//海康
+		case VENDER_TYPE_HAIKANG:		//海康
 			DlgMain->DlgScreen.m_video.m_haikang.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 																curCamInfo.port,\
 																curCamInfo.user.GetBuffer(0),\
 																curCamInfo.psw.GetBuffer(0),\
 																m_video.m_hWnd);
 			break;
-		case 1:		//大华
+		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgScreen.m_video.m_dahua.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
+																curCamInfo.port,\
+																curCamInfo.user.GetBuffer(0),\
+																curCamInfo.psw.GetBuffer(0),\
+																m_video.m_hWnd);
+			break;
+		case VENDER_TYPE_YAAN:
+			DlgMain->DlgScreen.m_video.m_yaAn.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 																curCamInfo.port,\
 																curCamInfo.user.GetBuffer(0),\
 																curCamInfo.psw.GetBuffer(0),\
@@ -193,9 +200,9 @@ void CDLGSetPTZ::SendPtzControl(int type, BOOL dwStop)
 	//	nParam = GetDlgItemInt(IDC_EDIT_SPEED, &b, FALSE);
 		nParam= m_edit_speed;
 	}
-	if (b)
+//	if (b)
 	{
-		DlgMain->DlgScreen.PtzControl(type,nParam,dwStop);
+		DlgMain->DlgScreen.PtzControl(type,dwStop,nParam);
 	}
 }
 
@@ -295,11 +302,14 @@ void CDLGSetPTZ::OnDestroy()
 	// TODO: Add your message handler code here
 	switch(curCamInfo.venderID)
 	{
-		case 0:		//海康
+		case VENDER_TYPE_HAIKANG:		//海康
 			DlgMain->DlgScreen.m_video.m_haikang.PtzStopPlay();
 			break;
-		case 1:		//大华
+		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgScreen.m_video.m_dahua.PtzStopPlay();
+			break;
+		case VENDER_TYPE_YAAN:
+			DlgMain->DlgScreen.m_video.m_yaAn.PtzStopPlay();
 			break;
 		default:
 			break;

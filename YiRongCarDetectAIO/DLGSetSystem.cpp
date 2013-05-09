@@ -34,6 +34,9 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_ftp_psw = _T("");
 	m_ftp_user = _T("");
 	m_check_savenet = FALSE;
+	m_path_dahua = _T("大华播放器\\player264demo.exe");
+	m_path_haikang = _T("海康播放器\\VSPlayer.exe");
+	m_path_yaan = _T("亚安播放器\\RealMp4Play.exe");
 	//}}AFX_DATA_INIT
 
 }
@@ -50,9 +53,11 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_ALARM_WAV, m_path_alarmwav);
 	DDV_MaxChars(pDX, m_path_alarmwav, 260);
 	DDX_Text(pDX, IDC_EDIT_CAPBMP_DIR, m_path_capbmp);
+	DDV_MaxChars(pDX, m_path_capbmp, 260);
 	DDX_Text(pDX, IDC_EDIT_DETECT_DIR, m_path_detect);
 	DDV_MaxChars(pDX, m_path_detect, 260);
 	DDX_Text(pDX, IDC_EDIT_RECORD_DIR, m_path_record);
+	DDV_MaxChars(pDX, m_path_record, 260);
 	DDX_Text(pDX, IDC_EDIT_TIME, m_record_cuttime);
 	DDV_MinMaxInt(pDX, m_record_cuttime, 1, 240);
 	DDX_Text(pDX, IDC_EDIT_FTP_IPADDR, m_ftp_ip);
@@ -64,6 +69,12 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_FTP_USER, m_ftp_user);
 	DDV_MaxChars(pDX, m_ftp_user, 32);
 	DDX_Check(pDX, IDC_CHECK_SAVENET, m_check_savenet);
+	DDX_Text(pDX, IDC_EDIT_DAHUA_PATH, m_path_dahua);
+	DDV_MaxChars(pDX, m_path_dahua, 260);
+	DDX_Text(pDX, IDC_EDIT_HAIKANG_PATH, m_path_haikang);
+	DDV_MaxChars(pDX, m_path_haikang, 260);
+	DDX_Text(pDX, IDC_EDIT_YAAN_PATH, m_path_yaan);
+	DDV_MaxChars(pDX, m_path_yaan, 260);
 	//}}AFX_DATA_MAP
 }
 
@@ -74,6 +85,9 @@ BEGIN_MESSAGE_MAP(CDLGSetSystem, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_DETECT_DIR, OnButtonDetectDir)
 	ON_BN_CLICKED(IDC_BUTTON_RECORD_DIR, OnButtonRecordDir)
 	ON_BN_CLICKED(IDC_BUTTON_CAPBMP_DIR, OnButtonCapbmpDir)
+	ON_BN_CLICKED(IDC_BUTTON_HAIKANG_PATH, OnButtonHaikangPath)
+	ON_BN_CLICKED(IDC_BUTTON_DAHUA_PATH, OnButtonDahuaPath)
+	ON_BN_CLICKED(IDC_BUTTON_YAAN_PATH, OnButtonYaanPath)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -228,7 +242,7 @@ void CDLGSetSystem::InputIni()
 	int nResponse=dlgw.DoModal();
 	if (nResponse == IDOK)
 	{
-		char szFilter[]="systeminfo Files (*.ini)|*.ini|*.*||";
+		char szFilter[]="systeminfo Files (*.ini)|*.ini|*.*|*.*||";
 		CFileDialog dlg(TRUE,"ini","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 			szFilter);
 		if(dlg.DoModal()==IDOK)
@@ -247,7 +261,7 @@ void CDLGSetSystem::InputIni()
 void CDLGSetSystem::OutputIni() 
 {
 	//保存文件
-	char szFilter[]="systeminfo Files (*.ini)|*.ini|*.*||";
+	char szFilter[]="systeminfo Files (*.ini)|*.ini|*.*|*.*||";
 	CFileDialog dlg(FALSE,"ini","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)
@@ -275,6 +289,11 @@ void CDLGSetSystem::readini(char *path)
 	char	ftp_user[ZOG_MAX_NAME_STR]="";
 	char	ftp_psw[ZOG_MAX_NAME_STR]="";
 	char	ftp_psw_ext[(ZOG_MAX_NAME_STR+1)*5]="";
+
+	char	path_dahua[ZOG_MAX_PATH_STR]="";
+	char	path_haikang[ZOG_MAX_PATH_STR]="";
+	char	path_yaan[ZOG_MAX_PATH_STR]="";
+
 	////////////////////////////////////
 	if(GetPrivateProfileStruct("Alarm", "CheckPic", &check_alarmpic, sizeof(int), path))
 		m_check_alarmpic=check_alarmpic;
@@ -295,6 +314,13 @@ void CDLGSetSystem::readini(char *path)
 		m_path_record=path_record;
 	if(GetPrivateProfileString("Record", "PathCapbmp", "", path_capbmp, ZOG_MAX_PATH_STR, path))
 		m_path_capbmp=path_capbmp;
+	////////////////////////////////////
+	if(GetPrivateProfileString("Play", "PathDahua", "", path_dahua, ZOG_MAX_PATH_STR, path))
+		m_path_dahua=path_dahua;
+	if(GetPrivateProfileString("Play", "PathHaikang", "", path_haikang, ZOG_MAX_PATH_STR, path))
+		m_path_haikang=path_haikang;
+	if(GetPrivateProfileString("Play", "PathYaan", "", path_yaan, ZOG_MAX_PATH_STR, path))
+		m_path_yaan=path_yaan;
 	////////////////////////////////////
 	if(GetPrivateProfileStruct("FTP", "check", &check_ftp, sizeof(int), path))
 		m_check_ftp=check_ftp;
@@ -333,6 +359,10 @@ void CDLGSetSystem::writeini(char *path)
 	WritePrivateProfileString("Record", "PathRecord",  m_path_record.GetBuffer(0),  path);
 	WritePrivateProfileString("Record", "PathCapbmp",  m_path_capbmp.GetBuffer(0), path);
 	////////////////////////////////////
+	WritePrivateProfileString("Play", "PathDahua",  m_path_dahua.GetBuffer(0),  path);
+	WritePrivateProfileString("Play", "PathHaikang",  m_path_haikang.GetBuffer(0), path);
+	WritePrivateProfileString("Play", "PathYaan",  m_path_yaan.GetBuffer(0), path);
+	////////////////////////////////////
 	WritePrivateProfileStruct("FTP", "check", &m_check_ftp, sizeof(int), path);
 	WritePrivateProfileString("FTP", "ip", m_ftp_ip.GetBuffer(0), path);
 	WritePrivateProfileString("FTP", "port", m_ftp_port.GetBuffer(0), path);
@@ -341,4 +371,43 @@ void CDLGSetSystem::writeini(char *path)
 	char	ftp_psw_ext[(ZOG_MAX_NAME_STR+1)*5]="";
 	ZogEnCode(m_ftp_psw.GetBuffer(0),ftp_psw_ext);
 	WritePrivateProfileString("FTP", "password",  ftp_psw_ext, path);
+}
+
+void CDLGSetSystem::OnButtonHaikangPath() 
+{
+	// TODO: Add your control notification handler code here
+	char szFilter[]="HaiKang Play Executable Files (*.exe)|*.exe|*.*|*.*||";
+	CFileDialog dlg(TRUE,"exe","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
+		szFilter);
+	if(dlg.DoModal()==IDOK)
+	{
+		m_path_haikang=dlg.GetPathName();
+		UpdateData(FALSE);
+	}
+}
+
+void CDLGSetSystem::OnButtonDahuaPath() 
+{
+	// TODO: Add your control notification handler code here
+	char szFilter[]="DaHua Play Executable Files (*.exe)|*.exe|*.*|*.*||";
+	CFileDialog dlg(TRUE,"exe","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
+		szFilter);
+	if(dlg.DoModal()==IDOK)
+	{
+		m_path_dahua=dlg.GetPathName();
+		UpdateData(FALSE);
+	}
+}
+
+void CDLGSetSystem::OnButtonYaanPath() 
+{
+	// TODO: Add your control notification handler code here
+	char szFilter[]="YaAn Play Executable Files (*.exe)|*.exe|*.*|*.*||";
+	CFileDialog dlg(TRUE,"exe","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
+		szFilter);
+	if(dlg.DoModal()==IDOK)
+	{
+		m_path_yaan=dlg.GetPathName();
+		UpdateData(FALSE);
+	}
 }

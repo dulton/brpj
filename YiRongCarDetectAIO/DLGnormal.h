@@ -51,6 +51,7 @@ public:
 	void ChangePreviewFontPic(bool start);
 	void ChangeDetectFontPic(bool start);
 	void ChangeAlarmFontPic(bool start);
+	void ChangeRecordFontPic(bool start);
 
 	void StopPlay(int screenNo);
 	bool OpenDetect(int screenNo);
@@ -59,11 +60,16 @@ public:
 	void CloseAlarm(int screenNo);
 	void Capture(int screenNo);
 
+	bool OpenRecord(int screenNo);
+	void CloseRecord(int screenNo);
+
+
 	afx_msg void OnButtonOpenPreview();
 	afx_msg void OnButtonOpenDetect();
 	afx_msg void OnButtonOpenAlarm();
 	afx_msg void OnButtonSetCar();
 	afx_msg void OnButtonCapbmp();
+	afx_msg void OnButtonOpenRecord();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -88,7 +94,7 @@ protected:
 
 	afx_msg void OnButtonOpenDetectAll();
 	afx_msg void OnButtonCloseDetectAll();
-	afx_msg void OnButtonOpenRecord();
+
 	afx_msg void OnButtonOpenRecordAll();
 	afx_msg void OnButtonCloseRecordAll();
 

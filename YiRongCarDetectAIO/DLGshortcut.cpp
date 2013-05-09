@@ -108,10 +108,23 @@ BOOL CDLGshortcut::OnInitDialog()
 	//车牌识别设置
 	m_setcar.LoadBitmaps(IDB_SETCAR_OPEN,IDB_SETCAR_MOVE,NULL,IDB_SETCAR_CLOSE);
 	m_setcar.SizeToContent();
+	//提示
+	m_ToolTip.Create(this);     
+	m_ToolTip.AddTool(&m_setcar,"车牌识别设置");  
+	m_ToolTip.AddTool(&m_alarm,"启动/关闭报警");  
+	m_ToolTip.AddTool(&m_record,"启动/关闭录制");  
+	m_ToolTip.AddTool(&m_preview,"启动/关闭预览");  
+	m_ToolTip.AddTool(&m_9mode,"九画面模式");  
+	m_ToolTip.AddTool(&m_4mode,"四画面模式");  
+	m_ToolTip.AddTool(&m_16mode,"十六画面模式");  
+	m_ToolTip.AddTool(&m_1mode,"单画面模式");  
+	m_ToolTip.AddTool(&m_Capbmp,"立即抓拍");  
+	m_ToolTip.AddTool(&m_Car,"启动/关闭识别");  
 
 	//放在最后
 	AutoSize();
 
+ 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -122,6 +135,13 @@ void CDLGshortcut::AutoSize()
 
 
 	Invalidate();
+}
+
+BOOL CDLGshortcut::PreTranslateMessage(MSG* pMsg) 
+{
+	//w为了TOOLTIP 增加
+	m_ToolTip.RelayEvent(pMsg);
+	return CDialog::PreTranslateMessage(pMsg);
 }
 
 void CDLGshortcut::ModeBMP(int oldmode,int newmode) 
@@ -302,14 +322,7 @@ void CDLGshortcut::RecordBMP()
 
 void CDLGshortcut::OnButtonRecord() 
 {
-	/*
-	// TODO: Add your control notification handler code here
-	RecordEnable=!RecordEnable;
-	//设置按钮图片
-	RecordBMP();
-
-	//以下处理其他事情
-	*/
+	DlgMain->DlgNormal.OnButtonOpenRecord();
 }
 
 void CDLGshortcut::OnSetCar() 

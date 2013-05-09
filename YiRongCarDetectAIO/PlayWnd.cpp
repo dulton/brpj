@@ -26,6 +26,7 @@ CPlayWnd::CPlayWnd()
 {
 	InitializeCriticalSection(&m_cs);
 	m_nPreSplit = 0;
+	oldscreenmode=SCREEN_16MODE;
 	//{{AFX_DATA_INIT(CPlayWnd)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
@@ -79,8 +80,27 @@ LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 		//		CYiRongCarDetectAIODlg * pMainWnd = (CYiRongCarDetectAIODlg *)(AfxGetMainWnd());
 		//	ÓÃ	DlgMain Ìæ´ú
+				//ÆÁ±Î
+			//	BOOL bMulti = pContainer->GetMultiScreen();
+			//pContainer->SetMultiScreen(!bMulti);
 				BOOL bMulti = pContainer->GetMultiScreen();
-				pContainer->SetMultiScreen(!bMulti);
+				if(bMulti)
+				{
+					oldscreenmode=DlgMain->DlgShortCut.screenmode;
+					DlgMain->DlgShortCut.OnButtonMode1();
+				}
+				else
+				{
+					switch(oldscreenmode)
+					{
+					case SCREEN_1MODE:DlgMain->DlgShortCut.OnButtonMode1();break;
+					case SCREEN_4MODE:DlgMain->DlgShortCut.OnButtonMode4();break;
+					case SCREEN_9MODE:DlgMain->DlgShortCut.OnButtonMode9();break;
+					case SCREEN_16MODE:DlgMain->DlgShortCut.OnButtonMode16();break;
+					default:break;
+					}
+				}
+					
 			}
 			break;
 		default:

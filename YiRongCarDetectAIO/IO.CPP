@@ -199,7 +199,9 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 	variant_t nid = m_pRecordsetPtr->GetCollect("nid");
 
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-	HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from T_ZD_ORG t", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+	HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from T_ZD_ORG t", \
+		m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
 	if(SUCCEEDED(hr))
 	{
 		m_pRecordsetPtr->AddNew();
@@ -238,7 +240,9 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 	long ncamera	= m_pRecordsetPtr->GetCollect("ncamera");
 
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-	HRESULT hr = m_pRecordsetPtr->Open("select * from tb_device", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+	HRESULT hr = m_pRecordsetPtr->Open("select * from tb_device", \
+		m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
 	if(SUCCEEDED(hr))
 	{
 		m_pRecordsetPtr->AddNew();
@@ -359,7 +363,7 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 	long nid = a;
 	strSql.Format(_T("update tb_device set scameraname='%s',\
 					sipserver='%s',sport=%d,suser='%s',spwd='%s',\
-					nid=%d,svenderid = %d where ncamera=%d"), CamName,sip,port,user,password,nid,CamID);
+					nid=%d,svenderid = %d where ncamera=%d"), CamName,sip,port,user,password,nid,venderID,CamID);
 
 	_variant_t RecordAffected;
 	m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -388,7 +392,9 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 	variant_t nid = m_pRecordsetPtr->GetCollect("nid");
 
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-	HRESULT hr = m_pRecordsetPtr->Open("select * from tb_user", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+	HRESULT hr = m_pRecordsetPtr->Open("select * from tb_user", \
+		m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
 	if(SUCCEEDED(hr))
 	{
 		m_pRecordsetPtr->AddNew();
@@ -2267,6 +2273,197 @@ bool IO::ELECAR_BlackTable_DeleteAll(void)
 	CString strSql=_T("delete from tb_vehicle_black");
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 	return true;
+}
+
+bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
+							unsigned long int size,char *stime,char *etime,char *path)
+{
+	CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	long id = (long)m_pRecordsetPtr->GetCollect("nid");
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select * from tb_video", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();
+		m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+		m_pRecordsetPtr->PutCollect("scameraname", _variant_t(camName));
+		m_pRecordsetPtr->PutCollect("sip", _variant_t(camIp));
+		m_pRecordsetPtr->PutCollect("svenderid", _variant_t((long)camVender));
+		m_pRecordsetPtr->PutCollect("sformat", _variant_t(type));
+		m_pRecordsetPtr->PutCollect("sfilesize", _variant_t((long)size));
+		m_pRecordsetPtr->PutCollect("dstarttime", _variant_t(stime));
+		m_pRecordsetPtr->PutCollect("dendtime", _variant_t(etime));
+		m_pRecordsetPtr->PutCollect("spath", _variant_t(path));
+
+		m_pRecordsetPtr->Update();
+		m_pRecordsetPtr->Close(); 
+		return true;
+	}
+	return false;
+}
+
+bool IO::VIDEO_DeleteVideo(unsigned long int nid)
+{
+	CString strSql;
+	strSql.Format("delete from tb_video where nid=%d",nid);
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+	return true;
+}
+
+unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr)
+{
+	CString	strSql="";
+	CString outSQL="";
+	CString tempSql="";
+	bool hadwhere=false;		//检查语句中是否已经有where
+	strSql= _T("select count(1) from tb_video");
+
+	if((flag&0x01) != 0)
+	{	
+		tempSql.Format(_T(" where scameraname like '%%%s%%'"),camName);
+		hadwhere = true;
+		outSQL = outSQL + tempSql;
+		strSql = strSql + tempSql;
+	}
+	if((flag&0x02) != 0)
+	{
+		if(hadwhere)
+		{
+			tempSql.Format(_T(" and sip like '%%%s%%'"),camIp);
+		}
+		else
+		{
+			tempSql.Format(_T(" where sip like '%%%s%%'"),camIp);
+			hadwhere = true;
+		}
+		outSQL = outSQL + tempSql;
+		strSql = strSql + tempSql;
+	}
+	if((flag&0x04) != 0)
+	{
+		if(hadwhere)
+		{
+			tempSql.Format(_T(" and dgettime between to_date(%s,'yyyymmddhh24miss') and to_date(%s,'yyyymmddhh24miss')"),stime,etime);
+		}
+		else
+		{
+			tempSql.Format(_T(" where dgettime between to_date(%s,'yyyymmddhh24miss') and to_date(%s,'yyyymmddhh24miss')"),stime,etime);
+			hadwhere = true;
+		}
+		outSQL = outSQL + tempSql;
+		strSql = strSql + tempSql;
+	}
+
+	strcpy(SQLstr,outSQL.GetBuffer(0));
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+
+	return num;
+}
+
+bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_VIDEO_ST> &Videolist)
+{
+	CString	strSql = _T("select * from (select nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime),to_char(dendtime),spath,rownum rn from tb_video");
+
+	CString tempSql = SQLstr;
+
+	CString numSql;
+
+	if(0 != flag)
+	{
+		numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+	}
+	else
+	{
+		numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+	}
+
+	strSql = strSql + tempSql + numSql;
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+	if(m_pRecordsetPtr->BOF)
+	{
+		return false;
+	}
+	else
+	{
+		m_pRecordsetPtr->MoveFirst();
+	}
+	
+	while(!m_pRecordsetPtr->adoEOF)
+	{
+		variant_t var;
+		variant_t temp; 
+		temp.ChangeType(VT_NULL);
+		CString str;
+		struct HISTORY_VIDEO_ST result = {0};
+
+		result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+
+		var = m_pRecordsetPtr->GetCollect("scameraname");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(result.name, str.GetBuffer(0));
+		}
+
+		var = m_pRecordsetPtr->GetCollect("sip");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(result.ip, str.GetBuffer(0));
+		}
+
+		result.venderID = (long)m_pRecordsetPtr->GetCollect("svenderid");
+
+		var = m_pRecordsetPtr->GetCollect("sformat");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(result.format, str.GetBuffer(0));
+		}
+
+		result.size = (long)m_pRecordsetPtr->GetCollect("sfilesize");
+
+		variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dstarttime)");
+		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+			   &result.StartYear,&result.StartMon,&result.StartDay,
+			   &result.StartHour,&result.StartMin,&result.StartSec);
+
+		vargetTime = m_pRecordsetPtr->GetCollect("to_char(dendtime)");
+		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+			   &result.EndYear,&result.EndMon,&result.EndDay,
+			   &result.EndHour,&result.EndMin,&result.EndSec);
+
+		var = m_pRecordsetPtr->GetCollect("spath");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(result.path, str.GetBuffer(0));
+		}
+
+		Videolist.push_back(result);
+		m_pRecordsetPtr->MoveNext();
+	}
+	m_pRecordsetPtr->Close();
+	if(Videolist.size() > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	return false;
 }
 
 /*************************************************************************

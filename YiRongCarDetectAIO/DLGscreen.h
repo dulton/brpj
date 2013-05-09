@@ -126,7 +126,13 @@ public:
 	bool StartPlay(int id,char *area,char *name,char *ip,int port,
 		char *user,char *psw,int subtype,int screenNo,int venderID);
 	void StopPlay(int screenNo);
-	void Capture(long pHandle,char *filename);
+	void Capture(char *filename);
+
+	//¿ªÊ¼Â¼Ïñ
+	void StartRecord(int screenNo,char *filename);
+	//Í£Ö¹Â¼Ïñ
+	void StopRecord(int screenNo);
+
 	//ÔÆÌ¨¿ØÖÆ
 	void PtzControl(int type, BOOL dwStop, int param);
 // Overrides

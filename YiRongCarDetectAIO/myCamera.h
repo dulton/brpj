@@ -4,6 +4,7 @@
 
 #include "DahuaSDK.h"
 #include "HaiKangSDK.h"
+#include "YaAnSDK.h"
 
 //0---º£¿µ,1---´ó»ª
 enum DEVICE_VENDERID_ENUM
@@ -23,12 +24,16 @@ public:
 
 	CDahuaSDK     m_dahua;
 	CHaikangSDK   m_haikang;
+	CYaAnSDK	  m_yaAn;
 
 	void SDKInit();
 	bool StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype);
 	void StopPlay(int venderID,int screenNo);
 	void Capture(int venderID,int screenNo,char *filename);
 	void PtzControl(int venderID, int screenNo, int type, BOOL dwStop, int param);
+
+	void StartRecord(int venderID,int screenNo,char *filename);
+	void StopRecord(int venderID,int screenNo);
 
 private:
 	long m_LoginHandle[MAX_DEVICE_NUM];

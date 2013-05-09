@@ -1174,6 +1174,7 @@ HBRUSH CYiRongCarDetectAIODlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // ·µ»ØÍ¸Ã÷»­Ë¢	
 		// TODO: Return a different brush if the default is not desired
 	}
+
 	return hbr;
 }
 

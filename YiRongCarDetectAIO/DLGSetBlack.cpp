@@ -31,6 +31,8 @@ CDLGSetBlack::CDLGSetBlack(CWnd* pParent /*=NULL*/)
 	m_page = 0;
 	//}}AFX_DATA_INIT
 	ListChoose=-1;
+	ListTotal=0;
+	ListNow=0;
 }
 
 
@@ -200,7 +202,7 @@ void CDLGSetBlack::OnButtonBlackInput()
 {
 	// TODO: Add your control notification handler code here
 	
-	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*||";
+	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*|*.*||";
 	CFileDialog dlg(TRUE,"xml","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)
@@ -217,7 +219,7 @@ void CDLGSetBlack::BlackInput()
 {
 	// TODO: Add your control notification handler code here
 	
-	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*||";
+	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*|*.*||";
 	CFileDialog dlg(TRUE,"xml","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)
@@ -233,7 +235,7 @@ void CDLGSetBlack::OnButtonBlackOuput()
 {
 	// TODO: Add your control notification handler code here
 	//保存文件
-	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*||";
+	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*|*.*||";
 	CFileDialog dlg(FALSE,"xml","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)
@@ -250,7 +252,7 @@ void CDLGSetBlack::BlackOuput()
 {
 	// TODO: Add your control notification handler code here
 	//保存文件
-	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*||";
+	char szFilter[]="utf8 xml Files (*.xml)|*.xml|*.*|*.*||";
 	CFileDialog dlg(FALSE,"xml","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)

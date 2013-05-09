@@ -228,6 +228,10 @@ SOURCE=.\xmlrw.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\YaAnSDK.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\YiRongCarDetectAIO.cpp
 # End Source File
 # Begin Source File
@@ -381,6 +385,10 @@ SOURCE=.\StdAfx.h
 # Begin Source File
 
 SOURCE=.\xmlrw.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\YaAnSDK.h
 # End Source File
 # Begin Source File
 

@@ -1,0 +1,82 @@
+
+不要和摄像头表关联。防止摄像头表删除摄像头以后。索引出错
+
+NID		UL 自增
+表时间		DATE 自写		
+摄像头名称	CHAR260
+摄像头IP地址  CHAR260
+摄像头厂家 ID	UL
+文件格式	CHAR8	
+文件大小	UL
+起始时间	TIME
+结束时间	TIME
+文件路径	CHAR260
+
+=============================
+
+BOOL  增（char *摄像头名称，
+char *摄像头IP，
+UL 摄像头厂家ID，
+char *文件格式
+UL 文件大小
+char *起始时间
+char *结束时间
+char *文件路径）;
+
+
+BOOL  删（UL NID）;
+
+=============================================
+flag |0x01 ==使用 摄像头名称 查询  用LIKE模式
+flag |0x02 ==使用 摄像头IP 查询	用LIKE模式
+flag |0x04 ==使用 时间 查询	用>= <=模式
+
+
+函数内部用 1 == flag & 0x01 来判断是否开启。
+
+UL 查总共有多少条信息
+(char *输入摄像头名称,
+char *输入IP,
+char *输入起始时间，
+char *输入结束时间，
+int flag,
+char *输出合成的SQL语句
+)；
+UL输出 0=没有查询结果或者错误 N=总共有多少条信息
+
+
+
+//给编号和语句，输出结果到A
+BOOL 分页查信息
+（CHAR *输入SQL语句，
+int flag,
+int 起始编号，
+int 结束编号，
+list<struct HISTORY_VIDEO_ST> &A）;
+
+======================================
+struct HISTORY_VIDEO_ST
+{
+	unsigned long int nid;
+	char name[260];	//摄像头名称
+	char ip[32];	//IP地址
+	int venderID;	//厂家
+	char format[8];	//后缀MP4 AVI 格式
+	unsigned long int size;	//文件大小
+	char path[260];
+
+	//时间
+	int StartYear;
+	int StartMon;
+	int StartDay;
+	int StartHour;
+	int StartMin;
+	int StartSec;
+	//时间
+	int EndYear;
+	int EndMon;
+	int EndDay;
+	int EndHour;
+	int EndMin;
+	int EndSec;
+};

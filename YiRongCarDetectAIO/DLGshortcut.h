@@ -31,6 +31,9 @@ public:
 	CBitmapButton	m_Car;
 	//}}AFX_DATA
 
+	CToolTipCtrl m_ToolTip; 
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+
 	int		screenmode;
 	bool	CarEnable;
 	bool	AlarmEnable;

@@ -59,7 +59,7 @@ class CPlayWnd : public CWnd
 public:
 	CPlayWnd();   // standard constructor
 
-
+	int oldscreenmode;
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CPlayWnd)

@@ -273,9 +273,9 @@ void CDLGptz::SendPtzControl(int type, BOOL dwStop)
 	//	nParam = GetDlgItemInt(IDC_EDIT_SPEED, &b, FALSE);
 		nParam= m_edit_speed;
 	}
-	if (b)
+//	if (b)
 	{
-		DlgMain->DlgScreen.PtzControl(type,nParam,dwStop);
+		DlgMain->DlgScreen.PtzControl(type,dwStop,nParam);
 	}
 }
 
