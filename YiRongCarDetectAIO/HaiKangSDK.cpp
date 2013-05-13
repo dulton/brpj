@@ -33,32 +33,32 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 		return;
 	//在这做识别
 	
-	//未启用识别
-	if(! DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
-		return ;
-	
 	//车牌识别
 #if OPEN_CARDETECT_CODE 	
 
-	//拷贝数值
-	DlgMain->DlgScreen.CarDetect[screenNo].m_playhandle=screenNo;
-	
-	DlgMain->DlgScreen.CarDetect[screenNo].alarmflag=
-		DlgMain->DlgScreen.m_videoInfo[screenNo].enableAlarm;
-	
-	DlgMain->DlgScreen.CarDetect[screenNo].camid=
-		DlgMain->DlgScreen.m_videoInfo[screenNo].camID;
-	
-	strcpy(DlgMain->DlgScreen.CarDetect[screenNo].cam_name,
-		DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
-	
-	strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
-		DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
-	//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
-	DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
-		(unsigned char *)pBuf,nWidth,nHeight,nSize);
-	
-	DlgMain->DlgScreen.CarDetect[screenNo].Result();
+	//启用识别
+	if(DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
+	{
+		//拷贝数值
+		DlgMain->DlgScreen.CarDetect[screenNo].m_playhandle=screenNo;
+		
+		DlgMain->DlgScreen.CarDetect[screenNo].alarmflag=
+			DlgMain->DlgScreen.m_videoInfo[screenNo].enableAlarm;
+		
+		DlgMain->DlgScreen.CarDetect[screenNo].camid=
+			DlgMain->DlgScreen.m_videoInfo[screenNo].camID;
+		
+		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].cam_name,
+			DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
+		
+		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
+			DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
+		DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
+			(unsigned char *)pBuf,nWidth,nHeight,nSize);
+		
+		DlgMain->DlgScreen.CarDetect[screenNo].Result();
+	}
 	
 #endif
 

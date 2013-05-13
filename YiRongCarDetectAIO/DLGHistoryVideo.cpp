@@ -199,7 +199,7 @@ void CDLGHistoryVideo::OnButtonSearch()
 	char STime[32]={0};
 	char ETime[32]={0};
 
-	sprintf(STime,"%04d-%02d-%02d %02d:%02d:%02d",		
+	sprintf(STime,"%04d%02d%02d%02d%02d%02d",		
 		m_StartMon.GetYear(),
 		m_StartMon.GetMonth(),
 		m_StartMon.GetDay(),
@@ -207,7 +207,7 @@ void CDLGHistoryVideo::OnButtonSearch()
 		m_StartHour.GetMinute(),
 		m_StartHour.GetSecond());
 
-	sprintf(ETime,"%04d-%02d-%02d %02d:%02d:%02d",	
+	sprintf(ETime,"%04d%02d%02d%02d%02d%02d",		
 		m_EndMon.GetYear(),
 		m_EndMon.GetMonth(),
 		m_EndMon.GetDay(),

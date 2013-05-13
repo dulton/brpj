@@ -5,11 +5,24 @@
 #include "YiRongCarDetectAIO.h"
 #include "DLGscreen.h"
 
+////////////////////////////////
+#include "IO.h"
+extern IO OracleIO;
+//////////////////////////////////
+#include "YiRongCarDetectAIODlg.h"
+extern CYiRongCarDetectAIODlg *DlgMain;
+//////////////////////////////////
+#include "DLGSetSystem.h"
+extern CDLGSetSystem DlgSetSystem;
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+#define RECORD_TIMER 1
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGscreen dialog
@@ -21,6 +34,7 @@ CDLGscreen::CDLGscreen(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CDLGscreen)
 		// NOTE: the ClassWizard will add member initialization here
 	m_curScreen = 0;
+	m_recordtimer = 0;
 	//}}AFX_DATA_INIT
 	/*
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
@@ -58,6 +72,8 @@ void CDLGscreen::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDLGscreen, CDialog)
 	//{{AFX_MSG_MAP(CDLGscreen)
 	ON_WM_PAINT()
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -85,15 +101,18 @@ BOOL CDLGscreen::OnInitDialog()
 	{
 		m_videoInfo[i].subtype = 0;		//主码流
 		m_videoInfo[i].isplay = false;
+		m_videoInfo[i].isRecord = false;
 		m_videoInfo[i].area = "";
 		m_videoInfo[i].name = "";
 		m_videoInfo[i].user = "";
 		m_videoInfo[i].psw = "";
+		m_videoInfo[i].recordPath = "";
 		m_videoInfo[i].enableDetect = false;
 		m_videoInfo[i].enableAlarm = false;
 		m_videoInfo[i].playHandle = -1;
 	}
-
+	//定时1s
+	m_recordtimer = SetTimer(RECORD_TIMER,1000,NULL);
 
 /*******************lynn*****************/
 	//放在最后
@@ -154,6 +173,13 @@ bool CDLGscreen::GetCurWindPlayState(int nCuWinID)
 {
 	return m_videoInfo[nCuWinID].isplay;
 }
+
+//获取当前窗口的摄像机录像状态
+bool CDLGscreen::GetCurWindRecordState(int nCuWinID)
+{
+	return m_videoInfo[nCuWinID].isRecord;
+}
+
 //获取当前窗口的播放句柄
 long CDLGscreen::GetCurWindPlayHandle(int nCuWinID)
 {
@@ -194,7 +220,11 @@ void CDLGscreen::EnableAlarm(int nCuWinID,bool bEnable)
 {
 	m_videoInfo[nCuWinID].enableAlarm = bEnable;
 }
-
+//开启/关闭录制
+void CDLGscreen::EnableRecord(int nCuWinID,bool bEnable)
+{
+	m_videoInfo[nCuWinID].isRecord = bEnable;
+}
 //获取识别状态
 bool CDLGscreen::GetDetectState(int nCuWinID)
 {
@@ -205,6 +235,12 @@ bool CDLGscreen::GetDetectState(int nCuWinID)
 bool CDLGscreen::GetAlarmState(int nCuWinID)
 {
 	return m_videoInfo[nCuWinID].enableAlarm;
+}
+
+//获取录像状态
+bool CDLGscreen::GetRecordState(int nCuWinID)
+{
+	return m_videoInfo[nCuWinID].isRecord;
 }
 
 //车牌识别设置
@@ -267,14 +303,26 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
 //停止播放
 void CDLGscreen::StopPlay(int screenNo)
 {
-	m_videoInfo[screenNo].isplay = false;
-
-	m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
-
+	if(m_videoInfo[screenNo].isRecord == true)
+	{
+		StopRecord(screenNo);
+	}
+	
+	if(m_videoInfo[screenNo].isplay == true)
+	{
+		m_videoInfo[screenNo].isplay = false;
+		m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
+	}
+	
+	m_videoInfo[screenNo].enableAlarm = false;
 
 #if OPEN_CARDETECT_CODE 
 	//停止识别
-	CarDetect[m_curScreen].Stop();
+	if(m_videoInfo[screenNo].enableDetect == true)
+	{
+		m_videoInfo[screenNo].enableDetect = false;
+		CarDetect[screenNo].Stop();
+	}
 #endif
 
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
@@ -290,15 +338,66 @@ void CDLGscreen::PtzControl(int type, BOOL dwStop, int param)
 }
 
 //开始录像
-void CDLGscreen::StartRecord(int screenNo,char *filename)
+int CDLGscreen::StartRecord(int screenNo,char *filename)
 {
-	m_video.StartRecord(m_videoInfo[m_curScreen].venderID,screenNo,filename);
+	int ret = m_video.StartRecord(m_videoInfo[screenNo].venderID,screenNo,filename);
+	if(ret == 0)
+	{
+		m_videoInfo[screenNo].isRecord = true;
+	}
+	return ret;
 }
 
 //停止录像
 void CDLGscreen::StopRecord(int screenNo)
 {
-	m_video.StopRecord(m_videoInfo[m_curScreen].venderID,screenNo);
+	if(m_videoInfo[screenNo].isRecord == false)
+	{
+		return;
+	}
+
+	char stime[32];
+	char etime[32];
+	sprintf(stime,"%04d-%02d-%02d %02d:%02d:%02d",
+					m_videoInfo[screenNo].startTime.GetYear(),
+					m_videoInfo[screenNo].startTime.GetMonth(),
+					m_videoInfo[screenNo].startTime.GetDay(),
+					m_videoInfo[screenNo].startTime.GetHour(),
+					m_videoInfo[screenNo].startTime.GetMinute(),
+					m_videoInfo[screenNo].startTime.GetSecond());
+
+	CTime nowtime=CTime::GetTickCount();
+
+	sprintf(etime,"%04d-%02d-%02d %02d:%02d:%02d",
+					nowtime.GetYear(),
+					nowtime.GetMonth(),
+					nowtime.GetDay(),
+					nowtime.GetHour(),
+					nowtime.GetMinute(),
+					nowtime.GetSecond());
+
+	m_video.StopRecord(m_videoInfo[screenNo].venderID,screenNo);
+	m_videoInfo[screenNo].isRecord = false;
+
+	FILE *fp;
+	unsigned long int size=0;
+
+	fp= fopen(m_videoInfo[screenNo].recordPath.GetBuffer(0),"rb");
+	if(fp)
+	{
+		fseek(fp,0,SEEK_END);
+		size = ftell(fp);
+		fclose(fp);
+	}
+
+	OracleIO.VIDEO_AddNewVideo(m_videoInfo[screenNo].name.GetBuffer(0),
+								m_videoInfo[screenNo].ip.GetBuffer(0),
+								m_videoInfo[screenNo].venderID,
+								"mp4",
+								size,
+								stime,
+								etime,
+								m_videoInfo[screenNo].recordPath.GetBuffer(0));
 }
 
 
@@ -353,4 +452,47 @@ void CDLGscreen::OnPaint()
 	
 	CDialog::OnPaint();
 	// Do not call CDialog::OnPaint() for painting messages
+}
+
+void CDLGscreen::OnTimer(UINT nIDEvent) 
+{
+	// TODO: Add your message handler code here and/or call default
+	
+	CDialog::OnTimer(nIDEvent);
+
+	if(nIDEvent == RECORD_TIMER)
+	{
+		RecordTimerEvent();
+	}
+}
+
+void CDLGscreen::OnDestroy() 
+{
+	CDialog::OnDestroy();
+	// TODO: Add your message handler code here
+	if(m_recordtimer) 
+		KillTimer(m_recordtimer); 
+	m_recordtimer = 0;
+
+
+}
+
+//录像定时事件
+void CDLGscreen::RecordTimerEvent()
+{
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		if(m_videoInfo[i].isRecord == true)
+		{
+			CTime nowtime=CTime::GetTickCount();
+			CTimeSpan ts = nowtime - m_videoInfo[i].startTime;
+			int recMinutes = ts.GetMinutes();
+			if(recMinutes >= DlgSetSystem.m_record_cuttime)
+			{
+				StopRecord(i);
+				DlgMain->DlgNormal.OpenRecord(i);
+			}
+		}
+	}
+	
 }

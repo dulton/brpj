@@ -1174,7 +1174,7 @@ BEGIN
         MENUITEM "开启/关闭预览",               ID_MENUITEM_PREVIEW
         MENUITEM "开启/关闭识别",               ID_MENUITEM_DETECT
         MENUITEM "开启/关闭报警",               ID_MENUITEM_ALARM
-        MENUITEM "开启/关闭录像",               ID_MENUITEM_RECORD, GRAYED
+        MENUITEM "开启/关闭录像",               ID_MENUITEM_RECORD
         MENUITEM "系统日志查询",                ID_MENUITEM_SYSTEM_REPORT
         MENUITEM "历史视频查询",                ID_MENUITEM_HISTORY_VIDEO
         MENUITEM "历史识别查询",                ID_MENUITEM_HISTORY_CAR

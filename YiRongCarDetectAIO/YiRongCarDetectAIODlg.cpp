@@ -505,6 +505,11 @@ void CYiRongCarDetectAIODlg::OnCancel()
 		return ;
 
 #endif
+	///STOP PLAY
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		DlgScreen.StopPlay(i);
+	}
 
 	////////////////lynn/////////////////
 	OracleIO.DisConnectionOracleDB();
@@ -1095,6 +1100,7 @@ void CYiRongCarDetectAIODlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
 			//电动车
 			m_ListCar.GetItemText(nItem,7,str,260);
 #endif
+			lplvcd->clrTextBk=RGB(232,248,254);
 			if(NULL!=strstr(str,"是"))
 			{
 				clrNewBkColor=RGB(255,0,0);//红底白字
@@ -1102,7 +1108,6 @@ void CYiRongCarDetectAIODlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
 				clrNewTextColor=RGB(255,255,255);	
 				lplvcd->clrText=clrNewTextColor;
 			}
-
 			*pResult=CDRF_DODEFAULT;
 			return;
 		}

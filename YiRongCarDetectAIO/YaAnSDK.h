@@ -43,6 +43,8 @@ public:
 	LONG m_ptzLoginHandle;
 
 	ETI_FILE_HEAD m_filehead;					//流播放文件头
+	unsigned char *image;	//ZOGNA YUV420 BUFFER
+
 public:
 	void		SDKInit();
 	bool        StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd,int subtype);

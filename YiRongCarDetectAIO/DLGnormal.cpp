@@ -433,12 +433,12 @@ void CDLGnormal::OnButtonOpenRecord()
 	}
 	// TODO: Add your control notification handler code here
 	int curSreen = DlgMain->DlgScreen.GetCurWindId();
-//	bool bEnable = DlgMain->DlgScreen.GetAlarmState(curSreen);
-//	if(bEnable)
+	bool bRecord = DlgMain->DlgScreen.GetCurWindRecordState(curSreen);
+	if(bRecord)
 	{
 		CloseRecord(curSreen);
 	}
-//	else
+	else
 	{
 		OpenRecord(curSreen);
 	}	
@@ -622,6 +622,7 @@ void CDLGnormal::UpdateNormalWnd(void)
 
 	ChangeAlarmFontPic(DlgMain->DlgScreen.GetAlarmState(curSreen));
 
+	ChangeRecordFontPic(DlgMain->DlgScreen.GetRecordState(curSreen));
 
 	DlgMain->DlgNormal.m_stream = DlgMain->DlgScreen.GetCurWindSubType(curSreen);
 	DlgMain->DlgNormal.UpdateData(FALSE);
@@ -696,38 +697,68 @@ void CDLGnormal::CloseAlarm(int screenNo)
 
 bool CDLGnormal::OpenRecord(int screenNo)
 {
-//	bool isplay = DlgMain->DlgScreen.GetCurWindPlayState(screenNo);
-//	if(isplay)				//正在播放
+	bool isplay = DlgMain->DlgScreen.GetCurWindPlayState(screenNo);
+	if(isplay)				//正在播放
 	{
-//		DlgMain->DlgScreen.EnableAlarm(screenNo,true);
-		ChangeRecordFontPic(true);
-		return true;
+		CString pathstr = "";
+		CTime nowtime=CTime::GetTickCount();
+		CString sip = DlgMain->DlgScreen.m_videoInfo[screenNo].ip;
+
+		pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.mp4"),
+						DlgSetSystem.m_path_record.GetBuffer(0),
+						sip.GetBuffer(0),
+						nowtime.GetYear(),
+						nowtime.GetMonth(),
+						nowtime.GetDay(),
+						nowtime.GetHour(),
+						nowtime.GetMinute(),
+						nowtime.GetSecond(),
+						GetTickCount());
+
+		int iRet = DlgMain->DlgScreen.StartRecord(screenNo,pathstr.GetBuffer(0));
+		if(iRet == 0)
+		{
+			DlgMain->DlgScreen.m_videoInfo[screenNo].recordPath = pathstr;
+			DlgMain->DlgScreen.m_videoInfo[screenNo].startTime = nowtime;
+			ChangeRecordFontPic(true);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	return false;
 }
 
 void CDLGnormal::CloseRecord(int screenNo)
 {
-//	DlgMain->DlgScreen.EnableAlarm(screenNo,false);
+	DlgMain->DlgScreen.StopRecord(screenNo);
 	ChangeRecordFontPic(false);
 }
 
 void CDLGnormal::Capture(int screenNo)
 {
-	CString pathstr = "";
-	CTime nowtime=CTime::GetTickCount();
-	CString sip = DlgMain->DlgScreen.m_videoInfo[screenNo].ip;
+	bool isplay = DlgMain->DlgScreen.GetCurWindPlayState(screenNo);
+	if(isplay)				//正在播放
+	{
+		CString pathstr = "";
+		CTime nowtime=CTime::GetTickCount();
+		CString sip = DlgMain->DlgScreen.m_videoInfo[screenNo].ip;
 
-	pathstr.Format(_T("%s\\%s %d-%d-%d %d-%d-%d %d.bmp"),
-					DlgSetSystem.m_path_capbmp.GetBuffer(0),
-					sip.GetBuffer(0),
-					nowtime.GetYear(),
-					nowtime.GetMonth(),
-					nowtime.GetDay(),
-					nowtime.GetHour(),
-					nowtime.GetMinute(),
-					nowtime.GetSecond(),
-					GetTickCount());
+		pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.bmp"),
+						DlgSetSystem.m_path_capbmp.GetBuffer(0),
+						sip.GetBuffer(0),
+						nowtime.GetYear(),
+						nowtime.GetMonth(),
+						nowtime.GetDay(),
+						nowtime.GetHour(),
+						nowtime.GetMinute(),
+						nowtime.GetSecond(),
+						GetTickCount());
 
-	DlgMain->DlgScreen.Capture(pathstr.GetBuffer(0));
+		DlgMain->DlgScreen.Capture(pathstr.GetBuffer(0));
+		ShellExecute(this->m_hWnd,NULL,pathstr.GetBuffer(0),NULL,NULL,SW_NORMAL);
+	}
+
 }

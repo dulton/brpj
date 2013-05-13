@@ -2284,9 +2284,33 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 
 	long id = (long)m_pRecordsetPtr->GetCollect("nid");
 
+	strSql.Format(_T("insert into TB_VIDEO(nid,scameraname,sip,svenderid,sformat,sfilesize,dstarttime,dendtime,spath) \
+		values(%d,'%s','%s',%d,'%s',%d, \
+		to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
+		to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
+		'%s')"), \
+		id,	\
+		camName, \
+		camIp, \
+		camVender, \
+		type, \
+		size, \
+		stime, \
+		etime, \
+		path);
+
+	m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+	return true;
+/*
+	CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	long id = (long)m_pRecordsetPtr->GetCollect("nid");
+
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
-	HRESULT hr = m_pRecordsetPtr->Open("select * from tb_video", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+	HRESULT hr = m_pRecordsetPtr->Open("select nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss'),to_char(dendtime,'yyyy-mm-dd hh24:mi:ss'),spath from tb_video", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
 
 	if(SUCCEEDED(hr))
 	{
@@ -2297,8 +2321,8 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 		m_pRecordsetPtr->PutCollect("svenderid", _variant_t((long)camVender));
 		m_pRecordsetPtr->PutCollect("sformat", _variant_t(type));
 		m_pRecordsetPtr->PutCollect("sfilesize", _variant_t((long)size));
-		m_pRecordsetPtr->PutCollect("dstarttime", _variant_t(stime));
-		m_pRecordsetPtr->PutCollect("dendtime", _variant_t(etime));
+		m_pRecordsetPtr->PutCollect("to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss')", _variant_t(stime));
+		m_pRecordsetPtr->PutCollect("to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss')", _variant_t(etime));
 		m_pRecordsetPtr->PutCollect("spath", _variant_t(path));
 
 		m_pRecordsetPtr->Update();
@@ -2306,7 +2330,9 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 		return true;
 	}
 	return false;
+*/
 }
+
 
 bool IO::VIDEO_DeleteVideo(unsigned long int nid)
 {

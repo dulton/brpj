@@ -371,6 +371,33 @@ char* CCarDetect::CarDirection(uint8_t i)
 	}
 }
 
+//判断识别出来的车牌是否不能保存成文件(非法文件名)
+// true为不正确车牌
+bool ErrorPlateName(char *name)
+{
+
+	if(NULL!=strchr(name,'\\'))
+		return true;
+	else if(NULL!=strchr(name,'/'))
+		return true;
+	else if(NULL!=strchr(name,':'))
+		return true;
+	else if(NULL!=strchr(name,'*'))
+		return true;
+	else if(NULL!=strchr(name,'?'))
+		return true;
+	else if(NULL!=strchr(name,'\"'))
+		return true;
+	else if(NULL!=strchr(name,'<'))
+		return true;
+	else if(NULL!=strchr(name,'>'))
+		return true;
+	else if(NULL!=strchr(name,'|'))
+		return true;
+
+	return false;
+}
+
 //返回 0为句柄无效
 //返回 1为写入数据库
 //返回 2为获得车辆信息
@@ -479,6 +506,9 @@ int CCarDetect::Result()
 			for(i=0;i<CarTotal;i++)
 			{
 				if(strlen(CarInfo[i].Str) <7)
+					continue;
+				//错误车牌号
+				if(ErrorPlateName(CarInfo[i].Str))
 					continue;
 
 				sprintf(Timeformat,"%04d-%02d-%02d %02d:%02d:%02d",
@@ -839,6 +869,7 @@ void CCarDetect::Stop()
 	if(1==State)
 	{
 		lc_plate_analysis_destroy(CarHandle);
+		//当为 ~()释放函数时。加此会出错
 		errorprintf("识别停止成功");
 	}
 

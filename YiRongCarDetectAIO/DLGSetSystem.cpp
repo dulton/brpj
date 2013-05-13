@@ -59,7 +59,7 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_RECORD_DIR, m_path_record);
 	DDV_MaxChars(pDX, m_path_record, 260);
 	DDX_Text(pDX, IDC_EDIT_TIME, m_record_cuttime);
-	DDV_MinMaxInt(pDX, m_record_cuttime, 1, 240);
+	DDV_MinMaxInt(pDX, m_record_cuttime, 1, 60);
 	DDX_Text(pDX, IDC_EDIT_FTP_IPADDR, m_ftp_ip);
 	DDV_MaxChars(pDX, m_ftp_ip, 32);
 	DDX_Text(pDX, IDC_EDIT_FTP_PORT, m_ftp_port);

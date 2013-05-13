@@ -45,11 +45,14 @@ struct DEVICE_INFO
 	CString psw;
 	long port;
 	bool isplay;
+	bool isRecord;
 	int subtype;
 	bool enableDetect;
 	long playHandle;
 	bool enableAlarm;
 	int  venderID;				//0---海康,1---大华
+	CString recordPath;
+	CTime startTime;
 };
 
 
@@ -90,6 +93,7 @@ public:
 #endif
 */
 	CMyCamera   m_video;
+	UINT  m_recordtimer;
 
 	//当前显示画面序号
 	int m_curScreen;
@@ -102,6 +106,8 @@ public:
 	int GetHandleWindID(int RealHandle);
 	//获取当前窗口的摄像机播放状态
 	bool GetCurWindPlayState(int nCuWinID);
+	//获取当前窗口的摄像机录像状态
+	bool GetCurWindRecordState(int nCuWinID);
 	//获取当前窗口的播放句柄
 	long GetCurWindPlayHandle(int nCuWinID);
 	//获取当前窗口的摄像机的码流类型
@@ -112,10 +118,14 @@ public:
 	void EnableDetect(int nCuWinID,bool bEnable);
 	//开启/关闭报警
 	void EnableAlarm(int nCuWinID,bool bEnable);
+	//开启/关闭录像
+	void EnableRecord(int nCuWinID,bool bEnable);
 	//获取识别状态
 	bool GetDetectState(int nCuWinID);
 	//获取报警状态
 	bool GetAlarmState(int nCuWinID);
+	//获取录像状态
+	bool GetRecordState(int nCuWinID);
 	//车牌识别设置
 	void CarDetectSet(void);
 
@@ -129,9 +139,11 @@ public:
 	void Capture(char *filename);
 
 	//开始录像
-	void StartRecord(int screenNo,char *filename);
+	int StartRecord(int screenNo,char *filename);
 	//停止录像
 	void StopRecord(int screenNo);
+	//录像定时时间
+	void RecordTimerEvent();
 
 	//云台控制
 	void PtzControl(int type, BOOL dwStop, int param);
@@ -148,6 +160,8 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDLGscreen)
 	afx_msg void OnPaint();
+	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

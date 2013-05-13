@@ -121,7 +121,10 @@ public:
 	//¿ªÆô±¨¾¯
 	void SetWindAlarmState(int screenNo,bool bFlag);
 	BOOL GetAlarmState(int screenNo);
-
+	//////////////////////////////////////////////////
+	//¿ªÆôÂ¼Ïñ
+	void SetWindRecordState(int screenNo,bool bFlag);
+	BOOL GetRecordState(int screenNo);
 	//////////////////////////////////////////////////
 	//×¥ÅÄÍ¼Ïñ
 	void Capture(int screenNo);

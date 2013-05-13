@@ -110,23 +110,27 @@ void CMyCamera::PtzControl(int venderID, int screenNo, int type, BOOL dwStop, in
 	}
 }
 
-void CMyCamera::StartRecord(int venderID,int screenNo,char *filename)
+
+int CMyCamera::StartRecord(int venderID,int screenNo,char *filename)
 {
+	int iRet = 0;
 	switch(venderID)
 	{
 		case VENDER_TYPE_HAIKANG:
-//			m_haikang.StartRecord(screenNo,filename);
+//			iRet = m_haikang.StartRecord(screenNo,filename);
 			break;
 		case VENDER_TYPE_DAHUA:
-//			m_dahua.StartRecord(screenNo,filename);
+//			iRet = m_dahua.StartRecord(screenNo,filename);
 			break;
 		case VENDER_TYPE_YAAN:
-			m_yaAn.StartRecord(screenNo,filename);
+			iRet = m_yaAn.StartRecord(screenNo,filename);
 			break;
 		default:
 			break;
 	}
+	return iRet;
 }
+
 void CMyCamera::StopRecord(int venderID,int screenNo)
 {
 	switch(venderID)

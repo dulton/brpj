@@ -46,12 +46,16 @@ public:
 	int		m_edit_set;
 	//}}AFX_DATA
 	BOOL	OnInitDialog();
-	void AutoSize();
+
 	void ButtonBMP();
 	void InitPtzCommand();
 	struct DEVICE_INFO curCamInfo;
 
 	void SendPtzControl(int type, BOOL dwStop);
+
+	//ÆÁ±Î²Ù×÷
+	void OnOK();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGSetPTZ)

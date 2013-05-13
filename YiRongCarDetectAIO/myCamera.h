@@ -32,7 +32,7 @@ public:
 	void Capture(int venderID,int screenNo,char *filename);
 	void PtzControl(int venderID, int screenNo, int type, BOOL dwStop, int param);
 
-	void StartRecord(int venderID,int screenNo,char *filename);
+	int StartRecord(int venderID,int screenNo,char *filename);
 	void StopRecord(int venderID,int screenNo);
 
 private:

@@ -506,6 +506,27 @@ BOOL CBSWndContainer::GetAlarmState(int screenNo)
 	BOOL bEnable = DlgMain->DlgScreen.GetAlarmState(screenNo);
 	return bEnable;
 }
+//////////////////////////////////////////////////
+//开启录制
+void CBSWndContainer::SetWindRecordState(int screenNo,bool bFlag)
+{
+	if((DlgMain->DlgScreen.GetCurWindRecordState(screenNo)) == bFlag)
+		return;
+	if(bFlag)
+	{
+		DlgMain->DlgNormal.OpenRecord(screenNo);
+	}
+	else
+	{
+		DlgMain->DlgNormal.CloseRecord(screenNo);
+	}
+}
+
+BOOL CBSWndContainer::GetRecordState(int screenNo)
+{
+	BOOL isRecord = DlgMain->DlgScreen.GetCurWindRecordState(screenNo);
+	return isRecord;
+}
 
 //////////////////////////////////////////////////
 //抓拍图像
@@ -601,10 +622,13 @@ void CBSWndContainer::AdjustRect(LPRECT lpRect)
 	int nHeight=lpRect->bottom-lpRect->top;
 	CPoint pt((lpRect->left+lpRect->right)/2,(lpRect->top+lpRect->bottom)/2);
 
-	int nTemp=nWidth*8/11;
+	//比例改16：9模式 ZOGNA
+//	int nTemp=nWidth*8/11;
+	int nTemp=nWidth*9.0/16.0;
 	if(nTemp>nHeight)
 	{
-		nWidth=nHeight*11/8;
+//		nWidth=nHeight*11/8;
+		nWidth=nHeight*16.0/9.0;
 	}
 	else if(nTemp<nHeight)
 	{

@@ -128,8 +128,8 @@ void CPlayWnd::OnContextMenu(CWnd* pWnd, CPoint point)
 	menu.AppendMenu(MF_STRING | (!pContainer->GetPlayState(screenNo)) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPPLAY, NAME_MENU_STOPPLAY);
 	menu.AppendMenu(MF_STRING | pContainer->GetDetectState(screenNo) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTDETECT, NAME_MENU_STARTDETECT);
 	menu.AppendMenu(MF_STRING | (!pContainer->GetDetectState(screenNo)) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPDETECT, NAME_MENU_STOPDETECT);
-	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTRECORD, NAME_MENU_STARTRECORD);
-	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPRECORD, NAME_MENU_STOPRECORD);
+	menu.AppendMenu(MF_STRING | pContainer->GetRecordState(screenNo) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTRECORD, NAME_MENU_STARTRECORD);
+	menu.AppendMenu(MF_STRING | (!pContainer->GetRecordState(screenNo)) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPRECORD, NAME_MENU_STOPRECORD);
 	menu.AppendMenu(MF_STRING | pContainer->GetAlarmState(screenNo) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTALARM, NAME_MENU_STARTALARM);
 	menu.AppendMenu(MF_STRING | (!pContainer->GetAlarmState(screenNo)) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPALARM, NAME_MENU_STOPALARM);
 	menu.AppendMenu(MF_STRING | 0 ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_CAPTURE, NAME_MENU_CAPTURE);
@@ -148,6 +148,7 @@ void CPlayWnd::OnContextMenu(CWnd* pWnd, CPoint point)
 void CPlayWnd::OnVideoMenu(UINT nID)
 {
 	CScreenPannel *pContainer = (CScreenPannel *)GetParent();
+	int screenNo = DlgMain->DlgScreen.GetCurWindId();
 	switch(nID)
 	{
 	case VIDEO_MENU_FULLSCREEN:
@@ -164,88 +165,78 @@ void CPlayWnd::OnVideoMenu(UINT nID)
 		break;
 	case VIDEO_MENU_PRINTSCREEN:
 		break;
-	case VIDEO_MENU_RECORDVIDEO:
+	case VIDEO_MENU_STARTRECORD:
+		if(!DlgLogin.CurrentUser.record)
+		{
+			MessageBox("无 录制 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
+		}
+		pContainer->SetWindRecordState(screenNo,true);
 		break;
-	case VIDEO_MENU_EXITDECODE:
-		//pContainer->SetFullScreen(FALSE);
+	case VIDEO_MENU_STOPRECORD:
+		if(!DlgLogin.CurrentUser.record)
+		{
+			MessageBox("无 录制 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
+		}
+		pContainer->SetWindRecordState(screenNo,false);
 		break;
 	case VIDEO_MENU_STARTPLAY:
+		if(!DlgLogin.CurrentUser.preview)
 		{
-			if(!DlgLogin.CurrentUser.preview)
-			{
-				MessageBox("无 预览 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->SetWindPlayState(screenNo,true);
-			break;
+			MessageBox("无 预览 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->SetWindPlayState(screenNo,true);
+		break;
 	case VIDEO_MENU_STOPPLAY:
+		if(!DlgLogin.CurrentUser.preview)
 		{
-			if(!DlgLogin.CurrentUser.preview)
-			{
-				MessageBox("无 预览 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->SetWindPlayState(screenNo,false);
-			break;
+			MessageBox("无 预览 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->SetWindPlayState(screenNo,false);
+		break;
 	case VIDEO_MENU_STARTDETECT:
+		if(!DlgLogin.CurrentUser.detect)
 		{
-			if(!DlgLogin.CurrentUser.detect)
-			{
-				MessageBox("无 识别 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->SetWindDetectState(screenNo,true);
-			break;
+			MessageBox("无 识别 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->SetWindDetectState(screenNo,true);
+		break;
 	case VIDEO_MENU_STOPDETECT:
+		if(!DlgLogin.CurrentUser.detect)
 		{
-			if(!DlgLogin.CurrentUser.detect)
-			{
-				MessageBox("无 识别-报警 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->SetWindDetectState(screenNo,false);
-			break;
+			MessageBox("无 识别-报警 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->SetWindDetectState(screenNo,false);
+		break;
 	case VIDEO_MENU_STARTALARM:
+		if(!DlgLogin.CurrentUser.detect)
 		{
-			if(!DlgLogin.CurrentUser.detect)
-			{
-				MessageBox("无 识别-报警 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->SetWindAlarmState(screenNo,true);
-			break;
+			MessageBox("无 识别-报警 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->SetWindAlarmState(screenNo,true);
+		break;
 	case VIDEO_MENU_STOPALARM:
+		if(!DlgLogin.CurrentUser.detect)
 		{
-			if(!DlgLogin.CurrentUser.detect)
-			{
-				MessageBox("无 识别-报警 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->SetWindAlarmState(screenNo,false);
-			break;
+			MessageBox("无 识别-报警 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->SetWindAlarmState(screenNo,false);
+		break;
 	case VIDEO_MENU_CAPTURE:
+		if(!DlgLogin.CurrentUser.capbmp)
 		{
-			if(!DlgLogin.CurrentUser.capbmp)
-			{
-				MessageBox("无 抓图 权限，请联系管理员",MESSAGEBOX_TITLE);
-				return ;
-			}
-			int screenNo = DlgMain->DlgScreen.GetCurWindId();
-			pContainer->Capture(screenNo);
-			break;
+			MessageBox("无 抓图 权限，请联系管理员",MESSAGEBOX_TITLE);
+			return ;
 		}
+		pContainer->Capture(screenNo);
+		break;
 	default:
 		break;
 	}

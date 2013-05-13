@@ -4,6 +4,9 @@
 
 #include "stdafx.h"
 #include "YaAnSDK.h"
+//////////////////////////////////
+#include "CarDetect.h"
+//////////////////////////////////
 
 //////////////////////////////////
 #include "YiRongCarDetectAIO.h"
@@ -70,6 +73,18 @@ static void WINAPI m_nomalaudio(char *pbuff,int headsize,int datasize,int timeti
 		TRACE("send audio data error\n",iRet);
 	}
 }
+//zogna添加
+void YUV2YUV420(VIDEO_FRAMEINFO *yuv_image,unsigned char* yuv420_image)
+{
+	long int size;
+	size=yuv_image->width*yuv_image->height;
+
+	memcpy(&yuv420_image[0],yuv_image->pY,size);
+	memcpy(&yuv420_image[size],yuv_image->pU,size/4);
+	memcpy(&yuv420_image[size+size/4],yuv_image->pV,size/4);
+}
+
+
 /*Decoder callback function*/
 static long  CALLBACK s_DecodeCallBack(long hHandle,long frametype,long *frameinfo,long lParam)
 {
@@ -77,16 +92,49 @@ static long  CALLBACK s_DecodeCallBack(long hHandle,long frametype,long *framein
     if(frametype == FRAMETYPE_VIDEO)
     {
         VIDEO_FRAMEINFO *pframeinfo = (VIDEO_FRAMEINFO*)frameinfo;
+		/*
         TRACE("video pchannel->handle:%d,handle:%d,timetick:%d,width:%d,height:%d,stridey:%d,strideuv:%d\n",
             pchannel->m_RealHandle,hHandle,pframeinfo->timetick,pframeinfo->width,pframeinfo->height,
             pframeinfo->stridey,pframeinfo->strideuv);
+			*/
+
+		//车牌识别
+#if OPEN_CARDETECT_CODE 	
+		//启用识别
+		if(DlgMain->DlgScreen.m_videoInfo[hHandle].enableDetect)
+		{
+			//拷贝数值
+			DlgMain->DlgScreen.CarDetect[hHandle].m_playhandle=hHandle;
+			
+			DlgMain->DlgScreen.CarDetect[hHandle].alarmflag=
+				DlgMain->DlgScreen.m_videoInfo[hHandle].enableAlarm;
+			
+			DlgMain->DlgScreen.CarDetect[hHandle].camid=
+				DlgMain->DlgScreen.m_videoInfo[hHandle].camID;
+			
+			strcpy(DlgMain->DlgScreen.CarDetect[hHandle].cam_name,
+				DlgMain->DlgScreen.m_videoInfo[hHandle].name.GetBuffer(0));
+			
+			strcpy(DlgMain->DlgScreen.CarDetect[hHandle].l_ipaddr,
+				DlgMain->DlgScreen.m_videoInfo[hHandle].ip.GetBuffer(0));
+			//////////////////////////
+			YUV2YUV420(pframeinfo,pchannel->image);
+			DlgMain->DlgScreen.CarDetect[hHandle].Start(LC_VIDEO_FORMAT_I420,\
+				pchannel->image,pframeinfo->width,pframeinfo->height,pframeinfo->width*pframeinfo->height*3/2);
+			
+			DlgMain->DlgScreen.CarDetect[hHandle].Result();
+		}
+#endif
+
     }
     else if(frametype == FRAMETYPE_AUDIO)
     {
         AUDIO_FRAMEINFO *pframeinfo = (AUDIO_FRAMEINFO*)frameinfo;
+		/*
         TRACE("audio pchannel->handle:%d,handle:%d,timetick:%d,channel:%d,samplerate:%d,bits:%d,size:%d\n",
             pchannel->m_RealHandle,hHandle,pframeinfo->timetick,pframeinfo->nChannels,
             pframeinfo->nSamplesPerSec,pframeinfo->wBitsPerSample,pframeinfo->size);
+			*/
     }
     return 0;
 }
@@ -119,6 +167,8 @@ CYaAnSDK::CYaAnSDK()
 	//                          m_audiotag:  0xFE:G722(lc5000,lc6000); 0x55: mp3(lc8000,lc9000)
 	//lc5000,lc6000的采样频率都为8000，不能修改
 	//在视频服务器连接成功后可通过函数VSNET_ClientGetStreamInfo,获得这些参数
+	
+	image=(unsigned char *)calloc(1920*1080*3,sizeof(unsigned char));	//ZOGNA YUV420 BUFFER
 }
 
 CYaAnSDK::~CYaAnSDK()
@@ -129,6 +179,8 @@ CYaAnSDK::~CYaAnSDK()
 		LC_PLAYM4_CloseStream(m_RealHandle[i]);
 	}
 	PtzStopPlay();
+
+//	free(image); //ZOGNA YUV420 BUFFER
 }
 
 void CYaAnSDK::SDKInit()
@@ -219,6 +271,7 @@ int CYaAnSDK::StopRecord(int screenNo)
 void CYaAnSDK::StopPlay(int screenNo)
 {
 	int iRet;
+
 	if(m_LoginHandle[screenNo] != -1)
 	{
 		VSNET_ClientStop(m_LoginHandle[screenNo]);
@@ -230,7 +283,14 @@ void CYaAnSDK::StopPlay(int screenNo)
 	{
 		TRACE("LC_PLAYM4_Stop Stream Error:%d\n",iRet);
 	}
+		
+#if OPEN_CARDETECT_CODE 	
+	//停止识别
+	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+#endif
+
 }
+
 
 int CYaAnSDK::GetWndIndex(int LoginHandle)
 {

@@ -95,10 +95,6 @@ BOOL CDLGOpenClose::OnInitDialog()
 		return true;
 	}
 
-
-//	int nItem = m_List.InsertItem(0,"aaa");
-
-
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -166,7 +162,7 @@ void CDLGOpenClose::BuildListPreview(void)
 		k=1;
 		for(int j=0;j<MAX_DEVICE_NUM;j++)
 		{
-			if(DlgMain->DlgScreen.m_videoInfo[j].ip == DlgMain->DlgDeviceTree.iplist[i].ip)
+			if(DlgMain->DlgScreen.m_videoInfo[j].camID == DlgMain->DlgDeviceTree.iplist[i].camID)
 			{
 				
 				if(DlgMain->DlgScreen.m_videoInfo[j].isplay)
@@ -250,7 +246,31 @@ void CDLGOpenClose::BuildListAlarm(void)
 
 void CDLGOpenClose::BuildListRecord(void)
 {
+	int nItem;
+	char str[32];
 
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{	
+		sprintf(str,"%02d",i+1);
+		nItem = m_List.InsertItem(0,str);
+
+		if( DlgMain->DlgScreen.m_videoInfo[i].isplay )
+		{
+			m_List.SetItemText(nItem,1,	DlgMain->DlgScreen.m_videoInfo[i].area.GetBuffer(0));
+			m_List.SetItemText(nItem,2,	DlgMain->DlgScreen.m_videoInfo[i].name.GetBuffer(0));
+			m_List.SetItemText(nItem,3,	DlgMain->DlgScreen.m_videoInfo[i].ip.GetBuffer(0));
+	
+			if(DlgMain->DlgScreen.GetRecordState(i))
+				m_List.SetItemText(nItem,4,"已启用录像");
+			else
+				m_List.SetItemText(nItem,4,"未启用录像");
+		}
+		else
+		{
+			m_List.SetItemText(nItem,2,"还未指定摄像头");
+			m_List.SetItemText(nItem,4,"还未开启预览");
+		}
+	}
 }
 /////////////////全选事件////////////////////////
 void CDLGOpenClose::CheckAllListPreview(void)
@@ -366,7 +386,17 @@ void CDLGOpenClose::OpenListAlarm(void)
 
 void CDLGOpenClose::OpenListRecord(void)
 {
-
+	UpdateData(TRUE);
+	for(int i=0;i<m_List.GetItemCount();i++)
+	{
+		if(m_List.GetCheck(i) 
+			&& !DlgMain->DlgScreen.GetRecordState(i)
+			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
+		{
+			DlgMain->DlgNormal.OpenRecord(i);
+			m_List.SetItemText(i,4,"已启用录制");
+		}
+	}
 }
 /////////////////////关闭按钮////////////////////
 void CDLGOpenClose::CloseListPreview(void)
@@ -427,8 +457,18 @@ void CDLGOpenClose::CloseListAlarm(void)
 }
 
 void CDLGOpenClose::CloseListRecord(void)
-{
-
+{	
+	UpdateData(TRUE);
+	for(int i=0;i<m_List.GetItemCount();i++)
+	{
+		if(m_List.GetCheck(i) 
+			&& DlgMain->DlgScreen.GetRecordState(i)
+			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
+		{
+			DlgMain->DlgNormal.CloseRecord(i);
+			m_List.SetItemText(i,4,"未启用录制");
+		}
+	}
 }
 /////////////////////////////////////////
 void CDLGOpenClose::OnButtonOpen() 

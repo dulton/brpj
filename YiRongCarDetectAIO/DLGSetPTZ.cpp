@@ -137,6 +137,11 @@ BOOL CDLGSetPTZ::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+void CDLGSetPTZ::OnOK()
+{
+	// TODO: Add your control notification handler code here
+}
+
 
 void CDLGSetPTZ::InitPtzCommand()
 {
