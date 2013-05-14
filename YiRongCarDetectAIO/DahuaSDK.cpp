@@ -370,6 +370,36 @@ void CDahuaSDK::Capture(long pHandle,char *filename)
 	}
 }
 
+int CDahuaSDK::StartRecord(int screenNo,char *filename)
+{
+	int iRet;
+	iRet = CLIENT_SaveRealData(m_RealHandle[screenNo],filename);
+	if(iRet == 0)
+	{
+		TRACE("StartRecord Error:%d\n",iRet);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int CDahuaSDK::StopRecord(int screenNo)
+{
+	int iRet;
+	iRet = CLIENT_StopSaveRealData(m_RealHandle[screenNo]);
+	if(iRet == 0)
+	{
+		TRACE("StopRecord Error:%d\n",iRet);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 char *CDahuaSDK::RuntimeMessage(void)
 {
 	DWORD dwError = CLIENT_GetLastError();

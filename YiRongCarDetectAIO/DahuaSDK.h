@@ -95,7 +95,12 @@ public:
 	void PtzControl(long lLoginID, int type, BOOL dwStop, int param);
 	char *RuntimeMessage(void);
 	void GetConnectError(char *name,int error,int flag);
+
+	int StartRecord(int screenNo,char *filename);
+	int StopRecord(int screenNo);
+
 };
+
 
 
 

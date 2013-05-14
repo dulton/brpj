@@ -137,6 +137,16 @@ void CDLGshortcut::AutoSize()
 	Invalidate();
 }
 
+void CDLGshortcut::OnCancel()
+{
+	DlgMain->OnCancel();
+}
+void CDLGshortcut::OnOK()
+{
+
+}
+
+
 BOOL CDLGshortcut::PreTranslateMessage(MSG* pMsg) 
 {
 	//w为了TOOLTIP 增加

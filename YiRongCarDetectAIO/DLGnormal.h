@@ -44,6 +44,11 @@ public:
 
 	BOOL	OnInitDialog();
 	void AutoSize();
+
+		//ÆÁ±Î²Ù×÷
+	void OnOK();
+	void OnCancel();
+
 	//lynn
 	void UpdateNormalWnd(void);
 	void StartPlay(int screenNo);

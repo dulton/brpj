@@ -187,6 +187,13 @@ public:
 	_ConnectionPtr m_pConnection;					//创建oracle connection对象
 	_RecordsetPtr m_pRecordsetPtr;					//创建数据记录集
 	bool state;
+	//写入锁。防止同时写入一张表 
+	// 仅在 LOG_AddNewSystemLog 函数
+	// VIDEO_AddNewVideo  函数
+	//  CAR_MatchResult_AddNew  函数
+	// ELECAR_MatchResult_AddNew 函数
+	bool IOwriteLock;
+
 
 public:
 	IO(void);

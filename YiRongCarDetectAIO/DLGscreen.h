@@ -74,6 +74,10 @@ public:
 	BOOL	OnInitDialog();
 	void AutoSize();
 
+	//ÆÁ±Î²Ù×÷
+	void OnOK();
+	void OnCancel();
+
 	//²¥·Å´°¿Ú
 	CScreenPannel m_screenPannel;
 

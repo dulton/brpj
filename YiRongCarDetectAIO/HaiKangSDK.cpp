@@ -366,4 +366,34 @@ int CHaikangSDK::GetPortWndindex(long lport)
 	return -1;
 }
 
+int CHaikangSDK::StartRecord(int screenNo,char *filename)
+{
+	int iRet;
+	iRet = NET_DVR_SaveRealData(m_RealHandle[screenNo],filename);
+	if(iRet == 0)
+	{
+		TRACE("StartRecord Error:%d\n",iRet);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int CHaikangSDK::StopRecord(int screenNo)
+{
+	int iRet;
+	iRet = NET_DVR_StopSaveRealData(m_RealHandle[screenNo]);
+	if(iRet == 0)
+	{
+		TRACE("StopRecord Error:%d\n",iRet);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 //#endif

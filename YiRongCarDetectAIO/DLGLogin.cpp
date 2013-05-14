@@ -30,6 +30,7 @@ CDLGLogin::CDLGLogin(CWnd* pParent /*=NULL*/)
 	m_newpsw_again = _T("");
 	//}}AFX_DATA_INIT
 	flag=LOGIN_IN;
+	memset(CurrentUser.user,0,32);
 
 }
 
@@ -75,7 +76,9 @@ BOOL CDLGLogin::OnInitDialog()
 
 	//设标题
 	SetWindowText("用户");
+
 	//密码永远要重新输入
+	m_user =CurrentUser.user;
 	m_password = _T("");
 	m_newpassword = _T("");
 	m_newpsw_again = _T("");
@@ -108,6 +111,7 @@ BOOL CDLGLogin::OnInitDialog()
 
 void CDLGLogin::OnOK() 
 {
+	CString tempstr;
 	// TODO: Add extra validation here
 	UpdateData(TRUE);
 	//登陆操作
@@ -120,6 +124,8 @@ void CDLGLogin::OnOK()
 			MessageBox("用户名和密码不为空",MESSAGEBOX_TITLE);
 			return ;
 		}
+
+		tempstr=CurrentUser.user;
 		//查询数据库
 		if(!OracleIO.USER_ReadUserInfoWithName(m_user.GetBuffer(0),&CurrentUser))
 		{
@@ -131,6 +137,8 @@ void CDLGLogin::OnOK()
 		if(0!=strcmp(m_password.GetBuffer(0),CurrentPsw))
 		{
 			MessageBox("密码错误",MESSAGEBOX_TITLE);
+			//还原
+			OracleIO.USER_ReadUserInfoWithName(tempstr.GetBuffer(0),&CurrentUser);
 			return ;
 		}
 		DlgMain->NewLogMessage("登陆");

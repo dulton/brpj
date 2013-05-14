@@ -130,6 +130,17 @@ void CDLGscreen::AutoSize()
 
 	Invalidate();
 }
+
+void CDLGscreen::OnCancel()
+{
+	DlgMain->OnCancel();
+}
+void CDLGscreen::OnOK()
+{
+
+}
+
+
 //多画面切换
 void CDLGscreen::SwitchMultiWnd(int nSplit)
 {
@@ -315,15 +326,15 @@ void CDLGscreen::StopPlay(int screenNo)
 	}
 	
 	m_videoInfo[screenNo].enableAlarm = false;
-
-#if OPEN_CARDETECT_CODE 
 	//停止识别
 	if(m_videoInfo[screenNo].enableDetect == true)
 	{
 		m_videoInfo[screenNo].enableDetect = false;
+#if OPEN_CARDETECT_CODE 
+
 		CarDetect[screenNo].Stop();
-	}
 #endif
+	}
 
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
 	if (pWnd)

@@ -113,7 +113,8 @@ void CDLGOpenClose::InitList(void)
 	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
 	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 110);
 	m_List.InsertColumn(4, _T("当前状态"), LVCFMT_LEFT, 120);
-	m_List.InsertColumn(5, _T("摄像头id"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(5, _T("treeid"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(6, _T("camid"), LVCFMT_LEFT, 0);
 
 	//带复选框 LVS_EX_CHECKBOXES
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -164,7 +165,6 @@ void CDLGOpenClose::BuildListPreview(void)
 		{
 			if(DlgMain->DlgScreen.m_videoInfo[j].camID == DlgMain->DlgDeviceTree.iplist[i].camID)
 			{
-				
 				if(DlgMain->DlgScreen.m_videoInfo[j].isplay)
 					m_List.SetItemText(nItem,4,"已启用预览");
 				else
@@ -183,6 +183,9 @@ void CDLGOpenClose::BuildListPreview(void)
 		}
 		sprintf(str,"%d",i);
 		m_List.SetItemText(nItem,5,str);
+
+		sprintf(str,"%d",DlgMain->DlgDeviceTree.iplist[i].camID);
+		m_List.SetItemText(nItem,6,str);
 	}
 }
 
@@ -321,24 +324,26 @@ void CDLGOpenClose::OpenListPreview(void)
 				if(!(DlgMain->DlgScreen.GetCurWindPlayState(m_winno)))
 				{
 					m_List.GetItemText(i,5,str,32);
-					int camID;
-					sscanf(str,"%d",&camID);
+					int treeid;
+					sscanf(str,"%d",&treeid);
 
 					bool ret = DlgMain->DlgScreen.StartPlay(
-											DlgMain->DlgDeviceTree.iplist[camID].camID,
-											DlgMain->DlgDeviceTree.iplist[camID].area.GetBuffer(0),
-											DlgMain->DlgDeviceTree.iplist[camID].name.GetBuffer(0),
-											DlgMain->DlgDeviceTree.iplist[camID].ip.GetBuffer(0),
-											DlgMain->DlgDeviceTree.iplist[camID].port,
-											DlgMain->DlgDeviceTree.iplist[camID].user.GetBuffer(0),
-											DlgMain->DlgDeviceTree.iplist[camID].psw.GetBuffer(0),
+											DlgMain->DlgDeviceTree.iplist[treeid].camID,
+											DlgMain->DlgDeviceTree.iplist[treeid].area.GetBuffer(0),
+											DlgMain->DlgDeviceTree.iplist[treeid].name.GetBuffer(0),
+											DlgMain->DlgDeviceTree.iplist[treeid].ip.GetBuffer(0),
+											DlgMain->DlgDeviceTree.iplist[treeid].port,
+											DlgMain->DlgDeviceTree.iplist[treeid].user.GetBuffer(0),
+											DlgMain->DlgDeviceTree.iplist[treeid].psw.GetBuffer(0),
 											m_winno,
 											0,
-											DlgMain->DlgDeviceTree.iplist[camID].venderID);
+											DlgMain->DlgDeviceTree.iplist[treeid].venderID);
 					if(ret)
 					{
-						DlgMain->DlgNormal.ChangePreviewFontPic(true);
+						if(m_winno==DlgMain->DlgScreen.GetCurWindId())
+							DlgMain->DlgNormal.ChangePreviewFontPic(true);
 						m_List.SetItemText(i,4,"已启用预览");
+						GetDlgItem(IDC_COMBO_WINNO)->EnableWindow(FALSE);
 					}
 					else
 					{
@@ -362,7 +367,10 @@ void CDLGOpenClose::OpenListDetect(void)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
 			DlgMain->DlgScreen.EnableDetect(i,true);
-			DlgMain->DlgNormal.ChangeDetectFontPic(true);
+
+			if(i==DlgMain->DlgScreen.GetCurWindId())
+				DlgMain->DlgNormal.ChangeDetectFontPic(true);
+
 			m_List.SetItemText(i,4,"已启用识别");
 		}
 	}
@@ -378,7 +386,9 @@ void CDLGOpenClose::OpenListAlarm(void)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
 			DlgMain->DlgScreen.EnableAlarm(i,true);
-			DlgMain->DlgNormal.ChangeAlarmFontPic(true);
+
+			if(i==DlgMain->DlgScreen.GetCurWindId())
+				DlgMain->DlgNormal.ChangeAlarmFontPic(true);
 			m_List.SetItemText(i,4,"已启用报警");
 		}
 	}
@@ -402,21 +412,28 @@ void CDLGOpenClose::OpenListRecord(void)
 void CDLGOpenClose::CloseListPreview(void)
 {
 	UpdateData(TRUE);
-	char ip[64];
+
+	char camidstr[64];
+	unsigned long int camID;
+
 	for(int i=0;i<m_List.GetItemCount();i++)
 	{
 		if(m_List.GetCheck(i))
-		{
-			m_List.GetItemText(i,3,ip,64);
+		{	
+			m_List.GetItemText(i,6,camidstr,64);
+			sscanf(camidstr,"%d",&camID);
+
 			for(int j=0;j<MAX_DEVICE_NUM;j++)
 			{
-				if(DlgMain->DlgScreen.m_videoInfo[j].ip == ip)
+				if(DlgMain->DlgScreen.m_videoInfo[j].camID == camID)
 				{
 					if(DlgMain->DlgScreen.GetCurWindPlayState(j))
 					{
 						DlgMain->DlgScreen.StopPlay(j);
-						DlgMain->DlgNormal.ChangePreviewFontPic(false);
+						if(j==DlgMain->DlgScreen.GetCurWindId())
+							DlgMain->DlgNormal.ChangePreviewFontPic(false);
 						m_List.SetItemText(i,4,"未启用预览");
+						GetDlgItem(IDC_COMBO_WINNO)->EnableWindow(TRUE);
 					}
 				}
 			}
@@ -434,7 +451,9 @@ void CDLGOpenClose::CloseListDetect(void)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
 			DlgMain->DlgScreen.EnableDetect(i,false);
-			DlgMain->DlgNormal.ChangeDetectFontPic(false);
+
+			if(i==DlgMain->DlgScreen.GetCurWindId())
+				DlgMain->DlgNormal.ChangeDetectFontPic(false);
 			m_List.SetItemText(i,4,"未启用识别");
 		}
 	}
@@ -450,7 +469,9 @@ void CDLGOpenClose::CloseListAlarm(void)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
 			DlgMain->DlgScreen.EnableAlarm(i,false);
-			DlgMain->DlgNormal.ChangeAlarmFontPic(false);
+
+			if(i==DlgMain->DlgScreen.GetCurWindId())
+				DlgMain->DlgNormal.ChangeAlarmFontPic(false);
 			m_List.SetItemText(i,4,"未启用报警");
 		}
 	}
@@ -532,6 +553,24 @@ void CDLGOpenClose::OnClickList(NMHDR* pNMHDR, LRESULT* pResult)
 		m_winno = 0;
 	else
 	{
+		GetDlgItem(IDC_COMBO_WINNO)->EnableWindow(TRUE);
+		//增加判断 开启预览时无法切换
+		char camidstr[64];
+		unsigned long int camID;
+		
+		m_List.GetItemText(p->iItem,6,camidstr,64);
+		sscanf(camidstr,"%d",&camID);
+		int j;
+		for(j=0;j<MAX_DEVICE_NUM;j++)
+		{
+			if(camID == DlgMain->DlgScreen.m_videoInfo[j].camID)
+			{
+				if(DlgMain->DlgScreen.m_videoInfo[j].isplay)
+					GetDlgItem(IDC_COMBO_WINNO)->EnableWindow(FALSE);
+				break;
+			}
+		}
+
 		m_List.GetItemText(p->iItem,0,str,32);
 		if(strlen(str))
 		{

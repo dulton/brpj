@@ -28,7 +28,7 @@ CDLGHistoryVideo::CDLGHistoryVideo(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGHistoryVideo::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDLGHistoryVideo)
-	m_page = 0;
+	m_page = 1;
 	m_name = _T("");
 	m_ip = _T("");
 	m_CheckTime = FALSE;

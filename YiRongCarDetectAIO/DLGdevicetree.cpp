@@ -91,6 +91,14 @@ void CDLGdevicetree::AutoSize()
 }
 
 
+void CDLGdevicetree::OnCancel()
+{
+	DlgMain->OnCancel();
+}
+void CDLGdevicetree::OnOK()
+{
+
+}
 
 void CDLGdevicetree::OnPaint() 
 {
@@ -382,7 +390,7 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 		if(m_DeviceTree.GetParentItem(m_selectItem) != NULL)
 		{
 			int ItemCount = 0;
-			for(int i=0;i<1024;i++)
+			for(int i=0;i<MAX_AREA;i++)
 			{
 				if(iplist[i].item == m_selectItem)
 				{
@@ -403,6 +411,8 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				screenNo,
 				0,
 				iplist[ItemCount].venderID);
+
+			DlgMain->DlgNormal.ChangePreviewFontPic(true);
 		}
 	}
 	*pResult = 0;

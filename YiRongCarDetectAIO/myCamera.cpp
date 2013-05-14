@@ -117,10 +117,10 @@ int CMyCamera::StartRecord(int venderID,int screenNo,char *filename)
 	switch(venderID)
 	{
 		case VENDER_TYPE_HAIKANG:
-//			iRet = m_haikang.StartRecord(screenNo,filename);
+			iRet = m_haikang.StartRecord(screenNo,filename);
 			break;
 		case VENDER_TYPE_DAHUA:
-//			iRet = m_dahua.StartRecord(screenNo,filename);
+			iRet = m_dahua.StartRecord(screenNo,filename);
 			break;
 		case VENDER_TYPE_YAAN:
 			iRet = m_yaAn.StartRecord(screenNo,filename);
@@ -136,10 +136,10 @@ void CMyCamera::StopRecord(int venderID,int screenNo)
 	switch(venderID)
 	{
 		case VENDER_TYPE_HAIKANG:
-//			m_haikang.StopRecord(screenNo);
+			m_haikang.StopRecord(screenNo);
 			break;
 		case VENDER_TYPE_DAHUA:
-//			m_dahua.StopRecord(screenNo);
+			m_dahua.StopRecord(screenNo);
 			break;
 		case VENDER_TYPE_YAAN:
 			m_yaAn.StopRecord(screenNo);

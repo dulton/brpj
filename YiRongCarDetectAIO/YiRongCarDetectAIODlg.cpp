@@ -211,6 +211,9 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	//列表
 	ListMainInit();
 
+	CString str;
+	str.Format("%s--当前登陆用户:%s",MESSAGEBOX_TITLE,DlgLogin.CurrentUser.user);
+	DlgMain->SetWindowText(str);
 
 	// TODO: Add extra initialization here
 	
@@ -654,6 +657,11 @@ void CYiRongCarDetectAIODlg::OnMenuitemLoginIn()
 	//登陆框
 	DlgLogin.flag=LOGIN_IN;
 	DlgLogin.DoModal();
+
+	CString str;
+	str.Format("%s--当前登陆用户:%s",MESSAGEBOX_TITLE,DlgLogin.CurrentUser.user);
+	DlgMain->SetWindowText(str);
+
 #endif
 }
 

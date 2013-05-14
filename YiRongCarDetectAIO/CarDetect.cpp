@@ -518,15 +518,15 @@ int CCarDetect::Result()
 					nowtime.GetHour(),
 					nowtime.GetMinute(),
 					nowtime.GetSecond());
-
+			
 #if ALLTAB_DETECT_CAR_MODE
 //汽车
 				//输出照片
-				sprintf(pathstr,"%s\\%s %s %s %d "
+				sprintf(pathstr,"%s\\%s %d %s %s %d "
 //					"%d %d %d %d"
 					" %s %s %s %s %d .jpg",	\
 					dirstr,
-					timestr,l_ipaddr,
+					timestr,camid,l_ipaddr,
 					CarInfo[i].Str,
 					CarInfo[i].Reliability,	
 //					CarInfo[i].CarRect.x0,CarInfo[i].CarRect.x1,CarInfo[i].CarRect.y0,CarInfo[i].CarRect.y1,
@@ -623,9 +623,9 @@ int CCarDetect::Result()
 #else
 //电动车
 				//输出照片
-				sprintf(pathstr,"%s\\%s %s %s %d %s %d .jpg",	\
+				sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 					dirstr,
-					timestr,l_ipaddr,
+					timestr,camid,l_ipaddr,
 					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
 					CarInfo[i].Reliability,
 					CarDirection(CarInfo[i].Direction),

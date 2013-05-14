@@ -221,6 +221,15 @@ bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,
 	m_chinfo.context      = this;
 	m_chinfo.m_messagecallback = s_messagecallback;
 
+	iRet = LC_PLAYM4_Play(m_RealHandle[screenNo],(long)hWnd);
+	if(iRet != 0)
+	{
+		StopPlay(screenNo);
+		DlgMain->ShowCameraMessage(name,"LC_PLAYM4_Play Stream Error",FALSE);
+		TRACE("LC_PLAYM4_Play Stream Error:%d\n",iRet);
+		return false;
+	}
+
 	m_LoginHandle[screenNo] = VSNET_ClientStart(sip,&m_chinfo,port);
 	if(m_LoginHandle[screenNo] == -1)
 	{
@@ -230,14 +239,6 @@ bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,
 		return false;
 	}
 
-	iRet = LC_PLAYM4_Play(m_RealHandle[screenNo],(long)hWnd);
-	if(iRet != 0)
-	{
-		StopPlay(screenNo);
-		DlgMain->ShowCameraMessage(name,"LC_PLAYM4_Play Stream Error",FALSE);
-		TRACE("LC_PLAYM4_Play Stream Error:%d\n",iRet);
-		return false;
-	}
 	return true;
 }
 

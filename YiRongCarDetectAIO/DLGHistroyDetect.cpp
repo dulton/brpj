@@ -27,7 +27,7 @@ CDLGHistroyDetect::CDLGHistroyDetect(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CDLGHistroyDetect)
 	m_ip = _T("");
 	m_name = _T("");
-	m_page = 0;
+	m_page = 1;
 	m_plate = _T("");
 	m_platetype = 0;
 	m_platecolor = 0;

@@ -28,7 +28,7 @@ CDLGSetBlack::CDLGSetBlack(CWnd* pParent /*=NULL*/)
 	m_Phone = _T("");
 	m_Plate = _T("");
 	m_Other = _T("");
-	m_page = 0;
+	m_page = 1;
 	//}}AFX_DATA_INIT
 	ListChoose=-1;
 	ListTotal=0;

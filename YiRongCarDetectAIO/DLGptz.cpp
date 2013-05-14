@@ -122,6 +122,15 @@ void CDLGptz::AutoSize()
 	Invalidate();
 }
 
+void CDLGptz::OnCancel()
+{
+	DlgMain->OnCancel();
+}
+void CDLGptz::OnOK()
+{
+
+}
+
 void CDLGptz::InitPtzCommand()
 {		
 

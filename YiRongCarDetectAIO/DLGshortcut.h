@@ -49,6 +49,10 @@ public:
 	BOOL	OnInitDialog();
 	void AutoSize();
 
+	//ÆÁ±Î²Ù×÷
+	void OnOK();
+	void OnCancel();
+
 	afx_msg void OnButtonMode1();
 	afx_msg void OnButtonMode4();
 	afx_msg void OnButtonMode9();

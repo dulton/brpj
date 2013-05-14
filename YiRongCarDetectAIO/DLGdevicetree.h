@@ -32,6 +32,10 @@ public:
 	BOOL	OnInitDialog();
 	void AutoSize();
 
+	//ÆÁ±Î²Ù×÷
+	void OnOK();
+	void OnCancel();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGdevicetree)

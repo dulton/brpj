@@ -27,6 +27,9 @@ public:
 	void PtzStopPlay();
 	//通过port获取到窗口号
 	int GetPortWndindex(long lport);
+
+	int StartRecord(int screenNo,char *filename);
+	int StopRecord(int screenNo);
 };
 
 

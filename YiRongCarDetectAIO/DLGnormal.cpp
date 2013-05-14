@@ -31,7 +31,7 @@ CDLGnormal::CDLGnormal(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGnormal::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDLGnormal)
-	m_stream = -1;
+	m_stream = 0;
 	m_screen = 3;
 	//}}AFX_DATA_INIT
 }
@@ -197,6 +197,15 @@ void CDLGnormal::AutoSize()
 //	MoveWindow(rc);
 
 	Invalidate();
+}
+
+void CDLGnormal::OnCancel()
+{
+	DlgMain->OnCancel();
+}
+void CDLGnormal::OnOK()
+{
+
 }
 
 void CDLGnormal::OnPaint() 
@@ -648,7 +657,8 @@ void CDLGnormal::StartPlay(int screenNo)
 							CameraInfo.venderID);
 		if(ret)
 		{
-			ChangePreviewFontPic(true);
+			if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+				ChangePreviewFontPic(true);
 		}
 	}
 }
@@ -656,7 +666,13 @@ void CDLGnormal::StartPlay(int screenNo)
 void CDLGnormal::StopPlay(int screenNo)
 {
 	DlgMain->DlgScreen.StopPlay(screenNo);
-	ChangePreviewFontPic(false);
+	if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+	{
+		ChangePreviewFontPic(false);
+		ChangeDetectFontPic(false);
+		ChangeAlarmFontPic(false);
+		ChangeRecordFontPic(false);
+	}
 }
 
 bool CDLGnormal::OpenDetect(int screenNo)
@@ -665,7 +681,8 @@ bool CDLGnormal::OpenDetect(int screenNo)
 	if(isplay)				//正在播放
 	{
 		DlgMain->DlgScreen.EnableDetect(screenNo,true);
-		ChangeDetectFontPic(true);
+		if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+			ChangeDetectFontPic(true);
 		return true;
 	}
 	return false;
@@ -674,7 +691,8 @@ bool CDLGnormal::OpenDetect(int screenNo)
 void CDLGnormal::CloseDetect(int screenNo)
 {
 	DlgMain->DlgScreen.EnableDetect(screenNo,false);
-	ChangeDetectFontPic(false);
+	if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+		ChangeDetectFontPic(false);
 }
 
 bool CDLGnormal::OpenAlarm(int screenNo)
@@ -683,7 +701,8 @@ bool CDLGnormal::OpenAlarm(int screenNo)
 	if(isplay)				//正在播放
 	{
 		DlgMain->DlgScreen.EnableAlarm(screenNo,true);
-		ChangeAlarmFontPic(true);
+		if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+			ChangeAlarmFontPic(true);
 		return true;
 	}
 	return false;
@@ -692,7 +711,8 @@ bool CDLGnormal::OpenAlarm(int screenNo)
 void CDLGnormal::CloseAlarm(int screenNo)
 {
 	DlgMain->DlgScreen.EnableAlarm(screenNo,false);
-	ChangeAlarmFontPic(false);
+	if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+		ChangeAlarmFontPic(false);
 }
 
 bool CDLGnormal::OpenRecord(int screenNo)
@@ -703,24 +723,42 @@ bool CDLGnormal::OpenRecord(int screenNo)
 		CString pathstr = "";
 		CTime nowtime=CTime::GetTickCount();
 		CString sip = DlgMain->DlgScreen.m_videoInfo[screenNo].ip;
-
-		pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.mp4"),
-						DlgSetSystem.m_path_record.GetBuffer(0),
-						sip.GetBuffer(0),
-						nowtime.GetYear(),
-						nowtime.GetMonth(),
-						nowtime.GetDay(),
-						nowtime.GetHour(),
-						nowtime.GetMinute(),
-						nowtime.GetSecond(),
-						GetTickCount());
+		if(DlgMain->DlgScreen.m_videoInfo[screenNo].venderID == VENDER_TYPE_DAHUA)
+		{
+			pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.dav"),
+				DlgSetSystem.m_path_record.GetBuffer(0),
+				sip.GetBuffer(0),
+				nowtime.GetYear(),
+				nowtime.GetMonth(),
+				nowtime.GetDay(),
+				nowtime.GetHour(),
+				nowtime.GetMinute(),
+				nowtime.GetSecond(),
+				GetTickCount());
+		}
+		else
+		{
+			pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.mp4"),
+				DlgSetSystem.m_path_record.GetBuffer(0),
+				sip.GetBuffer(0),
+				nowtime.GetYear(),
+				nowtime.GetMonth(),
+				nowtime.GetDay(),
+				nowtime.GetHour(),
+				nowtime.GetMinute(),
+				nowtime.GetSecond(),
+				GetTickCount());
+		}
 
 		int iRet = DlgMain->DlgScreen.StartRecord(screenNo,pathstr.GetBuffer(0));
 		if(iRet == 0)
 		{
 			DlgMain->DlgScreen.m_videoInfo[screenNo].recordPath = pathstr;
 			DlgMain->DlgScreen.m_videoInfo[screenNo].startTime = nowtime;
-			ChangeRecordFontPic(true);
+
+			if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+				ChangeRecordFontPic(true);
+
 			return true;
 		}
 		else
@@ -734,7 +772,9 @@ bool CDLGnormal::OpenRecord(int screenNo)
 void CDLGnormal::CloseRecord(int screenNo)
 {
 	DlgMain->DlgScreen.StopRecord(screenNo);
-	ChangeRecordFontPic(false);
+
+	if(screenNo==DlgMain->DlgScreen.GetCurWindId())
+		ChangeRecordFontPic(false);
 }
 
 void CDLGnormal::Capture(int screenNo)

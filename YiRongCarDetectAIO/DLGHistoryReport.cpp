@@ -22,7 +22,7 @@ CDLGHistoryReport::CDLGHistoryReport(CWnd* pParent /*=NULL*/)
 {
 
 	//{{AFX_DATA_INIT(CDLGHistoryReport)
-	m_page = 0;
+	m_page = 1;
 	m_user = _T("");
 	m_CheckTime = FALSE;
 	//}}AFX_DATA_INIT

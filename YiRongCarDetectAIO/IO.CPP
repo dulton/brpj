@@ -13,6 +13,8 @@ IO::IO(void)
 	YRVM_state=false;
 #endif
 
+	IOwriteLock=false;
+
 }
 
 IO::~IO(void)
@@ -209,8 +211,10 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 		m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
 		m_pRecordsetPtr->Update();
 		m_pRecordsetPtr->Close(); 
+		
 		return true;   		
 	}
+
 	return false;
 }
 
@@ -596,8 +600,16 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 	}
 }
 
+
 bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql = _T("select seq_log.nextval as nid from dual");	    //获取电动车图像数据nid
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
@@ -617,8 +629,10 @@ bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 
 		m_pRecordsetPtr->Update();
 		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
 		return true;
 	}
+	IOwriteLock=false;
 	return false;
 }
 
@@ -733,6 +747,13 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
 								char *plate,int reliability,char *path,unsigned long int picsize,unsigned char *picdata)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql = _T("select seq_match_result_car.nextval as nid from dual");	    //获取电动车图像数据nid
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
@@ -745,6 +766,7 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 
 	if(m_pRecordsetPtr->BOF)
 	{
+		IOwriteLock=false;
 		return false;
 	}
 
@@ -797,8 +819,10 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 
 		CAR_AlarmResult_Execute(id,isblack);
 
+		IOwriteLock=false;
 		return true;
 	}
+	IOwriteLock=false;
 	return false;
 }
 
@@ -1371,6 +1395,13 @@ bool IO::CAR_AlarmResult_Execute(int nid,bool *isblack)
 bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direction,char *plate,int reliability,
 									char *path,unsigned long int picsize,unsigned char *picdata)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
@@ -1383,6 +1414,7 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direc
 
 	if(m_pRecordsetPtr->BOF)
 	{
+		IOwriteLock=false;
 		return false;
 	}
 
@@ -1432,8 +1464,10 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direc
 		
 		ELECAR_AlarmResult_Execute(id,isblack);
 
+		IOwriteLock=false;
 		return true;
 	}
+	IOwriteLock=false;
 	return false;
 }
 
@@ -2278,6 +2312,13 @@ bool IO::ELECAR_BlackTable_DeleteAll(void)
 bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
 							unsigned long int size,char *stime,char *etime,char *path)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
@@ -2300,6 +2341,8 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 		path);
 
 	m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+
+	IOwriteLock=false;
 	return true;
 /*
 	CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
@@ -2565,6 +2608,13 @@ int IO::YRVM_ConnectionOracleDBTXT(char*  FileName)
 // 获取数据库临时电动车表的nid
 unsigned long int IO::YRVM_getElectricCarOracleTempNid(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	unsigned long int id=0;
 
 	CString strSql = _T("select seq_temp_photo_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
@@ -2573,12 +2623,20 @@ unsigned long int IO::YRVM_getElectricCarOracleTempNid(void)
 
 	id = (long)m_pRecordsetPtr->GetCollect("nid");
 
+	IOwriteLock=false;
 	return id;
 }
 
 // 写电动车临时照片表
 bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long int ImageSize,unsigned long int id)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql;
 
 	strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
@@ -2586,6 +2644,7 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 	m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
 	if(m_pRecordsetPtr->BOF)
 	{
+		IOwriteLock=false;
 		return false;
 	}
 
@@ -2600,7 +2659,10 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 	if(var.vt != NULL && var !=temp)
 		cameraid=(long)var;
 	else
+	{
+		IOwriteLock=false;
 		return false;
+	}
 
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
@@ -2639,16 +2701,25 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 		SafeArrayUnaccessData(psa);
 
 		m_pRecordsetPtr->Close(); 
-
+	
+		IOwriteLock=false;
 		return true;   		
 
 	}
+	IOwriteLock=false;
 	return false;
 }
 
 // 写临时电动车信息表
 bool IO::YRVM_writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Direction,char *Reliability,unsigned long int id)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql = _T("select seq_temp_electric_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
 
 	m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
@@ -2673,15 +2744,24 @@ bool IO::YRVM_writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Di
 
 		m_pRecordsetPtr->Close(); 
 
+		IOwriteLock=false;
 		return true;   		
 
 	}
+	IOwriteLock=false;
 	return false;
 }
 
 // 获取数据库临时机动车表的nid
 unsigned long int IO::YRVM_getCarOracleTempNid(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	unsigned long int id;
 
 	CString strSql = _T("select seq_temp_photo_car.nextval as nid from dual");	    //获取临时车辆图像数据nid
@@ -2690,12 +2770,20 @@ unsigned long int IO::YRVM_getCarOracleTempNid(void)
 
 	id	=(long) m_pRecordsetPtr->GetCollect("nid");
 
+	IOwriteLock=false;
 	return id;
 }
 
 // 写机动车临时照片表
 bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long int ImageSize,unsigned long int id)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql;
 
 	strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
@@ -2703,6 +2791,7 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 	m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 	if(m_pRecordsetPtr->BOF)
 	{
+		IOwriteLock=false;
 		return false;
 	}
 
@@ -2716,7 +2805,10 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 	if(var.vt != NULL && var !=temp)
 		cameraid=(long)var;
 	else
+	{
+		IOwriteLock=false;
 		return false;
+	}
 
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
@@ -2756,15 +2848,24 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 
 		m_pRecordsetPtr->Close(); 
 
+		IOwriteLock=false;
 		return true;   		
 
 	}
+	IOwriteLock=false;
 	return false;
 }
 
 // 写临时机动车信息表
 bool IO::YRVM_writeCarTempInfoToOracleDB(char *CarStr,char* PlateColor,int Direction,char *Reliability,char* Type,char *CarColor,unsigned long int id)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
+
 	CString strSql = _T("select seq_temp_car.nextval as nid from dual");	    //获取电动车图像数据nid
 
 	m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
@@ -2792,9 +2893,11 @@ bool IO::YRVM_writeCarTempInfoToOracleDB(char *CarStr,char* PlateColor,int Direc
 
 		m_pRecordsetPtr->Close(); 
 
+		IOwriteLock=false;
 		return true;   		
 
 	}
+	IOwriteLock=false;
 	return false;
 }
 

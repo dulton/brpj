@@ -46,6 +46,11 @@ public:
 	//}}AFX_DATA
 	BOOL	OnInitDialog();
 	void AutoSize();
+
+	//ÆÁ±Î²Ù×÷
+	void OnOK();
+	void OnCancel();
+
 	void ButtonBMP();
 	void InitPtzCommand();
 
