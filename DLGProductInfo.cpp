@@ -12,6 +12,10 @@ extern bool IsChinese;
 #include "DLGSettings.h"
 extern CDLGSettings DlgSettings;
 
+////////////////////////////////////
+#include "SqliteOperate.h"
+extern CSqliteOperate SQLiteIO;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -104,6 +108,11 @@ void CDLGProductInfo::OnDestroy()
 	m_recordtimer = 0;
 }
 
+void CDLGProductInfo::OnCancel()
+{
+
+}
+
 void CDLGProductInfo::AutoSize()
 {
 	CRect rc(0, 0, 0, 0);
@@ -136,7 +145,7 @@ void CDLGProductInfo::OnButtonOk()
 
 	//查询数据库
 	memset(&temp,0,sizeof(struct PRODUCT_INFO_ST));
-	if(!pCMainDlg->SQLiteIO.Product_Read(m_barcode.GetBuffer(0),temp))
+	if(!SQLiteIO.Product_Read(m_barcode.GetBuffer(0),temp))
 	{
 		if(IsChinese)
 			MessageBox("此产品无法找到");

@@ -1,0 +1,96 @@
+CreateThread:c 0
+ThreadPROC:in 0
+CreateThread:c 1
+ThreadPROC:in 0
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-40-14 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-40-14 Screen2.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-40-14 Screen1.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+TerminateThread:stop 0
+CreateThread:c 0
+TerminateThread:stop 0
+CreateThread:c 0
+CreateThread:c 0
+ThreadPROC:in 0
+CreateThread:c 1
+ThreadPROC:in 0
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-43-38 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-43-38 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-43-38 Screen2.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+TerminateThread:stop 1
+CreateThread:c 1
+ThreadPROC:in 0
+TerminateThread:stop 2
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-43-55 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-43-55 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-43-55 Screen2.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+TerminateThread:stop 1
+CreateThread:c 1
+ThreadPROC:in 0
+TerminateThread:stop 2
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-44-27 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-44-27 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-44-27 Screen2.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+TerminateThread:stop 1
+CreateThread:c 1
+ThreadPROC:in 0
+TerminateThread:stop 2
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-45-26 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-45-26 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-45-26 Screen2.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+TerminateThread:stop 1
+CreateThread:c 1
+ThreadPROC:in 0
+TerminateThread:stop 2
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-46-26 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-46-26 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-46-26 Screen2.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+TerminateThread:stop 1
+CreateThread:c 1
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-46-47 Screen0.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-46-47 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-46-47 Screen2.mp4 0
+TerminateThread:stop 0
+CreateThread:c 0
+ThreadPROC:in 0
+TerminateThread:stop 1
+CreateThread:c 1
+ThreadPROC:in 0
+TerminateThread:stop 2
+CreateThread:c 2
+ThreadPROC:in 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-47-03 Screen0.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-47-03 Screen1.mp4 0
+ThreadPROC:D:\record\51609.00RBLGRY\JSC-1072 2013-04-28 17-47-03 Screen2.mp4 0

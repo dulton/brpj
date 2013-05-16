@@ -136,7 +136,10 @@ public:
 	char	l_ipaddr[64];	//IP地址
 	unsigned long int	camid;			//摄像头NID
 
-	bool alarmflag;		//报警标志 是的话就弹图片或者其他的
+	bool alarmflag;		//是否使用报警
+
+	bool JumpJPG;	//弹出图片 外部调用。防止亚安画面无法显示
+	char JumpJPGpath[260];
 
 	//启用标记
 //	int ElcarDetectFlag;

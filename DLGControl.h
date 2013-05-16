@@ -26,6 +26,11 @@ public:
 	void UpdateBtnState(BOOL brecord);
 	afx_msg void OnButtonRecord();
 	afx_msg void OnButtonStop();
+
+	//ÆÁ±Î²Ù×÷
+	void OnOK();
+	void OnCancel();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGControl)

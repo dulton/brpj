@@ -80,7 +80,7 @@ BOOL CDLGAnalyseFlowrate::OnInitDialog()
 	m_List.InsertColumn(3,"起始时间",LVCFMT_LEFT,130);
 	m_List.InsertColumn(4,"结束时间",LVCFMT_LEFT,130);
 	m_List.InsertColumn(5,"统计数量",LVCFMT_LEFT,60);
-	m_List.InsertColumn(6,"直方图",LVCFMT_LEFT,240);
+	m_List.InsertColumn(6,"直方图",LVCFMT_LEFT,230);
 
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
@@ -153,7 +153,8 @@ void CDLGAnalyseFlowrate::OnButtonSearchAll()
 
 		m_List.SetItemText(nItem,4,	str);
 //////////////////////////////
-		total=GetCount(DlgMain->DlgDeviceTree.iplist[i].ip.GetBuffer(0),STime,ETime);
+		total=GetCount(DlgMain->DlgDeviceTree.iplist[i].name.GetBuffer(0),
+			DlgMain->DlgDeviceTree.iplist[i].ip.GetBuffer(0),STime,ETime);
 		sprintf(str,"%d",total);
 		m_List.SetItemText(nItem,5,	str);
 		//寻找最大值
@@ -170,24 +171,10 @@ void CDLGAnalyseFlowrate::OnButtonSearchSingle()
 	UpdateData(TRUE);
 	m_List.DeleteAllItems();
 
-	int i;
+	int i,j,k;
 	//寻找IP
 	CString ipname;
 
-	ipname.Empty();
-	for(i=0;i<DlgMain->DlgDeviceTree.iptotal;i++)
-	{	
-		if(	DlgMain->DlgDeviceTree.iplist[i].ip == m_ip)
-		{
-			ipname=DlgMain->DlgDeviceTree.iplist[i].name;
-			break;
-		}
-	}
-	if(ipname.IsEmpty())
-	{
-		MessageBox("未找到该IP所对应的摄像头",MESSAGEBOX_TITLE);
-		return ;
-	}
 	//找到IP
 	int nItem;
 	char str[32];
@@ -197,66 +184,86 @@ void CDLGAnalyseFlowrate::OnButtonSearchSingle()
 	unsigned long int max=100;
 	unsigned long int total;
 
-	for(i=0;i<24;i++)
+	ipname.Empty();
+
+	k=0;
+	for(i=0;i<DlgMain->DlgDeviceTree.iptotal;i++)
 	{	
-		sprintf(str,"%02d",i);
-		nItem = m_List.InsertItem(0,str);
-	
-		m_List.SetItemText(nItem,1,	ipname.GetBuffer(0));
-		m_List.SetItemText(nItem,2,	m_ip.GetBuffer(0));
-/////////////////////////////
-		sprintf(str,"%04d-%02d-%02d %02d:00:00",
-			m_Day.GetYear(),
-			m_Day.GetMonth(),
-			m_Day.GetDay(),
-			i);
-
-		m_List.SetItemText(nItem,3,	str);
-
-		sprintf(str,"%04d-%02d-%02d %02d:59:59",		
-			m_Day.GetYear(),
-			m_Day.GetMonth(),
-			m_Day.GetDay(),
-			i);
-
-		m_List.SetItemText(nItem,4,	str);
-/////////////////////////////
-		sprintf(STime,"%04d%02d%02d%02d0000",		
-			m_Day.GetYear(),
-			m_Day.GetMonth(),
-			m_Day.GetDay(),
-			i);
+		if(	DlgMain->DlgDeviceTree.iplist[i].ip == m_ip)
+		{
+			ipname=DlgMain->DlgDeviceTree.iplist[i].name;
 		
-		sprintf(ETime,"%04d%02d%02d%02d5959",		
-			m_Day.GetYear(),
-			m_Day.GetMonth(),
-			m_Day.GetDay(),
-			i);
+			for(j=0;j<24;j++)
+			{	
+				sprintf(str,"%04d",k);
+				k++;
+				nItem = m_List.InsertItem(0,str);
+				
+				m_List.SetItemText(nItem,1,	ipname.GetBuffer(0));
+				m_List.SetItemText(nItem,2,	m_ip.GetBuffer(0));
+				/////////////////////////////
+				sprintf(str,"%04d-%02d-%02d %02d:00:00",
+					m_Day.GetYear(),
+					m_Day.GetMonth(),
+					m_Day.GetDay(),
+					j);
+				
+				m_List.SetItemText(nItem,3,	str);
+				
+				sprintf(str,"%04d-%02d-%02d %02d:59:59",		
+					m_Day.GetYear(),
+					m_Day.GetMonth(),
+					m_Day.GetDay(),
+					j);
+				
+				m_List.SetItemText(nItem,4,	str);
+				/////////////////////////////
+				sprintf(STime,"%04d%02d%02d%02d0000",		
+					m_Day.GetYear(),
+					m_Day.GetMonth(),
+					m_Day.GetDay(),
+					j);
+				
+				sprintf(ETime,"%04d%02d%02d%02d5959",		
+					m_Day.GetYear(),
+					m_Day.GetMonth(),
+					m_Day.GetDay(),
+					j);
+				
+				total=GetCount(ipname.GetBuffer(0),m_ip.GetBuffer(0),STime,ETime);
+				
+				sprintf(str,"%d",total);
+				m_List.SetItemText(nItem,5,	str);
+				//寻找最大值
+				if(total > max)
+					max=total;
+			}
 
-		total=GetCount(m_ip.GetBuffer(0),STime,ETime);
-
-		sprintf(str,"%d",total);
-		m_List.SetItemText(nItem,5,	str);
-		//寻找最大值
-		if(total > max)
-			max=total;
+		}
 	}
+	if(ipname.IsEmpty())
+	{
+		MessageBox("未找到该IP所对应的摄像头",MESSAGEBOX_TITLE);
+		return ;
+	}
+
 	//重设最大值
 	m_List.InitProgressMax(max);
 }
 
-unsigned long int CDLGAnalyseFlowrate::GetCount(char *ip,char *stime,char*etime)
+unsigned long int CDLGAnalyseFlowrate::GetCount(char *ipname,char *ip,char *stime,char*etime)
 {
 	char SqlStr[1024];
 	int searchFlag=0;
 	
 	searchFlag = 0x02;
+	searchFlag |= 0x01;
 	searchFlag |= 0x08;
 	
 #if ALLTAB_DETECT_CAR_MODE
 	//汽车
 	return OracleIO.CAR_MatchResult_GetNum(
-		"",
+		ipname,
 		ip,
 		"",
 		stime,
@@ -270,7 +277,7 @@ unsigned long int CDLGAnalyseFlowrate::GetCount(char *ip,char *stime,char*etime)
 #else
 	//电动车
 	return OracleIO.ELECAR_MatchResult_GetNum(
-		"",
+		ipname,
 		ip,
 		"",
 		stime,

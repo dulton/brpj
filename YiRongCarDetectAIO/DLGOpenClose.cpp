@@ -366,10 +366,7 @@ void CDLGOpenClose::OpenListDetect(void)
 			&& !DlgMain->DlgScreen.GetDetectState(i)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
-			DlgMain->DlgScreen.EnableDetect(i,true);
-
-			if(i==DlgMain->DlgScreen.GetCurWindId())
-				DlgMain->DlgNormal.ChangeDetectFontPic(true);
+			DlgMain->DlgNormal.OpenDetect(i);
 
 			m_List.SetItemText(i,4,"已启用识别");
 		}
@@ -385,10 +382,9 @@ void CDLGOpenClose::OpenListAlarm(void)
 			&& !DlgMain->DlgScreen.GetAlarmState(i)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
-			DlgMain->DlgScreen.EnableAlarm(i,true);
+			DlgMain->DlgNormal.OpenDetect(i);
+			DlgMain->DlgNormal.OpenAlarm(i);
 
-			if(i==DlgMain->DlgScreen.GetCurWindId())
-				DlgMain->DlgNormal.ChangeAlarmFontPic(true);
 			m_List.SetItemText(i,4,"已启用报警");
 		}
 	}
@@ -429,9 +425,7 @@ void CDLGOpenClose::CloseListPreview(void)
 				{
 					if(DlgMain->DlgScreen.GetCurWindPlayState(j))
 					{
-						DlgMain->DlgScreen.StopPlay(j);
-						if(j==DlgMain->DlgScreen.GetCurWindId())
-							DlgMain->DlgNormal.ChangePreviewFontPic(false);
+						DlgMain->DlgNormal.StopPlay(j);
 						m_List.SetItemText(i,4,"未启用预览");
 						GetDlgItem(IDC_COMBO_WINNO)->EnableWindow(TRUE);
 					}
@@ -450,10 +444,9 @@ void CDLGOpenClose::CloseListDetect(void)
 			&& DlgMain->DlgScreen.GetDetectState(i)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
-			DlgMain->DlgScreen.EnableDetect(i,false);
+			DlgMain->DlgNormal.CloseDetect(i);
+			DlgMain->DlgNormal.CloseAlarm(i);
 
-			if(i==DlgMain->DlgScreen.GetCurWindId())
-				DlgMain->DlgNormal.ChangeDetectFontPic(false);
 			m_List.SetItemText(i,4,"未启用识别");
 		}
 	}
@@ -468,10 +461,8 @@ void CDLGOpenClose::CloseListAlarm(void)
 			&& DlgMain->DlgScreen.GetAlarmState(i)
 			&& DlgMain->DlgScreen.GetCurWindPlayState(i))
 		{
-			DlgMain->DlgScreen.EnableAlarm(i,false);
+			DlgMain->DlgNormal.CloseAlarm(i);
 
-			if(i==DlgMain->DlgScreen.GetCurWindId())
-				DlgMain->DlgNormal.ChangeAlarmFontPic(false);
 			m_List.SetItemText(i,4,"未启用报警");
 		}
 	}

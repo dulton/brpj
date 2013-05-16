@@ -81,6 +81,16 @@ void CDLGControl::AutoSize()
 	Invalidate();
 }
 
+void CDLGControl::OnCancel()
+{
+
+}
+
+void CDLGControl::OnOK()
+{
+
+}
+
 void CDLGControl::OnButtonRecord() 
 {
 	// TODO: Add your control notification handler code here

@@ -8,6 +8,9 @@
 //////////////////////////////////////////////////////////////
 #include "BarcodeRecordDlg.h"
 extern CBarcodeRecordDlg *pCMainDlg;
+////////////////////////////////////
+#include "SqliteOperate.h"
+extern CSqliteOperate SQLiteIO;
 
 #include "Yaanlib/launet.h"
 #include "Yaanlib/megaplay.h"
@@ -201,14 +204,14 @@ DWORD WINAPI ThreadPROC(LPVOID lpParameter)
 	printffile("ThreadPROC","in",0);
 	if(zogMP4toAVI(pRecord->MP4path,pRecord->AVIpath))
 	{
-		pCMainDlg->SQLiteIO.Video_Add(pRecord->RunningNumber,
-									  pRecord->tag,
-									  pRecord->HmNum,
-									  pRecord->Description,
-									  pRecord->stime,
-									  pRecord->etime,
-									  pRecord->AVIpath,
-									  pRecord->size);
+		SQLiteIO.Video_Add(pRecord->RunningNumber,
+						   pRecord->tag,
+						   pRecord->HmNum,
+						   pRecord->Description,
+						   pRecord->stime,
+						   pRecord->etime,
+						   pRecord->AVIpath,
+						   pRecord->size);
 		//É¾³ýMP4ÎÄ¼þ
 		DeleteFile(pRecord->MP4path);
 	}

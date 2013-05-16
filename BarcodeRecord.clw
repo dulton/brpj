@@ -2,34 +2,36 @@
 
 [General Info]
 Version=1
-LastClass=CDLGSettings
+LastClass=CDLGWarnning
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "BarcodeRecord.h"
 
-ClassCount=11
+ClassCount=12
 Class1=CBarcodeRecordApp
 Class2=CBarcodeRecordDlg
 Class3=CAboutDlg
 
-ResourceCount=9
+ResourceCount=10
 Resource1=IDD_PRODUCT_INFO
 Resource2=IDR_MAINFRAME
-Resource3=IDD_VIDEOLIST
-Resource4=IDD_BARCODERECORD_DIALOG
+Resource3=IDD_PLAYWIN
+Resource4=IDD_ABOUTBOX
 Resource5=IDD_CONTROL
-Resource6=IDD_SETTINGS
+Resource6=IDD_NEWDEVICE
 Class4=CDLGProductList
-Resource7=IDD_PLAYWIN
+Resource7=IDD_VIDEOLIST
 Class5=CDLGVideoList
 Class6=CDLGControl
 Class7=CDLGPlaywin
 Class8=CDLGProductInfo
-Resource8=IDD_ABOUTBOX
+Resource8=IDD_BARCODERECORD_DIALOG
 Class9=CDLGSettings
 Class10=CDLGNewDevice
 Class11=a1111111
-Resource9=IDD_NEWDEVICE
+Resource9=IDD_SETTINGS
+Class12=CDLGWarnning
+Resource10=IDD_WARNNING
 
 [CLS:CBarcodeRecordApp]
 Type=0
@@ -261,5 +263,22 @@ ImplementationFile=a1111111.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=a1111111
+VirtualFilter=dWC
+
+[DLG:IDD_WARNNING]
+Type=1
+Class=CDLGWarnning
+ControlCount=3
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC_WARNTXT,static,1342308352
+
+[CLS:CDLGWarnning]
+Type=0
+HeaderFile=DLGWarnning.h
+ImplementationFile=DLGWarnning.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CDLGWarnning
 VirtualFilter=dWC
 

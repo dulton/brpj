@@ -16,6 +16,10 @@ static char THIS_FILE[] = __FILE__;
 extern CBarcodeRecordDlg *pCMainDlg;
 extern bool IsChinese;
 
+////////////////////////////////////
+#include "SqliteOperate.h"
+extern CSqliteOperate SQLiteIO;
+
 /////////////////////////////////////////////////////////////////////////////
 // CDLGVideoList dialog
 
@@ -164,7 +168,7 @@ void CDLGVideoList::OnButtonSearch()
 	}
 
 	memset(SqlStr,0,1024);
-	ListTotal=pCMainDlg->SQLiteIO.Video_GetCount(
+	ListTotal=SQLiteIO.Video_GetCount(
 								   m_runnum.GetBuffer(0),
 								   m_hmnum.GetBuffer(0),
 								   m_desc.GetBuffer(0),
@@ -199,7 +203,7 @@ void CDLGVideoList::OnButtonDelete()
 	m_list.GetItemText(ListChoose,0,str,260);
 
 	sscanf(str,"%d",&nid);
-	pCMainDlg->SQLiteIO.Video_Delete(nid);
+	SQLiteIO.Video_Delete(nid);
 
 	//删除文件
 	m_list.GetItemText(ListChoose,7,str,260);
@@ -339,7 +343,7 @@ void CDLGVideoList::DisplayerList(void)
 		ei=ListTotal;
 
 	//查询数据库
-	pCMainDlg->SQLiteIO.Video_GetHistory(SqlStr, searchFlag,si,ei,list_video);
+	SQLiteIO.Video_GetHistory(SqlStr, searchFlag,si,ei,list_video);
 
 	int nItem;
 	char str[128];

@@ -92,6 +92,8 @@ CCarDetect::CCarDetect()
 	/////////////////////////////////////
 	cam_name[0]=0;
 	l_ipaddr[0]=0;	
+
+	JumpJPG=false;
 }
 
 CCarDetect::~CCarDetect()
@@ -424,6 +426,7 @@ int CCarDetect::Result()
 	int nid;
 	char Timeformat[32];
 	FILE *fp;
+	bool isBlack=false;
 
 	re=lc_plate_get_plate_number(CarHandle,&tempCartotal);
 
@@ -548,7 +551,7 @@ int CCarDetect::Result()
 				{
 					//写数据库
 					tempadd=OracleIO.CAR_MatchResult_AddNew(
-						&alarmflag,
+						&isBlack,
 						camid,
 						CarInfo[i].PlateType,
 						CarInfo[i].PlateColor,	
@@ -563,7 +566,7 @@ int CCarDetect::Result()
 				{
 					//本地保存
 					tempadd=OracleIO.CAR_MatchResult_AddNew(
-						&alarmflag,
+						&isBlack,
 						camid,
 						CarInfo[i].PlateType,
 						CarInfo[i].PlateColor,	
@@ -599,11 +602,18 @@ int CCarDetect::Result()
 					DlgMain->m_ListCar.SetItemText(nItem,7,	CarInfo[i].PlateColor);
 					DlgMain->m_ListCar.SetItemText(nItem,8,	CarInfo[i].PlateType);
 					DlgMain->m_ListCar.SetItemText(nItem,9,	CarInfo[i].CarColor);
-					if(alarmflag)
+					if(alarmflag && isBlack)
 					{
 						DlgMain->m_ListCar.SetItemText(nItem,10,	"是");
 						if(DlgSetSystem.m_check_alarmpic)
-							ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
+						{
+							//	ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
+							JumpJPG=true;
+							strcpy(JumpJPGpath,pathstr);
+						}
+						//报警声音
+						if(DlgSetSystem.m_check_alarmwav)
+							PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
 					}
 					else
 						DlgMain->m_ListCar.SetItemText(nItem,10,	"否");
@@ -644,7 +654,7 @@ int CCarDetect::Result()
 				{
 					//写数据库
 					tempadd=OracleIO.ELECAR_MatchResult_AddNew(
-						&alarmflag,
+						&isBlack,
 						camid,
 						CarDirection(CarInfo[i].Direction),
 						&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
@@ -656,7 +666,7 @@ int CCarDetect::Result()
 				{
 					//保存本地
 					tempadd=OracleIO.ELECAR_MatchResult_AddNew(
-						&alarmflag,
+						&isBlack,
 						camid,
 						CarDirection(CarInfo[i].Direction),
 						&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
@@ -685,11 +695,15 @@ int CCarDetect::Result()
 					DlgMain->m_ListCar.SetItemText(nItem,5,str);
 					
 					DlgMain->m_ListCar.SetItemText(nItem,6,CarDirection(CarInfo[i].Direction));
-					if(alarmflag)
+					if(alarmflag && isBlack)
 					{
 						DlgMain->m_ListCar.SetItemText(nItem,7,	"是");
 						if(DlgSetSystem.m_check_alarmpic)
-							ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
+						{
+						//	ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
+							JumpJPG=true;
+							strcpy(JumpJPGpath,pathstr);
+						}
 						//报警声音
 						if(DlgSetSystem.m_check_alarmwav)
 							PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);

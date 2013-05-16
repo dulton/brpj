@@ -478,6 +478,8 @@ void CBSWndContainer::SetWindDetectState(int screenNo,bool bFlag)
 	else
 	{
 		DlgMain->DlgNormal.CloseDetect(screenNo);
+		//关闭识别 也会关闭报警
+		DlgMain->DlgNormal.CloseAlarm(screenNo);
 	}
 }
 BOOL CBSWndContainer::GetDetectState(int screenNo)
@@ -494,6 +496,8 @@ void CBSWndContainer::SetWindAlarmState(int screenNo,bool bFlag)
 		return;
 	if(bFlag)
 	{
+		//开启报警也会开启识别
+		DlgMain->DlgNormal.OpenDetect(screenNo);
 		DlgMain->DlgNormal.OpenAlarm(screenNo);
 	}
 	else

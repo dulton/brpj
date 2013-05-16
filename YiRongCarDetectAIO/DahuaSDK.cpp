@@ -121,7 +121,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 		case 2:
 			//yuv 数据
 			int screenNo;
-			screenNo = DlgMain->DlgScreen.GetHandleWindID(lRealHandle);
+			screenNo = DlgMain->DlgScreen.m_video.m_dahua.GetHandleWindID(lRealHandle);
 			if((screenNo == -1)||(screenNo > 15))
 			{
 				return;
@@ -180,7 +180,7 @@ CDahuaSDK::CDahuaSDK()
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		m_LoginHandle[i] = 0;
-		m_RealHandle[i] = 0;
+		m_RealHandle[i] = -1;
 	}
 	SDKInit();
 }
@@ -224,7 +224,7 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user
 
 		//开启预览
 		m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID, hWnd, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
-		if (m_RealHandle[screenNo] == 0)
+		if (m_RealHandle[screenNo] == -1)
 		{
 			return false;
 		}
@@ -243,14 +243,15 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user
 
 void CDahuaSDK::StopPlay(int screenNo)
 {
-	if(m_RealHandle[screenNo] != 0)
+	if(m_RealHandle[screenNo] != -1)
 	{
 		//关闭预览
 		CLIENT_StopRealPlayEx(m_RealHandle[screenNo]);
-		m_RealHandle[screenNo] = 0;
+		m_RealHandle[screenNo] = -1;
 
 #if OPEN_CARDETECT_CODE 	
-		//停止识别
+	//停止识别
+	if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
 		DlgMain->DlgScreen.CarDetect[screenNo].Stop();
 #endif
 	}
@@ -398,6 +399,19 @@ int CDahuaSDK::StopRecord(int screenNo)
 	{
 		return 0;
 	}
+}
+
+//根据播放句柄获取窗口ID
+int CDahuaSDK::GetHandleWindID(int RealHandle)
+{
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		if(m_RealHandle[i] == RealHandle)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
 char *CDahuaSDK::RuntimeMessage(void)

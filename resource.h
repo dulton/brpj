@@ -13,6 +13,7 @@
 #define IDD_VIDEOLIST                   133
 #define IDD_SETTINGS                    135
 #define IDD_NEWDEVICE                   137
+#define IDD_WARNNING                    140
 #define IDC_EDIT_BARCODE                1002
 #define IDC_BUTTON_OK                   1003
 #define IDC_BUTTON_RECORD               1005
@@ -69,14 +70,15 @@
 #define IDC_BUTTON_MODIFY               1077
 #define IDC_BUTTON_CLEAN                1078
 #define IDC_EDIT_TIME                   1079
+#define IDC_STATIC_WARNTXT              1081
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        140
+#define _APS_NEXT_RESOURCE_VALUE        141
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1081
+#define _APS_NEXT_CONTROL_VALUE         1082
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

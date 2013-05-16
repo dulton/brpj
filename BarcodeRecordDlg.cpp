@@ -5,6 +5,10 @@
 #include "BarcodeRecord.h"
 #include "BarcodeRecordDlg.h"
 
+////////////////////////////////////
+#include "SqliteOperate.h"
+extern CSqliteOperate SQLiteIO;
+
 CBarcodeRecordDlg *pCMainDlg;
 
 #ifdef _DEBUG
@@ -93,12 +97,11 @@ END_MESSAGE_MAP()
 BOOL CBarcodeRecordDlg::OnInitDialog()
 {
 	pCMainDlg=this;
-	//打开数据库
-	SQLiteIO.OpenDB("BarcodeRecordSQL.db");
 	//数据库建表
-	SQLiteIO.Product_CreateTable();
-	SQLiteIO.Video_CreateTable();
-	SQLiteIO.Camera_CreateTable();
+//	SQLiteIO.Camera_CreateTable();
+//	SQLiteIO.Product_CreateTable();
+//	SQLiteIO.Video_CreateTable();
+//	SQLiteIO.Video_Add("","03731052488050","51609.00RBLGRY","PRESTON STUD DINING CHAIR","2013-04-16 22:34:50","2013-04-16 22:44:50","D:\\Video",102400);
 
 	DlgNewDevice.read();
 
@@ -201,7 +204,6 @@ void CBarcodeRecordDlg::OnOK()
 {
 	// TODO: Add extra validation here
 	DlgProductInfo.OnButtonOk();
-
 }
 
 void CBarcodeRecordDlg::OnCancel() 
@@ -211,7 +213,7 @@ void CBarcodeRecordDlg::OnCancel()
 	DlgPlaywin.StopRecord();
 	DlgPlaywin.m_video.WaitConvrtThread();
 	//关闭数据库
-	SQLiteIO.CloseDB();
+	SQLiteIO.DisConnectionDataBase();
 	Sleep(100);
 
 	CDialog::OnCancel();

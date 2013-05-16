@@ -394,6 +394,8 @@ void CDLGnormal::OnButtonOpenDetect()
 	if(bEnable)
 	{
 		CloseDetect(curSreen);
+		//关闭识别也会关闭报警
+		CloseAlarm(curSreen);
 	}
 	else
 	{
@@ -426,6 +428,8 @@ void CDLGnormal::OnButtonCloseDetectAll()
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		CloseDetect(i);
+		//关闭识别也会关闭报警
+		CloseAlarm(i);
 	}
 }
 
@@ -540,6 +544,8 @@ void CDLGnormal::OnButtonOpenAlarm()
 	}
 	else
 	{
+		//同时开启识别
+		OpenDetect(curSreen);
 		OpenAlarm(curSreen);
 	}	
 }
@@ -554,6 +560,8 @@ void CDLGnormal::OnButtonOpenAlarmAll()
 	// TODO: Add your control notification handler code here
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
+		//同时开启识别
+		OpenDetect(i);
 		OpenAlarm(i);
 	}
 }
@@ -691,6 +699,13 @@ bool CDLGnormal::OpenDetect(int screenNo)
 void CDLGnormal::CloseDetect(int screenNo)
 {
 	DlgMain->DlgScreen.EnableDetect(screenNo,false);
+
+#if OPEN_CARDETECT_CODE
+
+	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+
+#endif
+
 	if(screenNo==DlgMain->DlgScreen.GetCurWindId())
 		ChangeDetectFontPic(false);
 }

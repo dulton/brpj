@@ -106,8 +106,6 @@ public:
 	void SetCurWindId(int nCuWinID);
 	//获取当前选择的窗口
 	int GetCurWindId(void);
-	//根据播放句柄获取窗口ID
-	int GetHandleWindID(int RealHandle);
 	//获取当前窗口的摄像机播放状态
 	bool GetCurWindPlayState(int nCuWinID);
 	//获取当前窗口的摄像机录像状态

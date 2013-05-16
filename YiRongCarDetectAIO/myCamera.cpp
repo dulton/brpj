@@ -7,7 +7,7 @@ CMyCamera::CMyCamera()
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		m_LoginHandle[i] = 0;
-		m_RealHandle[i] = 0;
+		m_RealHandle[i] = -1;
 	}
 }
 
@@ -70,7 +70,7 @@ void CMyCamera::StopPlay(int venderID,int screenNo)
 			break;
 	}
 	m_LoginHandle[screenNo] = 0;
-	m_RealHandle[screenNo] = 0;
+	m_RealHandle[screenNo] = -1;
 }
 
 void CMyCamera::Capture(int venderID,int screenNo,char *filename)

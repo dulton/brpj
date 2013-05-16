@@ -118,9 +118,9 @@ static long  CALLBACK s_DecodeCallBack(long hHandle,long frametype,long *framein
 			strcpy(DlgMain->DlgScreen.CarDetect[hHandle].l_ipaddr,
 				DlgMain->DlgScreen.m_videoInfo[hHandle].ip.GetBuffer(0));
 			//////////////////////////
-			YUV2YUV420(pframeinfo,pchannel->image);
+			YUV2YUV420(pframeinfo,pchannel->image[hHandle]);
 			DlgMain->DlgScreen.CarDetect[hHandle].Start(LC_VIDEO_FORMAT_I420,\
-				pchannel->image,pframeinfo->width,pframeinfo->height,pframeinfo->width*pframeinfo->height*3/2);
+				pchannel->image[hHandle],pframeinfo->width,pframeinfo->height,pframeinfo->width*pframeinfo->height*3/2);
 			
 			DlgMain->DlgScreen.CarDetect[hHandle].Result();
 		}
@@ -146,6 +146,7 @@ CYaAnSDK::CYaAnSDK()
 	{
 		m_RealHandle[i] = i;
 		m_LoginHandle[i] = -1;
+		image[i]=(unsigned char *)calloc(1920*1080*3,sizeof(unsigned char));	//ZOGNA YUV420 BUFFER
 	}
 	m_ptzLoginHandle = -1;
 	m_ptzRealHandle = MAX_DEVICE_NUM;
@@ -168,7 +169,6 @@ CYaAnSDK::CYaAnSDK()
 	//lc5000,lc6000的采样频率都为8000，不能修改
 	//在视频服务器连接成功后可通过函数VSNET_ClientGetStreamInfo,获得这些参数
 	
-	image=(unsigned char *)calloc(1920*1080*3,sizeof(unsigned char));	//ZOGNA YUV420 BUFFER
 }
 
 CYaAnSDK::~CYaAnSDK()
@@ -177,10 +177,11 @@ CYaAnSDK::~CYaAnSDK()
 	{
 		StopPlay(i);
 		LC_PLAYM4_CloseStream(m_RealHandle[i]);
+		free(image[i]); //ZOGNA YUV420 BUFFER
 	}
 	PtzStopPlay();
 
-//	free(image); //ZOGNA YUV420 BUFFER
+
 }
 
 void CYaAnSDK::SDKInit()
@@ -287,7 +288,8 @@ void CYaAnSDK::StopPlay(int screenNo)
 		
 #if OPEN_CARDETECT_CODE 	
 	//停止识别
-	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+	if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
+		DlgMain->DlgScreen.CarDetect[screenNo].Stop();
 #endif
 
 }
@@ -425,5 +427,16 @@ void CYaAnSDK::PtzStopPlay()
 	{
 		VSNET_ClientStop(m_ptzLoginHandle);
 		m_ptzLoginHandle = -1;
+	}
+}
+
+void CYaAnSDK::RefrenshWnd()
+{
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		if(m_LoginHandle[i] != -1)
+		{
+			VSNET_ClientRefrenshWnd(m_LoginHandle[i]);
+		}
 	}
 }

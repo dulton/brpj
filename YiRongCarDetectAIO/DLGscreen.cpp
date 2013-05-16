@@ -167,18 +167,7 @@ int CDLGscreen::GetCurWindId()
 {
 	return m_curScreen;
 }
-//根据播放句柄获取窗口ID
-int CDLGscreen::GetHandleWindID(int RealHandle)
-{
-	for(int i=0;i<MAX_DEVICE_NUM;i++)
-	{
-		if(m_videoInfo[i].playHandle == RealHandle)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
+
 //获取当前窗口的摄像机播放状态
 bool CDLGscreen::GetCurWindPlayState(int nCuWinID)
 {
@@ -319,22 +308,20 @@ void CDLGscreen::StopPlay(int screenNo)
 		StopRecord(screenNo);
 	}
 	
+	m_videoInfo[screenNo].enableDetect = false;
+	m_videoInfo[screenNo].enableAlarm = false;
+
 	if(m_videoInfo[screenNo].isplay == true)
 	{
 		m_videoInfo[screenNo].isplay = false;
 		m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
 	}
 	
-	m_videoInfo[screenNo].enableAlarm = false;
-	//停止识别
-	if(m_videoInfo[screenNo].enableDetect == true)
-	{
-		m_videoInfo[screenNo].enableDetect = false;
 #if OPEN_CARDETECT_CODE 
-
+	//停止识别
+	if(false == m_videoInfo[screenNo].enableDetect)
 		CarDetect[screenNo].Stop();
 #endif
-	}
 
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
 	if (pWnd)
@@ -460,7 +447,7 @@ void CDLGscreen::OnPaint()
 	dc.SetStretchBltMode(COLORONCOLOR);
 	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
 	memdc.DeleteDC();
-	
+
 	CDialog::OnPaint();
 	// Do not call CDialog::OnPaint() for painting messages
 }
@@ -474,6 +461,16 @@ void CDLGscreen::OnTimer(UINT nIDEvent)
 	if(nIDEvent == RECORD_TIMER)
 	{
 		RecordTimerEvent();
+#if OPEN_CARDETECT_CODE
+		for(int i=0;i<MAX_DEVICE_NUM;i++)
+		{
+			if(CarDetect[i].JumpJPG)
+			{
+				ShellExecute(DlgMain->m_hWnd,NULL,CarDetect[i].JumpJPGpath,NULL,NULL,SW_NORMAL);
+				CarDetect[i].JumpJPG=false;
+			}
+		}
+#endif
 	}
 }
 
@@ -484,8 +481,6 @@ void CDLGscreen::OnDestroy()
 	if(m_recordtimer) 
 		KillTimer(m_recordtimer); 
 	m_recordtimer = 0;
-
-
 }
 
 //录像定时事件

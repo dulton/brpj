@@ -71,6 +71,8 @@ public:
 	HBITMAP bi;
 
 	afx_msg void OnButtonOk();
+	//ÆÁ±Î²Ù×÷
+	void OnCancel();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGProductInfo)

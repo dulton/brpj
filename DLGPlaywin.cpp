@@ -99,6 +99,14 @@ void CDLGPlaywin::AutoSize()
 	Invalidate();
 }
 
+void CDLGPlaywin::OnCancel()
+{
+}
+
+void CDLGPlaywin::OnOK()
+{
+
+}
 //设置选择的窗口
 void CDLGPlaywin::SetCurWindId(int nCuWinID)
 {

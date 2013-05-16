@@ -30,7 +30,6 @@ public:
 	CDLGControl DlgControl;
 	CDLGPlaywin	DlgPlaywin;
 	CDLGProductInfo	DlgProductInfo;
-	CSqliteOperate SQLiteIO;
 	CDLGNewDevice DlgNewDevice;
 
 	CFont TextFont;

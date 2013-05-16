@@ -52,6 +52,10 @@ public:
 	void GetCurWndRecordTime(char *rtime);
 	//更新窗口的产品信息
 	void UpdateWndProductInfo();
+	//屏蔽操作
+	void OnOK();
+	void OnCancel();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGPlaywin)

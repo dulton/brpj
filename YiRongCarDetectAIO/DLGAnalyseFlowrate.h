@@ -29,7 +29,7 @@ public:
 	//}}AFX_DATA
 
 	BOOL OnInitDialog();
-	unsigned long int GetCount(char *ip,char *stime,char*etime);
+	unsigned long int GetCount(char *ipname,char *ip,char *stime,char*etime);
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGAnalyseFlowrate)

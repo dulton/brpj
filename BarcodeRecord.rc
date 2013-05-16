@@ -248,6 +248,17 @@ BEGIN
     PUSHBUTTON      "Clean",IDC_BUTTON_CLEAN,200,162,24,14
 END
 
+IDD_WARNNING DIALOG DISCARDABLE  0, 0, 199, 89
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "对话"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,42,68,50,14
+    PUSHBUTTON      "取消",IDCANCEL,99,68,50,14
+    LTEXT           "输入警告语，警告框 用在再次确认提示。",
+                    IDC_STATIC_WARNTXT,7,16,185,36
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -354,6 +365,14 @@ BEGIN
         RIGHTMARGIN, 303
         TOPMARGIN, 7
         BOTTOMMARGIN, 176
+    END
+
+    IDD_WARNNING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 192
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 82
     END
 END
 #endif    // APSTUDIO_INVOKED

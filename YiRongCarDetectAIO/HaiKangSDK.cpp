@@ -69,7 +69,7 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *pBuffer,DWORD dwBufSize,void* dwUser)
 {
 	CHaikangSDK *HaikangSDK = (CHaikangSDK *)dwUser;
-	int screenNo = DlgMain->DlgScreen.GetHandleWindID(lRealHandle);
+	int screenNo = DlgMain->DlgScreen.m_video.m_haikang.GetHandleWindID(lRealHandle);
 	LONG lPort = HaikangSDK->m_lPort[screenNo];
 	CWnd* pWnd = DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
 	if (!pWnd)
@@ -222,7 +222,8 @@ void CHaikangSDK::StopPlay(int screenNo)
 
 #if OPEN_CARDETECT_CODE 	
 	//停止识别
-	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+	if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
+		DlgMain->DlgScreen.CarDetect[screenNo].Stop();
 #endif
 
 }
@@ -362,6 +363,19 @@ int CHaikangSDK::GetPortWndindex(long lport)
 		if(m_lPort[i] == lport)
 			return Wndindex;
 		Wndindex++;
+	}
+	return -1;
+}
+
+//根据播放句柄获取窗口ID
+int CHaikangSDK::GetHandleWindID(int RealHandle)
+{
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		if(m_RealHandle[i] == RealHandle)
+		{
+			return i;
+		}
 	}
 	return -1;
 }

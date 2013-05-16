@@ -8,6 +8,10 @@
 #include "BarcodeRecordDlg.h"
 extern CBarcodeRecordDlg *pCMainDlg;
 
+////////////////////////////////////
+#include "SqliteOperate.h"
+extern CSqliteOperate SQLiteIO;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -167,7 +171,7 @@ void CDLGNewDevice::OnButtonModify()
 	device[ListChoose].port=m_port;
 
 	//修改
-	pCMainDlg->SQLiteIO.Camera_Modify(device[ListChoose]);
+	SQLiteIO.Camera_Modify(device[ListChoose]);
 	display(ListChoose,ListChoose);
 }
 
@@ -187,7 +191,7 @@ void CDLGNewDevice::OnButtonClean()
 	memset(device[ListChoose].psw,0,sizeof(device[ListChoose].psw));
 	device[ListChoose].port=0;
 	//修改
-	pCMainDlg->SQLiteIO.Camera_Modify(device[ListChoose]);
+	SQLiteIO.Camera_Modify(device[ListChoose]);
 	display(ListChoose,ListChoose);
 
 }
@@ -195,8 +199,16 @@ void CDLGNewDevice::OnButtonClean()
 void CDLGNewDevice::read()
 {
 	//读数据库 拷贝到数组
-	pCMainDlg->SQLiteIO.Camera_Read(MAX_PLAYWIN,cameraList);
-
+	SQLiteIO.Camera_Read(MAX_PLAYWIN,cameraList);
+	if(cameraList.size() == 0)
+	{
+		struct CAMERA_INFO_ST cameraInfo = {0};
+		for(int i=0;i<MAX_PLAYWIN;i++)
+		{
+			SQLiteIO.Camera_Add(cameraInfo);
+		}
+		SQLiteIO.Camera_Read(MAX_PLAYWIN,cameraList);
+	}
 	list<struct CAMERA_INFO_ST>::iterator beglist;
 
 	int i=0;
@@ -208,8 +220,9 @@ void CDLGNewDevice::read()
 		device[i].port=beglist->port;
 		strcpy(device[i].user,beglist->user);
 		strcpy(device[i].psw,beglist->psw);
-
 		i++;
+		if(MAX_PLAYWIN == i)
+			break;
 	}
 }
 

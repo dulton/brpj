@@ -98,6 +98,7 @@ public:
 
 	int StartRecord(int screenNo,char *filename);
 	int StopRecord(int screenNo);
+	int GetHandleWindID(int RealHandle);
 
 };
 
