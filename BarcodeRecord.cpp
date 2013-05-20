@@ -58,46 +58,46 @@ BOOL CBarcodeRecordApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+	//读系统配置表
+	Set_AllPath();
+	DlgSettings.Read2Dlg();
+
 	//打开数据库
 	int Error = SQLiteIO.ConnectionDataBase("DataBaseConfig.txt");
 	if(Error == ReadFile_FAIL)
 	{
-		CDLGWarnning dlgw;
-		dlgw.m_wintxt="连接数据库";					//窗口标题
-		dlgw.m_warntxt="读数据库配置文件失败";	//窗口内容
-		dlgw.DoModal();	
+//		CDLGWarnning dlgw;
+//		dlgw.m_wintxt=Language_ConvertString("Connect Database");					//窗口标题
+//		dlgw.m_warntxt=Language_ConvertString("Conn't Read Database Config");		//窗口内容
+//		dlgw.DoModal();	
 
 		return FALSE;
 	}
 	else if(Error == Instance_FAIL)
 	{
-		CDLGWarnning dlgw;
-		dlgw.m_wintxt="连接数据库";					//窗口标题
-		dlgw.m_warntxt="数据库ADO初始化失败";	//窗口内容
-		dlgw.DoModal();
+//		CDLGWarnning dlgw;
+//		dlgw.m_wintxt=Language_ConvertString("Connect Database");					//窗口标题
+//		dlgw.m_warntxt=Language_ConvertString("Initialization ADO failed");			//窗口内容
+//		dlgw.DoModal();
 		
 		return FALSE;
 	}
 	else if(Error == ContOpen_FAIL)
 	{
-		CDLGWarnning dlgw;
-		dlgw.m_wintxt="连接数据库";					//窗口标题
-		dlgw.m_warntxt="数据库无法连接:账号密码IP异常";	//窗口内容
-		dlgw.DoModal();
+//		CDLGWarnning dlgw;
+//		dlgw.m_wintxt=Language_ConvertString("Connect Database");					//窗口标题
+//		dlgw.m_warntxt=Language_ConvertString("Connet Database Failed");			//窗口内容
+//		dlgw.DoModal();
 
 		return FALSE;
 	}
 	else if(Error == Connectd_DONE)
 	{
-		CDLGWarnning dlgw;
-		dlgw.m_wintxt="连接数据库";					//窗口标题
-		dlgw.m_warntxt="连接数据库成功";	//窗口内容
-		dlgw.DoModal();
+//		CDLGWarnning dlgw;
+//		dlgw.m_wintxt=Language_ConvertString("Connect Database");					//窗口标题
+//		dlgw.m_warntxt=Language_ConvertString("Connect Database Successfully");		//窗口内容
+//		dlgw.DoModal();
 	}
-
-	//读系统配置表
-	Set_AllPath();
-	DlgSettings.Read2Dlg();
 
 	CBarcodeRecordDlg dlg;
 	m_pMainWnd = &dlg;

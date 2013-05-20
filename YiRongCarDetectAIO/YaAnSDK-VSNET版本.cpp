@@ -286,7 +286,8 @@ void CYaAnSDK::StopPlay(int screenNo)
 		
 #if OPEN_CARDETECT_CODE 	
 	//Í£Ö¹Ê¶±ð
-	DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+	if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
+		DlgMain->DlgScreen.CarDetect[screenNo].Stop();
 #endif
 
 }

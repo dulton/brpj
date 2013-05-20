@@ -1,156 +1,215 @@
+
 #include "stdafx.h"
-#include "SqliteOperate.h"
+#include "SQLiteOperate.h"
 
-////////////////////////////////////////////////////
-CSqliteOperate::CSqliteOperate()
+
+CSqliteOperate::CSqliteOperate(void)
 {
-	m_pDB = NULL;
-	readProductSuccess = false;
-	m_productInfo.nid = 0;
-	strcpy(m_productInfo.RunningNumber,"");
-	strcpy(m_productInfo.tag,"");
-	strcpy(m_productInfo.MainCategory,"");
-	strcpy(m_productInfo.SubCategory,"");
-	strcpy(m_productInfo.MetaField,"");
-	strcpy(m_productInfo.ColourDesc,"");
-	strcpy(m_productInfo.Colour,"");
-	strcpy(m_productInfo.Unit,"");
-	strcpy(m_productInfo.FactoryItem,"");
-	strcpy(m_productInfo.HmNum,"");
-	strcpy(m_productInfo.Description,"");
-	strcpy(m_productInfo.path1,"");
-	strcpy(m_productInfo.path2,"");
-	strcpy(m_productInfo.path3,"");
+	state=false;
 }
 
-////////////////////////////////////////////////////
-CSqliteOperate::~CSqliteOperate()
+CSqliteOperate::~CSqliteOperate(void)
 {
-	CloseDB();
+   DisConnectionDataBase();
 }
 
-////////////////////////////////////////////////////
-//打开数据库
-int CSqliteOperate::OpenDB(char *file)
+
+//读数据库配置文件
+bool CSqliteOperate::ReadFile(TCHAR* FileName)
 {
-	return sqlite3_open_v2(file, &m_pDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	TCHAR temp[256]="";
+	TCHAR tempchar[256]="";
+
+	FILE *fp=_tfopen(FileName,_T("r"));
+	if(fp)
+	{
+		_fgetts(temp,256,fp);
+		_stscanf(temp,_T("Ip:%s"),Ip);
+
+		_fgetts(temp,256,fp);
+		_stscanf(temp,_T("Port:%s"),Port);
+
+		_fgetts(temp,256,fp);
+		_stscanf(temp,_T("User:%s"),User);
+
+		_fgetts(temp,256,fp);
+		_stscanf(temp,_T("Psw:%s"),Psw);
+
+		_fgetts(temp,256,fp);
+		_stscanf(temp,_T("DataBaseName:%s"),DataBaseName);
+
+		fclose(fp);
+
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
 
-////////////////////////////////////////////////////
-//关闭数据库
-void CSqliteOperate::CloseDB()
+//连接数据库
+int CSqliteOperate::ConnectionDataBase(char*  FileName)
 {
-	if(m_pDB)
-		sqlite3_close(m_pDB);
-	m_pDB = 0;
+	AfxOleInit();
+	CoInitialize(NULL);
+
+	//ReadConfigTxt pConfig;
+	if(!ReadFile(FileName))
+	{
+		return ReadFile_FAIL;
+	}
+
+	CString CstrConn;
+#if 0
+	CstrConn.Format(_T("Provider=OraOLEDB.Oracle.1;User ID=%s;Password=%s;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)));Persist Security Info=False"),\
+					User, Psw, Ip, Port, DataBaseName);
+#else
+	CstrConn.Format(_T("Provider=SQLOLEDB.1;Persist Security Info=False;Server=%s,%s;Database=%s; uid=%s; pwd=%s"),\
+						Ip, Port, DataBaseName, User, Psw);
+#endif
+	HRESULT hr;
+	if(SUCCEEDED(m_pConnection.CreateInstance("ADODB.Connection")))
+	{
+		_bstr_t strConnect = _bstr_t(CstrConn);
+
+		m_pConnection->ConnectionTimeout = 30;
+
+		try
+		{
+			hr = m_pConnection->Open(strConnect,"","",adModeUnknown);
+		}
+		catch(_com_error e)
+		{
+			return ContOpen_FAIL;
+		}
+
+		state=true;
+		return Connectd_DONE;
+	}
+	else
+	{
+		return Instance_FAIL;
+	}
 }
 
-////////////////////////////////////////////////////
-//执行SQL语句
-void CSqliteOperate::Sql_Execute(char *sql)
+//断开与oracle数据库的连接
+bool CSqliteOperate::DisConnectionDataBase(void)
 {
-	if(m_pDB == 0)
-		return;
-	sqlite3_prepare_v2(m_pDB, sql, strlen(sql) + 1, &stmt, NULL);
-	sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
+	try
+	{
+		if(m_pConnection->State)
+		{
+			m_pConnection->Close();
+			state=false;
+			return true;
+		}
+	}
+	catch(_com_error e)        //捕捉异常
+	{
+		CString temp;
+		temp.Format(_T("错误信息:%s"),e.ErrorMessage());
+		return false;
+	}	
+
+	return false;
 }
+
 
 ////////////////////////////////////////////////////
 //摄像头表
 void CSqliteOperate::Camera_CreateTable(void)
 {
-	CString sql;
-	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_camera'");
-	sqlite3_prepare_v2(m_pDB, sql.GetBuffer(0), strlen(sql.GetBuffer(0)) + 1, &stmt, NULL);
-
-	if (SQLITE_ROW == sqlite3_step(stmt)) {
-		int row = sqlite3_column_int(stmt, 0);
-		sqlite3_finalize(stmt);
-		if(0 == row)
-		{
-			sql.Format("create table tb_camera(id integer primary key,name nvarchar(24), \
-												ip nvarchar(40), user nvarchar(20), \
-												psw nvarchar(20), port integer)");
-			Sql_Execute(sql.GetBuffer(0));
-			//第一次创建四个空的摄像头
-			struct CAMERA_INFO_ST cInfo;
-			strcpy(cInfo.name,"");
-			strcpy(cInfo.ip,"");
-			strcpy(cInfo.user,"");
-			strcpy(cInfo.psw,"");
-			cInfo.port = 0;
-
-			for(int i=0;i<MAX_PLAYWIN;i++)
-			{
-				Camera_Add(cInfo);
-			}
-		}
-	}
+	CString strsql;
+	strsql = _T("create table tb_camera(nid number primary key,sname varchar2(24), \
+				 sip varchar2(40), suser varchar2(20), \
+				 spsw varchar2(20), nport number)");
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 void CSqliteOperate::Camera_Add(struct CAMERA_INFO_ST cInfo)
 {
-	CString sql;
-	sql.Format("insert into tb_camera(name,ip,user,psw,port) values('%s', '%s', '%s', '%s', %d)",\
-									  cInfo.name,cInfo.ip,cInfo.user,cInfo.psw,cInfo.port);
-	Sql_Execute(sql.GetBuffer(0));
+	CString strsql;
+
+	strsql.Format("insert into tb_camera(sname,sip,suser,spsw,nport) values('%s', '%s', '%s', '%s', %d)",\
+				   cInfo.name,cInfo.ip,cInfo.user,cInfo.psw,cInfo.port);
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 void CSqliteOperate::Camera_Modify(struct CAMERA_INFO_ST cInfo)
 {
-	CString sql;
-	sql.Format("update tb_camera set name='%s',ip='%s',user='%s',psw='%s',port=%d where id=%d",\
-									 cInfo.name,cInfo.ip,cInfo.user,cInfo.psw,cInfo.port,cInfo.nid);
-	Sql_Execute(sql.GetBuffer(0));
+	CString strsql;
+	strsql.Format("update tb_camera set sname='%s',sip='%s',suser='%s',spsw='%s',nport=%d where nid=%d",\
+				   cInfo.name,cInfo.ip,cInfo.user,cInfo.psw,cInfo.port,cInfo.nid);
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 void CSqliteOperate::Camera_Delete(unsigned long int nid)
 {
-	CString sql;
-	sql.Format("delete from tb_camera where id=%d",nid);
-	Sql_Execute(sql.GetBuffer(0));
-}
-
-////////////////////////////////////////////////////
-static int ReadCameraCallBack(void *context, int argc, char **argv, char **ColName)
-{
-	list<struct CAMERA_INFO_ST> *mSqlite = (list<struct CAMERA_INFO_ST> *)context; 
-
-	struct CAMERA_INFO_ST cInfo = {0};
-
-	sscanf(argv[0],"%d",&cInfo.nid);
-	strcpy(cInfo.name,argv[1]);
-	strcpy(cInfo.ip,argv[2]);
-	strcpy(cInfo.user,argv[3]);
-	strcpy(cInfo.psw,argv[4]);
-
-	if(strlen(argv[5]))
-		sscanf(argv[5],"%d",&cInfo.port);
-	else
-		cInfo.port=0;
-
-	mSqlite->push_back(cInfo);
-
-    return 0;
+	CString strsql;
+	strsql.Format("delete from tb_camera where nid=%d",nid);
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 bool CSqliteOperate::Camera_Read(int maxNum,list<struct CAMERA_INFO_ST> &cameraList)
 {
-	CString strSql;
-	strSql.Format(_T("select * from tb_camera limit %d"),maxNum);
-	char* cErrMsg;
-	int res = sqlite3_exec(m_pDB, strSql.GetBuffer(0), ReadCameraCallBack , &cameraList , &cErrMsg); 
-	if(res == SQLITE_OK)
+	CString strSql = _T("select * from tb_camera");
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+	if(m_pRecordsetPtr->adoBOF)
 	{
-		if(cameraList.size())
-			return true;
-		else
-			return false;
+		return false;
+	}
+	else
+	{
+		m_pRecordsetPtr->MoveFirst();
+	}
+	while(!m_pRecordsetPtr->adoEOF)
+	{
+		variant_t temp; 
+		temp.ChangeType(VT_NULL);
+
+		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
+		variant_t camName = m_pRecordsetPtr->GetCollect("sname");
+		variant_t sip = m_pRecordsetPtr->GetCollect("sip");
+		variant_t user = m_pRecordsetPtr->GetCollect("suser");
+		variant_t password = m_pRecordsetPtr->GetCollect("spsw");
+		variant_t port = m_pRecordsetPtr->GetCollect("nport");
+
+		struct CAMERA_INFO_ST CameraInfo = {0};
+		CameraInfo.nid = nid;
+		CameraInfo.port = port;
+
+		if(camName.vt != NULL && camName !=temp)
+		{
+			CString str = camName.bstrVal;
+			strcpy(CameraInfo.name, str.GetBuffer(0));
+		}
+		if(sip.vt != NULL && sip !=temp)
+		{
+			CString str = sip.bstrVal;
+			strcpy(CameraInfo.ip, str.GetBuffer(0));
+		}
+		if(user.vt != NULL && user !=temp)
+		{
+			CString str = user.bstrVal;
+			strcpy(CameraInfo.user, str.GetBuffer(0));
+		}
+		if(password.vt != NULL && password !=temp)
+		{
+			CString str = password.bstrVal;
+			strcpy(CameraInfo.psw, str.GetBuffer(0));
+		}
+
+		cameraList.push_back(CameraInfo);
+
+		m_pRecordsetPtr->MoveNext();
+	}
+	m_pRecordsetPtr->Close();
+	if(cameraList.size())
+	{
+		return true;
 	}
 	else
 	{
@@ -162,33 +221,23 @@ bool CSqliteOperate::Camera_Read(int maxNum,list<struct CAMERA_INFO_ST> &cameraL
 //产品信息表
 void CSqliteOperate::Product_CreateTable(void)
 {
-	CString sql;
-	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_product'");
-	sqlite3_prepare_v2(m_pDB, sql.GetBuffer(0), strlen(sql.GetBuffer(0)) + 1, &stmt, NULL);
-
-	if (SQLITE_ROW == sqlite3_step(stmt)) {
-		int row = sqlite3_column_int(stmt, 0);
-		sqlite3_finalize(stmt);
-		if(0 == row)
-		{
-			sql.Format("create table tb_product(id integer primary key,RunningNumber nvarchar(256), \
-												tag nvarchar(256), MainCategory nvarchar(256), \
-												SubCategory nvarchar(256), MetaField nvarchar(256), \
-												ColourDesc nvarchar(256), Colour nvarchar(256), \
-												Unit nvarchar(256), FactoryItem nvarchar(256), \
-												HmNum nvarchar(256), Description nvarchar(2560), \
-												path1 nvarchar(260), path2 nvarchar(260), \
-												path3 nvarchar(260))");
-			Sql_Execute(sql.GetBuffer(0));
-		}
-	}
+	CString strsql;
+	strsql = _T("create table tb_product(nid number primary key,RunningNumber varchar2(256), \
+				 tag varchar2(256), MainCategory varchar2(256), \
+				 SubCategory varchar2(256), MetaField varchar2(256), \
+				 ColourDesc varchar2(256), Colour varchar2(256), \
+				 Unit varchar2(256), FactoryItem varchar2(256), \
+				 HmNum varchar2(256), Description varchar2(2560), \
+				 path1 varchar2(260), path2 varchar2(260), \
+				 path3 varchar2(260))");
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 void CSqliteOperate::Product_Add(struct PRODUCT_INFO_ST pInfo)
 {
-	CString sql;
-	sql.Format("insert into tb_product(RunningNumber,tag,MainCategory,SubCategory,\
+	CString strsql;
+	strsql.Format("insert into tb_product(RunningNumber,tag,MainCategory,SubCategory,\
 										MetaField,ColourDesc,Colour,Unit,FactoryItem,\
 										HmNum,Description,path1,path2,path3) \
 										values('%s', '%s', '%s', '%s', '%s', '%s', '%s', \
@@ -196,180 +245,161 @@ void CSqliteOperate::Product_Add(struct PRODUCT_INFO_ST pInfo)
 										pInfo.RunningNumber,pInfo.tag,pInfo.MainCategory,pInfo.SubCategory,\
 										pInfo.MetaField,pInfo.ColourDesc,pInfo.Colour,pInfo.Unit,pInfo.FactoryItem,\
 										pInfo.HmNum,pInfo.Description,pInfo.path1,pInfo.path2,pInfo.path3);
-	Sql_Execute(sql.GetBuffer(0));
-}
-
-////////////////////////////////////////////////////
-void CSqliteOperate::Product_Modify(struct PRODUCT_INFO_ST pInfo)
-{
-#if 0
-	CString sql;
-	sql.Format("update tb_product set barcode='%s',name='%s',description='%s',path1='%s',path2='%s',path3='%s' where id=%d",\
-										pInfo.barcode,pInfo.name,pInfo.spec,pInfo.path1,pInfo.path2,pInfo.path3,pInfo.nid);
-	Sql_Execute(sql.GetBuffer(0));
-#endif
-}
-
-////////////////////////////////////////////////////
-void CSqliteOperate::Product_Delete(unsigned long int nid)
-{
-#if 0
-	CString sql;
-	sql.Format("delete from tb_product where id=%d",nid);
-	Sql_Execute(sql.GetBuffer(0));
-#endif
-}
-
-////////////////////////////////////////////////////
-static int ReadProductCallBack(void *context, int argc, char **argv, char **ColName)
-{
-	CSqliteOperate *mSqlite = (CSqliteOperate*)context; 
-	mSqlite->readProductSuccess = true;
-
-	sscanf(argv[0],"%d",&mSqlite->m_productInfo.nid);
-	strcpy(mSqlite->m_productInfo.RunningNumber,argv[1]);
-	strcpy(mSqlite->m_productInfo.tag,argv[2]);
-	strcpy(mSqlite->m_productInfo.MainCategory,argv[3]);
-	strcpy(mSqlite->m_productInfo.SubCategory,argv[4]);
-	strcpy(mSqlite->m_productInfo.MetaField,argv[5]);
-	strcpy(mSqlite->m_productInfo.ColourDesc,argv[6]);
-	strcpy(mSqlite->m_productInfo.Colour,argv[7]);
-	strcpy(mSqlite->m_productInfo.Unit,argv[8]);
-	strcpy(mSqlite->m_productInfo.FactoryItem,argv[9]);
-	strcpy(mSqlite->m_productInfo.HmNum,argv[10]);
-	strcpy(mSqlite->m_productInfo.Description,argv[11]);
-	strcpy(mSqlite->m_productInfo.path1,argv[12]);
-	strcpy(mSqlite->m_productInfo.path2,argv[13]);
-	strcpy(mSqlite->m_productInfo.path3,argv[14]);
-    return 0;
+//	strsql = _T("delete from tb_product");
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 bool CSqliteOperate::Product_Read(char *barcode,struct PRODUCT_INFO_ST &pInfo)
 {
-	CString sql;
-	sql.Format(_T("select * from tb_product where RunningNumber='%s' or tag = '%s'"),barcode,barcode);
-	readProductSuccess = false;
-	char* cErrMsg;
-	int res = sqlite3_exec(m_pDB, sql.GetBuffer(0), ReadProductCallBack , this , &cErrMsg); 
-	if(res == SQLITE_OK)
+	CString strSql;
+	strSql.Format(_T("select * from tb_product where RunningNumber='%s' or tag = '%s'"),barcode,barcode);
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+	if(m_pRecordsetPtr->adoBOF)
 	{
-		if(readProductSuccess)
-		{
-			pInfo.nid = m_productInfo.nid;
-			strcpy(pInfo.RunningNumber,m_productInfo.RunningNumber);
-			strcpy(pInfo.tag,m_productInfo.tag);
-			strcpy(pInfo.MainCategory,m_productInfo.MainCategory);
-			strcpy(pInfo.SubCategory,m_productInfo.SubCategory);
-			strcpy(pInfo.MetaField,m_productInfo.MetaField);
-			strcpy(pInfo.ColourDesc,m_productInfo.ColourDesc);
-			strcpy(pInfo.Colour,m_productInfo.Colour);
-			strcpy(pInfo.Unit,m_productInfo.Unit);
-			strcpy(pInfo.FactoryItem,m_productInfo.FactoryItem);
-			strcpy(pInfo.HmNum,m_productInfo.HmNum);
-			strcpy(pInfo.Description,m_productInfo.Description);
-			strcpy(pInfo.path1,m_productInfo.path1);
-			strcpy(pInfo.path2,m_productInfo.path2);
-			strcpy(pInfo.path3,m_productInfo.path3);
-			return true;
-		}
-		else
-			return false;
-	}
-	else
 		return false;
+	}
+
+	variant_t var;
+	variant_t temp; 
+	temp.ChangeType(VT_NULL);
+	CString str;
+
+	pInfo.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+
+	var = m_pRecordsetPtr->GetCollect("RunningNumber");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.RunningNumber, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("tag");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.tag, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("MainCategory");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.MainCategory, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("SubCategory");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.SubCategory, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("MetaField");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.MetaField, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("ColourDesc");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.ColourDesc, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("Colour");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.Colour, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("Unit");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.Unit, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("FactoryItem");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.FactoryItem, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("HmNum");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.HmNum, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("Description");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.Description, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("path1");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.path1, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("path2");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.path2, str.GetBuffer(0));
+	}
+	var = m_pRecordsetPtr->GetCollect("path3");
+	if(var.vt != NULL && var !=temp)
+	{
+		str = var.bstrVal;
+		strcpy(pInfo.path3, str.GetBuffer(0));
+	}
+
+	m_pRecordsetPtr->Close();
+
+	return true;
 }
 
 ////////////////////////////////////////////////////
 //视频信息表
 void CSqliteOperate::Video_CreateTable(void)
 {
-	CString sql;
-	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_video'");
-	sqlite3_prepare_v2(m_pDB, sql.GetBuffer(0), strlen(sql.GetBuffer(0)) + 1, &stmt, NULL);
-
-	if (SQLITE_ROW == sqlite3_step(stmt)) {
-		int row = sqlite3_column_int(stmt, 0);
-		sqlite3_finalize(stmt);
-		if(0 == row)
-		{
-			sql.Format("create table tb_video(id integer primary key,RunningNumber nvarchar(256), \
-												tag nvarchar(256), HmNum nvarchar(256), Description nvarchar(2560), \
-												stime datetime, etime datetime, \
-												size integer, path nvarchar(260))");
-			Sql_Execute(sql.GetBuffer(0));
-		}
-	}
+	CString strsql;
+	strsql = _T("create table tb_video(nid number primary key,RunningNumber varchar2(256), \
+				 tag varchar2(256), HmNum varchar2(256), Description varchar2(2560), \
+				 stime date, etime date, nsize number, spath varchar2(260))");
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 void CSqliteOperate::Video_Add(char *RunningNumber,char *tag,char *HmNum,char *Description,\
 							   char *starttime,char *endtime,char *path,unsigned long size)
 {
-	CString sql;
-	sql.Format("insert into tb_video(RunningNumber,tag,HmNum,Description,stime,etime,size,path) \
-										values('%s', '%s', '%s', '%s', datetime('%s'), datetime('%s'), %d, '%s')",\
-										RunningNumber,tag,HmNum,Description,starttime,endtime,size,path);
-	Sql_Execute(sql.GetBuffer(0));
+	CString strsql;
+
+	strsql.Format("insert into tb_video(RunningNumber,tag,HmNum,Description,stime,etime,nsize,spath) \
+					values('%s','%s','%s','%s','%s','%s',%d,'%s')",\
+					RunningNumber,tag,HmNum,Description,starttime,endtime,size,path);
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 void CSqliteOperate::Video_Delete(unsigned long int nid)
 {
-	CString sql;
-	sql.Format("delete from tb_video where id=%d",nid);
-	Sql_Execute(sql.GetBuffer(0));
-}
-
-////////////////////////////////////////////////////
-static int ReadViedoCallBack(void *context, int argc, char **argv, char **ColName)
-{
-	list<struct VIDEO_INFO_ST> *mSqlite = (list<struct VIDEO_INFO_ST> *)context; 
-
-	struct VIDEO_INFO_ST vInfo = {0};
-	char stime[32];
-	char etime[32];
-	sscanf(argv[0],"%d",&vInfo.nid);
-	strcpy(vInfo.RunningNumber,argv[1]);
-	strcpy(vInfo.tag,argv[2]);
-	strcpy(vInfo.HmNum,argv[3]);
-	strcpy(vInfo.Description,argv[4]);
-	strcpy(stime,argv[5]);
-	strcpy(etime,argv[6]);
-	sscanf(argv[7],"%d",&vInfo.size);
-	strcpy(vInfo.path,argv[8]);
-	sscanf(stime,"%04d-%02d-%02d %02d:%02d:%02d",
-					&vInfo.start_year,
-					&vInfo.start_mon,
-					&vInfo.start_day,
-					&vInfo.start_hour,
-					&vInfo.start_min,
-					&vInfo.start_sec);
-	sscanf(etime,"%04d-%02d-%02d %02d:%02d:%02d",
-					&vInfo.end_year,
-					&vInfo.end_mon,
-					&vInfo.end_day,
-					&vInfo.end_hour,
-					&vInfo.end_min,
-					&vInfo.end_sec);
-
-	mSqlite->push_back(vInfo);
-
-    return 0;
+	CString strsql;
+	strsql.Format("delete from tb_video where nid=%d",nid);
+	m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 }
 
 ////////////////////////////////////////////////////
 unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Description,\
 											 char *starttime,char *endtime,int flag,char *sql)
 {
-	CString strSql = _T("select count(1) from tb_video");
+	CString strSql = _T("select count(*) as number from tb_video");
 	CString tempSql = "";
 	CString outSql = "";
 	bool wflag = false;
 
 	if((flag&0x01) != 0)
 	{	
-		tempSql.Format(_T(" where RunningNumber like '%%%s%%' or tag like '%%%s%%'"),runnum,runnum);
+		tempSql.Format(_T(" where RunningNumber like '%%s%' or tag like '%%s%'"),runnum,runnum);
 		wflag = true;
 		strSql = strSql + tempSql;
 		outSql = outSql + tempSql;
@@ -378,11 +408,11 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 	{
 		if(wflag)
 		{
-			tempSql.Format(_T(" and HmNum like '%%%s%%'"),HmNum);
+			tempSql.Format(_T(" and HmNum like '%%s%'"),HmNum);
 		}
 		else
 		{
-			tempSql.Format(_T(" where HmNum like '%%%s%%'"),HmNum);
+			tempSql.Format(_T(" where HmNum like '%%s%'"),HmNum);
 			wflag = true;
 		}
 		strSql = strSql + tempSql;
@@ -392,11 +422,11 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 	{
 		if(wflag)
 		{
-			tempSql.Format(_T(" and Description like '%%%s%%'"),Description);
+			tempSql.Format(_T(" and Description like '%%s%'"),Description);
 		}
 		else
 		{
-			tempSql.Format(_T(" where Description = '%%%s%%'"),Description);
+			tempSql.Format(_T(" where Description = '%%s%'"),Description);
 			wflag = true;
 		}
 		strSql = strSql + tempSql;
@@ -406,11 +436,11 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 	{
 		if(wflag)
 		{
-			tempSql.Format(_T(" and stime >= strftime('%s') and etime <= strftime('%s')"),starttime,endtime);
+			tempSql.Format(_T(" and stime >= '%s' and etime <= '%s'"),starttime,endtime);
 		}
 		else
 		{
-			tempSql.Format(_T(" where stime >= strftime('%s') and etime <= strftime('%s')"),starttime,endtime);
+			tempSql.Format(_T(" where stime >= '%s' and etime <= '%s'"),starttime,endtime);
 			wflag = true;
 		}
 		strSql = strSql + tempSql;
@@ -418,13 +448,9 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 	}
 	strcpy(sql,outSql.GetBuffer(0));
 
-	unsigned long num = 0;
-	sqlite3_prepare_v2(m_pDB, strSql.GetBuffer(0), strlen(strSql.GetBuffer(0)) + 1, &stmt, NULL);
-	if(sqlite3_step(stmt) == SQLITE_ROW)
-	{
-		num = sqlite3_column_int(stmt, 0);
-	}
-	sqlite3_finalize(stmt);
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("number");
 
 	return num;
 }
@@ -432,21 +458,91 @@ unsigned long CSqliteOperate::Video_GetCount(char *runnum,char *HmNum,char *Desc
 bool CSqliteOperate::Video_GetHistory(char *sql,int flag,int startNum,int endNum,\
 									  list<struct VIDEO_INFO_ST> &videoList)
 {
-	CString strSql = "select id,RunningNumber,tag,HmNum,Description,strftime(stime),strftime(etime),size,path from tb_video";
+	CString strSql = "select * from (select nid,RunningNumber,tag,HmNum,Description,\
+									 convert(varchar(19),stime,120) as starttime,\
+									 convert(varchar(19),etime,120) as endtime,\
+									 nsize,spath,row_number() over(order by nid desc) as rn from tb_video";
+	CString tempSql = sql;
 	CString numSql;
-	numSql.Format(_T(" limit %d offset %d"),(endNum-startNum+1),(startNum-1));
-	strSql = strSql + sql + numSql;
-	char* cErrMsg;
-	int res = sqlite3_exec(m_pDB, strSql.GetBuffer(0), ReadViedoCallBack , &videoList , &cErrMsg); 
-	if(res == SQLITE_OK)
+	numSql.Format(_T(") as a where rn >= %d and rn <= %d"),startNum,endNum);
+
+	strSql = strSql + tempSql + numSql;
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+	if(m_pRecordsetPtr->adoBOF)
 	{
-		if(videoList.size())
-			return true;
-		else
-			return false;
+		return false;
+	}
+	else
+	{
+		m_pRecordsetPtr->MoveFirst();
+	}
+
+	while(!m_pRecordsetPtr->adoEOF)
+	{
+		variant_t temp; 
+		temp.ChangeType(VT_NULL);
+
+		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
+		variant_t RunningNumber = m_pRecordsetPtr->GetCollect("RunningNumber");
+		variant_t tag = m_pRecordsetPtr->GetCollect("tag");
+		variant_t HmNum = m_pRecordsetPtr->GetCollect("HmNum");
+		variant_t Description = m_pRecordsetPtr->GetCollect("Description");
+		variant_t stime = m_pRecordsetPtr->GetCollect("starttime");
+		variant_t etime = m_pRecordsetPtr->GetCollect("endtime");
+		variant_t nsize = m_pRecordsetPtr->GetCollect("nsize");
+		variant_t spath = m_pRecordsetPtr->GetCollect("spath");
+
+		struct VIDEO_INFO_ST VideoInfo = {0};
+		VideoInfo.nid = (long)nid;
+		if(RunningNumber.vt != NULL && RunningNumber !=temp)
+		{
+			CString str = RunningNumber.bstrVal;
+			strcpy(VideoInfo.RunningNumber, str.GetBuffer(0));
+		}
+		if(tag.vt != NULL && tag !=temp)
+		{
+			CString str = tag.bstrVal;
+			strcpy(VideoInfo.tag, str.GetBuffer(0));
+		}
+		if(HmNum.vt != NULL && HmNum !=temp)
+		{
+			CString str = HmNum.bstrVal;
+			strcpy(VideoInfo.HmNum, str.GetBuffer(0));
+		}
+		if(Description.vt != NULL && Description !=temp)
+		{
+			CString str = Description.bstrVal;
+			strcpy(VideoInfo.Description, str.GetBuffer(0));
+		}
+
+		sscanf(LPCTSTR((CString)stime.bstrVal),"%04d-%02d-%02d %02d:%02d:%02d",
+			   &VideoInfo.start_year,&VideoInfo.start_mon,&VideoInfo.start_day,
+			   &VideoInfo.start_day,&VideoInfo.start_min,&VideoInfo.start_sec);
+		sscanf(LPCTSTR((CString)etime.bstrVal),"%04d-%02d-%02d %02d:%02d:%02d",
+			   &VideoInfo.end_year,&VideoInfo.end_mon,&VideoInfo.end_day,
+			   &VideoInfo.end_day,&VideoInfo.end_min,&VideoInfo.end_sec);
+
+		VideoInfo.size = (long)nsize;
+		if(spath.vt != NULL && spath !=temp)
+		{
+			CString str = spath.bstrVal;
+			strcpy(VideoInfo.path, str.GetBuffer(0));
+		}
+
+		videoList.push_back(VideoInfo);
+		m_pRecordsetPtr->MoveNext();
+	}
+	m_pRecordsetPtr->Close();
+	if(videoList.size() > 0)
+	{
+		return true;
 	}
 	else
 	{
 		return false;
 	}
+
+	return false;
+
 }

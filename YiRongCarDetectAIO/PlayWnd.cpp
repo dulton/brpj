@@ -122,7 +122,7 @@ void CPlayWnd::OnContextMenu(CWnd* pWnd, CPoint point)
 	CMenu menu;
 	menu.CreatePopupMenu();
 //	menu.AppendMenu(MF_STRING | pContainer->GetFullScreen()    ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_FULLSCREEN, NAME_MENU_FULLSCREEN);
-	menu.AppendMenu(MF_STRING | pContainer->GetMultiScreen()    ? MF_CHECKED : MF_UNCHECKED, 	VIDEO_MENU_MULTISCREEN, NAME_MENU_MULTISCREEN);
+//	menu.AppendMenu(MF_STRING | pContainer->GetMultiScreen()    ? MF_CHECKED : MF_UNCHECKED, 	VIDEO_MENU_MULTISCREEN, NAME_MENU_MULTISCREEN);
 	menu.AppendMenu(MF_STRING | pContainer->GetAutoAdjustPos() ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_AUTOADJUST, NAME_MENU_AUTOADJUST);
 	menu.AppendMenu(MF_STRING | pContainer->GetPlayState(screenNo) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STARTPLAY, NAME_MENU_STARTPLAY);
 	menu.AppendMenu(MF_STRING | (!pContainer->GetPlayState(screenNo)) ? MF_CHECKED : MF_UNCHECKED, VIDEO_MENU_STOPPLAY, NAME_MENU_STOPPLAY);

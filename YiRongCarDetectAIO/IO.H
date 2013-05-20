@@ -239,6 +239,8 @@ public:
 	bool CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool CAR_AlarmResult_Execute(int nid,bool *isblack);
+	//统计分析
+	unsigned long int CAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime);
 
 	/**************************电动车结果表、报警表*******************************/
 	bool ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direction,char *plate,int reliability,
@@ -252,6 +254,8 @@ public:
 	bool ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool ELECAR_AlarmResult_Execute(int nid,bool *isblack);
+	//统计分析
+	unsigned long int ELECAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime);
 
 	/**************************汽车黑名单表*******************************/
 	bool CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo);

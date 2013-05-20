@@ -10,6 +10,8 @@
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
+#include "DLGWarnning.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -412,15 +414,28 @@ void CDLGHistoryVideo::OnButtonDelete()
 	//删除数据库
 	unsigned long int nid;
 	char str[260];
-	m_List.GetItemText(ListChoose,8,str,260);
+	m_List.GetItemText(ListChoose,0,str,260);
+	CString temp=str;
 
-	sscanf(str,"%d",&nid);
-	OracleIO.VIDEO_DeleteVideo(nid);
-
-	//删除文件
+	//警告框
+	CDLGWarnning dlgw;
+	dlgw.m_wintxt="删除该视频 序号:"+temp;	//窗口标题
 	m_List.GetItemText(ListChoose,7,str,260);
-	DeleteFile(str);
-
-	ListNow=0;
-	DisplayerList();
+	temp=str;
+	dlgw.m_warntxt="请再次确定是否删除:"+temp;	//窗口内容
+	int nResponse=dlgw.DoModal();
+	if (nResponse == IDOK)
+	{
+		m_List.GetItemText(ListChoose,8,str,260);
+		
+		sscanf(str,"%d",&nid);
+		OracleIO.VIDEO_DeleteVideo(nid);
+		
+		//删除文件
+		m_List.GetItemText(ListChoose,7,str,260);
+		DeleteFile(str);
+		
+		ListNow=0;
+		DisplayerList();
+	}
 }

@@ -43,6 +43,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGProductInfo)
 	enum { IDD = IDD_PRODUCT_INFO };
+	CEdit	m_barcodeCtrl;
 	CStatic	m_pic3;
 	CStatic	m_pic2;
 	CStatic	m_pic1;
@@ -53,6 +54,7 @@ public:
 	CPicture pic3;
 	CFont TextFont;
 	UINT  m_recordtimer;
+	CString old_barcode;
 
 	BOOL OnInitDialog();
 	void AutoSize();

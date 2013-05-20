@@ -111,10 +111,11 @@ CCarDetect::~CCarDetect()
 	int i;
 	for(i=0;i<CAR_STRUCT_MAX;i++)
 	{
-		free(CarInfo[i].Str);
-		free(CarInfo[i].CarColor);
-		free(CarInfo[i].PlateColor); 
-		free(CarInfo[i].PlateType); 
+		//屏蔽。可能存在退出泄露风险。
+//		free(CarInfo[i].Str);
+//		free(CarInfo[i].CarColor);
+//		free(CarInfo[i].PlateColor); 
+//		free(CarInfo[i].PlateType); 
 	}
 }
 
@@ -879,15 +880,15 @@ void CCarDetect::CleanList(void)
 //停止画面
 void CCarDetect::Stop()
 {
-
 	if(1==State)
 	{
+		Sleep(100);
 		lc_plate_analysis_destroy(CarHandle);
 		//当为 ~()释放函数时。加此会出错
 		errorprintf("识别停止成功");
+		CarHandle=NULL;
 	}
 
-	CarHandle=NULL;
 	State=-1;
 
 	CarTotal=0;

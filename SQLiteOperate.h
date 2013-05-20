@@ -1,12 +1,14 @@
 
-#ifndef _SQLITE_OPERATE_
-#define _SQLITE_OPERATE_
 
-#include "sqlite3.h"
+#ifndef _SQLITE_OPERATE_H_
+#define _SQLITE_OPERATE_H_
+
+#include <afx.h>
 #include <list>
 using namespace::std;
 
-#pragma comment( lib, "sqlite3.lib")
+//#import "C:\Program Files\Common Files\System\ado\msado15.dll" no_namespace rename("EOF","adoEOF") rename("BOF","adoBOF")
+#import "msado15.dll" no_namespace rename("EOF","adoEOF") rename("BOF","adoBOF")
 
 struct CAMERA_INFO_ST
 {
@@ -66,37 +68,43 @@ struct VIDEO_INFO_ST
 	char path[260];	//文件路径
 };
 
+//数据库连接函数 返回值 定义
+#define ReadFile_FAIL -1	//配置文件打开失败
+#define Instance_FAIL -2	//数据库ADO初始化失败
+#define ContOpen_FAIL -3	//数据库无法连接-账号密码IP异常
+#define Connectd_DONE 1		//数据库连接成功	
+
 class CSqliteOperate
 {
 public:
-	sqlite3 * m_pDB;
-	sqlite3_stmt* stmt;
-	bool readProductSuccess;
-	struct PRODUCT_INFO_ST m_productInfo;
+	TCHAR Ip[256];
+	TCHAR Port[256];
+	TCHAR User[256];
+	TCHAR Psw[256];
+	TCHAR DataBaseName[256];
+	_ConnectionPtr m_pConnection;					//创建oracle connection对象
+	_RecordsetPtr m_pRecordsetPtr;					//创建数据记录集
+	bool state;
+
 public:
 	CSqliteOperate(void);
-	virtual ~CSqliteOperate(void);
-	//打开数据库
-	int OpenDB(char *file);
-	//关闭数据库
-	void CloseDB();
-	//执行SQL语句
-	void Sql_Execute(char *sql);
-
-	//摄像头表
+	~CSqliteOperate(void);
+	bool ReadFile(char* FileName);					//读数据库配置文件
+	int ConnectionDataBase(char* FileName);			//连接数据库
+	bool DisConnectionDataBase(void);				//断开与oracle数据库的连接
+	/**************************设备表*******************************/
 	void Camera_CreateTable(void);
 	void Camera_Add(struct CAMERA_INFO_ST cInfo);
 	void Camera_Modify(struct CAMERA_INFO_ST cInfo);
 	void Camera_Delete(unsigned long int nid);
 	bool Camera_Read(int maxNum,list<struct CAMERA_INFO_ST> &cameraList);
-	//产品信息表
+	/************************产品信息表*****************************/
 	void Product_CreateTable(void);
 	void Product_Add(struct PRODUCT_INFO_ST pInfo);
 	void Product_Modify(struct PRODUCT_INFO_ST pInfo);
 	void Product_Delete(unsigned long int nid);
 	bool Product_Read(char *barcode,struct PRODUCT_INFO_ST &pInfo);
-
-	//视频信息表
+	/************************视频信息表*****************************/
 	void Video_CreateTable(void);
 	void Video_Add(char *RunningNumber,char *tag,char *HmNum,char *Description,\
 				   char *starttime,char *endtime,char *path,unsigned long size);
@@ -105,19 +113,7 @@ public:
 								 char *starttime,char *endtime,int flag,char *sql);
 	bool Video_GetHistory(char *sql,int flag,int startNum,int endNum,\
 							list<struct VIDEO_INFO_ST> &videoList);
-
 };
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "BarcodeRecord.h"
 #include "DLGVideoList.h"
-
+#include "DLGWarnning.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -284,10 +284,10 @@ void CDLGVideoList::OnButtonJump()
 	}	
 	else
 	{
-		if(IsChinese)
-			MessageBox("不在页面范围");
-		else
-			MessageBox("This page can not be found");
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt=Language_ConvertString("Warnning");						//窗口标题
+		dlgw.m_warntxt=Language_ConvertString("This page can not be found");		//窗口内容
+		dlgw.DoModal();
 	}
 }
 

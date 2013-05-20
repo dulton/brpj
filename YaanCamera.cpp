@@ -5,12 +5,16 @@
 #include "stdafx.h"
 #include "YaanCamera.h"
 #include "BarcodeRecord.h"
+#include "DLGWarnning.h"
+
 //////////////////////////////////////////////////////////////
 #include "BarcodeRecordDlg.h"
 extern CBarcodeRecordDlg *pCMainDlg;
 ////////////////////////////////////
 #include "SqliteOperate.h"
 extern CSqliteOperate SQLiteIO;
+
+extern bool IsChinese;
 
 #include "Yaanlib/launet.h"
 #include "Yaanlib/megaplay.h"
@@ -93,7 +97,11 @@ bool CYaanCamera::StartPlay(int nCuWinID,char *name,char *sip,WORD port,char *us
 	m_playhandle[nCuWinID] = VSNET_ClientStart(sip,&pVSChann,port);
 	if (m_playhandle[nCuWinID] == -1)
 	{
-		AfxMessageBox(_T("启动通道失败 ：\n句柄获取失败\n可能输入的IP不存在"));
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt=Language_ConvertString("Warnning");						//窗口标题
+		dlgw.m_warntxt=Language_ConvertString("Connect Camera Failded!");		//窗口内容
+		dlgw.DoModal();
+
 		return false;
 	}
 	else

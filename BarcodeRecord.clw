@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CDLGWarnning
+LastClass=CBarcodeRecordDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "BarcodeRecord.h"
@@ -15,21 +15,21 @@ Class3=CAboutDlg
 ResourceCount=10
 Resource1=IDD_PRODUCT_INFO
 Resource2=IDR_MAINFRAME
-Resource3=IDD_PLAYWIN
-Resource4=IDD_ABOUTBOX
-Resource5=IDD_CONTROL
-Resource6=IDD_NEWDEVICE
+Resource3=IDD_NEWDEVICE
+Resource4=IDD_BARCODERECORD_DIALOG
+Resource5=IDD_SETTINGS
+Resource6=IDD_ABOUTBOX
 Class4=CDLGProductList
 Resource7=IDD_VIDEOLIST
 Class5=CDLGVideoList
 Class6=CDLGControl
 Class7=CDLGPlaywin
 Class8=CDLGProductInfo
-Resource8=IDD_BARCODERECORD_DIALOG
+Resource8=IDD_CONTROL
 Class9=CDLGSettings
 Class10=CDLGNewDevice
 Class11=a1111111
-Resource9=IDD_SETTINGS
+Resource9=IDD_PLAYWIN
 Class12=CDLGWarnning
 Resource10=IDD_WARNNING
 
@@ -194,7 +194,7 @@ HeaderFile=DLGProductInfo.h
 ImplementationFile=DLGProductInfo.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=CDLGProductInfo
+LastObject=IDC_EDIT_BARCODE
 VirtualFilter=dWC
 
 [DLG:IDD_SETTINGS]

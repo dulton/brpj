@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "BarcodeRecord.h"
 #include "DLGPlaywin.h"
+#include "DLGWarnning.h"
 
 #include "Yaanlib/launet.h"
 #include "Yaanlib/megaplay.h"
@@ -289,7 +290,11 @@ bool CDLGPlaywin::StartRecord()
 		}
 		else
 		{
-			MessageBox(Language_ConvertString("Please enter a Product code"));
+			CDLGWarnning dlgw;
+			dlgw.m_wintxt=Language_ConvertString("Warnning");						//窗口标题
+			dlgw.m_warntxt=Language_ConvertString("Please enter a Product code");		//窗口内容
+			dlgw.DoModal();
+
 			return false;
 		}
 	}

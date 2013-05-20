@@ -102,7 +102,6 @@ BOOL CBarcodeRecordDlg::OnInitDialog()
 //	SQLiteIO.Product_CreateTable();
 //	SQLiteIO.Video_CreateTable();
 //	SQLiteIO.Video_Add("","03731052488050","51609.00RBLGRY","PRESTON STUD DINING CHAIR","2013-04-16 22:34:50","2013-04-16 22:44:50","D:\\Video",102400);
-
 	DlgNewDevice.read();
 
 	//翻译
@@ -145,9 +144,16 @@ BOOL CBarcodeRecordDlg::OnInitDialog()
 	//设置字体
 	TextFont.CreatePointFont(110,_T("Arial"));
 	GetDlgItem(IDC_STATIC_TITLE)->SetFont(&TextFont,true);
+
+
+	CEdit* pEdit = (CEdit *)DlgProductInfo.GetDlgItem(IDC_EDIT_BARCODE);
+	pEdit->SetFocus();
+	pEdit->SetSel(0,-1);
+
+
 	// TODO: Add extra initialization here
 	
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return false;  // return TRUE  unless you set the focus to a control
 }
 
 
@@ -293,4 +299,5 @@ void CBarcodeRecordDlg::UpdatePannelPosition()
 	//必须 样式=重叠，边框=调整大小
 	DlgPlaywin.MoveWindow(playwin_Rect);
 }
+
 

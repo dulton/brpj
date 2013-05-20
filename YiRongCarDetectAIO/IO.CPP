@@ -1392,6 +1392,21 @@ bool IO::CAR_AlarmResult_Execute(int nid,bool *isblack)
 	return iresult;
 }
 
+unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime)
+{
+	CString	strSql="";
+
+	strSql.Format(_T("select count(1) from tb_match_result_car where ncamera = %d \
+						and dcreate between to_date(%s,'yyyymmddhh24miss') \
+						and to_date(%s,'yyyymmddhh24miss')"),CAMID,startTime,endTime);
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	unsigned long int num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+
+	return num;
+}
+
 bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direction,char *plate,int reliability,
 									char *path,unsigned long int picsize,unsigned char *picdata)
 {
@@ -1915,6 +1930,21 @@ bool IO::ELECAR_AlarmResult_Execute(int nid,bool *isblack)
 	(*isblack)=black;
 
 	return iresult;
+}
+
+unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime)
+{
+	CString	strSql="";
+
+	strSql.Format(_T("select count(1) from tb_match_result_vehicle where ncamera = %d \
+						and dcreate between to_date(%s,'yyyymmddhh24miss') \
+						and to_date(%s,'yyyymmddhh24miss')"),CAMID,startTime,endTime);
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	unsigned long int num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+
+	return num;
 }
 
 bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)

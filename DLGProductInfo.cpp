@@ -4,6 +4,9 @@
 #include "stdafx.h"
 #include "BarcodeRecord.h"
 #include "DLGProductInfo.h"
+#include "DLGWarnning.h"
+
+#include "SignalDownload.h"
 
 #include "BarcodeRecordDlg.h"
 extern CBarcodeRecordDlg *pCMainDlg;
@@ -34,7 +37,7 @@ CDLGProductInfo::CDLGProductInfo(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CDLGProductInfo)
 	m_barcode = _T("");
 	//}}AFX_DATA_INIT
-
+	old_barcode = _T("");
 	curchoose=0;
 	m_recordtimer = 0;
 
@@ -49,6 +52,7 @@ void CDLGProductInfo::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGProductInfo)
+	DDX_Control(pDX, IDC_EDIT_BARCODE, m_barcodeCtrl);
 	DDX_Control(pDX, IDC_STATIC_PIC3, m_pic3);
 	DDX_Control(pDX, IDC_STATIC_PIC2, m_pic2);
 	DDX_Control(pDX, IDC_STATIC_PIC1, m_pic1);
@@ -74,6 +78,11 @@ BOOL CDLGProductInfo::OnInitDialog()
 {
 	Language_SetWndStaticText(this);
 	CDialog::OnInitDialog();
+
+//	CEdit* pEdit = (CEdit *)GetDlgItem(IDC_EDIT_BARCODE);
+//	pEdit->SetFocus();
+//	pEdit->SetWindowText("");
+//	pEdit->SetSel(0,-1);
 
 	//设置字体
 	TextFont.CreatePointFont(350,_T("Arial Black"));
@@ -136,10 +145,11 @@ void CDLGProductInfo::OnButtonOk()
 
 	if(m_barcode.IsEmpty())
 	{
-		if(IsChinese)
-			MessageBox("请输入产品条形码");
-		else
-			MessageBox("Please Input Running Number or Carton TAG");
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt=Language_ConvertString("Warnning");						//窗口标题
+		dlgw.m_warntxt=Language_ConvertString("Please Input Running Number or Carton TAG");		//窗口内容
+		dlgw.DoModal();
+
 		return ;
 	}
 
@@ -147,17 +157,29 @@ void CDLGProductInfo::OnButtonOk()
 	memset(&temp,0,sizeof(struct PRODUCT_INFO_ST));
 	if(!SQLiteIO.Product_Read(m_barcode.GetBuffer(0),temp))
 	{
-		if(IsChinese)
-			MessageBox("此产品无法找到");
-		else
-			MessageBox("This Product can not be found");
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt=Language_ConvertString("Warnning");						//窗口标题
+		dlgw.m_warntxt=Language_ConvertString("This Product can not be found");		//窗口内容
+		dlgw.DoModal();
 	}
 	else
 	{
 		DisplayLite(temp);
-		pCMainDlg->DlgControl.OnButtonStop();
-		pCMainDlg->DlgControl.OnButtonRecord();
+		if(old_barcode != m_barcode)
+		{
+			pCMainDlg->DlgControl.OnButtonStop();
+			pCMainDlg->DlgControl.OnButtonRecord();
+			old_barcode = m_barcode;
+		}
+		else
+		{
+			pCMainDlg->DlgControl.OnButtonStop();
+		}
 	}
+	CEdit* pEdit = (CEdit *)GetDlgItem(IDC_EDIT_BARCODE);
+	pEdit->SetFocus();
+//	pEdit->SetWindowText("");
+	pEdit->SetSel(0,-1);
 }
 
 //外部选中窗口后调用此
@@ -169,6 +191,7 @@ void CDLGProductInfo::Display(int i)
 //清空函数
 void CDLGProductInfo::Clean(int i)
 {
+	old_barcode = _T("");
 	memset(&data[i],0,sizeof(struct PRODUCT_INFO_ST));
 }
 
@@ -192,6 +215,8 @@ void CDLGProductInfo::DisplayTemp()
 
 void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 {
+	SignalDownload a;
+
 	if(input.nid >0)
 	{
 		GetDlgItem(IDC_STATIC_RUNNUMBER)->SetWindowText(input.RunningNumber);     
@@ -208,7 +233,8 @@ void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 
 		if(strlen(input.path1))
 		{
-			bi=pic1.LoadPicture(input.path1);
+			a.HTTPDownload(input.path1,"pi1.jpg",5,0);
+			bi=pic1.LoadPicture("pi1.jpg");
 			m_pic1.SetBitmap(bi);
 		}
 		else
@@ -216,7 +242,8 @@ void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 
 		if(strlen(input.path2))
 		{
-			bi=pic2.LoadPicture(input.path2);
+			a.HTTPDownload(input.path2,"pi2.jpg",5,0);
+			bi=pic2.LoadPicture("pi2.jpg");
 			m_pic2.SetBitmap(bi);
 		}
 		else
@@ -224,7 +251,8 @@ void CDLGProductInfo::DisplayLite(struct PRODUCT_INFO_ST &input)
 
 		if(strlen(input.path3))
 		{
-			bi=pic3.LoadPicture(input.path3);
+			a.HTTPDownload(input.path3,"pi3.jpg",5,0);
+			bi=pic3.LoadPicture("pi3.jpg");
 			m_pic3.SetBitmap(bi);
 		}
 		else

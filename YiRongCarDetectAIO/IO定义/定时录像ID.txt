@@ -1,0 +1,1 @@
+ID_MENUITEM_SET_RECORD  定时录像设置 的定义

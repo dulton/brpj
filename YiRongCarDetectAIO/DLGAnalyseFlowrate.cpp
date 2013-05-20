@@ -153,8 +153,7 @@ void CDLGAnalyseFlowrate::OnButtonSearchAll()
 
 		m_List.SetItemText(nItem,4,	str);
 //////////////////////////////
-		total=GetCount(DlgMain->DlgDeviceTree.iplist[i].name.GetBuffer(0),
-			DlgMain->DlgDeviceTree.iplist[i].ip.GetBuffer(0),STime,ETime);
+		total=GetCount(DlgMain->DlgDeviceTree.iplist[i].camID,STime,ETime);
 		sprintf(str,"%d",total);
 		m_List.SetItemText(nItem,5,	str);
 		//寻找最大值
@@ -230,7 +229,7 @@ void CDLGAnalyseFlowrate::OnButtonSearchSingle()
 					m_Day.GetDay(),
 					j);
 				
-				total=GetCount(ipname.GetBuffer(0),m_ip.GetBuffer(0),STime,ETime);
+				total=GetCount(DlgMain->DlgDeviceTree.iplist[i].camID,STime,ETime);
 				
 				sprintf(str,"%d",total);
 				m_List.SetItemText(nItem,5,	str);
@@ -251,15 +250,16 @@ void CDLGAnalyseFlowrate::OnButtonSearchSingle()
 	m_List.InitProgressMax(max);
 }
 
-unsigned long int CDLGAnalyseFlowrate::GetCount(char *ipname,char *ip,char *stime,char*etime)
+unsigned long int CDLGAnalyseFlowrate::GetCount(unsigned long int camid,char *stime,char*etime)
 {
+/*
 	char SqlStr[1024];
 	int searchFlag=0;
 	
 	searchFlag = 0x02;
 	searchFlag |= 0x01;
 	searchFlag |= 0x08;
-	
+
 #if ALLTAB_DETECT_CAR_MODE
 	//汽车
 	return OracleIO.CAR_MatchResult_GetNum(
@@ -285,5 +285,12 @@ unsigned long int CDLGAnalyseFlowrate::GetCount(char *ipname,char *ip,char *stim
 		"",
 		searchFlag,
 		SqlStr);
+#endif
+*/
+
+#if ALLTAB_DETECT_CAR_MODE
+	return OracleIO.CAR_MatchResult_Count(camid,stime,etime);
+#else
+	return OracleIO.ELECAR_MatchResult_Count(camid,stime,etime);
 #endif
 }
