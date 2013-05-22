@@ -757,7 +757,7 @@ int CCarDetect::Result()
 				{
 					//数据库
 					nid=OracleIO.YRVM_getElectricCarOracleTempNid();
-					if(OracleIO.YRVM_writeElectricCarTempPhotoToOracleDB(l_ipaddr,Jpg,JpgSize,nid))
+					if(! OracleIO.YRVM_writeElectricCarTempPhotoToOracleDB(l_ipaddr,Jpg,JpgSize,nid))
 					{
 						errorprintf("YRVM数据库错误:可能无此摄像头IP或者识别结果插入错误");
 						DlgMain->ShowRuntimeMessage("YRVM数据库错误:可能无此摄像头IP或者识别结果插入错误",1);

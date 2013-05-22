@@ -252,45 +252,11 @@ void CDLGAnalyseFlowrate::OnButtonSearchSingle()
 
 unsigned long int CDLGAnalyseFlowrate::GetCount(unsigned long int camid,char *stime,char*etime)
 {
-/*
-	char SqlStr[1024];
-	int searchFlag=0;
-	
-	searchFlag = 0x02;
-	searchFlag |= 0x01;
-	searchFlag |= 0x08;
-
-#if ALLTAB_DETECT_CAR_MODE
-	//汽车
-	return OracleIO.CAR_MatchResult_GetNum(
-		ipname,
-		ip,
-		"",
-		stime,
-		etime,
-		"",
-		"",
-		"",
-		"",
-		searchFlag,
-		SqlStr);
-#else
-	//电动车
-	return OracleIO.ELECAR_MatchResult_GetNum(
-		ipname,
-		ip,
-		"",
-		stime,
-		etime,
-		"",
-		searchFlag,
-		SqlStr);
-#endif
-*/
 
 #if ALLTAB_DETECT_CAR_MODE
 	return OracleIO.CAR_MatchResult_Count(camid,stime,etime);
 #else
 	return OracleIO.ELECAR_MatchResult_Count(camid,stime,etime);
 #endif
+
 }

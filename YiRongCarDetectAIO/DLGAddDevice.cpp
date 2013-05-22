@@ -141,6 +141,7 @@ void CDLGAddDevice::OnButtonAddarea()
 			this->GetDlgItem(IDC_EDIT_CAM_PORT)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_CAM_USER)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_CAM_PSW)->EnableWindow(0);
+			this->GetDlgItem(IDC_COMBO_CAMVENDER)->EnableWindow(0);
 			this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("请按确定，系统将为您新增一个区域");
 			AddAreaFlag = true;
 		}

@@ -187,8 +187,11 @@ void CDLGSetSystem::OnButtonCapbmpDir()
 void CDLGSetSystem::OnOK() 
 {
 	// TODO: Add extra validation here
-	//写入
 	UpdateData(TRUE);
+	
+	if(m_record_cuttime < 1 || m_record_cuttime >60)
+		return ;
+
 	Dlg2Write();
 
 	//创建文件夹

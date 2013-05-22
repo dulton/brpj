@@ -81,7 +81,7 @@ BOOL CDataBaseConfigDlg::OnInitDialog()
 	m_cancel.SizeToContent();		//自适应图片大小
 
 	//设标题
-	SetWindowText("亿榕车牌识别系统-数据库连接设置");
+	SetWindowText("车牌识别系统-数据库连接设置");
 
 	//先读取
 	TCHAR ipaddr[RCT_MAX_STR_SIZE]="";

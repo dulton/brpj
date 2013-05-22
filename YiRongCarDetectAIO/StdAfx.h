@@ -68,7 +68,7 @@ typedef enum _PTZ_Command
 #define ALLTAB_LOGIN_WIN_MODE 1
 
 //弹出框题目
-#define MESSAGEBOX_TITLE "亿榕车牌识别系统"
+#define MESSAGEBOX_TITLE "车牌识别系统"
 
 //最多增加区域
 #define MAX_AREA 1024

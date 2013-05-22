@@ -14,12 +14,23 @@ using namespace std;
 
 #include "tinyxml.h"
 
+#ifdef NDEBUG
+//RELEASE
+#if (_MSC_VER == 1500)
+#pragma comment(lib,"tinyxmlSTLvc2008UTF8Mt.lib") 
+#else
+#pragma comment(lib,"tinyxmlSTLvc6UTF8Mt.lib") 
+#endif // _MSC_VER > 1000
+
+#else
+//DEBUG
 #if (_MSC_VER == 1500)
 #pragma comment(lib,"tinyxmlSTLvc2008UTF8Mtd.lib") 
 #else
 #pragma comment(lib,"tinyxmlSTLvc6UTF8Mtd.lib") 
 #endif // _MSC_VER > 1000
 
+#endif
 
 #define XMLRW_MAX_WSTR 2560
 #define XMLRW_MAX_STR 5120

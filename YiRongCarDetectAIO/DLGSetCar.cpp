@@ -38,14 +38,21 @@ void CDLGSetCar::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CDLGSetCar)
 	DDX_CBString(pDX, IDC_DEFAULT_PROVINCE, m_defaultProvince);
 	DDX_Text(pDX, IDC_EDIT_RELIABILITY, m_reliability);
-	DDV_MinMaxInt(pDX, m_reliability, 0, 100);
+	DDV_MinMaxInt(pDX, m_reliability, 1, 100);
 	DDX_Text(pDX, IDC_EDIT_JPG_QUALITY, m_JPGquality);
+	DDV_MinMaxInt(pDX, m_JPGquality, 50, 100);
 	DDX_Text(pDX, IDC_EDIT_DOWN, m_RectDown);
+	DDV_MinMaxInt(pDX, m_RectDown, 0, 100);
 	DDX_Text(pDX, IDC_EDIT_LEFT, m_RectLeft);
+	DDV_MinMaxInt(pDX, m_RectLeft, 0, 100);
 	DDX_Text(pDX, IDC_EDIT_RIGHT, m_RectRight);
+	DDV_MinMaxInt(pDX, m_RectRight, 0, 100);
 	DDX_Text(pDX, IDC_EDIT_UP, m_RectUp);
+	DDV_MinMaxInt(pDX, m_RectUp, 0, 100);
 	DDX_Text(pDX, IDC_EDIT_MIN_WIDTH, m_MinWidth);
+	DDV_MinMaxInt(pDX, m_MinWidth, 60, 200);
 	DDX_Text(pDX, IDC_EDIT_MAX_WIDTH, m_MaxWidth);
+	DDV_MinMaxInt(pDX, m_MaxWidth, 60, 200);
 	//}}AFX_DATA_MAP
 }
 
