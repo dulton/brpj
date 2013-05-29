@@ -31,6 +31,15 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 	int screenNo = DlgMain->DlgScreen.m_video.m_haikang.GetPortWndindex(nPort);
 	if(screenNo<0)
 		return;
+
+	if( ! DlgMain->DlgScreen.m_video.m_haikang.CapturePath[screenNo].IsEmpty())
+	{
+		PlayM4_ConvertToBmpFile(pBuf, nSize, nWidth, nHeight, nType, 
+			DlgMain->DlgScreen.m_video.m_haikang.CapturePath[screenNo].GetBuffer(0));
+
+		DlgMain->DlgScreen.m_video.m_haikang.CapturePath[screenNo]="";
+	}
+
 	//在这做识别
 	
 	//车牌识别
@@ -94,7 +103,7 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 				break;
 			}
 
-			if (!PlayM4_OpenStream(lPort, pBuffer, dwBufSize, 1024*1024)) //打开流接口
+			if (!PlayM4_OpenStream(lPort, pBuffer, dwBufSize, 1920*1080)) //打开流接口
 			{
 				break;
 			}
@@ -345,7 +354,8 @@ void CHaikangSDK::PtzStopPlay()
 
 void CHaikangSDK::Capture(int screenNo,char *filename)
 {
-	if (NET_DVR_CapturePicture(m_LoginHandle[screenNo], filename))
+	/*
+	if (NET_DVR_CapturePicture(m_RealHandle[screenNo], filename))
 	{
 		//DlgMain->ShowCameraMessage(name,"抓图成功!",flag);
 	}
@@ -353,6 +363,10 @@ void CHaikangSDK::Capture(int screenNo,char *filename)
 	{
 		//DlgMain->ShowCameraMessage(name,"抓图失败!",flag);
 	}
+	*/
+	CapturePath[screenNo]=filename;
+	Sleep(150);
+
 }
 
 int CHaikangSDK::GetPortWndindex(long lport)

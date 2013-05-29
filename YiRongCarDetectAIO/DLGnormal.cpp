@@ -279,6 +279,7 @@ void CDLGnormal::OnButtonOpenchannel()
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
 	int curSreen = DlgMain->DlgScreen.GetCurWindId();
+	StopPlay(curSreen);
 	StartPlay(curSreen);
 }
 

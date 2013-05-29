@@ -18,6 +18,8 @@ public:
 	long m_lPort[MAX_DEVICE_NUM];
 	BOOL m_bPTZCtrl;
 
+	CString CapturePath[MAX_DEVICE_NUM];
+
 	void SDKInit();
 	bool StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype);
 	void StopPlay(int screenNo);

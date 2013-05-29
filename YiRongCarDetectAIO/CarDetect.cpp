@@ -48,10 +48,6 @@ CCarDetect::CCarDetect()
 	int i;
 	for(i=0;i<CAR_STRUCT_MAX;i++)
 	{
-		CarInfo[i].Str=(int8_t *)calloc(CAR_STR_MAX,sizeof(int8_t)); 
-		CarInfo[i].CarColor=(int8_t *)calloc(CAR_STR_MAX,sizeof(int8_t)); 
-		CarInfo[i].PlateColor=(int8_t *)calloc(CAR_STR_MAX,sizeof(int8_t)); 
-		CarInfo[i].PlateType=(int8_t *)calloc(CAR_STR_MAX,sizeof(int8_t)); 
 		//	CarInfo[i].SmallJpg=(unsigned char*)calloc(VIDEO_WIDTH*VIDEO_HEIGHT*3,sizeof(unsigned char));
 		//	CarInfo[i].SmallJpgSize=0;
 	}
@@ -108,15 +104,7 @@ CCarDetect::~CCarDetect()
 	for(i=0;i<CAR_STRUCT_MAX;i++)
 	free(CarInfo[i].SmallJpg);
 	*/
-	int i;
-	for(i=0;i<CAR_STRUCT_MAX;i++)
-	{
-		//屏蔽。可能存在退出泄露风险。
-//		free(CarInfo[i].Str);
-//		free(CarInfo[i].CarColor);
-//		free(CarInfo[i].PlateColor); 
-//		free(CarInfo[i].PlateType); 
-	}
+
 }
 
 
@@ -438,7 +426,6 @@ int CCarDetect::Result()
 
 		for(i=0;i<CarTotal;i++)
 		{
-			memset(CarInfo[i].Str,0,CAR_STR_MAX*sizeof(char));
 			lc_plate_get_plate_name(CarHandle,i,&CarInfo[i].Str);
 
 			//lc_plate_get_plate_color_id(CarHandle,i,&CarInfo[i].ColorId);
