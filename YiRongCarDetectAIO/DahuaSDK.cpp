@@ -76,8 +76,13 @@ int zogSize2WH(long int size,int *w,int *h)
 ///////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall DisConnectFunc(LONG lLoginID, char *pchDVRIP, LONG nDVRPort, DWORD dwUser)
 {
-
+	DlgMain->ShowCameraMessage(pchDVRIP,"掉线",0);
 }
+void __stdcall AutoConnectFunc(LONG lLoginID,char *pchDVRIP,LONG nDVRPort,DWORD dwUser)
+{
+	DlgMain->ShowCameraMessage(pchDVRIP,"重连成功",0);
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall SubDisConnectFunc(EM_INTERFACE_TYPE emInterfaceType, BOOL bOnline, LONG lOperateHandle, LONG lLoginID, DWORD dwUser)
@@ -103,12 +108,14 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 	BOOL bInput=FALSE;
 	if(0 != lRealHandle)
 	{
+		/*
 		FILE *fp=fopen("dahua.txt","a+");
 		if(fp)
 		{
 			fprintf(fp,"input data type: %d\n",dwDataType);
 			fclose(fp);
 		}
+		*/
 		//printf("input data type: %d\n", dwDataType);
 		switch(dwDataType) {
 		case 0:
@@ -201,6 +208,8 @@ void CDahuaSDK::SDKInit()
 {
 	CLIENT_Init(DisConnectFunc, 0);
 	CLIENT_SetSubconnCallBack(SubDisConnectFunc, 0);
+	CLIENT_SetAutoReconnect(AutoConnectFunc,0);
+	CLIENT_SetConnectTime(10000, 100);
 }
 
 bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype)
@@ -231,6 +240,7 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user
 
 		// 设置回调函数处理数据
 		CLIENT_SetRealDataCallBackEx(m_RealHandle[screenNo], RealDataCallBackEx, 0, 0x00000006);
+		DlgMain->ShowCameraMessage(name,"连接成功",0);
 		return true;
 	}
 	else

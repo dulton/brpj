@@ -58,7 +58,6 @@ public:
 	void		PtzControl(long lLoginID, int type, BOOL dwStop, int param);
 	bool		PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd);
 	void		PtzStopPlay();
-	void		RefrenshWnd();
 };
 
 #endif // !defined(AFX_VIDEOCHANNEL_H__D1736789_C3E0_4E20_88A2_304B89946F22__INCLUDED_)

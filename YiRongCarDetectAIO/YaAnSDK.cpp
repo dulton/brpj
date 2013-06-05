@@ -26,6 +26,57 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////
+// 显示回调
+//////////////////////////////////////////////////////////////////////
+//zogna添加
+void YUV2YUV420(BYTE *m_y,BYTE *m_u,BYTE *m_v,int width,int height,unsigned char* yuv420_image)
+{
+	long int size;
+	size=width*height;
+
+
+	memcpy(&yuv420_image[0],m_y,size);
+	memcpy(&yuv420_image[size],m_u,size/4);
+	memcpy(&yuv420_image[size+size/4],m_v,size/4);
+}
+
+
+static void WINAPI m_ShowCallBack(BYTE *m_y,BYTE *m_u,BYTE *m_v,int stridey,int strideuv,int width,int height,void *context)
+{
+    int hHandle = *((int*)context);
+
+	//车牌识别
+#if OPEN_CARDETECT_CODE 	
+	//启用识别
+	if(DlgMain->DlgScreen.m_videoInfo[hHandle].enableDetect)
+	{
+		//拷贝数值
+		DlgMain->DlgScreen.CarDetect[hHandle].m_playhandle=hHandle;
+		
+		DlgMain->DlgScreen.CarDetect[hHandle].alarmflag=
+			DlgMain->DlgScreen.m_videoInfo[hHandle].enableAlarm;
+		
+		DlgMain->DlgScreen.CarDetect[hHandle].camid=
+			DlgMain->DlgScreen.m_videoInfo[hHandle].camID;
+		
+		strcpy(DlgMain->DlgScreen.CarDetect[hHandle].cam_name,
+			DlgMain->DlgScreen.m_videoInfo[hHandle].name.GetBuffer(0));
+		
+		strcpy(DlgMain->DlgScreen.CarDetect[hHandle].l_ipaddr,
+			DlgMain->DlgScreen.m_videoInfo[hHandle].ip.GetBuffer(0));
+		//////////////////////////
+		YUV2YUV420(m_y,m_u,m_v,width,height,DlgMain->DlgScreen.m_video.m_yaAn.image[hHandle]);
+		DlgMain->DlgScreen.CarDetect[hHandle].Start(LC_VIDEO_FORMAT_I420,\
+			DlgMain->DlgScreen.m_video.m_yaAn.image[hHandle],width, height,width*height*3/2);
+		
+		DlgMain->DlgScreen.CarDetect[hHandle].Result();
+	}
+#endif
+
+
+}
+
+//////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 static void WINAPI s_messagecallback(LONG hHandle,int wParam,int lParam,void *context)
@@ -34,111 +85,6 @@ static void WINAPI s_messagecallback(LONG hHandle,int wParam,int lParam,void *co
 	int curWndIndex = pchannel->GetWndIndex(hHandle);
 	pchannel->LinkProcess(curWndIndex,lParam);
 }
-
-/*Note:In video and audio callback function,you must return as soon as possible.
-otherwise,you will lost frames or connection broken. */
-/*
-pbuff:       MPEG4 video data;have vol header,just send this data to decoder or save to disk.
-headsize:    MPEG4 Video frame head length;
-datasize:    MPEG4 video data length;
-timetick:    MPEG4 time tick(ms)
-biskeyframe: TRUE: key frame(I frame), FALSE : other
-*/
-static void WINAPI m_nomalvideo(char *pbuff,int headsize,int datasize,int timetick,int biskeyframe,void *context)
-{
-	int iRet;
-	int phandle = (*(int*)context);
-
-    iRet = LC_PLAYM4_InputData(phandle,(long*)(pbuff - headsize),headsize + datasize);
-	if(iRet != 0)
-	{
-		TRACE("send video data error\n",iRet);
-	}
-}
-/*
-pbuff:       MP3 audio data;just send this data to decoder or save to disk.
-headsize:    MP3 audio frame head length;
-datasize:    MP3 audio data length;
-timetick:    MP3 time tick(ms)
-biskeyframe: Not used.
-*/
-static void WINAPI m_nomalaudio(char *pbuff,int headsize,int datasize,int timetick,int biskeyframe,void *context)
-{
-	int iRet;
-	int phandle = (*(int*)context);
-
-	iRet = LC_PLAYM4_InputData(phandle,(long*)(pbuff - headsize),headsize + datasize);
-	if(iRet != 0)
-	{
-		TRACE("send audio data error\n",iRet);
-	}
-}
-//zogna添加
-void YUV2YUV420(VIDEO_FRAMEINFO *yuv_image,unsigned char* yuv420_image)
-{
-	long int size;
-	size=yuv_image->width*yuv_image->height;
-
-	memcpy(&yuv420_image[0],yuv_image->pY,size);
-	memcpy(&yuv420_image[size],yuv_image->pU,size/4);
-	memcpy(&yuv420_image[size+size/4],yuv_image->pV,size/4);
-}
-
-
-/*Decoder callback function*/
-static long  CALLBACK s_DecodeCallBack(long hHandle,long frametype,long *frameinfo,long lParam)
-{
-    CYaAnSDK *pchannel = (CYaAnSDK*)lParam;
-    if(frametype == FRAMETYPE_VIDEO)
-    {
-        VIDEO_FRAMEINFO *pframeinfo = (VIDEO_FRAMEINFO*)frameinfo;
-		/*
-        TRACE("video pchannel->handle:%d,handle:%d,timetick:%d,width:%d,height:%d,stridey:%d,strideuv:%d\n",
-            pchannel->m_RealHandle,hHandle,pframeinfo->timetick,pframeinfo->width,pframeinfo->height,
-            pframeinfo->stridey,pframeinfo->strideuv);
-			*/
-
-		//车牌识别
-#if OPEN_CARDETECT_CODE 	
-		//启用识别
-		if(DlgMain->DlgScreen.m_videoInfo[hHandle].enableDetect)
-		{
-			//拷贝数值
-			DlgMain->DlgScreen.CarDetect[hHandle].m_playhandle=hHandle;
-			
-			DlgMain->DlgScreen.CarDetect[hHandle].alarmflag=
-				DlgMain->DlgScreen.m_videoInfo[hHandle].enableAlarm;
-			
-			DlgMain->DlgScreen.CarDetect[hHandle].camid=
-				DlgMain->DlgScreen.m_videoInfo[hHandle].camID;
-			
-			strcpy(DlgMain->DlgScreen.CarDetect[hHandle].cam_name,
-				DlgMain->DlgScreen.m_videoInfo[hHandle].name.GetBuffer(0));
-			
-			strcpy(DlgMain->DlgScreen.CarDetect[hHandle].l_ipaddr,
-				DlgMain->DlgScreen.m_videoInfo[hHandle].ip.GetBuffer(0));
-			//////////////////////////
-			YUV2YUV420(pframeinfo,pchannel->image[hHandle]);
-			DlgMain->DlgScreen.CarDetect[hHandle].Start(LC_VIDEO_FORMAT_I420,\
-				pchannel->image[hHandle],pframeinfo->width,pframeinfo->height,pframeinfo->width*pframeinfo->height*3/2);
-			
-			DlgMain->DlgScreen.CarDetect[hHandle].Result();
-		}
-#endif
-
-    }
-    else if(frametype == FRAMETYPE_AUDIO)
-    {
-        AUDIO_FRAMEINFO *pframeinfo = (AUDIO_FRAMEINFO*)frameinfo;
-		/*
-        TRACE("audio pchannel->handle:%d,handle:%d,timetick:%d,channel:%d,samplerate:%d,bits:%d,size:%d\n",
-            pchannel->m_RealHandle,hHandle,pframeinfo->timetick,pframeinfo->nChannels,
-            pframeinfo->nSamplesPerSec,pframeinfo->wBitsPerSample,pframeinfo->size);
-			*/
-    }
-    return 0;
-}
-
 
 CYaAnSDK::CYaAnSDK()
 {
@@ -181,109 +127,95 @@ CYaAnSDK::~CYaAnSDK()
 	}
 	PtzStopPlay();
 
-
+//	free(image); //ZOGNA YUV420 BUFFER
 }
 
 void CYaAnSDK::SDKInit()
 {
 //	LC_PLAYM4_Initial((long)DlgMain->m_hWnd);
-	LC_PLAYM4_Initial(NULL);
+//	LC_PLAYM4_Initial(NULL);
 	VSNET_ClientStartup(NULL,NULL); //call this function to initialize SDK;
+	VSNET_ClientWaitTime();
 }
 
 bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd,int subtype)
 {
 	StopPlay(screenNo);
-	LC_PLAYM4_CloseStream(m_RealHandle[screenNo]);
-	
-	int iRet;
-	iRet = LC_PLAYM4_OpenStream(m_RealHandle[screenNo],(long*)&m_filehead,sizeof(ETI_FILE_HEAD));
-	if(iRet != 0)
-	{
-		TRACE("Open File or stream error:%d\n",iRet);
-		return false;
-	}
-    LC_PLAYM4_SetDecodeCallBack(m_RealHandle[screenNo],s_DecodeCallBack,(long)this);
 
 	CHANNEL_CLIENTINFO m_chinfo;
 
-	m_chinfo.m_buffnum    = 50;
-	m_chinfo.m_ch         = 0;
 	m_chinfo.m_hChMsgWnd  = NULL;
-	m_chinfo.m_hVideohWnd = NULL;
-	m_chinfo.m_nChmsgid   = NULL;
-	m_chinfo.m_password   = psw;
-	m_chinfo.m_playstart  = FALSE;
+	m_chinfo.m_nChmsgid   = 0;
 	m_chinfo.m_sername    = name;
+	m_chinfo.m_username   = user;
+	m_chinfo.m_password   = psw;
+	m_chinfo.m_playstart  = TRUE;
 	m_chinfo.m_tranType   = 3;
 	m_chinfo.m_useoverlay = FALSE;
-	m_chinfo.m_username   = user;
-	m_chinfo.nColorKey    = RGB(255,0,255);
+	m_chinfo.nColorKey    = RGB(192,0,192);
+	m_chinfo.m_ch         = 0;
+	m_chinfo.m_buffnum    = 20;
+	m_chinfo.m_hVideohWnd = hWnd;
 	m_chinfo.context      = this;
 	m_chinfo.m_messagecallback = s_messagecallback;
 
-	iRet = LC_PLAYM4_Play(m_RealHandle[screenNo],(long)hWnd);
-	if(iRet != 0)
+	m_LoginHandle[screenNo] = VSNET_ClientStart(sip,&m_chinfo,port,subtype);
+	if (m_LoginHandle[screenNo] == -1)
 	{
-		StopPlay(screenNo);
-		DlgMain->ShowCameraMessage(name,"LC_PLAYM4_Play Stream Error",FALSE);
-		TRACE("LC_PLAYM4_Play Stream Error:%d\n",iRet);
+		AfxMessageBox(_T("启动通道失败 ：\n句柄获取失败\n可能输入的IP不存在"));
 		return false;
 	}
-
-	m_LoginHandle[screenNo] = VSNET_ClientStart(sip,&m_chinfo,port);
-	if(m_LoginHandle[screenNo] == -1)
+	else
 	{
-		StopPlay(screenNo);
-		DlgMain->ShowCameraMessage(name,"VSNET_ClientStart Error",FALSE);
-		TRACE("VSNET_ClientStart Error:%d\n",iRet);
-		return false;
+		VSNET_ClientSetWnd(m_LoginHandle[screenNo],hWnd);
+		VSNET_ClientMediaData(m_LoginHandle[screenNo],TRUE);
+		VSNET_ClientStartViewEx(m_LoginHandle[screenNo]);
+		return true;
 	}
-
-	return true;
 }
 
 int CYaAnSDK::Capture(int screenNo,char *filename)
 {
-	int iRet;
-	iRet = LC_PLAYM4_CapPic(m_RealHandle[screenNo],filename);
-	if(iRet != 0)
+	int iRet = 0;
+	iRet = VSNET_ClientCapturePicture(m_LoginHandle[screenNo],filename);
+	if(iRet != TRUE)
+	{
 		TRACE("Capture Error:%d\n",iRet);
-	return iRet;
+		return 1;
+	}
+	return 0;
 }
 
 int CYaAnSDK::StartRecord(int screenNo,LPCSTR filename)
 {
-	int iRet;
-	iRet = LC_PLAYM4_StartMp4Capture(m_RealHandle[screenNo],filename);
-	if(iRet != 0)
+	int iRet = 0;
+	iRet = VSNET_ClientStartMp4Capture(m_LoginHandle[screenNo],filename);
+	if(iRet != TRUE)
+	{
 		TRACE("StartRecord Error:%d\n",iRet);
-	return iRet;
+		return 1;
+	}
+	return 0;
 }
 
 int CYaAnSDK::StopRecord(int screenNo)
 {
-	int iRet;
-	iRet = LC_PLAYM4_StopMp4Capture(m_RealHandle[screenNo]);
-	if(iRet != 0)
+	int iRet = 0;
+	iRet = VSNET_ClientStopMp4Capture(m_LoginHandle[screenNo]);
+	if(iRet != TRUE)
+	{
 		TRACE("StopRecord Error:%d\n",iRet);
-	return iRet;
+		return 1;
+	}
+	return 0;
 }
 
 void CYaAnSDK::StopPlay(int screenNo)
 {
-	int iRet;
-
 	if(m_LoginHandle[screenNo] != -1)
 	{
 		VSNET_ClientStop(m_LoginHandle[screenNo]);
 		m_LoginHandle[screenNo] = -1;
-	}
-
-	iRet = LC_PLAYM4_Stop(m_RealHandle[screenNo]);
-	if(iRet != 0)
-	{
-		TRACE("LC_PLAYM4_Stop Stream Error:%d\n",iRet);
 	}
 		
 #if OPEN_CARDETECT_CODE 	
@@ -313,7 +245,7 @@ void CYaAnSDK::LinkProcess(int screenNo,int lParam)
 	{
 		DlgMain->ShowCameraMessage(DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0),"Connect successful",FALSE);
 		TRACE("Connect successful\n");
-		VSNET_ClientStartNomalCap(m_LoginHandle[screenNo],m_nomalvideo,&m_RealHandle[screenNo],NULL,&m_RealHandle[screenNo]);
+		VSNET_ClientShowcallback(m_LoginHandle[screenNo],m_ShowCallBack,&m_RealHandle[screenNo]);
 	}
 	else
 	{
@@ -427,16 +359,5 @@ void CYaAnSDK::PtzStopPlay()
 	{
 		VSNET_ClientStop(m_ptzLoginHandle);
 		m_ptzLoginHandle = -1;
-	}
-}
-
-void CYaAnSDK::RefrenshWnd()
-{
-	for(int i=0;i<MAX_DEVICE_NUM;i++)
-	{
-		if(m_LoginHandle[i] != -1)
-		{
-			VSNET_ClientRefrenshWnd(m_LoginHandle[i]);
-		}
 	}
 }

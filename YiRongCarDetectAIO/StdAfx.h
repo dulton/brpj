@@ -58,11 +58,14 @@ typedef enum _PTZ_Command
 //汽车模式 1 电动车模式 0
 #define ALLTAB_DETECT_CAR_MODE 1
 
-//开启识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
+//开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_CARDETECT_CODE 1
 
+//开启人脸识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
+#define OPEN_FACEDETECT_CODE 0
+
 //结果输出到平台 模式 =1  单机版=0 
-#define YRVM_PINGTAI_MODE	0
+#define YRVM_PINGTAI_MODE	1
 
 //弹出框登录 1 不弹出窗登录0
 #define ALLTAB_LOGIN_WIN_MODE 1
@@ -76,6 +79,7 @@ typedef enum _PTZ_Command
 //最大显示多少个摄像头窗口
 #define MAX_DEVICE_NUM 16
 
+//亚安的RTSP地址 rtsp://10.142.50.249:554/0/888888:888888/main
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

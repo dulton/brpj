@@ -311,6 +311,8 @@ public:
 	//车牌存储过程
 	void YRVM_ExecuteInsertMatchCarResultProcedure(unsigned long int id);
 
+	//人脸识别保存到临时人员表
+	bool YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSize, char* sip);  
 #endif
 
 

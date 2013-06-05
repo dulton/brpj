@@ -513,7 +513,7 @@ void CYiRongCarDetectAIODlg::OnCancel()
 	{
 		DlgScreen.StopPlay(i);
 	}
-
+	Sleep(200);
 	////////////////lynn/////////////////
 	OracleIO.DisConnectionOracleDB();
 
@@ -1025,7 +1025,7 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 	m_ListCar.SetBkColor(RGB(232,248,254));
 #if ALLTAB_DETECT_CAR_MODE
 
-	m_ListCar.InsertColumn(0, _T("ÐòºÅ") , LVCFMT_LEFT, 50);
+	m_ListCar.InsertColumn(0, _T("ÐòºÅ") , LVCFMT_LEFT, 40);
 	m_ListCar.InsertColumn(1, _T("Ê±¼ä" ), LVCFMT_LEFT, 140);
 	m_ListCar.InsertColumn(2, _T("ÉãÏñÍ·Ãû³Æ" ), LVCFMT_LEFT, 140);
 	m_ListCar.InsertColumn(3, _T("IPµØÖ·"), LVCFMT_LEFT, 100);
@@ -1041,7 +1041,7 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 
 #else
 
-	m_ListCar.InsertColumn(0, _T("ÐòºÅ") , LVCFMT_LEFT, 50);
+	m_ListCar.InsertColumn(0, _T("ÐòºÅ") , LVCFMT_LEFT, 40);
 	m_ListCar.InsertColumn(1, _T("Ê±¼ä" ), LVCFMT_LEFT, 140);
 	m_ListCar.InsertColumn(2, _T("ÉãÏñÍ·Ãû³Æ" ), LVCFMT_LEFT, 140);
 	m_ListCar.InsertColumn(3, _T("IPµØÖ·"), LVCFMT_LEFT, 100);
@@ -1136,7 +1136,6 @@ void CYiRongCarDetectAIODlg::ShowRuntimeMessage(char *msgStr,int windowflag)
 
 	if(windowflag)
 		MessageBox(msgStr,MESSAGEBOX_TITLE);
-
 	else
 	{
 		GetDlgItem(IDC_STATIC_PRINTF)->SetWindowText(msgStr);
