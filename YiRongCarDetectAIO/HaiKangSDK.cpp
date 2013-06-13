@@ -169,7 +169,7 @@ void CHaikangSDK::SDKInit()
 	// 初始化
 	NET_DVR_Init();
 	//设置连接时间与重连时间
-	NET_DVR_SetConnectTime(2000, 1);
+	NET_DVR_SetConnectTime(2000, 5);
 	NET_DVR_SetReconnect(10000, true);
 }
 

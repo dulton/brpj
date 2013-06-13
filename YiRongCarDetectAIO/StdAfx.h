@@ -27,24 +27,24 @@
 typedef enum _PTZ_Command
 {
 	PTZ_CONTROL_UP = 0,							//上
-	PTZ_CONTROL_DOWN,							// 下
-	PTZ_CONTROL_LEFT,							// 左
-	PTZ_CONTROL_RIGHT,							// 右
-	PTZ_CONTROL_ZOOM_ADD,						// 变倍+
-	PTZ_CONTROL_ZOOM_SUB,						// 变倍-
-	PTZ_CONTROL_FOCUS_ADD,						// 调焦+
-	PTZ_CONTROL_FOCUS_SUB,						// 调焦-
-	PTZ_CONTROL_IRIS_ADD,						// 光圈+
-	PTZ_CONTROL_IRIS_SUB,						// 光圈-
-	PTZ_CONTROL_POINT_MOVE,						// 跳转到预设点
-	PTZ_CONTROL_POINT_SET,						// 预设点设置
-	PTZ_CONTROL_UPLEFT,							// 左上
-	PTZ_CONTROL_UPRIGHT,						// 右上
-	PTZ_CONTROL_DOWNLEFT,						// 左下
-	PTZ_CONTROL_DOWNRIGHT,						// 右下
-	PTZ_CONTROL_SPEED_ADD,						// 云台速度+
-	PTZ_CONTROL_SPEED_SUB,						// 云台速度-
-	PTZ_CONTROL_AUTO,							// 自动
+	PTZ_CONTROL_DOWN = 1,								// 下
+	PTZ_CONTROL_LEFT = 2,								// 左
+	PTZ_CONTROL_RIGHT = 3,								// 右
+	PTZ_CONTROL_ZOOM_ADD = 4,							// 变倍+
+	PTZ_CONTROL_ZOOM_SUB = 5,						// 变倍-
+	PTZ_CONTROL_FOCUS_ADD = 6,							// 调焦+
+	PTZ_CONTROL_FOCUS_SUB = 7,						// 调焦-
+	PTZ_CONTROL_IRIS_ADD = 8,							// 光圈+
+	PTZ_CONTROL_IRIS_SUB = 9,							// 光圈-
+	PTZ_CONTROL_POINT_MOVE = 10,						// 跳转到预设点
+	PTZ_CONTROL_POINT_SET = 11,						// 预设点设置
+	PTZ_CONTROL_UPLEFT = 12,							// 左上
+	PTZ_CONTROL_UPRIGHT = 13,							// 右上
+	PTZ_CONTROL_DOWNLEFT = 14,							// 左下
+	PTZ_CONTROL_DOWNRIGHT = 15,							// 右下
+	PTZ_CONTROL_SPEED_ADD = 16,						// 云台速度+
+	PTZ_CONTROL_SPEED_SUB = 17,							// 云台速度-
+	PTZ_CONTROL_AUTO = 18,							// 自动
 } PTZ_Command;
 
 //摄像机厂商定义

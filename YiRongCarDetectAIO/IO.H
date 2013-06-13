@@ -243,8 +243,9 @@ public:
 	unsigned long int CAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime);
 
 	/**************************电动车结果表、报警表*******************************/
-	bool ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direction,char *plate,int reliability,
-									char *path,unsigned long int picsize,unsigned char *picdata);
+	bool ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
+								   char *plate,int reliability,
+								   char *path,unsigned long int picsize,unsigned char *picdata);
 	bool ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data);	//获取电动车比对结果表图片数据
 	bool ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data);	//获取报警表图片数据
 	unsigned long ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,

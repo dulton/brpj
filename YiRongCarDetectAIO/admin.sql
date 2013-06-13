@@ -1,0 +1,7 @@
+prompt Importing table TB_USER...
+set feedback off
+set define off
+insert into TB_USER (SUSER, SPWD, NDEVICEALLOT, NPHOTO, NVIDEO, NVIEW, NALARM, NYUNTAI, NPARAM, NVIDEOSET, NCARNUMBER, NBLACK, NSET, NVIDEOQUERY, NALARMQUERY, NDISTINGUISHQUERY, NLOGQUERY, NMANAGER, NID)
+values ('admin', '0261015901610163', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0);
+
+prompt Done.

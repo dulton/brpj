@@ -214,6 +214,7 @@ void CDLGSetUser::Clear()
 	m_detect = FALSE;
 	m_detectset = FALSE;
 	m_all = FALSE;
+	m_admin = FALSE;
 	UpdateData(FALSE);
 }
 

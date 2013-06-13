@@ -644,6 +644,7 @@ int CCarDetect::Result()
 					tempadd=OracleIO.ELECAR_MatchResult_AddNew(
 						&isBlack,
 						camid,
+						"绿牌",	
 						CarDirection(CarInfo[i].Direction),
 						&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
 						CarInfo[i].Reliability,	
@@ -656,6 +657,7 @@ int CCarDetect::Result()
 					tempadd=OracleIO.ELECAR_MatchResult_AddNew(
 						&isBlack,
 						camid,
+						"绿牌",
 						CarDirection(CarInfo[i].Direction),
 						&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
 						CarInfo[i].Reliability,	
@@ -683,9 +685,12 @@ int CCarDetect::Result()
 					DlgMain->m_ListCar.SetItemText(nItem,5,str);
 					
 					DlgMain->m_ListCar.SetItemText(nItem,6,CarDirection(CarInfo[i].Direction));
+
+					DlgMain->m_ListCar.SetItemText(nItem,7,"绿牌");
+
 					if(alarmflag && isBlack)
 					{
-						DlgMain->m_ListCar.SetItemText(nItem,7,	"是");
+						DlgMain->m_ListCar.SetItemText(nItem,8,	"是");
 						if(DlgSetSystem.m_check_alarmpic)
 						{
 						//	ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
@@ -697,14 +702,14 @@ int CCarDetect::Result()
 							PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
 					}
 					else
-						DlgMain->m_ListCar.SetItemText(nItem,7,	"否");
+						DlgMain->m_ListCar.SetItemText(nItem,8,	"否");
 					
-					DlgMain->m_ListCar.SetItemText(nItem,8,	pathstr);
+					DlgMain->m_ListCar.SetItemText(nItem,9,	pathstr);
 		
 					if(DlgSetSystem.m_check_savenet)
-						DlgMain->m_ListCar.SetItemText(nItem,9,	"是");
+						DlgMain->m_ListCar.SetItemText(nItem,10,	"是");
 					else
-						DlgMain->m_ListCar.SetItemText(nItem,9,	"否");
+						DlgMain->m_ListCar.SetItemText(nItem,10,	"否");
 				}
 				else
 				{
@@ -758,7 +763,9 @@ int CCarDetect::Result()
 				
 				//写字符串
 				OracleIO.YRVM_writeElectricCarTempInfoToOracleDB(&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],	\
-					CarInfo[i].PlateColor,CarInfo[i].Direction,tempstr,nid);
+				//	CarInfo[i].PlateColor,
+					"绿牌",
+					CarInfo[i].Direction,tempstr,nid);
 #endif
 
 #endif
@@ -839,7 +846,7 @@ void CCarDetect::CleanList(void)
 			DlgMain->m_ListCar.GetItemText(i,12,str,260);
 #else
 			//电动车
-			DlgMain->m_ListCar.GetItemText(i,9,str,260);
+			DlgMain->m_ListCar.GetItemText(i,10,str,260);
 #endif	
 			//本地模式就不用删
 			if(0==strcmp(str,"否"))
@@ -851,7 +858,7 @@ void CCarDetect::CleanList(void)
 			DlgMain->m_ListCar.GetItemText(i,11,str,260);
 #else
 			//电动车
-			DlgMain->m_ListCar.GetItemText(i,8,str,260);
+			DlgMain->m_ListCar.GetItemText(i,9,str,260);
 #endif	
 			DeleteFile(str);
 			

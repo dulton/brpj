@@ -1670,7 +1670,8 @@ unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startT
 	}  
 }
 
-bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direction,char *plate,int reliability,
+bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
+								   char *plate,int reliability,
 								   char *path,unsigned long int picsize,unsigned char *picdata)
 {
 	try
@@ -1712,6 +1713,7 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *direc
 			m_pRecordsetPtr->PutCollect("ncamera", _variant_t((long)CAMID));
 			m_pRecordsetPtr->PutCollect("scameraname", _variant_t(CamName));
 			m_pRecordsetPtr->PutCollect("sip", _variant_t(CamIp));
+			m_pRecordsetPtr->PutCollect("scolour", _variant_t(platecolor));
 			m_pRecordsetPtr->PutCollect("sdirection", _variant_t(direction));
 			m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(plate));
 			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
@@ -2096,6 +2098,12 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 				str = var.bstrVal;
 				strcpy(result.plate, str.GetBuffer(0));
 			}
+			var = m_pRecordsetPtr->GetCollect("scolour");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platecolor, str.GetBuffer(0));
+			}
 			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
 			var = m_pRecordsetPtr->GetCollect("sfile");
 			if(var.vt != NULL && var !=temp)
@@ -2196,6 +2204,12 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 			{
 				str = var.bstrVal;
 				strcpy(result.plate, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolour");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platecolor, str.GetBuffer(0));
 			}
 			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
 			var = m_pRecordsetPtr->GetCollect("sfile");

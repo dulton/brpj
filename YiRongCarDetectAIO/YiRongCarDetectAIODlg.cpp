@@ -211,9 +211,35 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	//列表
 	ListMainInit();
 
+	//////显示标题///////////////////
+	CString modeflag;
+
+	//开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
+	if(OPEN_CARDETECT_CODE)
+	{
+		//汽车模式 1 电动车模式 0
+		if(ALLTAB_DETECT_CAR_MODE)
+			modeflag="C";
+		else
+			modeflag="E";
+	}
+	else
+	{
+		modeflag="X";
+	}
+	//结果输出到平台 模式 =1  单机版=0 
+	if(YRVM_PINGTAI_MODE)
+		modeflag+="P";
+	else
+		modeflag+="S";
+
+
 	CString str;
-	str.Format("%s--当前登陆用户:%s",MESSAGEBOX_TITLE,DlgLogin.CurrentUser.user);
+	str.Format("%s-%s-当前登陆用户:%s",MESSAGEBOX_TITLE,modeflag.GetBuffer(0),DlgLogin.CurrentUser.user);
 	DlgMain->SetWindowText(str);
+
+
+
 
 	// TODO: Add extra initialization here
 	
@@ -1048,9 +1074,10 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 	m_ListCar.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
 	m_ListCar.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
 	m_ListCar.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_ListCar.InsertColumn(7, _T("黑名单"), LVCFMT_LEFT, 50);
-	m_ListCar.InsertColumn(8, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(9, _T("服务器模式"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
+	m_ListCar.InsertColumn(8, _T("黑名单"), LVCFMT_LEFT, 50);
+	m_ListCar.InsertColumn(9, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(10, _T("服务器模式"), LVCFMT_LEFT, 0);
 
 #endif
 	m_ListCar.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
@@ -1069,7 +1096,7 @@ void CYiRongCarDetectAIODlg::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResu
 	m_ListCar.GetItemText(pNMIA->iItem,11,str,260);
 #else
 //电动车
-	m_ListCar.GetItemText(pNMIA->iItem,8,str,260);
+	m_ListCar.GetItemText(pNMIA->iItem,9,str,260);
 #endif
 
 	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
@@ -1106,7 +1133,7 @@ void CYiRongCarDetectAIODlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
 			m_ListCar.GetItemText(nItem,10,str,260);
 #else
 			//电动车
-			m_ListCar.GetItemText(nItem,7,str,260);
+			m_ListCar.GetItemText(nItem,8,str,260);
 #endif
 			lplvcd->clrTextBk=RGB(232,248,254);
 			if(NULL!=strstr(str,"是"))

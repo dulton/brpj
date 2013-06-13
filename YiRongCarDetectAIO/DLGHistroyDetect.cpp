@@ -133,9 +133,10 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
 	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
 	m_List.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(7, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(8, _T("nid"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(9, _T("图片大小"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(8, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(9, _T("nid"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(10, _T("图片大小"), LVCFMT_LEFT, 0);
 
 	//屏蔽车牌类型 车牌颜色 车身颜色
 	GetDlgItem(IDC_COMBO_PLATETYPE)->ShowWindow(FALSE);
@@ -403,13 +404,14 @@ void CDLGHistroyDetect::DisplayerList(void)
 	
 #else
 //电动车
-		m_List.SetItemText(nItem,7,beglist->path);
+		m_List.SetItemText(nItem,7,beglist->platecolor);
+		m_List.SetItemText(nItem,8,beglist->path);
 	
 		sprintf(str,"%d",beglist->nid);
-		m_List.SetItemText(nItem,8,str);
+		m_List.SetItemText(nItem,9,str);
 
 		sprintf(str,"%d",beglist->picsize);
-		m_List.SetItemText(nItem,9,str);
+		m_List.SetItemText(nItem,10,str);
 #endif
 
 	}
@@ -519,7 +521,7 @@ void CDLGHistroyDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 		m_List.GetItemText(pNMIA->iItem,10,str,260);
 #else
 		//电动车
-		m_List.GetItemText(pNMIA->iItem,7,str,260);
+		m_List.GetItemText(pNMIA->iItem,8,str,260);
 #endif
 		//网络模式
 		if(0==strcmp(str,"null"))
@@ -546,7 +548,7 @@ void CDLGHistroyDetect::DisplayNetPic(int iItem)
 	m_List.GetItemText(iItem,11,str,260);
 #else
 	//电动车
-	m_List.GetItemText(iItem,8,str,260);
+	m_List.GetItemText(iItem,9,str,260);
 #endif
 
 	sscanf(str,"%d",&nid);
@@ -556,7 +558,7 @@ void CDLGHistroyDetect::DisplayNetPic(int iItem)
 	m_List.GetItemText(iItem,12,str,260);
 #else
 	//电动车
-	m_List.GetItemText(iItem,9,str,260);
+	m_List.GetItemText(iItem,10,str,260);
 #endif
 
 	sscanf(str,"%d",&size);

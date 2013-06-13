@@ -135,7 +135,7 @@ void CYaAnSDK::SDKInit()
 //	LC_PLAYM4_Initial((long)DlgMain->m_hWnd);
 //	LC_PLAYM4_Initial(NULL);
 	VSNET_ClientStartup(NULL,NULL); //call this function to initialize SDK;
-	VSNET_ClientWaitTime();
+	VSNET_ClientWaitTime(10,1000);
 }
 
 bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd,int subtype)
@@ -311,6 +311,9 @@ void CYaAnSDK::PtzControl(long lLoginID, int type, BOOL dwStop, int param)
 		case PTZ_CONTROL_SPEED_ADD:
 			break;
 		case PTZ_CONTROL_SPEED_SUB:
+			break;
+		case PTZ_CONTROL_AUTO:
+			VSNET_ClientPTZCtrl(lLoginID,12,1);
 			break;
 		default:
 			break;
