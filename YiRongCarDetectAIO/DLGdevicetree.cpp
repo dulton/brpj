@@ -308,7 +308,51 @@ void CDLGdevicetree::OnMenuitemEdit()
 						DlgAddDevice.m_CamUser,\
 						DlgAddDevice.m_CamPsw,\
 						DlgAddDevice.VenderComboCur);
+					
 					OnMenuitemUpdate();
+
+					//必须放到	OnMenuitemUpdate后面 否则IPLIST还未更新
+					for(int j=0;j<MAX_DEVICE_NUM;j++)
+					{
+						if(DlgMain->DlgScreen.m_videoInfo[j].camID == 	iplist[i].camID)
+						{
+							//如果正在播放。则
+							if(DlgMain->DlgScreen.GetCurWindPlayState(j))
+							{
+								bool beforedetect=DlgMain->DlgScreen.GetDetectState(j);
+								
+								bool beforealarm=DlgMain->DlgScreen.GetAlarmState(j);
+								
+								bool beforerecord=DlgMain->DlgScreen.GetRecordState(j);
+								
+								//重新播放
+								DlgMain->DlgScreen.StartPlay(
+									iplist[i].camID,
+									iplist[i].area.GetBuffer(0),
+									iplist[i].name.GetBuffer(0),
+									iplist[i].ip.GetBuffer(0),
+									iplist[i].port,
+									iplist[i].user.GetBuffer(0),
+									iplist[i].psw.GetBuffer(0),
+									j,
+									0,
+									iplist[i].venderID);
+								
+								//恢复状态
+								if(beforedetect)
+									DlgMain->DlgNormal.OpenDetect(j);
+								
+								if(beforealarm)
+								{
+									DlgMain->DlgNormal.OpenDetect(j);
+									DlgMain->DlgNormal.OpenAlarm(j);
+								}
+								if(beforerecord)
+									DlgMain->DlgNormal.OpenRecord(j);
+							}
+							break;
+						}
+					}
 				}
 				break;
 			}
@@ -411,8 +455,7 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				screenNo,
 				0,
 				iplist[ItemCount].venderID);
-
-			DlgMain->DlgNormal.ChangePreviewFontPic(true);
+		
 		}
 	}
 	*pResult = 0;

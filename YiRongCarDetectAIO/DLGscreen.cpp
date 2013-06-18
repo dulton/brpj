@@ -295,7 +295,12 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
 		m_videoInfo[screenNo].camID = id;
 		m_videoInfo[screenNo].playHandle = m_video.m_RealHandle[screenNo];
 		m_videoInfo[screenNo].venderID = venderID;
+
+		DlgMain->DlgNormal.UpdateNormalWnd();
 	}
+	
+
+
 	return ret;
 
 }
@@ -328,6 +333,7 @@ void CDLGscreen::StopPlay(int screenNo)
 	{
 		pWnd->PostMessage(VIDEO_REPAINT);
 	}
+
 }
 //云台控制
 void CDLGscreen::PtzControl(int type, BOOL dwStop, int param)
@@ -413,6 +419,8 @@ void CDLGscreen::DeleteDevice(CString sip)
 		if(m_videoInfo[i].ip == sip)
 		{
 			StopPlay(i);
+			DlgMain->DlgNormal.UpdateNormalWnd();
+
 			m_videoInfo[i].subtype = 0;		//主码流
 			m_videoInfo[i].isplay = false;
 			m_videoInfo[i].area = "";

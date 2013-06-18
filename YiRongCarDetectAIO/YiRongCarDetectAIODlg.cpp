@@ -214,25 +214,24 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	//////显示标题///////////////////
 	CString modeflag;
 
-	//开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-	if(OPEN_CARDETECT_CODE)
-	{
-		//汽车模式 1 电动车模式 0
-		if(ALLTAB_DETECT_CAR_MODE)
-			modeflag="C";
-		else
-			modeflag="E";
-	}
-	else
-	{
-		modeflag="X";
-	}
+
+
 	//结果输出到平台 模式 =1  单机版=0 
 	if(YRVM_PINGTAI_MODE)
-		modeflag+="P";
-	else
-		modeflag+="S";
+	{
+		modeflag="P";
 
+		if(0==ALLTAB_DETECT_CAR_MODE)
+		{
+			//电动车混合模式
+			if(YRVM_PINGTAI_ELECAR_MIX_MODE)
+				modeflag+="M";
+			else
+				modeflag+="E";
+		}
+	}
+	else
+		modeflag="S";
 
 	CString str;
 	str.Format("%s-%s-当前登陆用户:%s",MESSAGEBOX_TITLE,modeflag.GetBuffer(0),DlgLogin.CurrentUser.user);

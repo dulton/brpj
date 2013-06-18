@@ -55,8 +55,35 @@ typedef enum _PTZ_Command
 //当前摄像头厂家
 #define ALLTAB_CAMERA_INC_TYPE CAMERA_INC_HAIKANG
 
+/*************************************
+//发布指南，目前分5种
+
+//汽车单机版
+ALLTAB_DETECT_CAR_MODE=1
+YRVM_PINGTAI_MODE=0
+
+//汽车联YRVM平台版
+ALLTAB_DETECT_CAR_MODE=1
+YRVM_PINGTAI_MODE=1
+
+//电动车单机版
+ALLTAB_DETECT_CAR_MODE=0
+YRVM_PINGTAI_MODE=0
+
+//电动联YRVM平台 写入电动车表 版
+ALLTAB_DETECT_CAR_MODE=0
+YRVM_PINGTAI_MODE=1
+YRVM_PINGTAI_ELECAR_MIX_MODE=0
+
+//电动联YRVM平台 写入机动车表 版
+ALLTAB_DETECT_CAR_MODE=0
+YRVM_PINGTAI_MODE=1
+YRVM_PINGTAI_ELECAR_MIX_MODE=1
+
+*************************************/
+
 //汽车模式 1 电动车模式 0
-#define ALLTAB_DETECT_CAR_MODE 1
+#define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_CARDETECT_CODE 1
@@ -65,13 +92,28 @@ typedef enum _PTZ_Command
 #define OPEN_FACEDETECT_CODE 0
 
 //结果输出到平台 模式 =1  单机版=0 
-#define YRVM_PINGTAI_MODE	1
+#define YRVM_PINGTAI_MODE	0
+
+//结果输出到平台 电动车写入机动车表 =1  电动车写入电动车表=0 
+#define YRVM_PINGTAI_ELECAR_MIX_MODE	1
+
 
 //弹出框登录 1 不弹出窗登录0
 #define ALLTAB_LOGIN_WIN_MODE 1
 
-//弹出框题目
-#define MESSAGEBOX_TITLE "车牌识别系统"
+
+#if OPEN_CARDETECT_CODE
+	#if ALLTAB_DETECT_CAR_MODE
+		//弹出框题目
+		#define MESSAGEBOX_TITLE "智能视频机动车车牌分析服务软件 2.0版"
+	#else
+		//弹出框题目
+		#define MESSAGEBOX_TITLE "智能视频电动车车牌分析服务软件 2.0版"
+	#endif
+#else
+	#define MESSAGEBOX_TITLE "智能视频车牌分析服务软件 2.0版"
+#endif
+
 
 //最多增加区域
 #define MAX_AREA 1024

@@ -744,7 +744,32 @@ int CCarDetect::Result()
 					CarInfo[i].PlateColor,CarInfo[i].Direction,tempstr,CarInfo[i].PlateType,
 					CarInfo[i].CarColor,nid);
 #else
-				//电动车
+
+#if YRVM_PINGTAI_ELECAR_MIX_MODE
+				//电动车写入机动车表
+				if(0==yrvm_first)
+				{
+					//数据库
+					nid=OracleIO.YRVM_getCarOracleTempNid();
+					if(! OracleIO.YRVM_writeCarTempPhotoToOracleDB(l_ipaddr,Jpg,JpgSize,nid))
+					{
+						errorprintf("YRVM数据库错误:可能无此摄像头IP或者识别结果插入错误");
+						DlgMain->ShowRuntimeMessage("YRVM数据库错误:可能无此摄像头IP或者识别结果插入错误",1);
+						break; //退出FOR循环
+					}
+					yrvm_first=1;
+				}
+				
+				//改置信度
+				sprintf(tempstr,"%02d",CarInfo[i].Reliability);
+				
+				//写字符串
+				OracleIO.YRVM_writeCarTempInfoToOracleDB(&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],	\
+					"绿牌",CarInfo[i].Direction,tempstr,"电动车号牌",
+					CarInfo[i].CarColor,nid);
+
+#else
+				//电动车写入电动车表
 				if(0==yrvm_first)
 				{
 					//数据库
@@ -767,6 +792,7 @@ int CCarDetect::Result()
 					"绿牌",
 					CarInfo[i].Direction,tempstr,nid);
 #endif
+#endif
 
 #endif
 /**********************平台END*********************************/
@@ -779,8 +805,15 @@ int CCarDetect::Result()
 //汽车
 			OracleIO.YRVM_ExecuteInsertMatchCarResultProcedure(nid);
 #else
-//电动车
+
+#if YRVM_PINGTAI_ELECAR_MIX_MODE
+			//电动车写入机动车表
+			OracleIO.YRVM_ExecuteInsertMatchCarResultProcedure(nid);
+#else
+			//电动车写入电动车表
 			OracleIO.YRVM_ExecuteInsertMatchVehicleResultProcedure(nid);
+#endif
+
 #endif
 
 #endif
