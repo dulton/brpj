@@ -37,6 +37,7 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_path_dahua = _T("大华播放器\\player264demo.exe");
 	m_path_haikang = _T("海康播放器\\VSPlayer.exe");
 	m_path_yaan = _T("亚安播放器\\RealMp4Play.exe");
+	m_ftp_path = _T("/");
 	//}}AFX_DATA_INIT
 
 }
@@ -75,6 +76,8 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_path_haikang, 260);
 	DDX_Text(pDX, IDC_EDIT_YAAN_PATH, m_path_yaan);
 	DDV_MaxChars(pDX, m_path_yaan, 260);
+	DDX_Text(pDX, IDC_EDIT_FTP_PATH, m_ftp_path);
+	DDV_MaxChars(pDX, m_ftp_path, 260);
 	//}}AFX_DATA_MAP
 }
 
@@ -99,6 +102,23 @@ BOOL CDLGSetSystem::OnInitDialog()
 
 	Read2Dlg();
 	UpdateData(FALSE);
+
+#if OPEN_VS2008_POCO_FTP
+
+	GetDlgItem(IDC_STATIC_FTP)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_FTP_IP)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_FTP_PORT)->ShowWindow(TRUE);	
+	GetDlgItem(IDC_STATIC_FTP_USER)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_FTP_PSW)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_FTP_IPADDR)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_FTP_PORT)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_FTP_USER)->ShowWindow(TRUE);	
+	GetDlgItem(IDC_EDIT_FTP_PSW)->ShowWindow(TRUE);
+
+	GetDlgItem(IDC_CHECK_FTP)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_FTP_PATH)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_FTP_PATH)->ShowWindow(TRUE);
+#endif
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -292,6 +312,7 @@ void CDLGSetSystem::readini(char *path)
 	char	ftp_user[ZOG_MAX_NAME_STR]="";
 	char	ftp_psw[ZOG_MAX_NAME_STR]="";
 	char	ftp_psw_ext[(ZOG_MAX_NAME_STR+1)*5]="";
+	char	ftp_path[ZOG_MAX_NAME_STR]="";
 
 	char	path_dahua[ZOG_MAX_PATH_STR]="";
 	char	path_haikang[ZOG_MAX_PATH_STR]="";
@@ -341,6 +362,8 @@ void CDLGSetSystem::readini(char *path)
 			m_ftp_psw=ftp_psw;
 		}
 	}
+	if(GetPrivateProfileString("FTP", "path", "", ftp_path, ZOG_MAX_NAME_STR, path))
+		m_ftp_path=ftp_path;
 
 	CreateDirectory(m_path_capbmp, NULL);
 	CreateDirectory(m_path_detect, NULL);
@@ -374,6 +397,8 @@ void CDLGSetSystem::writeini(char *path)
 	char	ftp_psw_ext[(ZOG_MAX_NAME_STR+1)*5]="";
 	ZogEnCode(m_ftp_psw.GetBuffer(0),ftp_psw_ext);
 	WritePrivateProfileString("FTP", "password",  ftp_psw_ext, path);
+
+	WritePrivateProfileString("FTP", "path",  m_ftp_path.GetBuffer(0), path);
 }
 
 void CDLGSetSystem::OnButtonHaikangPath() 

@@ -36,6 +36,7 @@ public:
 	CString	m_path_dahua;
 	CString	m_path_haikang;
 	CString	m_path_yaan;
+	CString	m_ftp_path;
 	//}}AFX_DATA
 	TCHAR SystemIniPath[ZOG_MAX_PATH_STR];
 

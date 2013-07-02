@@ -196,6 +196,10 @@ SOURCE=.\ExButton.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\FTPClient.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\HaiKangSDK.cpp
 # End Source File
 # Begin Source File
@@ -350,6 +354,10 @@ SOURCE=.\DLGWarnning.h
 # Begin Source File
 
 SOURCE=.\ExButton.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FTPClient.h
 # End Source File
 # Begin Source File
 

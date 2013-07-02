@@ -225,7 +225,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 		{
 			//电动车混合模式
 			if(YRVM_PINGTAI_ELECAR_MIX_MODE)
-				modeflag+="M";
+				modeflag+="C";
 			else
 				modeflag+="E";
 		}
@@ -524,15 +524,26 @@ void CYiRongCarDetectAIODlg::OnOK()
 void CYiRongCarDetectAIODlg::OnCancel()
 {
 	// TODO: Add your control notification handler code here
-
+/*
 #if ALLTAB_LOGIN_WIN_MODE
 	//退出系统
 	//退出框
 	DlgLogin.flag=LOGIN_EXIT;
 	if( IDCANCEL == DlgLogin.DoModal())
 		return ;
-
 #endif
+*/
+	if(DlgLogin.SilentMode)
+		DlgMain->NewLogMessage("退出");
+	else
+	{	
+		//退出系统
+		//退出框
+		DlgLogin.flag=LOGIN_EXIT;
+		if( IDCANCEL == DlgLogin.DoModal())
+			return ;
+	}
+
 	///STOP PLAY
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{

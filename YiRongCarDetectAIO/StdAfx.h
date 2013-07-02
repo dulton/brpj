@@ -92,15 +92,20 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define OPEN_FACEDETECT_CODE 0
 
 //结果输出到平台 模式 =1  单机版=0 
-#define YRVM_PINGTAI_MODE	0
+#define YRVM_PINGTAI_MODE	1
 
 //结果输出到平台 电动车写入机动车表 =1  电动车写入电动车表=0 
 #define YRVM_PINGTAI_ELECAR_MIX_MODE	1
 
 
-//弹出框登录 1 不弹出窗登录0
+//弹出框登录 1 不弹出窗登录0 //预留 请务必为1
 #define ALLTAB_LOGIN_WIN_MODE 1
 
+//开启POCO-FTP功能 需要2008编译
+#define OPEN_VS2008_POCO_FTP	0
+
+
+///////////////////////////
 
 #if OPEN_CARDETECT_CODE
 	#if ALLTAB_DETECT_CAR_MODE

@@ -618,6 +618,22 @@ int CCarDetect::Result()
 					errorprintf("数据库错误:识别结果插入错误");
 					DlgMain->ShowRuntimeMessage("数据库错误:识别结果插入错误",1);
 				}
+
+#if OPEN_VS2008_POCO_FTP
+				
+				//上传到FTP
+				FtpUploadCar(timestr,
+					l_ipaddr,
+					CarInfo[i].Str,
+					CarInfo[i].Reliability,	
+					CarDirection(CarInfo[i].Direction),
+					CarInfo[i].PlateType,
+					CarInfo[i].PlateColor,
+					CarInfo[i].CarColor,
+					Jpg,
+					JpgSize);
+#endif
+
 #else
 //电动车
 				//输出照片
@@ -716,6 +732,19 @@ int CCarDetect::Result()
 					errorprintf("数据库错误:识别结果插入错误");
 					DlgMain->ShowRuntimeMessage("数据库错误:识别结果插入错误",1);
 				}
+
+#if OPEN_VS2008_POCO_FTP
+
+				//上传到FTP
+				FtpUploadElecar(timestr,
+					l_ipaddr,
+					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+					CarInfo[i].Reliability,	
+					CarDirection(CarInfo[i].Direction),
+					Jpg,
+					JpgSize);
+#endif
+
 #endif
 /**********************平台BEGIN*********************************/
 #if YRVM_PINGTAI_MODE
@@ -923,5 +952,108 @@ void CCarDetect::Stop()
 	JpgSize=0;
 }
 
+#if OPEN_VS2008_POCO_FTP
+
+#include "FTPClient.h"
+bool CCarDetect::FtpUploadElecar(char *TimeStr,
+						   char *IpAddr,
+						   char *Plate,
+						   unsigned int Reliability,	
+						   char *Direction,
+						   unsigned char *FileBuf,
+						   unsigned long int FileSize)
+{
+	//未开启上传
+	if(FALSE == DlgSetSystem.m_check_ftp)
+		return true;
+
+	FTPClient g_ftpClient;
+	char temp[512];
+
+	if(0 != g_ftpClient.LoginServer(
+		DlgSetSystem.m_ftp_ip.GetBuffer(0),
+		atoi(DlgSetSystem.m_ftp_port.GetBuffer(0)),
+		DlgSetSystem.m_ftp_user.GetBuffer(0),
+		DlgSetSystem.m_ftp_psw.GetBuffer(0))
+		)
+	{
+		errorprintf("FTP用户登录失败");
+		return false;
+	}
+
+	if(0 != g_ftpClient.SetWorkingDirectory(DlgSetSystem.m_ftp_path.GetBuffer(0)))
+	{
+		errorprintf("FTP设置目录失败");
+		g_ftpClient.CloseConnect();
+		return false;
+	}
+
+	//格式 年-月-日-时-分-秒(空格)IP地址(空格)车牌号(空格)置信度(空格)行驶方向(空格)文件字节长度(空格).txt
+	sprintf(temp,"%s %s %s %d %s %d.txt",
+		TimeStr,IpAddr,Plate,Reliability,Direction,FileSize);
+
+	if(0 != g_ftpClient.UpLoadFile(temp,(const char*)FileBuf))
+	{
+		errorprintf("FTP上传失败");
+		g_ftpClient.CloseConnect();
+		return false;
+	}
+
+	g_ftpClient.CloseConnect();
+	return true;
+}
+
+bool CCarDetect::FtpUploadCar(char *TimeStr,
+							  char *IpAddr,
+							  char *Plate,
+							  unsigned int Reliability,	
+							  char *Direction,
+							  char *PlateType,
+							  char *PlateColor,
+							  char *CarColor,
+							  unsigned char *FileBuf,
+							  unsigned long int FileSize)
+{
+	//未开启上传
+	if(FALSE == DlgSetSystem.m_check_ftp)
+		return true;
+
+	FTPClient g_ftpClient;
+	char temp[512];
+
+	if(0 != g_ftpClient.LoginServer(
+		DlgSetSystem.m_ftp_ip.GetBuffer(0),
+		atoi(DlgSetSystem.m_ftp_port.GetBuffer(0)),
+		DlgSetSystem.m_ftp_user.GetBuffer(0),
+		DlgSetSystem.m_ftp_psw.GetBuffer(0))
+		)
+	{
+		errorprintf("FTP用户登录失败");
+		return false;
+	}
+
+	if(0 != g_ftpClient.SetWorkingDirectory(DlgSetSystem.m_ftp_path.GetBuffer(0)))
+	{
+		errorprintf("FTP设置目录失败");
+		g_ftpClient.CloseConnect();
+		return false;
+	}
+
+	//格式 年-月-日-时-分-秒(空格)IP地址(空格)车牌号(空格)置信度(空格)行驶方向(空格)车牌类型(空格)车牌颜色(空格)车身颜色(空格)文件字节长度(空格).txt
+	sprintf(temp,"%s %s %s %d %s %s %s %s %d.txt",
+		TimeStr,IpAddr,Plate,Reliability,Direction,PlateType,PlateColor,CarColor,FileSize);
+
+	if(0 != g_ftpClient.UpLoadFile(temp,(const char*)FileBuf))
+	{
+		errorprintf("FTP上传失败");
+		g_ftpClient.CloseConnect();
+		return false;
+	}
+
+	g_ftpClient.CloseConnect();
+	return true;
+}
+
+#endif
 
 #endif

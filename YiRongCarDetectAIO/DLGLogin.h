@@ -32,7 +32,8 @@ public:
 	CString	m_newpassword;
 	CString	m_newpsw_again;
 	//}}AFX_DATA
-
+	//带参数静默模式
+	BOOL SilentMode;
 	//定义标志
 	int flag;
 
@@ -41,7 +42,8 @@ public:
 	struct SET_USER_DATA_ST CurrentUser;
 	//解密的密码
 	char CurrentPsw[260];
-
+	
+	BOOL OnOK_Silent(); 
 
 // Overrides
 	// ClassWizard generated virtual function overrides

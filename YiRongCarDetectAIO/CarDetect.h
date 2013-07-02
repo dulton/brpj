@@ -115,6 +115,26 @@ public:
 	////////////////////////////////////////////////////////
 	void LimitMessageBox(void);
 	void errorprintf(char *str);
+
+
+	bool FtpUploadElecar(char *TimeStr,
+						   char *IpAddr,
+						   char *Plate,
+						   unsigned int Reliability,	
+						   char *Direction,
+						   unsigned char *FileBuf,
+						   unsigned long int FileSize);
+
+	bool FtpUploadCar(char *TimeStr,
+							  char *IpAddr,
+							  char *Plate,
+							  unsigned int Reliability,	
+							  char *Direction,
+							  char *PlateType,
+							  char *PlateColor,
+							  char *CarColor,
+							  unsigned char *FileBuf,
+							  unsigned long int FileSize);
 public:
 	Plate_handle CarHandle;
 	//句柄申请是否成功 1=成功。 0为失败 -1为未申请

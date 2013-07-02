@@ -30,6 +30,7 @@ CDLGLogin::CDLGLogin(CWnd* pParent /*=NULL*/)
 	m_newpsw_again = _T("");
 	//}}AFX_DATA_INIT
 	flag=LOGIN_IN;
+	SilentMode=FALSE;
 	memset(CurrentUser.user,0,32);
 
 }
@@ -210,7 +211,103 @@ void CDLGLogin::OnOK()
 	//必须成功才执行下一句
 	CDialog::OnOK();
 }
+//静默模式
+BOOL CDLGLogin::OnOK_Silent() 
+{
+	CString tempstr;
+	//登陆操作
+	switch(flag)
+	{
+	case LOGIN_IN:	
+		if(m_user.IsEmpty() ||
+			m_password.IsEmpty()	)
+		{
+		//	MessageBox("用户名和密码不为空",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
 
+		tempstr=CurrentUser.user;
+		//查询数据库
+		if(!OracleIO.USER_ReadUserInfoWithName(m_user.GetBuffer(0),&CurrentUser))
+		{
+		//	MessageBox("无此用户",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+		//解密
+		ZogDeCode(CurrentUser.psw,CurrentPsw);
+		if(0!=strcmp(m_password.GetBuffer(0),CurrentPsw))
+		{
+			//MessageBox("密码错误",MESSAGEBOX_TITLE);
+			//还原
+			OracleIO.USER_ReadUserInfoWithName(tempstr.GetBuffer(0),&CurrentUser);
+			return FALSE;
+		}
+	//	DlgMain->NewLogMessage("登陆");
+		break;
+	case LOGIN_LOCK:
+	case LOGIN_EXIT:
+		if(m_user.IsEmpty() ||
+			m_password.IsEmpty())
+		{
+		//	MessageBox("用户名和密码不为空",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+		if(0!=strcmp(m_user.GetBuffer(0),CurrentUser.user))
+		{
+		//	MessageBox("并非原来的用户",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+		if(0!=strcmp(m_password.GetBuffer(0),CurrentPsw))
+		{
+		//	MessageBox("密码错误",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+	//	DlgMain->NewLogMessage("退出");
+		break;
+	case LOGIN_MODIFY:
+		if(m_user.IsEmpty() ||
+			m_password.IsEmpty() ||
+			m_newpassword.IsEmpty() ||
+			m_newpsw_again.IsEmpty() )
+		{
+		//	MessageBox("用户名和密码和新密码不为空",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+		if(0!=strcmp(m_user.GetBuffer(0),CurrentUser.user))
+		{
+		//	MessageBox("并非原来的用户",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+		if(0!=strcmp(m_password.GetBuffer(0),CurrentPsw))
+		{
+		//	MessageBox("原密码错误",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+		if(	m_newpassword!=	m_newpsw_again)
+		{
+		//	MessageBox("两次新密码不一致",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+
+		ZogEnCode(m_newpassword.GetBuffer(0),CurrentUser.psw);
+		if(!OracleIO.USER_UpdateUserInfo(CurrentUser))
+		{
+		//	MessageBox("修改密码 数据库错误 未成功",MESSAGEBOX_TITLE);
+			return FALSE;
+		}
+
+		//修改密码
+		strcpy(CurrentPsw,m_newpassword.GetBuffer(0));
+
+		//DlgMain->NewLogMessage("修改密码");
+		break;
+	default:
+		return FALSE;
+	}
+	//成功
+	//如果是LOCK和EXIT模式。必须原用户登陆才可以正确退出
+	return TRUE;
+}
 void CDLGLogin::OnCancel() 
 {
 	// TODO: Add extra cleanup here

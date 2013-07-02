@@ -153,6 +153,34 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 #endif
 	////////////////lynn/////////////////
 
+	LPWSTR *szArglist = NULL;  
+    int nArgs = 0;  
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);  
+    if( nArgs > 1)  
+    {  
+		//szArglist就是保存参数的数组  
+		//nArgs是数组中参数的个数  
+		//数组的第一个元素表示进程的path，也就是szArglist[0]，其他的元素依次是输入参数。  
+		DlgLogin.SilentMode=TRUE;
+		DlgLogin.flag=LOGIN_IN;
+		DlgLogin.m_user = szArglist[1];
+		DlgLogin.m_password = szArglist[2];
+		//静默登陆
+		DlgLogin.OnOK_Silent();
+    }  
+	else
+	{
+		DlgLogin.SilentMode=FALSE;
+		//登陆框
+		DlgLogin.flag=LOGIN_IN;
+		if( IDCANCEL == DlgLogin.DoModal())
+		{
+			return FALSE;
+		}
+	}
+    //取得参数后，释放CommandLineToArgvW申请的空间  
+    LocalFree(szArglist);  
+/*
 
 #if ALLTAB_LOGIN_WIN_MODE
 	//登陆框
@@ -180,7 +208,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 	DlgLogin.CurrentUser.detect=1;
 	DlgLogin.CurrentUser.detectset=1;
 #endif
-
+*/
 
 	//主界面
 	CYiRongCarDetectAIODlg dlg;
