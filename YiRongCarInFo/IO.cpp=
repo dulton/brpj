@@ -1,0 +1,972 @@
+
+#include "stdafx.h"
+#include "IO.h"
+
+
+IO::IO(void)
+{
+	////连接本地oracle数据库
+	//CString connstring = _T("Provider=OraOLEDB.Oracle.1;Password=goodguy;Persist Security Info=True;User ID=sde;Data Source=orcl"); 
+
+	//连接远程oracle数据库
+//	CString connstring = _T("Provider=OraOLEDB.Oracle.1;User ID=yrvm;Password=yrvm;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=10.142.50.125)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=yrvm)));Persist Security Info=False"); 
+//	USES_CONVERSION;
+//	LPCWSTR Lconnstring = A2CW((LPCSTR)connstring);
+	
+//	ConnectionOracleDB(Lconnstring);
+}
+
+IO::~IO(void)
+{
+	DisConnectionOracleDB();
+}
+
+#define RCT_MAX_STR_SIZE 256
+
+bool IO::ReadFile(char* FileName)
+{
+	TCHAR temp[RCT_MAX_STR_SIZE];
+
+	FILE *fp=_tfopen(FileName,_T("r"));
+	if(fp)
+	{
+		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
+		_stscanf(temp,_T("Ip:%s"),Ip);
+
+		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
+		_stscanf(temp,_T("Port:%s"),Port);
+
+		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
+		_stscanf(temp,_T("User:%s"),User);
+
+		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
+		_stscanf(temp,_T("Psw:%s"),Psw);
+
+		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
+		_stscanf(temp,_T("DataBaseName:%s"),DataBaseName);
+
+		fclose(fp);
+
+		return true;
+	}
+	else
+		return false;
+}
+
+bool IO::ConnectionOracleDBTXT(char*  FileName)
+{
+	//ReadConfigTxt pConfig;
+
+	if(!ReadFile(FileName))
+	{
+		return false;
+	}
+
+	CString CstrConn;
+
+	CstrConn.Format(_T("Provider=OraOLEDB.Oracle.1;User ID=%s;Password=%s;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)));Persist Security Info=False"),\
+		User, Psw, Ip, Port, DataBaseName);
+
+	HRESULT hr;
+	if(SUCCEEDED(m_pConnection.CreateInstance("ADODB.Connection")))
+	{
+		_bstr_t strConnect = _bstr_t(CstrConn);
+
+		m_pConnection->ConnectionTimeout = 30;
+
+		try
+		{
+			hr = m_pConnection->Open(strConnect,"","",adModeUnknown);
+		}
+		catch(_com_error e)
+		{
+			return false;
+		}
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//连接oracle数据库
+bool IO::ConnectionOracleDB(char* strConn)
+{
+	//CString CstrConn(strConn);
+	HRESULT hr;
+	try
+	{
+		//创建Connection对象
+		hr = m_pConnection.CreateInstance("ADODB.Connection");    
+
+		if(SUCCEEDED(hr))
+		{
+			_bstr_t strConnect = _bstr_t(strConn);
+
+			//设置超时时间为30秒
+			m_pConnection->ConnectionTimeout=30;    
+		
+			//连接数据库
+			hr = m_pConnection->Open(strConnect,"","",adModeUnknown);
+			
+			return true;
+		}
+	}
+	catch(_com_error e)            //捕捉异常
+	{
+		CString temp;
+		temp.Format(_T("错误信息:%s"),e.ErrorMessage());
+		TRACE("%s",temp);
+		//MessageBox(temp, _T("数据库连接失败信息提示"));
+		return false;
+	}	
+
+	return false;
+}
+
+//断开oracle数据库连接
+bool IO::DisConnectionOracleDB(void)
+{
+	try
+	{
+		if(m_pConnection->State)
+		{
+			m_pConnection->Close();
+			
+			return true;
+		}
+	}
+	catch(_com_error e)        //捕捉异常
+	{
+		CString temp;
+		temp.Format(_T("错误信息:%s"),e.ErrorMessage());
+		//MessageBox(temp, _T("数据库断开连接失败信息提示"));
+		return FALSE;
+	}	
+
+	return false;
+}
+#if 0
+void IO::getHostIPaddr(CString& hostName,CString& ipAddress)
+{
+	WSADATA wsaData;  
+	char name[255]={0};  
+	char *ip=NULL;
+	PHOSTENT hostinfo;   
+	if ( WSAStartup( MAKEWORD(2,0), &wsaData ) == 0 )//调用MAKEWORD（）获得Winsock版本的正确值，用于加载Winsock库  
+	{
+		if( gethostname ( name, sizeof(name)) == 0)
+		{
+			if((hostinfo = gethostbyname(name)) != NULL)
+			{
+				ip = inet_ntoa (*(struct in_addr *)*hostinfo->h_addr_list);   
+			}   
+		}   
+		WSACleanup( );								//卸载Winsock库，并释放所有资源   
+	}
+	hostName=name;
+	ipAddress=ip;
+}
+
+// 从oracle数据库中读取电动车牌信息
+bool IO::ReadBatchLicensePlateInfoFromOracleDB(vector<int>& idList)
+{
+	//CString	 strsql = _T("select nid, bpicture from tb_temp_electric_vehicle where nflag = 0 and bpicture is not null and rownum <= 1");
+
+	//CString	 strsql = _T("select nid, bpicture from tb_temp_electric_vehicle where nflag = 0 and bpicture is not null");
+
+	CString	 strsql = _T("select nid, bphoto from TB_PERSON_PHOTO_test where nenterflag = 0 and rownum <= 110 and bphoto is not null");
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+
+	if(!m_pRecordsetPtr->BOF)
+	{
+		m_pRecordsetPtr->MoveFirst();
+	}
+
+	variant_t var; 	
+
+	while(!m_pRecordsetPtr->adoEOF)
+	{
+		var = m_pRecordsetPtr->GetCollect("nid");	          //获取id
+
+		if(var.vt != NULL)
+		{
+			idList.push_back((int)var);	                  //输出id
+		}
+
+		long lDatasize =  m_pRecordsetPtr->GetFields()->GetItem("bphoto")->ActualSize;	  //从数据库获取图片
+
+		_variant_t varBLOB =  m_pRecordsetPtr->GetFields()->GetItem("bphoto")->GetChunk(lDatasize);
+
+
+		CString filename = _T("D:\\Face Image\\Register\\");
+
+		filename.AppendFormat(_T("%d"), (int)var);
+
+		filename.Append(_T(".jpg"));	
+
+		CFile outputFile(filename, CFile::modeWrite | CFile::modeCreate);
+
+		if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+		{
+			char * pbuffer = NULL;
+
+			SafeArrayAccessData(varBLOB.parray,(void **)&pbuffer);
+            
+			outputFile.Write(pbuffer, lDatasize);
+
+			SafeArrayUnaccessData(varBLOB.parray);
+		}
+
+		m_pRecordsetPtr->MoveNext();
+	}
+
+	m_pRecordsetPtr->Close();
+
+	if(idList.size() > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// 获取数据库临时电动车表的nid
+void IO::getElectricCarOracleTempNid(int *id)
+{
+	CString strSql = _T("select seq_vehicle_supervised.nextval as nid from dual");	    //获取电动车图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
+
+	*id	= m_pRecordsetPtr->GetCollect("nid");
+}
+
+// 写电动车车牌到数据库
+bool IO::writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long int ImageSize,int *id)
+{
+	CString strSql;
+
+	strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
+
+	int cameraid = m_pRecordsetPtr->GetCollect("ncameraid"); 
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nid, ncamera, bpicture, ssize, sgettype, sip, nflag from tb_temp_photo_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();
+		m_pRecordsetPtr->PutCollect("nid", _variant_t(*id));
+		m_pRecordsetPtr->PutCollect("ncamera", _variant_t(cameraid));
+		m_pRecordsetPtr->PutCollect("ssize", _variant_t(ImageSize));
+		m_pRecordsetPtr->PutCollect("sgettype", _variant_t(1));
+		m_pRecordsetPtr->PutCollect("sip", _variant_t(IpAddr));
+		m_pRecordsetPtr->PutCollect("nflag", _variant_t(0));
+
+		char *m_pbuff = NULL;
+
+		SAFEARRAYBOUND rgs[1];	
+		rgs[0].lLbound = 0;	   
+		rgs[0].cElements =	ImageSize;		
+
+		SAFEARRAY *psa;	   
+		psa = SafeArrayCreate(VT_UI1,1,rgs); 
+		SafeArrayAccessData(psa,(void **)&m_pbuff);		
+		
+		memcpy(m_pbuff, Image, ImageSize); 
+
+		variant_t varBOLB;
+		varBOLB.vt = VT_ARRAY | VT_UI1;
+		varBOLB.parray = psa;
+
+		m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
+
+		m_pRecordsetPtr->Update();
+
+		SafeArrayUnaccessData(psa);
+
+		m_pRecordsetPtr->Close(); 
+
+		return true;   		
+
+	}
+	return false;
+}
+
+//写临时电动车信息表
+bool IO::writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Direction,char *Reliability,int *nphoto)
+{
+	CString strSql = _T("select seq_temp_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nphoto, nvehicleid, scarnumber, scarnumtype, ncarnumflag, srate from tb_temp_electric_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();
+		m_pRecordsetPtr->PutCollect("nvehicleid", _variant_t(id));
+		m_pRecordsetPtr->PutCollect("nphoto", _variant_t(*nphoto));
+		m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(CarStr));
+		m_pRecordsetPtr->PutCollect("scarnumtype", _variant_t(Color));
+		m_pRecordsetPtr->PutCollect("ncarnumflag", _variant_t(Direction));
+		m_pRecordsetPtr->PutCollect("srate", _variant_t(Reliability));
+
+		m_pRecordsetPtr->Update();
+
+		m_pRecordsetPtr->Close(); 
+
+		return true;   		
+
+	}
+	return false;
+}
+
+// 将车牌检测的结果写入oracle数据库中
+bool IO::writeCarDetectResultToOracleDB(char* sLNumber, char* scarColor, char* scarnumtype, char* sip, char* picture,int nsize)
+{
+	//CString sLNumber(LsLNumber);
+
+	//CString scarColor(LscarColor);
+
+	//CString scarnumtype(Lscarnumtype);
+
+	//CString sip(Lsip);
+
+	CString strSql = _T("select seq_temp_photo_car.nextval as nid from dual");	    //获取临时车辆图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	
+	strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), sip);		 //获取当前连接监控摄像头IP所对应的摄像头编号
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
+
+	int cameraid = m_pRecordsetPtr->GetCollect("ncameraid"); 
+
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nid, scarnumber, scolor, scarnumtype, ncamera, bpicture from tb_temp_photo_car", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();
+		m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+		m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(sLNumber));
+		m_pRecordsetPtr->PutCollect("scolor", _variant_t(scarColor));
+		m_pRecordsetPtr->PutCollect("scarnumtype", _variant_t(scarnumtype));
+		m_pRecordsetPtr->PutCollect("ncamera", _variant_t(cameraid));   
+
+		char *m_pbuff = NULL;
+
+		SAFEARRAYBOUND rgs[1];	
+		rgs[0].lLbound = 0;	   
+		rgs[0].cElements =	nsize;		
+
+		SAFEARRAY *psa;	   
+		psa = SafeArrayCreate(VT_UI1,1,rgs); 
+		SafeArrayAccessData(psa,(void **)&m_pbuff);		
+		
+		memcpy(m_pbuff, picture, nsize); 
+
+		variant_t varBOLB;
+		varBOLB.vt = VT_ARRAY | VT_UI1;
+		varBOLB.parray = psa;
+
+		m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
+
+		m_pRecordsetPtr->Update();
+
+		SafeArrayUnaccessData(psa);
+
+		m_pRecordsetPtr->Close(); 
+
+		return true;   
+	} 	
+
+	return false;
+}
+
+//将摄像头抓拍人脸数据写入oracle数据库临时人员表中      //new add by ethink.wang  at 2012-8-8 17:12
+bool IO::WriteTempFaceDataToOracleDB(unsigned char *picture, int nsize, char* sip, int *id)     //10.142.50.249     
+{
+	//CString sip(Lsip);
+
+	CString strSql = _T("select SEQ_TEMP_ID.nextval as nid from dual");			          //获取临时人员人脸图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+
+	//int id	= m_pRecordsetPtr->GetCollect("nid");
+	*id	= m_pRecordsetPtr->GetCollect("nid");
+
+	
+	strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), sip);	    //获取当前连接监控摄像头IP所对应的摄像头编号
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
+
+	int cameraid = m_pRecordsetPtr->GetCollect("ncameraid"); 
+	
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nid, ncamera, bpicture from TB_TEMP_PHOTO", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);		    //待定	  yrvm.TB_TEMP_PHOTO
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();	 
+		m_pRecordsetPtr->PutCollect("nid", _variant_t(*id));                  //id    
+		m_pRecordsetPtr->PutCollect("ncamera", _variant_t(cameraid));				 //device ip
+
+		char *m_pbuff = NULL;
+
+		SAFEARRAYBOUND rgs[1];	
+		rgs[0].lLbound = 0;	   
+		rgs[0].cElements =	nsize;		
+
+		SAFEARRAY *psa;	   
+		psa = SafeArrayCreate(VT_UI1,1,rgs); 
+		SafeArrayAccessData(psa,(void **)&m_pbuff);		
+		
+		memcpy(m_pbuff, picture, nsize); 
+
+		variant_t varBOLB;
+		varBOLB.vt = VT_ARRAY | VT_UI1;		   //Indicates a SAFEARRAY pointer |  Indicates a byte
+		varBOLB.parray = psa;
+
+		m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
+
+		m_pRecordsetPtr->Update();
+
+		SafeArrayUnaccessData(psa);
+																	   
+		m_pRecordsetPtr->Close(); 
+		//m_pRecordsetPtr->Release();
+
+		UpdateDataState(*id);
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IO::ExecuteInsertMatchCarResultProcedure(int taskid, int nid, int* matchSuccesNum, int* result)
+{
+	_CommandPtr pCommandPtr = NULL;
+	pCommandPtr.CreateInstance(_uuidof(Command));
+
+	_ParameterPtr pParameterPtr;
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_taskid"), adInteger, adParamInput, sizeof(taskid), _variant_t(taskid));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(nid), _variant_t(nid));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_match_succes_num"), adInteger, adParamOutput, sizeof(matchSuccesNum), _variant_t(matchSuccesNum));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(result), _variant_t(result));	
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pCommandPtr->CommandText = "pro_auto_match_car";
+	pCommandPtr->CommandType = adCmdStoredProc;	 
+
+	pCommandPtr->ActiveConnection =	m_pConnection;
+
+	pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
+
+	*result = pCommandPtr->Parameters->GetItem("o_result")->GetValue();
+
+
+	if(*result == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool IO::ExecuteInsertMatchVehicleResultProcedure(int taskid, int nid, int* matchSuccesNum, int* result)
+{
+	_CommandPtr pCommandPtr = NULL;
+	pCommandPtr.CreateInstance(_uuidof(Command));
+
+	_ParameterPtr pParameterPtr;
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_taskid"), adInteger, adParamInput, sizeof(taskid), _variant_t(taskid));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(nid), _variant_t(nid));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_match_succes_num"), adInteger, adParamOutput, sizeof(matchSuccesNum), _variant_t(matchSuccesNum));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(result), _variant_t(result));	
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	
+	pCommandPtr->CommandText = "pro_auto_match_vehicle";
+	pCommandPtr->CommandType = adCmdStoredProc;	 
+
+	pCommandPtr->ActiveConnection =	m_pConnection;
+
+	
+	pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
+
+	*result = pCommandPtr->Parameters->GetItem("o_result")->GetValue();
+
+
+	if(*result == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void IO::ExecuteInsertMatchResultProcedure(char *smatchResult)
+{
+	_CommandPtr pCommandPtr = NULL;
+	pCommandPtr.CreateInstance(_uuidof(Command));
+
+	_ParameterPtr pParameterPtr;
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_match_result"), adVarChar, adParamInput, _tcslen(smatchResult), _variant_t(smatchResult));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_sourcetype"), adInteger, adParamInput, sizeof(int), _variant_t(1));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(int), _variant_t(NULL));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pCommandPtr->CommandText = "pro_insert_match_result";
+	pCommandPtr->CommandType = adCmdStoredProc;	 
+
+	pCommandPtr->ActiveConnection =	m_pConnection;
+
+	
+	pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
+}
+#endif
+bool IO::writeMatchResultVehiclePicture(char *IpAddr,char *CarStr,unsigned char *Image,long int ImageSize)
+{
+	CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nid, bpicture, scarnumber, sip, nflag from tb_match_result_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();
+		m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+		m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(CarStr));
+		m_pRecordsetPtr->PutCollect("sip", _variant_t(IpAddr));
+		m_pRecordsetPtr->PutCollect("nflag", _variant_t(0));
+		
+		char *m_pbuff = NULL;
+
+		SAFEARRAYBOUND rgs[1];	
+		rgs[0].lLbound = 0;	   
+		rgs[0].cElements =	ImageSize;
+
+		SAFEARRAY *psa;	   
+		psa = SafeArrayCreate(VT_UI1,1,rgs); 
+		SafeArrayAccessData(psa,(void **)&m_pbuff);
+		
+		memcpy(m_pbuff, Image, ImageSize); 
+
+		variant_t varBOLB;
+		varBOLB.vt = VT_ARRAY | VT_UI1;
+		varBOLB.parray = psa;
+
+		m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
+
+		m_pRecordsetPtr->Update();
+
+		SafeArrayUnaccessData(psa);
+
+		m_pRecordsetPtr->Close(); 
+
+		return true;
+	}
+	return false;
+}
+
+bool IO::writeMatchResultVehiclePath(char *IpAddr,char *CarStr,char *path)
+{
+	CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nid, scarnumber, sip, nflag, sfile from tb_match_result_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+		m_pRecordsetPtr->AddNew();
+		m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+		m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(CarStr));
+		m_pRecordsetPtr->PutCollect("sip", _variant_t(IpAddr));
+		m_pRecordsetPtr->PutCollect("nflag", _variant_t(0));
+		m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
+
+		m_pRecordsetPtr->Update();
+
+		m_pRecordsetPtr->Close(); 
+
+		int result[1];
+		char error[256];
+		ExecuteInsertAlarmVehicleProcedure(id,result,error);
+
+		return true;
+	}
+	return false;
+}
+
+bool IO::readMatchResultVehiclePath(HISTORY_STRUCT &CarInfo)
+{
+	CString	 strSql = _T("select nid, sfile, sip, to_char(dcreate),scarnumber from tb_match_result_vehicle where sfile is not null and nflag=0 and rownum<2");
+	
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
+
+	if(m_pRecordsetPtr->BOF)
+	{
+		return false;
+	}
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	CString ipaddr = m_pRecordsetPtr->GetCollect("sip");
+
+	CString carNum = m_pRecordsetPtr->GetCollect("scarnumber");	
+
+	CString filename = m_pRecordsetPtr->GetCollect("sfile");
+
+	//SYSTEMTIME createTime;
+
+	variant_t varcreateTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
+
+	sscanf(LPCTSTR((CString)varcreateTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				   &CarInfo.year,&CarInfo.mon,&CarInfo.day,
+				   &CarInfo.hour,&CarInfo.min,&CarInfo.sec);
+
+	sprintf(CarInfo.carNumber,"%s",carNum.GetBuffer());
+	sprintf(CarInfo.ip,"%s",ipaddr.GetBuffer());
+	sprintf(CarInfo.path,"%s",filename.GetBuffer());
+
+	m_pRecordsetPtr->Close();
+
+	UpdateDataState("tb_match_result_vehicle","nflag",id);
+
+	return true;
+}
+bool IO::readMatchResultVehicle(CString path,HISTORY_STRUCT &CarInfo)
+{
+	CString	 strSql = _T("select nid, bpicture, sip, to_char(dcreate),scarnumber from tb_match_result_vehicle where bpicture is not null and nflag=0 and rownum<2");
+	
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
+
+	if(m_pRecordsetPtr->BOF)
+	{
+		return false;
+	}
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	CString ipaddr = m_pRecordsetPtr->GetCollect("sip");
+
+	CString carNum = m_pRecordsetPtr->GetCollect("scarnumber");	
+
+	long lDatasize =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->ActualSize;	  //从数据库获取图片
+
+	_variant_t varBLOB =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->GetChunk(lDatasize);
+
+	//SYSTEMTIME createTime;
+
+	variant_t varcreateTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
+
+	sscanf(LPCTSTR((CString)varcreateTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				   &CarInfo.year,&CarInfo.mon,&CarInfo.day,
+				   &CarInfo.hour,&CarInfo.min,&CarInfo.sec);
+
+	sprintf(CarInfo.carNumber,"%s",carNum.GetBuffer());
+	sprintf(CarInfo.ip,"%s",ipaddr.GetBuffer());
+	//sscanf(LPCTSTR((CString)varcreateTime.bstrVal),"%d-%d-%d %d:%d:%d",
+	//	   &createTime.wYear,&createTime.wMonth,&createTime.wDay,
+	//	   &createTime.wHour,&createTime.wMinute,&createTime.wSecond);
+
+	//CTime cTime(createTime);
+
+	//CString str=cTime.Format("%Y-%m-%d %H:%M:%S");
+
+	//str=cTime.Format("%Y-%m-%d-%H-%M-%S");
+
+	CString filename = path;
+
+	filename.AppendFormat(_T("%d-%d-%d-%d-%d-%d %s %s %d "),CarInfo.year,CarInfo.mon,CarInfo.day,CarInfo.hour,CarInfo.min,CarInfo.sec,ipaddr,carNum,lDatasize);
+
+	filename.Append(_T(".jpg"));
+
+	sprintf(CarInfo.path,"%s",filename.GetBuffer());
+
+	CFile outputFile(filename, CFile::modeWrite | CFile::modeCreate);
+
+	if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+	{
+		char * pbuffer = NULL;
+		SafeArrayAccessData(varBLOB.parray,(void **)&pbuffer);
+            
+		outputFile.Write(pbuffer, lDatasize);
+
+		SafeArrayUnaccessData(varBLOB.parray);
+	}
+
+	m_pRecordsetPtr->Close();
+
+	UpdateDataState("tb_match_result_vehicle","nflag",id);
+
+	return true;
+}
+
+bool IO::readAlarmVehicle(HISTORY_STRUCT &AlarmInfo)
+{
+	CString	 strSql = _T("select nid, scarnumber, to_char(dgettime), sip, sfile from tb_alarm_vehicle where sdealflag=0 and rownum<2 and sfile is not null");
+	
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+
+	if(m_pRecordsetPtr->BOF)
+	{
+		return false;
+	}
+
+	CString carNum = m_pRecordsetPtr->GetCollect("scarnumber");
+
+	CString ipaddr = m_pRecordsetPtr->GetCollect("sip");
+
+	CString path = m_pRecordsetPtr->GetCollect("sfile");	
+
+	int id	= m_pRecordsetPtr->GetCollect("nid");
+
+	variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dgettime)");
+
+	sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+		   &AlarmInfo.year,&AlarmInfo.mon,&AlarmInfo.day,
+		   &AlarmInfo.hour,&AlarmInfo.min,&AlarmInfo.sec);
+
+	sprintf(AlarmInfo.carNumber,"%s",carNum.GetBuffer());
+	sprintf(AlarmInfo.ip,"%s",ipaddr.GetBuffer());
+	sprintf(AlarmInfo.path,"%s",path.GetBuffer());
+
+	m_pRecordsetPtr->Close();
+
+	UpdateDataState("tb_alarm_vehicle","sdealflag",id);
+
+	return true;
+}
+
+bool IO::readAllAlarmVehicle(list<HISTORY_STRUCT>& AlarmList)
+{
+	CString	 strSql = _T("select nid, scarnumber, to_char(dgettime), sip, sfile from tb_alarm_vehicle where sdealflag=1 and sfile is not null");
+	
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+
+	if(m_pRecordsetPtr->BOF)
+	{
+		return false;
+	}
+	else
+	{
+		m_pRecordsetPtr->MoveFirst();
+	}
+	CString carNum;
+	CString ipaddr;
+	CString path;
+	int id;
+	HISTORY_STRUCT AlarmInfo;
+
+	while(!m_pRecordsetPtr->adoEOF)
+	{
+		carNum = m_pRecordsetPtr->GetCollect("scarnumber");
+		ipaddr = m_pRecordsetPtr->GetCollect("sip");
+		//CString path = _T("D:\\TEMP");
+		path = m_pRecordsetPtr->GetCollect("sfile");	
+		id	= m_pRecordsetPtr->GetCollect("nid");
+		variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dgettime)");
+
+		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+			   &AlarmInfo.year,&AlarmInfo.mon,&AlarmInfo.day,
+			   &AlarmInfo.hour,&AlarmInfo.min,&AlarmInfo.sec);
+		sprintf(AlarmInfo.carNumber,"%s",carNum.GetBuffer());
+		sprintf(AlarmInfo.ip,"%s",ipaddr.GetBuffer());
+		sprintf(AlarmInfo.path,"%s",path.GetBuffer());
+
+		AlarmList.push_back((HISTORY_STRUCT)AlarmInfo);
+
+		UpdateDataState("tb_alarm_vehicle","sdealflag",id);//待修改
+
+		m_pRecordsetPtr->MoveNext();
+	}
+	m_pRecordsetPtr->Close();
+
+	if(AlarmList.size() > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IO::readAllMatchResultVehicle(list<HISTORY_STRUCT>& MatchResultList)
+{
+	CString	 strSql = _T("select nid, sip, to_char(dcreate), scarnumber, sfile from tb_match_result_vehicle where nflag=1 and sfile is not null");
+	
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
+
+	if(m_pRecordsetPtr->BOF)
+	{
+		return false;
+	}
+	else
+	{
+		m_pRecordsetPtr->MoveFirst();
+	}
+	CString carNum;
+	CString ipaddr;
+	CString path;
+	int id;
+	HISTORY_STRUCT AlarmInfo;
+	while(!m_pRecordsetPtr->adoEOF)
+	{
+		carNum = m_pRecordsetPtr->GetCollect("scarnumber");
+		ipaddr = m_pRecordsetPtr->GetCollect("sip");
+		path = m_pRecordsetPtr->GetCollect("sfile");	
+		id	= m_pRecordsetPtr->GetCollect("nid");
+		variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
+
+		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+			   &AlarmInfo.year,&AlarmInfo.mon,&AlarmInfo.day,
+			   &AlarmInfo.hour,&AlarmInfo.min,&AlarmInfo.sec);
+		sprintf(AlarmInfo.carNumber,"%s",carNum.GetBuffer());
+		sprintf(AlarmInfo.ip,"%s",ipaddr.GetBuffer());
+		sprintf(AlarmInfo.path,"%s",path.GetBuffer());
+
+		MatchResultList.push_back((HISTORY_STRUCT)AlarmInfo);
+
+		UpdateDataState("tb_match_result_vehicle","nflag",id);
+
+		m_pRecordsetPtr->MoveNext();
+	}
+	m_pRecordsetPtr->Close();
+
+	if(MatchResultList.size() > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool IO::ExecuteInsertAlarmVehicleProcedure(int nid, int *iresult, char* serror)
+{
+	_CommandPtr pCommandPtr = NULL;
+	pCommandPtr.CreateInstance(_uuidof(Command));
+
+	_ParameterPtr pParameterPtr;
+	pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(nid), _variant_t(nid));
+	pCommandPtr->Parameters->Append(pParameterPtr);	
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(iresult), _variant_t(iresult));	
+	pCommandPtr->Parameters->Append(pParameterPtr);
+
+	pParameterPtr = pCommandPtr->CreateParameter(_T("o_errmessage"), adVarChar, adParamOutput, 256, _variant_t(serror));
+	pCommandPtr->Parameters->Append(pParameterPtr);
+	
+	pCommandPtr->CommandText = "pro_auto_match_vehicle";
+	pCommandPtr->CommandType = adCmdStoredProc;	 
+
+	pCommandPtr->ActiveConnection =	m_pConnection;
+
+	pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
+
+	*iresult = pCommandPtr->Parameters->GetItem("o_result")->GetValue();
+	if(*iresult == 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+// 更新数据记录状态
+bool IO::UpdateDataState(char *table,char *str,int ID)
+{
+	CString insertsql;
+
+	//insertsql.Format(_T("update tb_temp_electric_vehicle set nflag = 1 where nid = %d"), ID);
+	//2013-01-06市局电动车演示
+	insertsql.Format(_T("update %s set %s = 1 where nid = %d"), table, str, ID);
+
+	_variant_t RecordAffected;
+
+	m_pConnection->Execute((_bstr_t)insertsql, &RecordAffected, adCmdText);	  
+	
+	if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+	{
+		return	true;
+	}
+	else
+	{
+		return false;
+	}
+}
+/*
+bool IO::updateDataState(CString stablename,int nflag,int nid)
+{
+	CString insertsql;
+
+	insertsql.Format(_T("update %s set nflag = %d where nid = %d"),stablename,nflag,nid);
+
+	_variant_t RecordAffected;
+
+	m_pConnection->Execute((_bstr_t)insertsql, &RecordAffected, adCmdText);	  
+	
+	if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+	{
+		return	true;
+	}
+	else
+	{
+		return false;
+	}
+}
+*/

@@ -1,0 +1,5 @@
+Ip:127.0.0.1
+Port:1521
+User:ushow
+Psw:ushow
+DataBaseName:yrvm
