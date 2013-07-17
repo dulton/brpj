@@ -1,0 +1,5 @@
+Ip:10.142.50.125
+Port:1521
+User:yr
+Psw:yr
+DataBaseName:yrvm

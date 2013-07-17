@@ -1,0 +1,605 @@
+#include "stdafx.h"
+#include <windows.h>		// Header File For Windows
+#include <tchar.h>	
+#include <stdio.h>			// Header File For Standard Input/Output
+#include "../lib/launet.h"
+#include "PlanRecord.h"
+
+
+void printfRecordStatus(RECORD_STATUS RecordStatus)
+{
+	printf("周计划 %s ==",RecordStatus.planweek ? "启用":"关闭");
+	printf("日计划 %s ==",RecordStatus.planday ? "启用":"关闭");
+
+	switch(RecordStatus.status)
+	{
+	case RECORD_STOP: printf("停止录制\n");break;
+	case RECORD_START: printf("正在录制\n");break;
+	case RECORD_LOST: printf("信号中断 停止录制\n");break;
+	case RECORD_PAUSE: printf("暂停录制\n");break;
+	case RECORD_PLANSTART: printf("准备录制\n");break;
+	case RECORD_UNKOWN: printf("未知\n");break;
+	default :break;
+	}
+}
+
+////////////////当使用即时录制时。无法计划录制 ///////////////////////////////////////////
+//按下开始键 开始录制
+void LocalRecordStart(BOOL link, long int handle,
+	RECORD_STATUS *RecordStatus, RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	TCHAR path[MAX_PATH]={0};
+	TCHAR temppath[MAX_PATH]={0};
+	//先停止
+	LocalRecordStop(handle,RecordStatus);
+	if(!link)
+	{
+		RecordStatus->status=RECORD_PLANSTART;
+		return ;
+	}
+	char timestr[64];
+	long int year;
+	unsigned char mon, day, hour, min,sec;
+
+	//获取时间
+	if( RecordStatus->poracle->GetSysdateFromOracleDB(timestr,&year, &mon, &day, &hour, &min,&sec))
+	{
+		_stprintf(temppath,_T("%s\\%d"),FileDir.DIR,info.camID);
+		CreateDirectory(temppath, NULL);
+		_stprintf(temppath,_T("%s\\%d\\%04d-%02d-%02d"),
+			FileDir.DIR,
+			info.camID,	
+			year,
+			mon,
+			day);
+		CreateDirectory(temppath, NULL);
+
+		_stprintf(path,_T("%s\\%s %s.mp4"),
+			temppath,
+			info.url,
+			timestr);
+
+		if(VSNET_ClientStartMp4Capture(handle,path))
+		{
+			RecordStatus->hour=(hour+(min+FileDir.CutTime)/60)%24;
+			//当前时间大于未来中断时间 说明跨天
+			if(hour > RecordStatus->hour)
+			{
+				RecordStatus->hour=0;
+				RecordStatus->min=0;
+			}
+			else
+				RecordStatus->min=(min+FileDir.CutTime)%60;
+			//拷贝文件路径 时间
+			CTime s(year, mon, day, hour, min,sec);
+			RecordStatus->stime=s;
+
+			memcpy(RecordStatus->path,path,MAX_PATH);
+
+			_stprintf(path,_T("%s %s.mp4"),
+				info.url,
+				timestr);
+
+			memcpy(RecordStatus->filename,path,MAX_PATH);
+			RecordStatus->camID=info.camID;	
+
+			RecordStatus->status=RECORD_START;
+		}
+		else
+			RecordStatus->status=RECORD_PLANSTART;
+	}
+	else
+		RecordStatus->status=RECORD_PLANSTART;
+}
+
+//取代VSNET_ClientStopMp4Capture
+void ZOGNA_ClientStopMp4Capture(long int handle,RECORD_STATUS *RecordStatus)
+{
+	if(VSNET_ClientStopMp4Capture(handle))
+	{	
+		//随时可以停止 但只有这个才写入数据库
+		if(RECORD_START == RecordStatus->status )
+		{
+				long int year;
+		unsigned char mon, day, hour, min,sec;
+
+	//获取时间
+			if( RecordStatus->poracle->GetSysdateFromOracleDB_DATE(&year, &mon, &day, &hour, &min,&sec))
+			{
+			
+			}
+		}
+
+	}
+
+}
+
+//信号中断
+void LocalRecordLost(long int handle,RECORD_STATUS *RecordStatus)
+{	
+	if(RECORD_STOP != RecordStatus->status  && RECORD_LOST != RecordStatus->status)
+	{
+		ZOGNA_ClientStopMp4Capture(handle,RecordStatus);
+		RecordStatus->status=RECORD_LOST;
+	}
+}
+//停止录制
+void LocalRecordStop(long int handle,RECORD_STATUS *RecordStatus)
+{	
+	if(RECORD_STOP != RecordStatus->status)
+	{
+		ZOGNA_ClientStopMp4Capture(handle,RecordStatus);
+		RecordStatus->status=RECORD_STOP;
+	}
+}
+
+//暂停录制
+void LocalRecordPause(long int handle,RECORD_STATUS *RecordStatus)
+{
+	if(	RECORD_START == RecordStatus->status)
+	{
+		if(VSNET_ClientPauseMp4Capture(handle))
+			RecordStatus->status=RECORD_PAUSE;
+		else
+			LocalRecordStop(handle,RecordStatus);
+	}
+}
+
+//重新开始录制
+void LocalRecordRestart(BOOL link,long int handle,RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	if( RECORD_PAUSE == RecordStatus->status)
+	{
+		if(VSNET_ClientMp4CaptureRestart(handle))
+			RecordStatus->status=RECORD_START;
+		else //重新开始失败 新建开始
+			LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+	}
+}
+//定时切割文件 返回1 切割 新建文件 0不切割
+BOOL LocalRecordCheckTime(RECORD_STATUS RecordStatus,RECORD_FILE FileDir)
+{
+	if((RECORD_START == RecordStatus.status) && (0 != FileDir.CutTime) )
+	{
+		long int year;
+		unsigned char mon, day, hour, min,sec;
+
+		//获取时间
+		if( RecordStatus.poracle->GetSysdateFromOracleDB_DATE(&year, &mon, &day, &hour, &min,&sec))
+		{
+			if((RecordStatus.hour == hour) &&
+				(RecordStatus.min <= min) )
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+//这个为演示。在死循环里
+void LocalRecordRefrensh(BOOL link,long int handle,RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	WORD port;
+	DWORD wParam,lParam;
+	int ch;
+	///////////////////(
+	if(link)
+		if(LocalRecordCheckTime(*RecordStatus,FileDir))
+			LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+	///////////////////)
+	if(VSNET_ClientReadMessage(info.sername,info.url,&port,&ch,&wParam,&lParam))
+	{
+		if(wParam == LAUMSG_LINKMSG)
+		{
+			if(lParam == 0) //连接成功
+			{
+				///////////////////(
+				if( RECORD_LOST == RecordStatus->status || RECORD_PLANSTART == RecordStatus->status)
+					LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+				///////////////////)
+			}
+			else if(lParam == 2 || lParam == 3)//失败
+				///////////////////(
+				LocalRecordLost(handle,RecordStatus);
+			///////////////////)
+		}
+	}
+}
+
+////////////////当使用计划录制时。无法即时录制 ///////////////////////////////////////////
+//int dayplan_total=0;
+//RECORD_DAYPLAN dayplan[10]={{0}};
+
+void SetDayPlan(int *dayplan_total,RECORD_DAYPLAN *dayplan)
+{
+	int i;
+	int startyear,stopyear;
+	int	startmon,startday,starthour,startmin;
+	int	stopmon,stopday,stophour,stopmin;
+
+	char buf[260];
+
+	FILE *fp=fopen("dayplanlist.txt","r");
+
+	if(!fp)
+	{
+		dayplan_total=0;
+		return ;
+	}
+
+	i=0;
+	do
+	{
+		memset(buf,0,260);
+		fgets(buf,260,fp);
+
+		if(0==buf[0] || 13==buf[0] || 10==buf[0]) continue ;
+
+		sscanf(buf,"%d%d%d%d%d %d%d%d%d%d %d",
+			&startyear,
+			&startmon,
+			&startday,
+			&starthour,
+			&startmin,
+			&stopyear,
+			&stopmon,
+			&stopday,
+			&stophour,
+			&stopmin,
+			&dayplan[i].maskday);
+
+		dayplan[i].startyyyymmdd=startyear*10000+startmon*100+startday;
+		dayplan[i].starthhmm=starthour*100+startmin;
+
+		dayplan[i].stopyyyymmdd=stopyear*10000+stopmon*100+stopday;
+		dayplan[i].stophhmm=stophour*100+stopmin;
+
+		i++;
+	}while(!feof(fp));
+
+	fclose(fp);
+
+	*dayplan_total=i;
+
+	for(int j=0;j< *dayplan_total;j++)
+	{
+		printf("计划%08u日%04d分起始 %08u日%04d分结束 %s\n",
+			dayplan[j].startyyyymmdd,
+			dayplan[j].starthhmm,
+			dayplan[j].stopyyyymmdd,
+			dayplan[j].stophhmm,
+			dayplan[j].maskday ? "开启" :"关闭");
+	}
+}
+
+//返回值 1 在某个时间内 要处于录制状态
+//返回值 0 在全部的时间外 不必录制
+BOOL PlanDayRecordTimeRange(IOoracle *poracle,int dayplan_total,RECORD_DAYPLAN *dayplan)
+{
+	int i;
+
+	unsigned long int nowyyyymmdd;
+	int nowhhmm;
+
+	if(0==dayplan_total)
+		return 0;
+
+	long int year;
+	unsigned char mon, day, hour, min,sec;
+
+	//获取时间
+	if( poracle->GetSysdateFromOracleDB_DATE(&year, &mon, &day, &hour, &min,&sec))
+	{
+		nowyyyymmdd=(unsigned long int)year*10000+(unsigned long int)mon*100+(unsigned long int)day;
+		nowhhmm=(int)hour*100+(int)min;
+
+		for(i=0;i<dayplan_total;i++)
+		{
+			if(0==dayplan[i].maskday)
+				continue ;
+
+			if( ((dayplan[i].startyyyymmdd <= nowyyyymmdd) && (nowyyyymmdd <= dayplan[i].stopyyyymmdd)) &&
+				((dayplan[i].starthhmm <= nowhhmm) && (nowhhmm <= dayplan[i].stophhmm)))
+				return 1;
+		}
+	}
+
+	return 0;
+}
+//计划开始
+void PlanDayRecordStart(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	RecordStatus->planday=1;
+	if(!link)
+	{
+		RecordStatus->status=RECORD_PLANSTART;
+		return ;
+	}
+
+	if(PlanDayRecordTimeRange(RecordStatus->poracle,dayplan_total, dayplan))
+		LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+}
+//计划停止
+void PlanDayRecordStop(long int handle,RECORD_STATUS *RecordStatus)
+{
+	RecordStatus->planday=0;
+	LocalRecordStop(handle,RecordStatus);
+}
+//信号中断
+void PlanDayRecordLost(long int handle,RECORD_STATUS *RecordStatus)
+{
+	if(RecordStatus->planday)
+		LocalRecordLost(handle,RecordStatus);
+}
+
+//中断重连 和重连 开始
+void PlanDayRecordLostRestart(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	if(RecordStatus->planday)
+	{
+		if(link && PlanDayRecordTimeRange(RecordStatus->poracle,dayplan_total, dayplan))
+		{
+			if( RECORD_START != RecordStatus->status)
+				LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+		}
+		else
+			LocalRecordStop(handle,RecordStatus);
+	}
+}
+//随时连接和切割文件
+void PlanDayRecordCheckTime(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	if(RecordStatus->planday )
+	{
+		if(link && PlanDayRecordTimeRange(RecordStatus->poracle,dayplan_total, dayplan))
+		{
+			if( RECORD_START != RecordStatus->status)
+				LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+			else if(LocalRecordCheckTime(*RecordStatus,FileDir))
+				LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+		}
+		else
+			LocalRecordStop(handle,RecordStatus);
+	}
+}
+
+//这个为演示。在死循环里
+void PlanDayRecordRefrensh(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	WORD port;
+	DWORD wParam,lParam;
+	int ch;
+	///////////////////(
+	PlanDayRecordCheckTime(link,handle,dayplan_total, dayplan,RecordStatus, info, FileDir);
+	///////////////////)
+	if(VSNET_ClientReadMessage(info.sername,info.url,&port,&ch,&wParam,&lParam))
+	{
+		if(wParam == LAUMSG_LINKMSG)
+		{
+			if(lParam == 0) //连接成功
+				///////////////////(
+				PlanDayRecordLostRestart(link,handle,dayplan_total, dayplan,RecordStatus, info, FileDir);
+			///////////////////)
+			else if(lParam == 2 || lParam == 3)//失败
+				///////////////////(
+				PlanDayRecordLost(handle,RecordStatus);
+			///////////////////)
+		}
+	}
+}
+
+////////////////当使用计划录制时。无法即时录制 ///使用周录制////////////////////////////////////////
+//int weekplan_total=0;
+//RECORD_WEEKPLAN weekplan[10]={{0}};
+
+void SetWeekPlan(int *weekplan_total,RECORD_WEEKPLAN *weekplan)
+{
+	int i;
+	char buf[260];
+	int starthour,startmin,stophour,stopmin;
+
+	FILE *fp=fopen("weekplanlist.txt","r");
+
+	if(!fp)
+	{
+		*weekplan_total=0;
+		return ;
+	}
+	i=0;
+	do
+	{
+		memset(buf,0,260);
+		fgets(buf,260,fp);
+
+		if(0==buf[0] || 13==buf[0] || 10==buf[0]) 
+			continue ;
+
+		sscanf(buf,"%d%d %d%d %d",
+			&starthour,
+			&startmin,
+			&stophour,
+			&stopmin,
+			&weekplan[i].maskweek);
+
+		weekplan[i].starthhmm=starthour*100+startmin;
+		weekplan[i].stophhmm=stophour*100+stopmin;
+
+		i++;
+	}while(!feof(fp));
+
+	fclose(fp);
+
+	*weekplan_total=i;
+
+	for(int j=0;j< *weekplan_total;j++)
+	{
+		switch(weekplan[j].maskweek)
+		{
+		case 1:printf("计划 星期一 ");break;
+		case 2:printf("计划 星期二 ");break;
+		case 3:printf("计划 星期三 ");break;
+		case 4:printf("计划 星期四 ");break;
+		case 5:printf("计划 星期五 ");break;
+		case 6:printf("计划 星期六 ");break;
+		case 0:printf("计划 星期天 ");break;
+		case 7:printf("计划 星期一 --星期五 ");break;
+		case 8:printf("计划 星期六 --星期天 ");break;
+		case 9:printf("计划 每天 ");break;
+		case 10:printf("关闭 ");break;
+		default:break;
+		}
+
+		printf("%04d分起始 %04d分结束\n",
+			weekplan[j].starthhmm,
+			weekplan[j].stophhmm);
+	}
+}
+
+
+//返回值 1 在某个时间内 要处于录制状态
+//返回值 0 在全部的时间外 不必录制 
+BOOL PlanWeekRecordTimeRange(IOoracle *poracle,int weekplan_total,RECORD_WEEKPLAN *weekplan)
+{
+	int i;
+
+	int nowtime;
+
+	if(0==weekplan_total)
+		return 0;
+	//获取时间 0星期天 1星期一 6星期六
+	long int year;
+	unsigned char mon, day, hour, min,sec;
+	int week;
+
+	//获取时间
+	if( poracle->GetSysdateFromOracleDB_DATE(&year, &mon, &day, &hour, &min,&sec))
+	{
+		CTime s(year, mon, day, hour, min,sec);
+		//变成0=星期天 1=星期一..
+		week=s.GetDayOfWeek()-1;
+
+		nowtime= hour*100+min;
+
+		for(i=0;i<weekplan_total;i++)
+		{
+			if(10==weekplan[i].maskweek)
+				continue;
+			else if(9==weekplan[i].maskweek)
+			{
+				if(( weekplan[i].starthhmm <=nowtime) && (nowtime <= weekplan[i].stophhmm ))
+					return 1;
+			}
+			else if(8==weekplan[i].maskweek)
+			{
+				if((6==week) && (0==week))
+				{
+					if(( weekplan[i].starthhmm <=nowtime) && (nowtime <= weekplan[i].stophhmm ))
+						return 1;
+				}
+			}
+			else if (7==weekplan[i].maskweek)
+			{
+				if((1 <= week) && (week <=5 ))
+				{
+					if(( weekplan[i].starthhmm <=nowtime) && (nowtime <= weekplan[i].stophhmm ))
+						return 1;
+				}
+			}
+			else if (weekplan[i].maskweek ==week)
+			{
+				if(( weekplan[i].starthhmm <=nowtime) && (nowtime <= weekplan[i].stophhmm ))
+					return 1;
+			}	
+		}
+	}
+
+	return 0;
+}
+
+//计划开始
+void PlanWeekRecordStart(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	RecordStatus->planweek=1;
+	if(!link)
+	{
+		RecordStatus->status=RECORD_PLANSTART;
+		return ;
+	}
+	if(PlanWeekRecordTimeRange(RecordStatus->poracle,weekplan_total, weekplan))
+		LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+}
+//计划停止
+void PlanWeekRecordStop(long int handle,RECORD_STATUS *RecordStatus)
+{
+	RecordStatus->planweek=0;
+	LocalRecordStop(handle,RecordStatus);
+}
+//信号中断
+void PlanWeekRecordLost(long int handle,RECORD_STATUS *RecordStatus )
+{
+	if(RecordStatus->planweek)
+		LocalRecordLost(handle,RecordStatus);
+}
+//中断重连 和重连 开始
+void PlanWeekRecordLostRestart(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	if(RecordStatus->planweek )
+	{
+		if(link && PlanWeekRecordTimeRange(RecordStatus->poracle,weekplan_total, weekplan))
+		{
+			if( RECORD_START != RecordStatus->status)
+				LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+		}
+		else
+			LocalRecordStop(handle,RecordStatus);
+	}
+}
+//随时连接和切割文件
+void PlanWeekRecordCheckTime(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	if(RecordStatus->planweek )
+	{
+		if(link && PlanWeekRecordTimeRange(RecordStatus->poracle,weekplan_total, weekplan))
+		{
+			if( RECORD_START != RecordStatus->status)
+				LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+			else if(LocalRecordCheckTime(*RecordStatus,FileDir))
+				LocalRecordStart(link,handle,RecordStatus, info,FileDir);
+		}
+		else
+			LocalRecordStop(handle,RecordStatus);
+	}
+}
+
+//这个为演示。在死循环里
+void PlanWeekRecordRefrensh(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir)
+{
+	WORD port;
+	DWORD wParam,lParam;
+	int ch;
+	///////////////////(
+	PlanWeekRecordCheckTime(link,handle,weekplan_total, weekplan,RecordStatus, info, FileDir);
+	///////////////////)
+	if(VSNET_ClientReadMessage(info.sername,info.url,&port,&ch,&wParam,&lParam))
+	{
+		if(wParam == LAUMSG_LINKMSG)
+		{
+			if(lParam == 0) //连接成功
+				///////////////////(
+				PlanWeekRecordLostRestart(link,handle,weekplan_total, weekplan,RecordStatus, info, FileDir);
+			///////////////////)
+			else if(lParam == 2 || lParam == 3)//失败
+				///////////////////(
+				PlanWeekRecordLost(handle,RecordStatus);
+			///////////////////)
+		}
+	}
+}

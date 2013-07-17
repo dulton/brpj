@@ -1,0 +1,156 @@
+#ifndef __CAM_PLANRECORD__
+#define __CAM_PLANRECORD__
+#include "IOoracle.h"
+//服务器接口
+typedef struct 
+{
+	char policeID[64];
+	long int camID;
+	char sername[64];                    //server name
+	char username[32];                   //user name
+	char password[32];                   //password
+	char url[64];                       //url
+	WORD port;
+	
+}RECORD_CLIENTINFO;
+
+/*
+starthhmm：起始小时分钟；
+stophhmm：结束小时分钟；
+maskweek：
+    0：星期天；
+    1：星期一；
+    2：星期二；
+    3：星期三；
+    4：星期四；
+    5：星期五；
+    6：星期六；
+    7：星期一——星期五；
+    8：星期六——星期天；
+    9：每天；
+    10：关闭，不使用该时间段；
+*/
+typedef struct 
+{
+	int starthhmm;
+	int stophhmm;
+	unsigned char maskweek;
+}RECORD_WEEKPLAN;
+
+/*
+startyyyymmdd：起始年月日
+starthhmm：起始小时分钟；
+stopyyyymmdd:结束年月日
+stophhmm：结束小时分钟；
+maskday:
+    0：关闭，不使用该时间段
+    1：开启，使用该时间段
+*/
+typedef struct 
+{
+	unsigned long int startyyyymmdd;
+	int  starthhmm;
+	unsigned long int stopyyyymmdd;
+	int  stophhmm;
+	BOOL maskday;
+}RECORD_DAYPLAN;
+
+// DIR 文件目录 需要包含最后的“\\”符号 比如C:TEMP
+// CutTime 每次间隔多少分钟就分割一次文件 最多 60*23分钟
+typedef struct 
+{
+	unsigned char CutTime;
+	TCHAR DIR[MAX_PATH]; 
+}RECORD_FILE;
+
+//录制状态
+//0 未开始录制
+//1 正在录制
+//2 信号中断或失败  
+//3 暂停录制
+//4 随时准备录制 （防止机器重启后不录制）
+//unsigned char Status;
+enum 
+{
+	RECORD_STOP=0,
+	RECORD_START=1,
+	RECORD_LOST=2,
+	RECORD_PAUSE=3,
+	RECORD_PLANSTART=4,
+	RECORD_UNKOWN=100
+};
+
+typedef struct 
+{
+	IOoracle *poracle;
+	//保存的文件路径
+	TCHAR path[MAX_PATH]; 
+	TCHAR filename[MAX_PATH]; 
+	long int camID;
+	//视频开始时间
+	CTime stime;
+	//预计停止的录制时间
+	unsigned char hour;
+	unsigned char min;
+	unsigned char status;
+	unsigned char planweek; //启用1 关闭0
+	unsigned char planday;  //启用1 关闭0
+
+}RECORD_STATUS;
+
+
+void printfRecordStatus(RECORD_STATUS RecordStatus);
+
+//按键按下
+void LocalRecordStart(BOOL link,long int handle,RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+void LocalRecordStop(long int handle,RECORD_STATUS *RecordStatus);
+void LocalRecordPause(long int handle,RECORD_STATUS *RecordStatus);
+void LocalRecordRestart(BOOL link,long int handle,RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+//自动触发
+void LocalRecordLost(long int handle,RECORD_STATUS *RecordStatus);
+//放死循环内
+BOOL LocalRecordCheckTime(RECORD_STATUS RecordStatus,RECORD_FILE FileDir);
+//举例
+void LocalRecordRefrensh(BOOL link,long int handle,RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+////////////////////////////////////////////////////////////
+
+void SetDayPlan(int *dayplan_total,RECORD_DAYPLAN *dayplan);
+//时间检测
+BOOL PlanDayRecordTimeRange(IOoracle *poracle,int dayplan_total,RECORD_DAYPLAN *dayplan);
+//按键按下
+void PlanDayRecordStart(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+void PlanDayRecordStop(long int handle,RECORD_STATUS *RecordStatus);
+//自动触发
+void PlanDayRecordLost(long int handle,RECORD_STATUS *RecordStatus );
+void PlanDayRecordLostRestart(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+//放死循环内
+void PlanDayRecordCheckTime(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+//举例
+void PlanDayRecordRefrensh(BOOL link,long int handle,int dayplan_total,RECORD_DAYPLAN *dayplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+////////////////////////////////////////////////////////////
+
+void SetWeekPlan(int *weekplan_total,RECORD_WEEKPLAN *weekplan);
+//时间检测
+BOOL PlanWeekRecordTimeRange(IOoracle *poracle,int weekplan_total,RECORD_WEEKPLAN *weekplan);
+//按键按下
+void PlanWeekRecordStart(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+void PlanWeekRecordStop(long int handle,RECORD_STATUS *RecordStatus);
+//自动触发
+void PlanWeekRecordLost(long int handle,RECORD_STATUS *RecordStatus);
+void PlanWeekRecordLostRestart(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+//放死循环内
+void PlanWeekRecordCheckTime(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+//举例
+void PlanWeekRecordRefrensh(BOOL link,long int handle,int weekplan_total,RECORD_WEEKPLAN *weekplan,
+	RECORD_STATUS *RecordStatus,RECORD_CLIENTINFO info,RECORD_FILE FileDir);
+
+//取代VSNET_ClientStopMp4Capture
+void ZOGNA_ClientStopMp4Capture(long int handle,RECORD_STATUS *RecordStatus);
+#endif

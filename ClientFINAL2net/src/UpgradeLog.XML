@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="LAUMp4Test">
+</Property><Property Name="解决方案文件" Value="H:\亿榕\Client20120914d\src\LAUMp4Test.sln">
+</Property><Property Name="Date" Value="2012年9月15日星期六">
+</Property><Property Name="Time" Value="13:08">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="LAUMp4Test.sln" Description="文件已成功备份为 H:\亿榕\Client20120914d\src\LAUMp4Test.sln.old">
+</Event><Event ErrorLevel="0" Project="LAUMp4Test" Source="LAUMp4Test.vcproj" Description="Converting project file 'H:\亿榕\Client20120914d\src\LAUMp4Test.vcproj'.">
+</Event><Event ErrorLevel="1" Project="LAUMp4Test" Source="LAUMp4Test.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="LAUMp4Test" Source="LAUMp4Test.vcproj" Description="MSB8012: $(TargetPath) ('H:\亿榕\Client20120914d\src\.\Debug\LAUMp4Test.exe') does not match the Linker's OutputFile property value '../bin/LAUMp4Test.exe' ('H:\亿榕\Client20120914d\src\../bin/LAUMp4Test.exe') in project configuration 'Debug|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="LAUMp4Test" Source="LAUMp4Test.vcproj" Description="MSB8012: $(TargetPath) ('H:\亿榕\Client20120914d\src\.\Release\LAUMp4Test.exe') does not match the Linker's OutputFile property value '../bin/LAUMp4Test.exe' ('H:\亿榕\Client20120914d\src\../bin/LAUMp4Test.exe') in project configuration 'Release|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="0" Project="LAUMp4Test" Source="LAUMp4Test.vcproj" Description="Done converting to new project file 'H:\亿榕\Client20120914d\src\LAUMp4Test.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="LAUMp4Test" Source="LAUMp4Test.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="LAUMp4Test.sln" Description="成功转换解决方案">
+</Event><Event ErrorLevel="3" Project="" Source="LAUMp4Test.sln" Description="Converted">
+</Event></UpgradeLog>

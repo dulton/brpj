@@ -1,0 +1,4 @@
+FtpPath:ftp://10.142.50.134/video/
+FtpLocalPath:Z:\video\
+FtpPort:21
+FtpUserPsw:da:da

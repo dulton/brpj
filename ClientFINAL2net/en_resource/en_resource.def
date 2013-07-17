@@ -1,0 +1,7 @@
+; en_resource.def : Declares the module parameters for the DLL.
+
+LIBRARY      "en_resource"
+DESCRIPTION  'en_resource Windows Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
