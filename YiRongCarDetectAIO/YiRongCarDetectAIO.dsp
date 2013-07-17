@@ -1051,6 +1051,18 @@ SOURCE=.\res\YiRongCarDetectAIO.ico
 
 SOURCE=.\res\YiRongCarDetectAIO.rc2
 # End Source File
+# Begin Source File
+
+SOURCE=.\res\YiRongCarDetectAIO1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\YiRongCarDetectAIO2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\YiRongCarDetectAIO3.ico
+# End Source File
 # End Group
 # Begin Source File
 

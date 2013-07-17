@@ -186,6 +186,7 @@
 #define IDB_TAB_TREE                    336
 #define IDB_TAB_TREE_CLOSE              337
 #define IDD_ANALYSE_FLOWRATE            340
+
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_LIST_CAR                    1002
@@ -489,7 +490,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        342
+#define _APS_NEXT_RESOURCE_VALUE        346
 #define _APS_NEXT_COMMAND_VALUE         32817
 #define _APS_NEXT_CONTROL_VALUE         1375
 #define _APS_NEXT_SYMED_VALUE           101

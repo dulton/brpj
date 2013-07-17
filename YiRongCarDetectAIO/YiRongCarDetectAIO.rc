@@ -78,7 +78,7 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于 智能视频车牌分析服务软件 2.0版"
 FONT 9, "宋体"
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,13,10,21,21
     LTEXT           "智能视频车牌分析服务软件 2.0版",IDC_STATIC,40,10,134,8,
                     SS_NOPREFIX
     LTEXT           "版权所有 (C) 2012-2013",IDC_STATIC,40,25,119,8
@@ -369,11 +369,11 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,189,222,64,10
     CONTROL         "识别报警管理",IDC_CHECK_USER_DETECT,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,189,160,64,10
-    CONTROL         "系统视频查询",IDC_CHECK_USER_HISTORYVIDEO,"Button",
+    CONTROL         "历史视频查询",IDC_CHECK_USER_HISTORYVIDEO,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,189,255,64,10
-    CONTROL         "系统识别查询",IDC_CHECK_USER_HISTORYDETECT,"Button",
+    CONTROL         "历史识别查询",IDC_CHECK_USER_HISTORYDETECT,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,189,281,64,10
-    CONTROL         "系统报警查询",IDC_CHECK_USER_HISTORYALARM,"Button",
+    CONTROL         "历史报警查询",IDC_CHECK_USER_HISTORYALARM,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,189,268,64,10
     CONTROL         "系统日志查询",IDC_CHECK_USER_HISTORYREPORT,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,189,294,64,10

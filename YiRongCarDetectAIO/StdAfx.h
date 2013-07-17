@@ -55,6 +55,7 @@ typedef enum _PTZ_Command
 //当前摄像头厂家
 #define ALLTAB_CAMERA_INC_TYPE CAMERA_INC_HAIKANG
 
+//工程 使用ushow2的库
 /*************************************
 //发布指南，目前分5种
 
@@ -95,7 +96,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define YRVM_PINGTAI_MODE	1
 
 //结果输出到平台 电动车写入机动车表 =1  电动车写入电动车表=0 
-#define YRVM_PINGTAI_ELECAR_MIX_MODE	1
+#define YRVM_PINGTAI_ELECAR_MIX_MODE	0
 
 
 //弹出框登录 1 不弹出窗登录0 //预留 请务必为1
