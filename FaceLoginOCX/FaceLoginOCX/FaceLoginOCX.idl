@@ -1,0 +1,56 @@
+// FaceLoginOCX.idl : type library source for ActiveX Control project.
+
+// This file will be processed by the MIDL compiler tool to
+// produce the type library (FaceLoginOCX.tlb) that will become a resource in
+// FaceLoginOCX.ocx.
+
+#include <olectl.h>
+#include <idispids.h>
+
+[ uuid(3656C95A-A6BA-41FA-8971-979DEBB8D96E), version(1.0),
+  helpfile("FaceLoginOCX.hlp"),
+  helpstring("FaceLoginOCX ActiveX Control module"),
+  control ]
+library FaceLoginOCXLib
+{
+	importlib(STDOLE_TLB);
+
+	//  Primary dispatch interface for CFaceLoginOCXCtrl
+
+	[ uuid(BB80CCC6-8390-477C-91D5-2CF335489402),
+	  helpstring("Dispatch interface for FaceLoginOCX Control")]
+	dispinterface _DFaceLoginOCX
+	{
+		properties:
+		methods:
+			[id(5), helpstring("方法EndCamera")] int EndCamera(void);
+			[id(4), helpstring("方法StartCamera")] 	int StartCamera(void);
+			[id(3), helpstring("方法GetImageTest")] BSTR GetImageTest();
+			[id(2), helpstring("方法GetFaceImage")] char *GetFaceImage(int ImageNum);
+			[id(1), helpstring("方法GetCamNum")] int GetCamNum();
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  Event dispatch interface for CFaceLoginOCXCtrl
+
+	[ uuid(F73D1D70-33B6-4CBD-B870-A7D143A1A9AD),
+	  helpstring("Event interface for FaceLoginOCX Control") ]
+	dispinterface _DFaceLoginOCXEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+	};
+
+	//  Class information for CFaceLoginOCXCtrl
+
+	[ uuid(AEFA1F7C-F5A9-44B3-86B8-53D586CAAFAB),
+	  helpstring("FaceLoginOCX Control"), control ]
+	coclass FaceLoginOCX
+	{
+		[default] dispinterface _DFaceLoginOCX;
+		[default, source] dispinterface _DFaceLoginOCXEvents;
+	};
+
+};
