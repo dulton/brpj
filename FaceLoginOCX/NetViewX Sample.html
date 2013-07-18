@@ -52,35 +52,15 @@ td.local
 //select value equal numbers of camera. hidden's value is the imgs' status(on/off?).
 function switchctrl(b)
 {
-	i = document.all.location.value;
-	var cmrai = new Array(Camera1, Camera2, Camera3, Camera4);
-    ichoice = document.all.location.value;
-	var bstatus = eval("document.all.img" + ichoice);
-
-    if(b>0)
-	{
-		cmrai[i].url         = document.all.ip.value;//ip address;
-		cmrai[i].wServerPort = document.all.serverport.value;//start port;
-		cmrai[i].channel     = document.all.ch.value;//channel number. 
-		cmrai[i].servername  = document.all.svrname.value;//username
-		cmrai[i].username    = document.all.usr.value;//user account;
-		cmrai[i].password    = document.all.pwd.value;//pwd;
-		cmrai[i].trantype   = 3;//3 is TCP
-		cmrai[i].SetLanguage(0);
-		cmrai[i].PostProMethon(0);
-		cmrai[i].StartView();
-		
-		document.all.start.disabled=true;
-		document.all.stop.disabled=false;
-		bstatus.value = 1;
-	}
+	if(b)
+		Camera1.StartCamera();
 	else
-	{
-	    cmrai[i].StopView();
-		document.all.start.disabled=false;
-		document.all.stop.disabled=true;
-		bstatus.value = 0;
-	}
+		Camera1.EndCamera();
+
+	Camera1.GetCamNum();
+	Camera1.GetImageTest();
+	Camera1.AboutBox();
+
 }
 function changeStatus()
 {
@@ -111,7 +91,7 @@ function changeStatus()
           <tr>
             
             <td>
-       		<object name="Camera2" ID="Camera2" width="560" height="450" 
+       		<object name="Camera1" ID="Camera1" width="560" height="450" 
 				CLASSID="CLSID:AEFA1F7C-F5A9-44B3-86B8-53D586CAAFAB" 
 				CODEBASE="/NetViewX.cab">
             </object>
@@ -138,16 +118,10 @@ function changeStatus()
           图像显示于： 
           <select name="location" id="location" onchange="changeStatus();">
             <option value="0" selected>第一图像位置</option>
-            <option value="1">第二图像位置</option>
-            <option value="2">第三图像位置</option>
-            <option value="3">第四图像位置</option>
           </select>
           <input type="button" id="start" name="Submit" value="启动图像" class="button1" onclick="switchctrl(1)">
-          <input type="button" id="stop" name="Submit" value="停止图像" class="button1" onclick="switchctrl(0)" disabled>
+          <input type="button" id="stop" name="Submit" value="停止图像" class="button1" onclick="switchctrl(0)">
 		  <input type="hidden" id="img0" value="0">
-		  <input type="hidden" id="img1" value="0">
-		  <input type="hidden" id="img2" value="0">
-		  <input type="hidden" id="img3" value="0">
         </div></td>
     </tr>
   </table>
