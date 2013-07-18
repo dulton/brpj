@@ -4,7 +4,7 @@
 
 #include "DirectShow.h"
 #pragma comment(lib,"DirectShow.lib") 
-
+#include "FaceCloudDLL.h"
 
 #pragma once
 
@@ -19,10 +19,18 @@ public:
 	char * CString2Char(CString str);
 	CString GetSystemFolder();
 
+
 	bool InitialDevice(CComboBox &m_cbDevice, LONG * w, LONG * h);
 	int GetCamNum();
 	CString GetReg(CString lpValueKey);
-	void DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffer, int bufferSize);
+
+	void DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
+							char * buffer, int bufferSize,
+							int list_size, RwFaceRect *face_rect_list,
+							CRect old_DrawRect,float scale);
+
+	CRect SetDrawSize(CStatic * m_picBox,CRect old_DrawRect,int bmpw,int bmph,float *scale) ;
+
 };
 
 

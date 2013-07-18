@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "afxwin.h"
 
+#include "FaceCloudDLL.h"
 // CFrmFaceMatch dialog
 
 class CFrmFaceMatch : public CDialog
@@ -33,8 +34,22 @@ public:
 	bool m_bThreadWork;
 	bool m_bIsClose;//是否窗体关闭
 	HANDLE m_pThreadDetect;
-	HANDLE m_pThreadMatch;
+
+
 	char* FaceImage[10];
+
+	int Face_count;
+	RECT Face_range[32];
+	unsigned char *tempRGB;
+	int list_size;
+	RwFaceRect face_rect_list[32];
+	//初始化的画面矩形框 永远不变
+	CRect old_DrawRect;
+	//绘制图案的矩形框。
+	CRect DrawRect;
+	//绘制图案的矩形框和初始化框的比例
+	float DrawScale;
+
 protected:
 	virtual void OnCancel();
 	virtual BOOL OnInitDialog();

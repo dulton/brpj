@@ -6,6 +6,9 @@
 #include "FrmFaceMatch.h"
 #include "base64_codec.h"
 
+
+
+
 //检测人脸抽取模板线程
 DWORD WINAPI DetectThread(void *p)
 {
@@ -14,6 +17,8 @@ DWORD WINAPI DetectThread(void *p)
 	long  bitmapSize;
 	char * buffer= NULL;
 	int FaceImageCount=0;
+
+	pFrmFaceMatch->m_bIsClose = false;
 
 	while(pFrmFaceMatch->m_bThreadWork)
 	{	
@@ -31,7 +36,25 @@ DWORD WINAPI DetectThread(void *p)
 				bmpInfo.bmiHeader.biBitCount = 24;  
 				try
 				{
-					pFrmFaceMatch->m_common->DrawCtrlImage((CStatic *)pFrmFaceMatch->GetDlgItem(IDC_STATIC_MAIN), bmpInfo, buffer, bitmapSize);
+					int tempw=pFrmFaceMatch->m_lVideoWidth*3;
+					for(int y=0; y < pFrmFaceMatch->m_lVideoHeight; y++)
+					{
+						memcpy(&pFrmFaceMatch->tempRGB[(pFrmFaceMatch->m_lVideoHeight-1-y)*tempw],
+							&buffer[y*tempw],tempw);
+					}
+
+					YRDetectFace((unsigned char *)pFrmFaceMatch->tempRGB,bitmapSize,pFrmFaceMatch->m_lVideoWidth,pFrmFaceMatch->m_lVideoHeight,
+								pFrmFaceMatch->list_size,pFrmFaceMatch->face_rect_list);
+
+					pFrmFaceMatch->m_common->DrawCtrlImage((CStatic *)pFrmFaceMatch->GetDlgItem(IDC_STATIC_MAIN), bmpInfo, 
+															buffer, bitmapSize, 
+															pFrmFaceMatch->list_size,pFrmFaceMatch->face_rect_list,
+															pFrmFaceMatch->DrawRect,pFrmFaceMatch->DrawScale);
+					
+					
+					//pFrmFaceMatch->GetDlgItem(IDC_STATIC_MAIN)->Invalidate();
+
+
 				/*
 					FaceImageCount++;
 					if(FaceImageCount==10)
@@ -55,6 +78,7 @@ DWORD WINAPI DetectThread(void *p)
 					}
 					*/
 				}
+
 				catch(...)
 				{
 					continue;
@@ -62,7 +86,7 @@ DWORD WINAPI DetectThread(void *p)
 			}
 			else
 			{			
-				Sleep(500);
+				Sleep(100);
 			}
 			
 		}
@@ -71,10 +95,8 @@ DWORD WINAPI DetectThread(void *p)
 			continue;
 		}
 	}
-	if(pFrmFaceMatch->m_bIsClose)
-	{
 
-	}
+	pFrmFaceMatch->m_bIsClose = true;
 	return 0;
 }
 
@@ -90,11 +112,20 @@ CFrmFaceMatch::CFrmFaceMatch(CWnd* pParent /*=NULL*/)
 	{
 		FaceImage[i] = NULL;
 	}
+	
+	tempRGB=NULL;
 }
 
 CFrmFaceMatch::~CFrmFaceMatch()
 {
 	//StopThread();
+	UnInitializeFaceCloud();
+	
+	if(tempRGB)
+	{
+		free(tempRGB);
+		tempRGB = NULL;
+	}
 }
 
 void CFrmFaceMatch::DoDataExchange(CDataExchange* pDX)
@@ -112,6 +143,20 @@ BOOL CFrmFaceMatch::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	TCHAR CurrentDir[260]="";
+	GetCurrentDirectory(260, CurrentDir);
+	InitializeFaceCloud(CurrentDir);
+
+	GetDlgItem(IDC_STATIC_MAIN)->GetWindowRect(&old_DrawRect);
+	//全部移到10 10的框
+	int x=old_DrawRect.left-10;
+	int y=old_DrawRect.top-10;
+
+	old_DrawRect.left=10;
+	old_DrawRect.top=10;
+	old_DrawRect.right -=x;
+	old_DrawRect.bottom -=y;
+
 	// TODO:  Add extra initialization here
 	//StartThread();
 
@@ -126,7 +171,8 @@ BOOL CFrmFaceMatch::OnInitDialog()
 *************************************/
 void CFrmFaceMatch::InitParameters()
 {
-	m_bIsClose = false;
+	m_pThreadDetect=NULL;
+	m_bIsClose = true;
 	m_bThreadWork = false;
 	m_lVideoWidth = 0;
 	m_lVideoHeight = 0;
@@ -140,12 +186,21 @@ int CFrmFaceMatch::StartThread()
 	InitParameters();
 	if(m_common->InitialDevice(m_cbDevice, &m_lVideoWidth, &m_lVideoHeight))//设备初始化
 	{
+		if(tempRGB)
+		{
+			free(tempRGB);
+			tempRGB=NULL;
+		}
+		tempRGB = (unsigned char*)calloc(3*m_lVideoWidth*m_lVideoHeight,sizeof(unsigned char));
+		//比例缩放
+		DrawRect=m_common->SetDrawSize((CStatic *)GetDlgItem(IDC_STATIC_MAIN),
+				old_DrawRect,m_lVideoWidth,m_lVideoHeight,&DrawScale);
+
 		m_bThreadWork = true;
-		int nPriority = THREAD_PRIORITY_BELOW_NORMAL;//默认为THREAD_PRIORITY_NORMAL
-		UINT nStackSize = 0;//与创建它的线程堆栈大小相同
-		DWORD dwCreateFlags = 0;//创建后立即执行
+
+		m_pThreadDetect=NULL;
 		m_pThreadDetect=CreateThread(NULL,0,DetectThread,this,0,NULL);
-		//m_pThreadMatch  = AfxBeginThread(MatchThread,this, nPriority, nStackSize, dwCreateFlags);
+	
 		return 1;
 	}
 	return 0;
@@ -156,14 +211,26 @@ int CFrmFaceMatch::StartThread()
 *************************************/
 int CFrmFaceMatch::StopThread()
 {
-	if(m_bThreadWork)
+	if(m_bThreadWork && m_pThreadDetect)
 	{
 		m_bThreadWork = false;
-		Sleep(500);
-		TerminateThread(m_pThreadDetect,0);
+		Sleep(100);
+
+		if(false == m_bIsClose)
+		{
+			TerminateThread(m_pThreadDetect,0);
+			m_pThreadDetect=NULL;
+		}
+		Sleep(100);
 		CloseCamera();
 		Invalidate();
 
+		if(tempRGB)
+		{
+			free(tempRGB);
+			tempRGB=NULL;
+		}
+		
 		return 1;
 	}
 	return 0;

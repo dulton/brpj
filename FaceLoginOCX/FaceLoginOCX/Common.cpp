@@ -134,11 +134,53 @@ CString CCommon::GetReg(CString lpValueKey)
 	return ret;
 }
 
+CRect CCommon::SetDrawSize(CStatic * m_picBox,CRect old_DrawRect,int bmpw,int bmph,float *scale) 
+{
+	//////////////重设矩形框 否则出现未刷新BUG
+
+	CRect rect;
+
+	// 读取图片的宽和高
+	int w = bmpw;
+	int h = bmph;
+	// 找出宽和高中的较大值者
+	int max = (w > h)? w: h;
+	// 计算将图片缩放到TheImage区域所需的比例因子
+	(*scale) = 1.0;
+	int rw ,rh;
+	rw = old_DrawRect.Width();// 求出图片控件的宽和高
+	rh = old_DrawRect.Height();
+	(*scale) = (float)rh/h <(float) rw/w ?(float)rh/h:(float) rw/w;
+	// 缩放后图片的宽和高
+	int nw = (int)( w* (*scale) );
+	int nh = (int)( h*(*scale) );
+	int iw = nw;//img->width;						// 读取图片的宽和高
+	int ih = nh;//img->height;
+	int tx = (int)(rw - iw)/2;					// 使图片的显示位置正好在控件的正中
+	int ty = (int)(rh - ih)/2;
+	SetRect( rect, tx, ty, tx+iw, ty+ih );
+
+	CRect new_clientRect;
+	new_clientRect.left	=	old_DrawRect.left+rect.left;
+	new_clientRect.top	=	old_DrawRect.top+rect.top;
+	new_clientRect.bottom	=	new_clientRect.top+rect.Height();
+	new_clientRect.right	=	new_clientRect.left+rect.Width();
+
+	//重置矩形
+	m_picBox->MoveWindow(new_clientRect);
+
+	//重置绘图矩形
+	SetRect( rect, 0, 0, iw, ih );
+
+	return rect;
+
+}
 
 /************************************
 * 绘图
 *************************************/
-void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffer, int bufferSize)
+/*
+void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffer, int bufferSize, int list_size, RwFaceRect *face_rect_list)
 {
 	CRect   rect;
 	
@@ -183,24 +225,71 @@ void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffe
 	DeleteObject(hBmp);
 //	free(lpBits);
 
-	rect.left=100;
-	rect.top=100;
-	rect.bottom=200;
-	rect.right=200;
-	CBrush tempBrush(RGB(0,255,0));
-	pDC->FrameRect(rect, &tempBrush);
+	for(int i=0;i<list_size;i++)
+	{
+		rect.left = face_rect_list[i].left*scale;
+		rect.top  = face_rect_list[i].top*scale;
+		rect.bottom = face_rect_list[i].bottom*scale;
+		rect.right  = face_rect_list[i].right*scale;
+		CBrush tempBrush(RGB(0,255,0));
 
-	rect.left=150;
-	rect.top=150;
-	rect.bottom=250;
-	rect.right=250;
-	pDC->FrameRect(rect, &tempBrush);
+		//pDC->FrameRect(rect, &pen);
+		pDC->FrameRect(rect, &tempBrush);
+	}
 
 	if(NULL != pDC)
 	{
 		m_picBox-> ReleaseDC(pDC);
 	}
 
+}
+*/
+
+void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
+							char * buffer, int bufferSize,
+							int list_size, RwFaceRect *face_rect_list,
+							CRect rect,float scale)
+{
+	
+	CDC *pDC = m_picBox->GetDC();
+	if(NULL == pDC)
+		return;
+	HDC hdc = pDC->GetSafeHdc();
+	HDC hdcMem = CreateCompatibleDC(hdc); 
+
+	LPBYTE   lpBits;
+	HBITMAP hBmp = CreateDIBSection(hdcMem,&bmpInfo,DIB_RGB_COLORS,(void **)&lpBits,NULL,0);  
+	memcpy(lpBits, buffer, bufferSize);
+	HBITMAP hOldBmp = (HBITMAP)SelectObject(hdcMem, hBmp); 
+
+
+	//SetStretchBltMode(hdc, HALFTONE);
+	SetStretchBltMode(hdc, COLORONCOLOR);
+	StretchBlt(hdc, rect.left,rect.top,rect.Width(),rect.Height(), hdcMem, 0, 0, bmpInfo.bmiHeader.biWidth, bmpInfo.bmiHeader.biHeight, SRCCOPY);	
+
+
+	SelectObject(hdcMem,hOldBmp);//复原兼容DC数据.
+	DeleteDC(hdcMem);
+	DeleteObject(hOldBmp);
+	DeleteObject(hBmp);
+//	free(lpBits);
+
+	for(int i=0;i<list_size;i++)
+	{
+		rect.left = face_rect_list[i].left*scale;
+		rect.top  = face_rect_list[i].top*scale;
+		rect.bottom = face_rect_list[i].bottom*scale;
+		rect.right  = face_rect_list[i].right*scale;
+		CBrush tempBrush(RGB(0,255,0));
+
+		//pDC->FrameRect(rect, &pen);
+		pDC->FrameRect(rect, &tempBrush);
+	}
+
+	if(NULL != pDC)
+	{
+		m_picBox-> ReleaseDC(pDC);
+	}
 }
 
 int CCommon::GetCamNum()
