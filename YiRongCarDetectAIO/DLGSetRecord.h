@@ -10,12 +10,45 @@
 #include <list>
 using namespace::std;
 
+#include "IO.h"
+
+/*
 //命名太长会出错
 struct SET_RECORD_DATA_ST
 {
 	//数据库的NID
 	unsigned long int nid;
+
+	unsigned long int camid;	//摄像头ID
+	char area[260];	//摄像头区域
+	char name[260];	//摄像头名称
+	char ip[32];	//IP地址
+
+	//如果下面3个都是false 则仅今天有效
+	int everyday;	//使用每天 bool
+	int usedate;	//使用日期 bool	 
+	int useweek;	//使用每周 bool
+	// 启用状态 启用则执行录制。不启用就只是备用 bool
+	int enable;
+
+	//时间
+	int StartYear;
+	int StartMon;
+	int StartDay;
+	int StartWeek; //1 周日 2-7 周一到周六
+	int StartHour;
+	int StartMin;
+	int StartSec;
+	//时间
+	int EndYear;
+	int EndMon;
+	int EndDay;
+	int EndWeek;	//0 周日 1-6 周一到周六
+	int EndHour;
+	int EndMin;
+	int EndSec;
 };
+*/
 /////////////////////////////////////////////////////////////////////////////
 // CDLGSetRecord dialog
 
@@ -42,6 +75,7 @@ public:
 	BOOL	m_week;
 	int		m_endweek;
 	int		m_startweek;
+	CString	m_camip;
 	//}}AFX_DATA
 
 	BOOL OnInitDialog();
@@ -50,13 +84,28 @@ public:
 
 	list<struct SET_RECORD_DATA_ST> list_record;
 	struct SET_RECORD_DATA_ST data;
+	bool rwLock;	//锁。如果为true 则不能读
 
 	int ListTotal;
 	int ListNow;
 	int ListChoose;
 
+	CString AreaStr;
+	CString CamStr;
+	unsigned long int camid;
+
+	void InitList(void);
 	void DisplayerList(void);
 	void Clear();
+	void Struct2M(void);
+	void M2Struct(void);
+
+	void SetToday();
+	bool NeedRecord(unsigned long int camid);
+	bool TimeLimit(void) ;
+	unsigned long int GetNid(long int ListChoose) ;
+	void DisplayWeek(int nItem,int i,int dayofweek);
+	void DisplayTime(int nItem,list<struct SET_RECORD_DATA_ST>::iterator beglist) ;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -80,6 +129,10 @@ protected:
 	afx_msg void OnCheckAll();
 	afx_msg void OnButtonDeleteall();
 	afx_msg void OnCloseupComboArea();
+	afx_msg void OnCloseupComboCam();
+	afx_msg void OnCheckDate();
+	afx_msg void OnCheckWeek();
+	afx_msg void OnCheckEveryday();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

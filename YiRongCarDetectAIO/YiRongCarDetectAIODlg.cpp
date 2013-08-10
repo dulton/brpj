@@ -158,12 +158,13 @@ BEGIN_MESSAGE_MAP(CYiRongCarDetectAIODlg, CDialog)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BUTTON_TREE, OnButtonTree)
 	ON_BN_CLICKED(IDC_BUTTON_NORMAL, OnButtonNormal)
+	ON_BN_CLICKED(IDC_BUTTON_PTZ, OnButtonPtz)
 	ON_COMMAND(ID_MENUITEM_HISTORY_VIDEO, OnMenuitemHistoryVideo)
 	ON_COMMAND(ID_MENUITEM_HISTORY_CAR, OnMenuitemHistoryCar)
 	ON_COMMAND(ID_MENUITEM_HISTORY_ALARM, OnMenuitemHistoryAlarm)
 	ON_COMMAND(ID_MENUITEM_SET_BLACK, OnMenuitemSetBlack)
 	ON_WM_INITMENUPOPUP() //为了菜单勾选事件增加的
-	ON_BN_CLICKED(IDC_BUTTON_PTZ, OnButtonPtz)
+	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -210,7 +211,8 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	//列表
 	ListMainInit();
-
+	//初始化定时录制信息
+	DlgSetRecord.InitList();
 	//////显示标题///////////////////
 	CString modeflag;
 
@@ -988,13 +990,15 @@ void CYiRongCarDetectAIODlg::OnMenuitemSetRecord()
 		MessageBox("无 定时录像设置 权限，请联系管理员",MESSAGEBOX_TITLE);
 		return ;
 	}
-//	MessageBox("定时录制设置");
-
-//	CDLGSetRecord DlgSetRecord;
-//	DlgSetRecord.DoModal();
-
+	
+	DlgSetRecord.DoModal();
 }
 
+void CYiRongCarDetectAIODlg::OnMenuitemSetrecord() 
+{
+	// TODO: Add your command handler code here
+
+}
 //车牌识别设置
 void CYiRongCarDetectAIODlg::OnMenuitemSetCar() 
 {
@@ -1228,4 +1232,9 @@ HBRUSH CYiRongCarDetectAIODlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 }
 
 
-
+void CYiRongCarDetectAIODlg::OnTimer(UINT nIDEvent) 
+{
+	// TODO: Add your message handler code here and/or call default
+	
+	CDialog::OnTimer(nIDEvent);
+}

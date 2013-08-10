@@ -186,7 +186,6 @@
 #define IDB_TAB_TREE                    336
 #define IDB_TAB_TREE_CLOSE              337
 #define IDD_ANALYSE_FLOWRATE            340
-
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_LIST_CAR                    1002
@@ -450,6 +449,7 @@
 #define IDC_STATIC_FTP_USER             1373
 #define IDC_STATIC_FTP_PSW              1374
 #define IDC_STATIC_FTP_PATH             1375
+#define IDC_STATIC_CAMIP                1376
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -490,9 +490,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        346
-#define _APS_NEXT_COMMAND_VALUE         32817
-#define _APS_NEXT_CONTROL_VALUE         1375
+#define _APS_NEXT_RESOURCE_VALUE        347
+#define _APS_NEXT_COMMAND_VALUE         32818
+#define _APS_NEXT_CONTROL_VALUE         1377
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

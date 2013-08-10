@@ -87,7 +87,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 1
+#define OPEN_CARDETECT_CODE 0
 
 //开启人脸识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_FACEDETECT_CODE 0

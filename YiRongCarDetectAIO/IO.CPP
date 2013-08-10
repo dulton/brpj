@@ -3113,6 +3113,347 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 	}  
 }
 
+bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
+{
+	char sTime[32]={0};
+	char eTime[32]={0};
+	sprintf(sTime,"%04d-%02d-%02d %02d:%02d:%02d",
+						rPlan.StartYear,
+						rPlan.StartMon,
+						rPlan.StartDay,
+						rPlan.StartHour,
+						rPlan.StartMin,
+						rPlan.StartSec);
+	sprintf(eTime,"%04d-%02d-%02d %02d:%02d:%02d",
+						rPlan.EndYear,
+						rPlan.EndMon,
+						rPlan.EndDay,
+						rPlan.EndHour,
+						rPlan.EndMin,
+						rPlan.EndSec);
+
+	try
+	{
+		CString strSql = _T("select seq_record_plan.nextval as nid from dual");	    //获取电动车图像数据nid
+		
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+		
+		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		
+		strSql.Format(_T("insert into TB_RECORD_PLAN(nid,ncamera,scameraarea,scameraname,sip,dailyflag,dateflag,weekflag, \
+													enableflag,startweek,endweek,starttime,endtime) \
+													values(%d,%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d, \
+													to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
+													to_date('%s','yyyy-mm-dd hh24:mi:ss'))"), \
+													id,rPlan.camid,rPlan.area,rPlan.name,rPlan.ip, \
+													rPlan.everyday,rPlan.usedate,rPlan.useweek,rPlan.enable,
+													rPlan.StartWeek,rPlan.EndWeek,sTime,eTime);
+		
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_AddNew error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+bool IO::RECORD_PlanTable_DeleteWithNid(unsigned long int nid)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format("delete from tb_record_plan where nid=%d",nid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
+bool IO::RECORD_PlanTable_DeleteWithCamID(unsigned long int camID)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format("delete from tb_record_plan where ncamera=%d",camID);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
+bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
+{
+	char sTime[32]={0};
+	char eTime[32]={0};
+	sprintf(sTime,"%04d-%02d-%02d %02d:%02d:%02d",
+						rPlan.StartYear,
+						rPlan.StartMon,
+						rPlan.StartDay,
+						rPlan.StartHour,
+						rPlan.StartMin,
+						rPlan.StartSec);
+	sprintf(eTime,"%04d-%02d-%02d %02d:%02d:%02d",
+						rPlan.EndYear,
+						rPlan.EndMon,
+						rPlan.EndDay,
+						rPlan.EndHour,
+						rPlan.EndMin,
+						rPlan.EndSec);
+	try
+	{
+		CString strSql;
+		strSql.Format(_T("update tb_record_plan set ncamera=%d,scameraarea='%s',scameraname='%s',sip='%s',\
+							dailyflag=%d,dateflag=%d,weekflag=%d,enableflag=%d,startweek=%d,endweek=%d,\
+							starttime=to_date('%s','yyyy-mm-dd hh24:mi:ss'),\
+							endtime=to_date('%s','yyyy-mm-dd hh24:mi:ss') where nid=%d"),\
+							rPlan.camid, rPlan.area, rPlan.name, rPlan.ip, \
+							rPlan.everyday, rPlan.usedate, rPlan.useweek, rPlan.enable, \
+							rPlan.StartWeek, rPlan.EndWeek, sTime, eTime, rPlan.nid);
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+		{
+			return	true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_Edit error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
+bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_ST *rPlan)
+{
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select a.*,to_char(starttime),to_char(endtime) from tb_record_plan a where nid=%d"),nid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		
+		variant_t var;
+		variant_t temp; 
+		temp.ChangeType(VT_NULL);
+		CString str;
+		
+		rPlan->nid = nid;
+		rPlan->camid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+		rPlan->everyday = (long)m_pRecordsetPtr->GetCollect("dailyflag");
+		rPlan->usedate = (long)m_pRecordsetPtr->GetCollect("dateflag");
+		rPlan->useweek = (long)m_pRecordsetPtr->GetCollect("weekflag");
+		rPlan->enable = (long)m_pRecordsetPtr->GetCollect("enableflag");
+		rPlan->StartWeek = (long)m_pRecordsetPtr->GetCollect("startweek");
+		rPlan->EndWeek = (long)m_pRecordsetPtr->GetCollect("endweek");
+
+		var = m_pRecordsetPtr->GetCollect("scameraarea");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(rPlan->area, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("scameraname");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(rPlan->name, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("sip");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(rPlan->ip, str.GetBuffer(0));
+		}
+		
+		variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(starttime)");
+		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				&rPlan->StartYear,&rPlan->StartMon,&rPlan->StartDay,
+				&rPlan->StartHour,&rPlan->StartMin,&rPlan->StartSec);
+			
+		vargetTime = m_pRecordsetPtr->GetCollect("to_char(endtime)");
+		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				&rPlan->EndYear,&rPlan->EndMon,&rPlan->EndDay,
+				&rPlan->EndHour,&rPlan->EndMin,&rPlan->EndSec);
+
+		m_pRecordsetPtr->Close();
+		
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_ReadOne error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
+bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
+{
+	try
+	{
+		CString	strSql = _T("select a.*,to_char(starttime),to_char(endtime) from tb_record_plan a");
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			variant_t var;
+			variant_t temp; 
+			temp.ChangeType(VT_NULL);
+			CString str;
+			struct SET_RECORD_DATA_ST rPlan = {0};
+			
+			rPlan.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+			rPlan.camid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+			rPlan.everyday = (long)m_pRecordsetPtr->GetCollect("dailyflag");
+			rPlan.usedate = (long)m_pRecordsetPtr->GetCollect("dateflag");
+			rPlan.useweek = (long)m_pRecordsetPtr->GetCollect("weekflag");
+			rPlan.enable = (long)m_pRecordsetPtr->GetCollect("enableflag");
+			rPlan.StartWeek = (long)m_pRecordsetPtr->GetCollect("startweek");
+			rPlan.EndWeek = (long)m_pRecordsetPtr->GetCollect("endweek");
+
+			var = m_pRecordsetPtr->GetCollect("scameraarea");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(rPlan.area, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scameraname");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(rPlan.name, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sip");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(rPlan.ip, str.GetBuffer(0));
+			}
+			
+			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(starttime)");
+			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+					&rPlan.StartYear,&rPlan.StartMon,&rPlan.StartDay,
+					&rPlan.StartHour,&rPlan.StartMin,&rPlan.StartSec);
+				
+			vargetTime = m_pRecordsetPtr->GetCollect("to_char(endtime)");
+			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+					&rPlan.EndYear,&rPlan.EndMon,&rPlan.EndDay,
+					&rPlan.EndHour,&rPlan.EndMin,&rPlan.EndSec);
+			
+			rPlanList.push_back(rPlan);
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+		if(rPlanList.size() > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_ReadAll error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
+bool IO::RECORD_PlanTable_SetRecordState(unsigned long nid,int enable)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format(_T("update tb_record_plan set enableflag=%d where nid=%d"),enable,nid);
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+		{
+			return	true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_SetRecordState error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
+bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char *camname,char *ip)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format(_T("update tb_record_plan set scameraarea='%s',scameraname='%s',sip='%s' where ncamera=%d"),area,camname,ip,camid);
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+		{
+			return	true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	catch(_com_error e)
+	{
+		CString errormessage;
+		errormessage.Format("IO::RECORD_PlanTable_UpdateCamInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(errormessage);
+		return false;
+	}  
+}
+
 /*************************************************************************
 //以下与平台连接
 ************************************************************************/

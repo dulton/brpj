@@ -300,6 +300,13 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.VenderComboCur = iplist[i].venderID;
 				if(DlgAddDevice.DoModal() == IDOK)
 				{
+					//修改定时录制计划
+					OracleIO.RECORD_PlanTable_UpdateCamInfo(
+						iplist[i].camID,
+						DlgAddDevice.m_CamArea.GetBuffer(0),\
+						DlgAddDevice.m_CamName.GetBuffer(0),\
+						DlgAddDevice.m_CamIpAddr.GetBuffer(0));
+					//做其他事
 					OracleIO.DEVICE_UpdateCameraInfo(iplist[i].camID,\
 						DlgAddDevice.m_CamArea,\
 						DlgAddDevice.m_CamName,\
@@ -381,6 +388,8 @@ void CDLGdevicetree::OnMenuitemDeleteDevice()
 	DlgMain->DlgScreen.DeleteDevice(iplist[i].ip);
 	OracleIO.DEVICE_DeleteCamera(iplist[i].camID);
 	OnMenuitemUpdate();
+	//删除定时录制计划
+	OracleIO.RECORD_PlanTable_DeleteWithCamID(iplist[i].camID);
 }
 
 void CDLGdevicetree::OnMenuitemDeletearea() 

@@ -53,6 +53,7 @@ struct DEVICE_INFO
 	int  venderID;				//0---海康,1---大华
 	CString recordPath;
 	CTime startTime;
+	bool planRecord;
 };
 
 
@@ -108,8 +109,11 @@ public:
 	int GetCurWindId(void);
 	//获取当前窗口的摄像机播放状态
 	bool GetCurWindPlayState(int nCuWinID);
+
 	//获取当前窗口的摄像机录像状态
 	bool GetCurWindRecordState(int nCuWinID);
+	//获取当前窗口的摄像机定时录像状态
+	bool GetCurWindPlanRecordState(int nCuWinID);
 	//获取当前窗口的播放句柄
 	long GetCurWindPlayHandle(int nCuWinID);
 	//获取当前窗口的摄像机的码流类型

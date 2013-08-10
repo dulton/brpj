@@ -179,6 +179,11 @@ bool CDLGscreen::GetCurWindRecordState(int nCuWinID)
 {
 	return m_videoInfo[nCuWinID].isRecord;
 }
+//获取当前窗口的摄像机定时录像状态
+bool CDLGscreen::GetCurWindPlanRecordState(int nCuWinID)
+{
+	return m_videoInfo[nCuWinID].planRecord;
+}
 
 //获取当前窗口的播放句柄
 long CDLGscreen::GetCurWindPlayHandle(int nCuWinID)
@@ -507,6 +512,45 @@ void CDLGscreen::RecordTimerEvent()
 				DlgMain->DlgNormal.OpenRecord(i);
 			}
 		}
+		//定时录制
+		if(DlgMain->DlgSetRecord.NeedRecord(m_videoInfo[i].camID))
+		{
+			if(m_videoInfo[i].isRecord == false)
+			{
+				m_videoInfo[i].planRecord = true;
+				DlgMain->DlgNormal.OpenRecord(i);	//开始录制
+			}
+		}
+		else
+		{
+			if(m_videoInfo[i].planRecord == true)
+			{
+				m_videoInfo[i].planRecord = false;
+				if(m_videoInfo[i].isRecord == true)
+				{
+					DlgMain->DlgNormal.CloseRecord(i);	//停止录制
+				}
+			}
+		}
 	}
+
+	//定时录像放这里ZOG
+	//FOR N个摄像头
+	/*
+	if(DlgMain->DlgSetRecord.NeedRecord(CAMID) )
+	{
+		if(m_videoInfo[i].isRecord)
+		//不做事情
+		else
+		//开始录制
 	
+	}
+	else
+	{
+		if(m_videoInfo[i].isRecord)
+		//停止录制
+		else
+		//不做事情
+	}
+	*/
 }

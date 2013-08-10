@@ -13,6 +13,41 @@
 #import "msado15.dll" no_namespace rename("EOF","adoEOF")       //引入ADO类型库
 using namespace::std;
 
+struct SET_RECORD_DATA_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+
+	unsigned long int camid;	//摄像头ID 
+	char area[260];	//摄像头区域
+	char name[260];	//摄像头名称
+	char ip[32];	//IP地址
+
+	//如果下面3个都是false 则仅今天有效
+	int everyday;	//使用每天 bool 
+	int usedate;	//使用日期 bool	 
+	int useweek;	//使用每周 bool
+	// 启用状态 启用则执行录制。不启用就只是备用 bool
+	int enable;
+
+	//时间
+	int StartYear;	
+	int StartMon;
+	int StartDay;
+	int StartWeek; //0 周日 1-6 周一到周六
+	int StartHour;
+	int StartMin;
+	int StartSec;
+	//时间
+	int EndYear;
+	int EndMon;
+	int EndDay;
+	int EndWeek;	//0 周日 1-6 周一到周六
+	int EndHour;
+	int EndMin;
+	int EndSec;
+};
+
 struct HISTORY_VIDEO_ST
 {
 	unsigned long int nid;
@@ -282,6 +317,16 @@ public:
 	bool VIDEO_DeleteVideo(unsigned long int nid);
 	unsigned long VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr);
 	bool VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_VIDEO_ST> &Videolist);
+
+	/**************************定时录制表*******************************/
+	bool RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan);
+	bool RECORD_PlanTable_DeleteWithNid(unsigned long int nid);
+	bool RECORD_PlanTable_DeleteWithCamID(unsigned long int camID);
+	bool RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan);
+	bool RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_ST *rPlan);
+	bool RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList);
+	bool RECORD_PlanTable_SetRecordState(unsigned long int nid,int enable);
+	bool RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char *camname,char *ip);
 
 	/*********************与平台连接的IO****************************/
 #if YRVM_PINGTAI_MODE

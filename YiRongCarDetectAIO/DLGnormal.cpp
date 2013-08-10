@@ -447,6 +447,15 @@ void CDLGnormal::OnButtonOpenRecord()
 	}
 	// TODO: Add your control notification handler code here
 	int curSreen = DlgMain->DlgScreen.GetCurWindId();
+
+	bool planRecord = DlgMain->DlgScreen.GetCurWindPlanRecordState(curSreen);
+	//正在执行计划录制不允许手动停止
+	if(planRecord == true)
+	{
+		MessageBox("系统正在执行 定时录制，请先关闭定时录制",MESSAGEBOX_TITLE);
+		return;
+	}
+
 	bool bRecord = DlgMain->DlgScreen.GetCurWindRecordState(curSreen);
 	if(bRecord)
 	{

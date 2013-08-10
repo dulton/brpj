@@ -14,6 +14,7 @@
 #include "DLGdevicetree.h"
 #include "DLGnormal.h"
 #include "DLGptz.h"
+#include "DLGSetRecord.h"
 
 ////////////////lynn/////////////////
 #include "IO.h"
@@ -48,6 +49,9 @@ public:
 	CDLGnormal	DlgNormal;
 	//云台
 	CDLGptz		DlgPtz;
+	//定时录制
+	CDLGSetRecord DlgSetRecord;
+
 
 	CRect printf_Rect;	//全局
 
@@ -137,6 +141,8 @@ protected:
 	afx_msg void OnButtonTree();
 	afx_msg void OnButtonNormal();
 	afx_msg void OnButtonPtz();
+	afx_msg void OnMenuitemSetrecord();
+	afx_msg void OnTimer(UINT nIDEvent);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

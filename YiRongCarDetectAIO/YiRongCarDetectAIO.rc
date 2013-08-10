@@ -827,57 +827,60 @@ BEGIN
     CONTROL         "",IDC_STATIC_RECT,"Static",SS_BLACKFRAME,7,7,126,73
 END
 
-IDD_SET_RECORD DIALOG DISCARDABLE  0, 0, 402, 349
+IDD_SET_RECORD DIALOG DISCARDABLE  0, 0, 506, 399
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "定时录像设置"
 FONT 9, "宋体"
 BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,17,388,200
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | 
+                    WS_BORDER | WS_TABSTOP,7,17,492,250
     LTEXT           "已设置的列表",IDC_STATIC,7,7,49,8
-    COMBOBOX        IDC_COMBO_AREA,35,255,113,98,CBS_DROPDOWNLIST | 
+    COMBOBOX        IDC_COMBO_AREA,35,305,113,98,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_CAM,199,255,113,98,CBS_DROPDOWNLIST | 
+    COMBOBOX        IDC_COMBO_CAM,199,305,113,98,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "使用日期",IDC_CHECK_DATE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,88,283,48,10
-    LTEXT           "起始时间",IDC_STATIC,46,301,33,8
-    LTEXT           "结束时间",IDC_STATIC,46,319,33,8
+    LTEXT           "起始时间",IDC_STATIC,46,351,33,8
+    LTEXT           "结束时间",IDC_STATIC,46,369,33,8
     CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_STARTMON,
                     "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
-                    WS_TABSTOP,88,297,99,15
+                    WS_TABSTOP,88,347,99,15
     CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER_ENDMON,
                     "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
-                    WS_TABSTOP,88,315,99,15
+                    WS_TABSTOP,88,365,99,15
     CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER_STARTHOUR,
                     "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
-                    WS_TABSTOP | 0x8,258,297,50,15
+                    WS_TABSTOP | 0x8,258,347,50,15
     CONTROL         "DateTimePicker4",IDC_DATETIMEPICKER_ENDHOUR,
                     "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
-                    WS_TABSTOP | 0x8,258,315,50,15
-    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,84,279,105,56
-    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,196,279,57,56
+                    WS_TABSTOP | 0x8,258,365,50,15
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,84,329,105,56
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,196,329,57,56
     CONTROL         "使用星期",IDC_CHECK_WEEK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,200,283,48,10
-    COMBOBOX        IDC_COMBO_ENDWEEK,200,315,48,44,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,200,333,48,10
+    COMBOBOX        IDC_COMBO_ENDWEEK,200,365,48,90,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_STARTWEEK,200,297,48,62,CBS_DROPDOWNLIST | 
+    COMBOBOX        IDC_COMBO_STARTWEEK,200,347,48,109,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "启用",IDC_CHECK_ENABLE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,17,283,32,10
+    CONTROL         "立即启用",IDC_CHECK_ENABLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,17,333,48,10
     CONTROL         "全选",IDC_CHECK_ALL,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,222,32,10
-    PUSHBUTTON      "启用",IDC_BUTTON_ENABLE,51,222,50,14
-    PUSHBUTTON      "不启用",IDC_BUTTON_DISABLE,111,222,50,14
-    GROUPBOX        "计划配置",IDC_STATIC,7,243,388,99
-    LTEXT           "区域",IDC_STATIC,15,257,17,8
-    LTEXT           "摄像头名称",IDC_STATIC,155,257,41,8
+                    WS_TABSTOP,7,273,32,10
+    PUSHBUTTON      "启用",IDC_BUTTON_ENABLE,49,271,50,14
+    PUSHBUTTON      "不启用",IDC_BUTTON_DISABLE,111,271,50,14
+    GROUPBOX        "计划配置",IDC_STATIC,7,293,492,99
+    LTEXT           "区域",IDC_STATIC,15,307,17,8
+    LTEXT           "摄像头名称",IDC_STATIC,155,307,41,8
     CONTROL         "每天",IDC_CHECK_EVERYDAY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,258,283,32,10
-    PUSHBUTTON      "添加",IDC_BUTTON_ADD,336,265,50,14
-    PUSHBUTTON      "修改",IDC_BUTTON_MODIFY,336,289,50,14
-    PUSHBUTTON      "删除",IDC_BUTTON_DELETE,337,313,50,14
-    PUSHBUTTON      "删除",IDC_BUTTON_DELETEALL,337,221,50,14
+                    WS_TABSTOP,258,333,32,10
+    PUSHBUTTON      "添加",IDC_BUTTON_ADD,329,341,50,14
+    PUSHBUTTON      "修改",IDC_BUTTON_MODIFY,389,341,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_DELETE,447,341,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_DELETEALL,449,270,50,14
+    LTEXT           "摄像头IP",IDC_STATIC,317,307,33,8
+    LTEXT           "",IDC_STATIC_CAMIP,356,307,97,10
+    CONTROL         "使用日期",IDC_CHECK_DATE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,89,333,48,10
 END
 
 IDD_BLACK_INOUT DIALOG DISCARDABLE  0, 0, 187, 65
@@ -1131,9 +1134,9 @@ BEGIN
     IDD_SET_RECORD, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 395
+        RIGHTMARGIN, 499
         TOPMARGIN, 7
-        BOTTOMMARGIN, 342
+        BOTTOMMARGIN, 392
     END
 
     IDD_BLACK_INOUT, DIALOG
@@ -1200,6 +1203,7 @@ BEGIN
         MENUITEM "车牌识别设置",                ID_MENUITEM_SET_CAR
         MENUITEM "黑名单设置",                  ID_MENUITEM_SET_BLACK
         MENUITEM "云台设置",                    ID_MENUITEM_SET_PTZ
+        MENUITEM "定时录制设置",                ID_MENUITEM_SET_RECORD
     END
     POPUP "统计分析"
     BEGIN
@@ -1613,6 +1617,39 @@ BEGIN
 0xf3b4, 0xaabb, "\000" 
     IDC_COMBO_CAMVENDER, 0x403, 5, 0
 0xc7d1, 0xb2b0, "\000" 
+    0
+END
+
+IDD_SET_RECORD DLGINIT
+BEGIN
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xd5c8, "\000" 
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xbbd2, "\000" 
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xfeb6, "\000" 
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xfdc8, "\000" 
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xc4cb, "\000" 
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xe5ce, "\000" 
+    IDC_COMBO_ENDWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xf9c1, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xd5c8, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xbbd2, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xfeb6, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xfdc8, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xc4cb, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xe5ce, "\000" 
+    IDC_COMBO_STARTWEEK, 0x403, 7, 0
+0xbfc3, 0xdcd6, 0xf9c1, "\000" 
     0
 END
 
