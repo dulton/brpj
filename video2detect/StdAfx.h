@@ -19,10 +19,12 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+//识别代码
+#define ALLTAB_DETECT_MODE 0
 //汽车=1 电动车=0
 #define ALLTAB_DETECT_CAR_MODE 1
 //写入YRVM平台
-#define YRVM_PINGTAI_MODE	1
+#define YRVM_PINGTAI_MODE	0
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

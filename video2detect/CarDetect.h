@@ -1,3 +1,5 @@
+#if ALLTAB_DETECT_MODE
+
 #ifndef _CAR_DETECT_H_
 #define _CAR_DETECT_H_
 
@@ -152,5 +154,7 @@ public:
 
 };
 
+
+#endif
 
 #endif

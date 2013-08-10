@@ -20,8 +20,10 @@ extern "C"
 #include "IO.h"
 IO OracleIO;
 
+#if ALLTAB_DETECT_MODE
 #include "CarDetect.h"
 CCarDetect CarDetect;
+#endif
 
 CVideo2detectDlg *DlgMain;
 
@@ -340,6 +342,7 @@ void SaveFrame(CVideo2detectDlg *pDlg,AVFrame *pFrame, int width, int height, in
 	fclose(pFile);
 #endif
 
+#if ALLTAB_DETECT_MODE
 	//拷贝数值
 				CarDetect.m_playhandle=0;
 				
@@ -355,7 +358,7 @@ void SaveFrame(CVideo2detectDlg *pDlg,AVFrame *pFrame, int width, int height, in
 					pFrame->data[0],width, height,pFrame->linesize[0]*height);
 				
 				CarDetect.Result();
-				
+#endif
 
 	///////////以下用来显示/////////////////////////
 
@@ -439,7 +442,7 @@ int VideoPlay(char * filePath,CVideo2detectDlg *pDlg)
 	pFrameRGB=avcodec_alloc_frame();
 	if(pFrameRGB==NULL)
 		return -1;
-	
+
 	// Determine required buffer size and allocate buffer
 	numBytes=avpicture_get_size(PIX_FMT_BGR24 , pCodecCtx->width,pCodecCtx->height);
 	buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
@@ -472,6 +475,16 @@ int VideoPlay(char * filePath,CVideo2detectDlg *pDlg)
 	pDlg->m_progress_file.SetRange32(0,total);
 	pDlg->m_progress_file.SetStep(1);
 	pDlg->m_progress_file.SetPos(0);
+
+	//定位到N帧 关键 lStart/fps= 秒 
+	int lStart=390;
+//	av_seek_frame(pFormatCtx, -1, lStart*AV_TIME_BASE, AVSEEK_FLAG_BACKWARD);
+		av_seek_frame(pFormatCtx, -1, lStart/fps*AV_TIME_BASE, AVSEEK_FLAG_BACKWARD);
+
+ // avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
+
+   // avcodec_flush_buffers(pFormatCtx->streams[audio_stream]->codec);
+
 	// Read frames and save first five frames to disk
 	i=0;
 	char rate[10]={0};
@@ -500,7 +513,9 @@ int VideoPlay(char * filePath,CVideo2detectDlg *pDlg)
 
 				//增加进度条
 				pDlg->m_progress_file.StepIt();
-				sprintf(rate,"%d%%",(int)((double)i/(double)(total-1)*100));
+			//	sprintf(rate,"%d%%",(int)((double)i/(double)(total-1)*100));
+				//第N帧
+				sprintf(rate,"%d",packet.dts);
 				pDlg->GetDlgItem(IDC_STATIC_RATE)->SetWindowText(rate);
 				
 			}

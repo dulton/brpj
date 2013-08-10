@@ -1,7 +1,10 @@
 
+
 #include "stdafx.h"
 #include "video2detect.h"
 #include "video2detectDlg.h"
+
+#if ALLTAB_DETECT_MODE
 
 #include "CarDetect.h"
 
@@ -718,3 +721,5 @@ void CCarDetect::Stop()
 	PicFlag=false;
 	JpgSize=0;
 }
+
+#endif
