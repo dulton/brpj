@@ -143,6 +143,7 @@ protected:
 	afx_msg void OnButtonPtz();
 	afx_msg void OnMenuitemSetrecord();
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnMenuitemVideodetect();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

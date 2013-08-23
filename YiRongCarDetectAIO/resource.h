@@ -186,12 +186,16 @@
 #define IDB_TAB_TREE                    336
 #define IDB_TAB_TREE_CLOSE              337
 #define IDD_ANALYSE_FLOWRATE            340
+#define IDD_VIDEO_DETECT                347
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
+#define IDC_BUTTON_FILE                 1001
 #define IDC_LIST_CAR                    1002
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_BUTTON2                     1004
+#define IDC_BUTTON_START                1004
 #define IDC_BUTTON_STOP                 1005
+#define IDC_BUTTON_PAUSE                1005
 #define IDC_BUTTON_CLOSE_PREVIEW_ALL    1006
 #define IDC_BUTTON_TREE                 1007
 #define IDC_TREE_DEVICE                 1008
@@ -230,6 +234,7 @@
 #define IDC_COMBO1                      1042
 #define IDC_COMBO_STREAM                1043
 #define IDC_BUTTON5                     1044
+#define IDC_BUTTON_SPEED                1044
 #define IDC_BUTTON6                     1045
 #define IDC_BUTTON8                     1047
 #define IDC_BUTTON9                     1048
@@ -406,6 +411,7 @@
 #define IDC_BUTTON_NORMAL               1324
 #define IDC_BUTTON_SEARCH_SINGLE        1325
 #define IDC_BUTTON4                     1326
+#define IDC_BUTTON_STOP2                1326
 #define IDC_COMBO_SCREEN                1327
 #define IDC_COMBO_WINNO                 1328
 #define IDC_COMBO2                      1329
@@ -418,6 +424,7 @@
 #define IDC_COMBO_STARTWEEK             1336
 #define IDC_BUTTON_OPEN_PREVIEW_ALL     1337
 #define IDC_BUTTON7                     1338
+#define IDC_BUTTON_CUTPIC               1338
 #define IDC_BUTTON_OPEN_DETECT          1339
 #define IDC_BUTTON_OPEN_DETECT_ALL      1340
 #define IDC_BUTTON_CLOSE_DETECT_ALL     1341
@@ -450,6 +457,12 @@
 #define IDC_STATIC_FTP_PSW              1374
 #define IDC_STATIC_FTP_PATH             1375
 #define IDC_STATIC_CAMIP                1376
+#define IDC_EDIT_FILE                   1379
+#define IDC_CHECK_WRITE_DB              1380
+#define IDC_SLIDER                      1381
+#define IDC_STATIC_STARTTIME            1384
+#define IDC_STATIC_ENDTIME              1385
+#define IDC_STATIC_PLAYWIN              1386
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -485,14 +498,15 @@
 #define ID_MENUITEM_DELETEDEVICE        32811
 #define ID_MENUITEM_ADDDEVICE           32812
 #define ID_MENUITEM_DELETEAREA          32816
+#define ID_MENUITEM_VIDEODETECT         32818
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        347
-#define _APS_NEXT_COMMAND_VALUE         32818
-#define _APS_NEXT_CONTROL_VALUE         1377
+#define _APS_NEXT_RESOURCE_VALUE        348
+#define _APS_NEXT_COMMAND_VALUE         32819
+#define _APS_NEXT_CONTROL_VALUE         1388
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

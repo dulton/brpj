@@ -115,7 +115,7 @@ public:
 	////////////////////////////////////////////////////////
 	void LimitMessageBox(void);
 	void errorprintf(char *str);
-
+	bool ErrorPlateName(char *name);
 
 	bool FtpUploadElecar(char *TimeStr,
 						   char *IpAddr,

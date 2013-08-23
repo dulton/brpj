@@ -928,6 +928,51 @@ BEGIN
     LTEXT           "该天24小时统计",IDC_STATIC,341,35,57,8
 END
 
+IDD_VIDEO_DETECT DIALOG DISCARDABLE  0, 0, 594, 393
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "视频文件识别"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "",IDC_STATIC_PLAYWIN,"Static",SS_BLACKFRAME,7,7,373,210
+    CONTROL         "List2",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | 
+                    WS_TABSTOP,7,264,580,122
+    EDITTEXT        IDC_EDIT_FILE,384,171,203,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "浏览文件",IDC_BUTTON_FILE,537,189,50,14
+    PUSHBUTTON      "开始识别",IDC_BUTTON_START,7,245,50,14
+    PUSHBUTTON      "暂停识别",IDC_BUTTON_PAUSE,63,245,50,14
+    PUSHBUTTON      "停止识别",IDC_BUTTON_STOP2,120,245,50,14
+    PUSHBUTTON      "全速播放",IDC_BUTTON_SPEED,178,245,50,14
+    CONTROL         "Slider1",IDC_SLIDER,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | TBS_ENABLESELRANGE | WS_TABSTOP,44,220,501,
+                    19
+    LTEXT           "END TIME",IDC_STATIC_ENDTIME,550,225,37,8
+    LTEXT           "STARTTIME",IDC_STATIC_STARTTIME,7,225,35,8
+    GROUPBOX        "设置",IDC_STATIC,384,7,203,135
+    CONTROL         "将识别结果写入数据库",IDC_CHECK_WRITE_DB,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,391,20,96,10
+    LTEXT           "",IDC_STATIC_CAMIP,437,105,142,10
+    LTEXT           "起始时间",IDC_STATIC,391,125,33,8
+    CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER_STARTMON,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_LONGDATEFORMAT | 
+                    WS_TABSTOP,425,121,99,15
+    CONTROL         "DateTimePicker3",IDC_DATETIMEPICKER_STARTHOUR,
+                    "SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | 
+                    WS_TABSTOP | 0x8,529,121,50,15
+    COMBOBOX        IDC_COMBO_AREA,416,65,163,98,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CAM,442,85,137,98,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "区域",IDC_STATIC,391,67,17,8
+    LTEXT           "摄像头名称",IDC_STATIC,391,87,41,8
+    LTEXT           "摄像头IP",IDC_STATIC,391,107,33,8
+    LTEXT           "打开视频",IDC_STATIC,384,158,33,8
+    PUSHBUTTON      "截图",IDC_BUTTON_CUTPIC,235,245,50,14
+    LTEXT           "提示:只有此项勾选以后，才能进行“发送至FTP，黑名单报警，数据存储”等完整功能。",
+                    IDC_STATIC,390,39,191,15
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -1154,6 +1199,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 424
     END
+
+    IDD_VIDEO_DETECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 587
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 386
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1193,6 +1246,7 @@ BEGIN
         MENUITEM "历史报警查询",                ID_MENUITEM_HISTORY_ALARM
         MENUITEM "黑名单导入",                  ID_MENUITEM_BLACK_IN
         MENUITEM "黑名单导出",                  ID_MENUITEM_BLACK_OUT
+        MENUITEM "视频文件识别",                ID_MENUITEM_VIDEODETECT
     END
     POPUP "设置"
     BEGIN

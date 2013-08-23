@@ -84,16 +84,16 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //汽车模式 1 电动车模式 0
-#define ALLTAB_DETECT_CAR_MODE 0
+#define ALLTAB_DETECT_CAR_MODE 1
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 0
+#define OPEN_CARDETECT_CODE 1
 
 //开启人脸识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_FACEDETECT_CODE 0
 
 //结果输出到平台 模式 =1  单机版=0 
-#define YRVM_PINGTAI_MODE	1
+#define YRVM_PINGTAI_MODE	0
 
 //结果输出到平台 电动车写入机动车表 =1  电动车写入电动车表=0 
 #define YRVM_PINGTAI_ELECAR_MIX_MODE	0

@@ -20,6 +20,9 @@ extern IO OracleIO;
 #include "DLGLogin.h"
 extern CDLGLogin DlgLogin;
 
+
+
+
 #if ALLTAB_DETECT_CAR_MODE
 //汽车
 #pragma comment(lib, "carSDK\\plate_dll.lib")
@@ -30,10 +33,7 @@ extern CDLGLogin DlgLogin;
 
 #endif
 
-
-
 #if OPEN_CARDETECT_CODE
-
 
 CCarDetect::CCarDetect()
 {
@@ -364,7 +364,7 @@ char* CCarDetect::CarDirection(uint8_t i)
 
 //判断识别出来的车牌是否不能保存成文件(非法文件名)
 // true为不正确车牌
-bool ErrorPlateName(char *name)
+bool CCarDetect::ErrorPlateName(char *name)
 {
 
 	if(NULL!=strchr(name,'\\'))

@@ -19,7 +19,7 @@ extern CDLGLogin DlgLogin;
 #include "DLGSetPTZ.h"
 #include "DLGSetRecord.h"
 #include "DLGAnalyseFlowrate.h"
-
+#include "DLGVideoDetect.h"
 ////////////////////////////////////////
 #if	ALLTAB_DETECT_CAR_MODE
 	#include "DLGSetCar.h"
@@ -159,12 +159,13 @@ BEGIN_MESSAGE_MAP(CYiRongCarDetectAIODlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_TREE, OnButtonTree)
 	ON_BN_CLICKED(IDC_BUTTON_NORMAL, OnButtonNormal)
 	ON_BN_CLICKED(IDC_BUTTON_PTZ, OnButtonPtz)
+	ON_WM_TIMER()
 	ON_COMMAND(ID_MENUITEM_HISTORY_VIDEO, OnMenuitemHistoryVideo)
 	ON_COMMAND(ID_MENUITEM_HISTORY_CAR, OnMenuitemHistoryCar)
 	ON_COMMAND(ID_MENUITEM_HISTORY_ALARM, OnMenuitemHistoryAlarm)
 	ON_COMMAND(ID_MENUITEM_SET_BLACK, OnMenuitemSetBlack)
 	ON_WM_INITMENUPOPUP() //为了菜单勾选事件增加的
-	ON_WM_TIMER()
+	ON_COMMAND(ID_MENUITEM_VIDEODETECT, OnMenuitemVideodetect)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -931,6 +932,14 @@ void CYiRongCarDetectAIODlg::OnMenuitemBlackOut()
 	CDLGSetBlack DlgSetBlack;
 	DlgSetBlack.BlackOuput();
 }
+
+void CYiRongCarDetectAIODlg::OnMenuitemVideodetect() 
+{
+	// TODO: Add your command handler code here
+	CDLGVideoDetect DlgVideoDetect;
+	DlgVideoDetect.DoModal();
+}
+
 //////////////菜单项///////////设置/////////////////////////////////
 //用户设置
 void CYiRongCarDetectAIODlg::OnMenuitemSetUser() 
@@ -1238,3 +1247,4 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT nIDEvent)
 	
 	CDialog::OnTimer(nIDEvent);
 }
+

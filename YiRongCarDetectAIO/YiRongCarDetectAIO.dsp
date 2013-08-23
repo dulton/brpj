@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "TIXML_USE_STL" /D "_CRT_SECURE_NO_WARNINGS" /D "TUNE" /FR /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "ffmpeginclude" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "TIXML_USE_STL" /D "_CRT_SECURE_NO_WARNINGS" /D "TUNE" /FR /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 ffmpeglib\*.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -188,6 +188,10 @@ SOURCE=.\DLGshortcut.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DLGVideoDetect.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DLGWarnning.cpp
 # End Source File
 # Begin Source File
@@ -226,6 +230,10 @@ SOURCE=.\ScreenPannel.cpp
 
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\VideoCarDetect.cpp
 # End Source File
 # Begin Source File
 
@@ -349,6 +357,10 @@ SOURCE=.\DLGshortcut.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DLGVideoDetect.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DLGWarnning.h
 # End Source File
 # Begin Source File
@@ -390,6 +402,10 @@ SOURCE=.\ScreenPannel.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\VideoCarDetect.h
 # End Source File
 # Begin Source File
 
