@@ -79,6 +79,7 @@ BEGIN_MESSAGE_MAP(CDLGHistoryVideo, CDialog)
 	ON_NOTIFY(NM_CLICK, IDC_LIST, OnClickList)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, OnButtonDelete)
 	ON_NOTIFY(LVN_ITEMACTIVATE, IDC_LIST,OnLvnItemActivateList)
+	ON_BN_CLICKED(IDC_CHECK_TIME, OnCheckTime)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -89,7 +90,7 @@ BOOL CDLGHistoryVideo::OnInitDialog()
 	CDialog::OnInitDialog();
 	
 	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_List.InsertColumn(1, _T("设备名称" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(1, _T("摄像头名称" ), LVCFMT_LEFT, 140);
 	m_List.InsertColumn(2, _T("IP地址"), LVCFMT_LEFT, 140);
 	m_List.InsertColumn(3, _T("文件格式"), LVCFMT_LEFT, 70);
 	m_List.InsertColumn(4, _T("文件大小"), LVCFMT_LEFT, 90);
@@ -102,6 +103,8 @@ BOOL CDLGHistoryVideo::OnInitDialog()
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
 	ChooseEnable();
+
+	OnCheckTime();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -146,7 +149,15 @@ void CDLGHistoryVideo::DisplayerList(void)
 		m_List.SetItemText(nItem,2,beglist->ip);
 		m_List.SetItemText(nItem,3,beglist->format);
 
-		sprintf(str,"%d",beglist->size);
+	//	sprintf(str,"%d",beglist->size);
+		if(beglist->size <= 1024 )
+			sprintf(str,"%d B",beglist->size);
+		else if(beglist->size > 1024 && beglist->size <= 1048576)
+			sprintf(str,"%.2f KB",beglist->size/1024.0);
+		else if(beglist->size > 1048576 && beglist->size <= 1073741824)
+			sprintf(str,"%.2f MB",beglist->size/1048576.0);
+		else if(beglist->size > 1073741824)
+			sprintf(str,"%.2f GB",beglist->size/1073741824.0);
 		m_List.SetItemText(nItem,4,str);
 
 		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
@@ -231,6 +242,28 @@ void CDLGHistoryVideo::OnButtonSearch()
 	if(m_CheckTime)
 	{
 		searchFlag |= 0x04;
+	
+		CTime cstime(
+			m_StartMon.GetYear(),
+			m_StartMon.GetMonth(),
+			m_StartMon.GetDay(),
+			m_StartHour.GetHour(),
+			m_StartHour.GetMinute(),
+			m_StartHour.GetSecond());
+		
+		CTime cetime(
+			m_EndMon.GetYear(),
+			m_EndMon.GetMonth(),
+			m_EndMon.GetDay(),
+			m_EndHour.GetHour(),
+			m_EndHour.GetMinute(),
+			m_EndHour.GetSecond());
+		
+		if(cstime>cetime)
+		{
+			MessageBox("起始时间 不得大于 结束时间");
+			return ;
+		}
 	}
 
 	memset(SqlStr,0,1024);
@@ -437,5 +470,25 @@ void CDLGHistoryVideo::OnButtonDelete()
 		
 		ListNow=0;
 		DisplayerList();
+	}
+}
+
+void CDLGHistoryVideo::OnCheckTime() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	if(m_CheckTime)
+	{
+		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDMON)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDHOUR)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDMON)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDHOUR)->EnableWindow(FALSE);
 	}
 }

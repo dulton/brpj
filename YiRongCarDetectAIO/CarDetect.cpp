@@ -294,6 +294,11 @@ void CCarDetect::Start(int format,unsigned char *image,int w,int h,int size)
 		SetJPGquality();
 		SetCarColor();
 
+		/*
+			lc_plate_set_OSD_scale(CarHandle,1.0);
+			lc_plate_set_OSD_position(CarHandle,0,0);
+			lc_plate_set_OSD_flag(CarHandle,1);
+		*/
 		if(LC_PLATE_SUCCESS!=lc_plate_analysis(&CarHandle,image,w,h,size))
 			return ;
 	}

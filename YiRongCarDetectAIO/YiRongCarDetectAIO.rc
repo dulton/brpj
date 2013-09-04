@@ -75,11 +75,11 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\YiRongCarDetectAIO.ico"
 
 IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "关于 智能视频车牌分析服务软件 2.0版"
+CAPTION "关于 车牌识别分析应用软件 2.0版"
 FONT 9, "宋体"
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,13,10,21,21
-    LTEXT           "智能视频车牌分析服务软件 2.0版",IDC_STATIC,40,10,134,8,
+    ICON            IDR_MAINFRAME,IDC_STATIC,13,10,20,20
+    LTEXT           "车牌识别分析应用软件 2.0版",IDC_STATIC,40,10,134,8,
                     SS_NOPREFIX
     LTEXT           "版权所有 (C) 2012-2013",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "确定",IDOK,178,7,50,14,WS_GROUP
@@ -89,20 +89,21 @@ IDD_YIRONGCARDETECTAIO_DIALOG DIALOGEX 0, 0, 596, 417
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
     WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "智能视频车牌分析服务软件 2.0版"
+CAPTION "车牌识别分析应用软件 2.0版"
 MENU IDR_MENU
 FONT 9, "宋体", 0, 0, 0x1
 BEGIN
     CONTROL         "List2",IDC_LIST_CAR,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,144,334,445,56
-    CONTROL         137,IDC_STATIC,"Static",SS_BITMAP,3,0,147,87
-    LTEXT           "日志状态:",IDC_STATIC_PRINTF,3,402,586,8
+    CONTROL         349,IDC_STATIC,"Static",SS_BITMAP,3,0,147,87
+    LTEXT           "日志状态:",IDC_STATIC_PRINTF,3,402,488,8
     CONTROL         "tree",IDC_BUTTON_TREE,"Button",BS_OWNERDRAW | 
                     WS_TABSTOP,3,320,50,14
     CONTROL         "normal",IDC_BUTTON_NORMAL,"Button",BS_OWNERDRAW | 
                     WS_TABSTOP,61,319,50,14
     CONTROL         "ptz",IDC_BUTTON_PTZ,"Button",BS_OWNERDRAW | WS_TABSTOP,
                     117,316,50,14
+    LTEXT           "当前登陆用户",IDC_STATIC_USERNAME,499,402,90,8
 END
 
 IDD_SHORTCUT DIALOG DISCARDABLE  0, 0, 74, 483
@@ -973,6 +974,15 @@ BEGIN
                     IDC_STATIC,390,39,191,15
 END
 
+IDD_HELP DIALOG DISCARDABLE  0, 0, 247, 57
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "帮助"
+FONT 9, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,190,26,50,14
+    LTEXT           "版本时间",IDC_STATIC_TIME,7,7,233,8
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -1206,6 +1216,14 @@ BEGIN
         RIGHTMARGIN, 587
         TOPMARGIN, 7
         BOTTOMMARGIN, 386
+    END
+
+    IDD_HELP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 240
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 50
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -1448,6 +1466,7 @@ IDB_TAB_PTZ             BITMAP  DISCARDABLE     "res\\tab_ptz.bmp"
 IDB_TAB_PTZ_CLOSE       BITMAP  DISCARDABLE     "res\\tab_ptz_dis.bmp"
 IDB_TAB_TREE            BITMAP  DISCARDABLE     "res\\tab_tree.bmp"
 IDB_TAB_TREE_CLOSE      BITMAP  DISCARDABLE     "res\\tab_tree_dis.bmp"
+IDB_LOGO_ELECAR         BITMAP  DISCARDABLE     "res\\logo_elecar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1715,7 +1734,7 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_ABOUTBOX            "关于 智能视频车牌分析服务软件 2.0版(&A)..."
+    IDS_ABOUTBOX            "关于 车牌识别分析应用软件 2.0版(&A)..."
 END
 
 #endif    // Chinese (中国) resources

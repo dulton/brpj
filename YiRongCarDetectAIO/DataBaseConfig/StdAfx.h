@@ -19,7 +19,11 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
-#define MESSAGEBOX_TITLE "智能视频车牌分析服务软件 2.0版-数据库连接设置"
+//修改这里 记得把主程序也改下
+//#define MESSAGEBOX_TITLE "智能视频车牌分析服务软件 2.0版-数据库连接设置"
+
+#define MESSAGEBOX_TITLE "车牌识别分析应用软件 2.0版-数据库连接设置"
+
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

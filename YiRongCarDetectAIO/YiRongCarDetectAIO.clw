@@ -2,13 +2,13 @@
 
 [General Info]
 Version=1
-LastClass=CDLGVideoDetect
+LastClass=CDLGhelp
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "yirongcardetectaio.h"
 LastPage=0
 
-ClassCount=26
+ClassCount=27
 Class1=CDLGAddArea
 Class2=CDLGAddDevice
 Class3=CDLGdevicetree
@@ -31,39 +31,41 @@ Class19=CYiRongCarDetectAIOApp
 Class20=CAboutDlg
 Class21=CYiRongCarDetectAIODlg
 
-ResourceCount=27
-Resource1=IDD_SET_BLACK
-Resource2=IDD_SHORTCUT
-Resource3=IDR_MENU
-Resource4=IDR_MENU_RCTREE
-Resource5=IDD_SET_PTZ
-Resource6=IDD_ADD_DEVICE
-Resource7=IDD_LOGIN
-Resource8=IDD_SET_CAR
-Resource9=IDD_PTZ
-Resource10=IDD_SET_USER
-Resource11=IDD_SCREEN
-Resource12=IDD_SET_RECORD
-Resource13=IDD_ABOUTBOX
-Resource14=IDD_SET_ELECAR
-Resource15=IDD_ANALYSE_FLOWRATE
-Resource16=IDD_HISTORY_VIDEO
-Resource17=IDD_VIDEO_DETECT
-Resource18=IDD_SET_SYSTEM
-Resource19=IDD_OPEN_CLOSE_PREVIEW
-Resource20=IDD_YIRONGCARDETECTAIO_DIALOG
-Resource21=IDD_HISTORY_DETECT
-Resource22=IDD_NORMAL
+ResourceCount=28
+Resource1=IDD_SET_PTZ
+Resource2=IDD_VIDEO_DETECT
+Resource3=IDD_SCREEN
+Resource4=IDD_PTZ
+Resource5=IDD_YIRONGCARDETECTAIO_DIALOG
+Resource6=IDD_ANALYSE_FLOWRATE
+Resource7=IDD_NORMAL
+Resource8=IDD_WARNNING
+Resource9=IDD_SET_CAR
+Resource10=IDD_HISTORY_DETECT
+Resource11=IDR_MENU_RCTREE
+Resource12=IDD_SET_BLACK
+Resource13=IDD_HISTORY_REPORT
+Resource14=IDD_ABOUTBOX
+Resource15=IDD_LOGIN
+Resource16=IDD_SET_ELECAR
+Resource17=IDD_BLACK_INOUT
+Resource18=IDD_SHORTCUT
+Resource19=IDD_ADD_DEVICE
+Resource20=IDD_SET_SYSTEM
+Resource21=IDR_MENU
+Resource22=IDD_SET_USER
 Class22=CDLGSetPTZ
-Resource23=IDD_HISTORY_REPORT
+Resource23=IDD_HELP
 Class23=CDLGSetRecord
-Resource24=IDD_BLACK_INOUT
+Resource24=IDD_DEVICE_TREE
 Class24=CDLGBlackInOut
-Resource25=IDD_DEVICE_TREE
+Resource25=IDD_HISTORY_VIDEO
 Class25=CDLGAnalyseFlowrate
-Resource26=IDD_WARNNING
+Resource26=IDD_SET_RECORD
 Class26=CDLGVideoDetect
-Resource27=IDR_MENU_RCTREE1
+Resource27=IDD_OPEN_CLOSE_PREVIEW
+Class27=CDLGhelp
+Resource28=IDR_MENU_RCTREE1
 
 [CLS:CDLGAddArea]
 Type=0
@@ -89,6 +91,8 @@ Type=0
 BaseClass=CDialog
 HeaderFile=DLGHistoryReport.h
 ImplementationFile=DLGHistoryReport.cpp
+Filter=D
+VirtualFilter=dWC
 
 [CLS:CDLGHistoryVideo]
 Type=0
@@ -105,6 +109,8 @@ BaseClass=CDialog
 HeaderFile=DLGHistroyDetect.h
 ImplementationFile=DLGHistroyDetect.cpp
 LastObject=CDLGHistroyDetect
+Filter=D
+VirtualFilter=dWC
 
 [CLS:CDLGLogin]
 Type=0
@@ -689,13 +695,14 @@ Control4=IDOK,button,1342373889
 [DLG:IDD_YIRONGCARDETECTAIO_DIALOG]
 Type=1
 Class=CYiRongCarDetectAIODlg
-ControlCount=6
+ControlCount=7
 Control1=IDC_LIST_CAR,SysListView32,1350631429
 Control2=IDC_STATIC,static,1342177294
 Control3=IDC_STATIC_PRINTF,static,1342308352
 Control4=IDC_BUTTON_TREE,button,1342242827
 Control5=IDC_BUTTON_NORMAL,button,1342242827
 Control6=IDC_BUTTON_PTZ,button,1342242827
+Control7=IDC_STATIC_USERNAME,static,1342308352
 
 [MNU:IDR_MENU]
 Type=1
@@ -922,6 +929,22 @@ HeaderFile=DLGVideoDetect.h
 ImplementationFile=DLGVideoDetect.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_SLIDER
+LastObject=CDLGVideoDetect
+VirtualFilter=dWC
+
+[DLG:IDD_HELP]
+Type=1
+Class=CDLGhelp
+ControlCount=2
+Control1=IDOK,button,1342242817
+Control2=IDC_STATIC_TIME,static,1342308352
+
+[CLS:CDLGhelp]
+Type=0
+HeaderFile=DLGhelp.h
+ImplementationFile=DLGhelp.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CDLGhelp
 VirtualFilter=dWC
 

@@ -124,6 +124,10 @@ SOURCE=.\DLGdevicetree.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DLGhelp.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DLGHistoryReport.cpp
 # End Source File
 # Begin Source File
@@ -290,6 +294,10 @@ SOURCE=.\DLGBlackInOut.h
 # Begin Source File
 
 SOURCE=.\DLGdevicetree.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DLGhelp.h
 # End Source File
 # Begin Source File
 
@@ -482,6 +490,10 @@ SOURCE=.\res\login_background.bmp
 # Begin Source File
 
 SOURCE=.\res\logo.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\logo_elecar.bmp
 # End Source File
 # Begin Source File
 

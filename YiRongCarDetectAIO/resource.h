@@ -187,6 +187,8 @@
 #define IDB_TAB_TREE_CLOSE              337
 #define IDD_ANALYSE_FLOWRATE            340
 #define IDD_VIDEO_DETECT                347
+#define IDB_LOGO_ELECAR                 349
+#define IDD_HELP                        350
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
@@ -463,6 +465,8 @@
 #define IDC_STATIC_STARTTIME            1384
 #define IDC_STATIC_ENDTIME              1385
 #define IDC_STATIC_PLAYWIN              1386
+#define IDC_STATIC_USERNAME             1388
+#define IDC_STATIC_TIME                 1390
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -504,9 +508,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        348
+#define _APS_NEXT_RESOURCE_VALUE        351
 #define _APS_NEXT_COMMAND_VALUE         32819
-#define _APS_NEXT_CONTROL_VALUE         1388
+#define _APS_NEXT_CONTROL_VALUE         1391
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

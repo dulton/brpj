@@ -20,6 +20,7 @@ extern CDLGLogin DlgLogin;
 #include "DLGSetRecord.h"
 #include "DLGAnalyseFlowrate.h"
 #include "DLGVideoDetect.h"
+#include "DLGhelp.h"
 ////////////////////////////////////////
 #if	ALLTAB_DETECT_CAR_MODE
 	#include "DLGSetCar.h"
@@ -185,8 +186,8 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
 	{
-		CString strAboutMenu;
-		strAboutMenu.LoadString(IDS_ABOUTBOX);
+		CString strAboutMenu="关于 "MESSAGEBOX_TITLE"(&A)...";
+	//	strAboutMenu.LoadString(IDS_ABOUTBOX);
 		if (!strAboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
@@ -214,34 +215,14 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	ListMainInit();
 	//初始化定时录制信息
 	DlgSetRecord.InitList();
-	//////显示标题///////////////////
-	CString modeflag;
 
-
-
-	//结果输出到平台 模式 =1  单机版=0 
-	if(YRVM_PINGTAI_MODE)
-	{
-		modeflag="P";
-
-		if(0==ALLTAB_DETECT_CAR_MODE)
-		{
-			//电动车混合模式
-			if(YRVM_PINGTAI_ELECAR_MIX_MODE)
-				modeflag+="C";
-			else
-				modeflag+="E";
-		}
-	}
-	else
-		modeflag="S";
-
+	////////////////////////////
 	CString str;
-	str.Format("%s-%s-当前登陆用户:%s",MESSAGEBOX_TITLE,modeflag.GetBuffer(0),DlgLogin.CurrentUser.user);
+	str.Format("%s",MESSAGEBOX_TITLE);
 	DlgMain->SetWindowText(str);
 
-
-
+	str.Format("当前登陆用户:%s",DlgLogin.CurrentUser.user);
+	DlgMain->GetDlgItem(IDC_STATIC_USERNAME)->SetWindowText(str);
 
 	// TODO: Add extra initialization here
 	
@@ -447,9 +428,13 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	printf_Rect.top = 	m_clientRect.bottom-printf_height/* + 5*/;
 	printf_Rect.bottom = 	m_clientRect.bottom /* - 10*/;
 	printf_Rect.left = m_clientRect.left +distance/* + 10*/;
-	printf_Rect.right = m_clientRect.right-distance;
+	printf_Rect.right = m_clientRect.right-distance-200;
 	//必须 样式=重叠，边框=调整大小
 	GetDlgItem(IDC_STATIC_PRINTF)->MoveWindow(printf_Rect);
+	//用户栏
+	printf_Rect.left = printf_Rect.right+distance/* + 10*/;
+	printf_Rect.right = m_clientRect.right-distance;
+	GetDlgItem(IDC_STATIC_USERNAME)->MoveWindow(printf_Rect);
 
 	//底部减去日志条
 //	m_clientRect.bottom -=printf_height+distance;
@@ -698,9 +683,8 @@ void CYiRongCarDetectAIODlg::OnMenuitemLoginIn()
 	DlgLogin.DoModal();
 
 	CString str;
-	str.Format("%s--当前登陆用户:%s",MESSAGEBOX_TITLE,DlgLogin.CurrentUser.user);
-	DlgMain->SetWindowText(str);
-
+	str.Format("当前登陆用户:%s",DlgLogin.CurrentUser.user);
+	DlgMain->GetDlgItem(IDC_STATIC_USERNAME)->SetWindowText(str);
 #endif
 }
 
@@ -1064,8 +1048,8 @@ void CYiRongCarDetectAIODlg::OnMenuitemAbout()
 void CYiRongCarDetectAIODlg::OnMenuitemHelp() 
 {
 	// TODO: Add your command handler code here
-	CAboutDlg dlgAbout;
-	dlgAbout.DoModal();
+	CDLGhelp DlgHelp;
+	DlgHelp.DoModal();
 }
 
 //////////////////////////////////////////////////////////////////////////

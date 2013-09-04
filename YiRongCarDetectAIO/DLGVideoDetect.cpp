@@ -270,7 +270,8 @@ void SaveFrame(CDLGVideoDetect *pDlg,AVFrame *pFrame, int width, int height,
 int VideoPlay(char * filePath,CDLGVideoDetect *pDlg) 
 {
 	AVFormatContext *pFormatCtx;
-	int             i, videoStream;
+	unsigned int             i;
+	int videoStream;
 	AVCodecContext  *pCodecCtx;
 	AVCodec         *pCodec;
 	AVFrame         *pFrame; 
@@ -713,7 +714,6 @@ void CDLGVideoDetect::OnCloseupComboCam()
 		return ;
 	}
 	//获取区域字符串
-	
 	m_cam.GetLBText(cami,CamStr);
 	
 	//全删

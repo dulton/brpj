@@ -243,14 +243,14 @@ void CYaAnSDK::LinkProcess(int screenNo,int lParam)
 {
 	if(lParam == 0)
 	{
-		DlgMain->ShowCameraMessage(DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0),"Connect successful",FALSE);
-		TRACE("Connect successful\n");
+		DlgMain->ShowCameraMessage(DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0),"连接成功",FALSE);
+		TRACE("连接成功\n");
 		VSNET_ClientShowcallback(m_LoginHandle[screenNo],m_ShowCallBack,&m_RealHandle[screenNo]);
 	}
 	else
 	{
-		DlgMain->ShowCameraMessage(DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0),"Connect failed",FALSE);
-		TRACE("Connect failed\n");
+		DlgMain->ShowCameraMessage(DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0),"连接失败",FALSE);
+		TRACE("连接失败\n");
 //		StopPlay(screenNo);
 	}
 }

@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="YiRongCarDetectAIO"
 	ProjectGUID="{C538386C-45D8-4CEB-AB99-00DCBDDF255D}"
+	RootNamespace="YiRongCarDetectAIO"
 	Keyword="MFCProj"
 	TargetFrameworkVersion="0"
 	>
@@ -143,6 +144,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="ffmpeginclude"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;TUNE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -171,6 +173,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="ffmpeglib\*.lib"
 				OutputFile=".\Debug/YiRongCarDetectAIO.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -694,6 +697,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DLGVideoDetect.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DLGWarnning.cpp"
 				>
 				<FileConfiguration
@@ -894,6 +901,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\VideoCarDetect.cpp"
+				>
 			</File>
 			<File
 				RelativePath="xmlrw.cpp"
@@ -1097,6 +1108,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DLGVideoDetect.h"
+				>
+			</File>
+			<File
 				RelativePath="DLGWarnning.h"
 				>
 			</File>
@@ -1138,6 +1153,10 @@
 			</File>
 			<File
 				RelativePath="StdAfx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VideoCarDetect.h"
 				>
 			</File>
 			<File

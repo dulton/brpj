@@ -113,7 +113,6 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDLGHistroyDetect)
-		// NOTE: the ClassWizard will add member functions here
 	afx_msg void OnButtonSearch();
 	afx_msg void OnButtonFirst();
 	afx_msg void OnButtonPrevious();
@@ -121,6 +120,7 @@ protected:
 	afx_msg void OnButtonLast();
 	afx_msg void OnButtonJump();
 	afx_msg void OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnCheckTime();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

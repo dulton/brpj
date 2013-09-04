@@ -84,7 +84,8 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //汽车模式 1 电动车模式 0
-#define ALLTAB_DETECT_CAR_MODE 1
+//切换电动车和汽车。A.记得换到IDD主窗口里换LOGO，B.到ICON里换图标
+#define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_CARDETECT_CODE 1
@@ -95,7 +96,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 //结果输出到平台 模式 =1  单机版=0 
 #define YRVM_PINGTAI_MODE	0
 
-//结果输出到平台 电动车写入机动车表 =1  电动车写入电动车表=0 
+//结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
 #define YRVM_PINGTAI_ELECAR_MIX_MODE	0
 
 
@@ -107,7 +108,10 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 
 
 ///////////////////////////
-
+//修改名称 记得把数据库配置程序的名称也改了
+//以及 关于 处的字符
+// 搜索 智能视频车牌分析服务软件 未加其他标志的
+/*
 #if OPEN_CARDETECT_CODE
 	#if ALLTAB_DETECT_CAR_MODE
 		//弹出框题目
@@ -119,7 +123,19 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #else
 	#define MESSAGEBOX_TITLE "智能视频车牌分析服务软件 2.0版"
 #endif
+*/
 
+#if OPEN_CARDETECT_CODE
+	#if ALLTAB_DETECT_CAR_MODE
+		//弹出框题目
+		#define MESSAGEBOX_TITLE "机动车车牌识别分析应用软件 2.0版"
+	#else
+		//弹出框题目
+		#define MESSAGEBOX_TITLE "电动车车牌识别分析应用软件 2.0版"
+	#endif
+#else
+	#define MESSAGEBOX_TITLE "车牌识别分析应用软件 2.0版"
+#endif
 
 //最多增加区域
 #define MAX_AREA 1024

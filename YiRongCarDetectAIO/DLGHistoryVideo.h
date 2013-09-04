@@ -104,6 +104,7 @@ protected:
 	afx_msg void OnClickList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnButtonDelete();
 	afx_msg void OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnCheckTime();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

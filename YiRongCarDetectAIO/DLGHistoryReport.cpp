@@ -58,13 +58,13 @@ void CDLGHistoryReport::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDLGHistoryReport, CDialog)
 	//{{AFX_MSG_MAP(CDLGHistoryReport)
-		// NOTE: the ClassWizard will add message map macros here
 	ON_BN_CLICKED(IDC_BUTTON_SEARCH, OnButtonSearch)
 	ON_BN_CLICKED(IDC_BUTTON_FIRST, OnButtonFirst)
 	ON_BN_CLICKED(IDC_BUTTON_PREVIOUS, OnButtonPrevious)
 	ON_BN_CLICKED(IDC_BUTTON_NEXT, OnButtonNext)
 	ON_BN_CLICKED(IDC_BUTTON_LAST, OnButtonLast)
 	ON_BN_CLICKED(IDC_BUTTON_JUMP, OnButtonJump)
+	ON_BN_CLICKED(IDC_CHECK_TIME, OnCheckTime)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -80,6 +80,8 @@ BOOL CDLGHistoryReport::OnInitDialog()
 	m_List.InsertColumn(3, _T("日志信息"), LVCFMT_LEFT, 380);
 
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+
+	OnCheckTime();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -192,6 +194,28 @@ void CDLGHistoryReport::OnButtonSearch()
 	if(m_CheckTime)
 	{
 		searchFlag |= 0x02;
+	
+		CTime cstime(
+			m_StartMon.GetYear(),
+			m_StartMon.GetMonth(),
+			m_StartMon.GetDay(),
+			m_StartHour.GetHour(),
+			m_StartHour.GetMinute(),
+			m_StartHour.GetSecond());
+		
+		CTime cetime(
+			m_EndMon.GetYear(),
+			m_EndMon.GetMonth(),
+			m_EndMon.GetDay(),
+			m_EndHour.GetHour(),
+			m_EndHour.GetMinute(),
+			m_EndHour.GetSecond());
+		
+		if(cstime>cetime)
+		{
+			MessageBox("起始时间 不得大于 结束时间");
+			return ;
+		}
 	}
 
 	ListTotal=0;
@@ -271,3 +295,23 @@ void CDLGHistoryReport::OnButtonJump()
 		MessageBox("不在页面范围",MESSAGEBOX_TITLE);
 }
 
+
+void CDLGHistoryReport::OnCheckTime() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	if(m_CheckTime)
+	{
+		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDMON)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDHOUR)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDMON)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_ENDHOUR)->EnableWindow(FALSE);
+	}
+}
