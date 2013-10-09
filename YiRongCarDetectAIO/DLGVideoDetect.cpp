@@ -662,7 +662,20 @@ void CDLGVideoDetect::EnablePlayState()
 /////////////////////////////////////////////////////
 		GetDlgItem(IDC_CHECK_WRITE_DB)->EnableWindow(TRUE);
 
-		OnCheckWriteDb();
+			if(m_check_writedb)
+	{
+		GetDlgItem(IDC_COMBO_AREA)->EnableWindow(TRUE);
+		GetDlgItem(IDC_COMBO_CAM)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(TRUE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_COMBO_AREA)->EnableWindow(FALSE);
+		GetDlgItem(IDC_COMBO_CAM)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(FALSE);
+		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(FALSE);
+	}
 
 		GetDlgItem(IDC_BUTTON_PAUSE)->SetWindowText("暂停识别");
 		GetDlgItem(IDC_BUTTON_SPEED)->SetWindowText("全速播放");
