@@ -70,7 +70,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				RegisterOutput="true"
-				AdditionalDependencies="FaceCloudDLL.lib"
 				OutputFile="$(OutDir)\$(ProjectName).ocx"
 				LinkIncremental="2"
 				ModuleDefinitionFile=".\FaceLoginOCX.def"
@@ -248,6 +247,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\YUV2RGB.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -288,6 +291,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\YUV2RGB.h"
 				>
 			</File>
 		</Filter>

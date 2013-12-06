@@ -23,10 +23,11 @@ library FaceLoginOCXLib
 	{
 		properties:
 		methods:
+			[id(6), helpstring("方法SaveFaceImage")] int SaveFaceImage(char *file);
 			[id(5), helpstring("方法EndCamera")] int EndCamera(void);
 			[id(4), helpstring("方法StartCamera")] 	int StartCamera(void);
 			[id(3), helpstring("方法GetImageTest")] BSTR GetImageTest();
-			[id(2), helpstring("方法GetFaceImage")] char *GetFaceImage(int ImageNum);
+			[id(2), helpstring("方法GetFaceImage")] BSTR GetFaceImage();
 			[id(1), helpstring("方法GetCamNum")] int GetCamNum();
 			[id(DISPID_ABOUTBOX)] void AboutBox();
 	};

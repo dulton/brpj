@@ -60,7 +60,7 @@ public:
 public:
 	CFrmFaceMatch faceMatch;
 	int GetCamNum();
-	char *GetFaceImage(int ImageNum);
+	BSTR GetFaceImage();
 	BSTR GetImageTest();
 	int StartCamera(void);
 	int EndCamera(void);

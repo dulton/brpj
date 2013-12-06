@@ -134,6 +134,27 @@ CString CCommon::GetReg(CString lpValueKey)
 	return ret;
 }
 
+/// <summary>
+/// 设置注册表值
+/// </summary>
+/// <param name="lpValueKey">键名</param>
+/// <param name="lpValueName">键值</param>
+/// <returns></returns>
+void CCommon::SetReg(CString lpValueKey, CString lpValueName)
+{
+	unsigned char buffer[255]={0};
+	unsigned long length;
+	unsigned long type;
+	HKEY hKey;
+	LPCTSTR data_Set= _T("SOFTWARE\\Microsoft");
+
+	RegOpenKey(HKEY_LOCAL_MACHINE,data_Set,&hKey);
+	RegQueryValueEx(hKey,lpValueKey,NULL,&type,buffer,&length);
+	RegCreateKey(HKEY_LOCAL_MACHINE,data_Set,&hKey);
+	RegSetValueEx(hKey,lpValueKey,0,REG_SZ,(const unsigned char *) CString2Char(lpValueName),lpValueName.GetLength());
+	RegCloseKey(hKey);
+}
+
 CRect CCommon::SetDrawSize(CStatic * m_picBox,CRect old_DrawRect,int bmpw,int bmph,float *scale) 
 {
 	//////////////重设矩形框 否则出现未刷新BUG
@@ -180,7 +201,7 @@ CRect CCommon::SetDrawSize(CStatic * m_picBox,CRect old_DrawRect,int bmpw,int bm
 * 绘图
 *************************************/
 /*
-void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffer, int bufferSize, int list_size, RwFaceRect *face_rect_list)
+void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffer, int bufferSize, int list_size, FaceRect *face_rect_list)
 {
 	CRect   rect;
 	
@@ -247,7 +268,7 @@ void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo, char * buffe
 
 void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
 							char * buffer, int bufferSize,
-							int list_size, RwFaceRect *face_rect_list,
+							int list_size, FaceRect *face_rect_list,
 							CRect rect,float scale)
 {
 	
@@ -284,6 +305,17 @@ void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
 
 		//pDC->FrameRect(rect, &pen);
 		pDC->FrameRect(rect, &tempBrush);
+	}
+
+	if(list_size > 0)
+	{
+		pDC->SetTextColor(RGB(0,0,255));
+		pDC->DrawText("  人脸捕获中，请保持正视  ",CRect(180,-380,400,400),DT_SINGLELINE|DT_LEFT|DT_VCENTER); 
+	}
+	else
+	{
+		pDC->SetTextColor(RGB(255,0,0));
+		pDC->DrawText("未检测到人脸，请正视摄像头",CRect(180,-380,400,400),DT_SINGLELINE|DT_LEFT|DT_VCENTER); 
 	}
 
 	if(NULL != pDC)

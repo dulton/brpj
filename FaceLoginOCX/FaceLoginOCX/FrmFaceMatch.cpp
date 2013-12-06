@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "FaceLoginOCX.h"
 #include "FrmFaceMatch.h"
-#include "base64_codec.h"
+
 
 
 
@@ -16,7 +16,6 @@ DWORD WINAPI DetectThread(void *p)
 	
 	long  bitmapSize;
 	char * buffer= NULL;
-	int FaceImageCount=0;
 
 	pFrmFaceMatch->m_bIsClose = false;
 
@@ -43,42 +42,35 @@ DWORD WINAPI DetectThread(void *p)
 							&buffer[y*tempw],tempw);
 					}
 
+					//清0上一次的人脸个数list_size
+					pFrmFaceMatch->list_size = 0;
+					//开始检测人脸
 					YRDetectFace((unsigned char *)pFrmFaceMatch->tempRGB,bitmapSize,pFrmFaceMatch->m_lVideoWidth,pFrmFaceMatch->m_lVideoHeight,
 								pFrmFaceMatch->list_size,pFrmFaceMatch->face_rect_list);
 
+					//显示摄像头画面及人脸框叠加
 					pFrmFaceMatch->m_common->DrawCtrlImage((CStatic *)pFrmFaceMatch->GetDlgItem(IDC_STATIC_MAIN), bmpInfo, 
 															buffer, bitmapSize, 
 															pFrmFaceMatch->list_size,pFrmFaceMatch->face_rect_list,
 															pFrmFaceMatch->DrawRect,pFrmFaceMatch->DrawScale);
 					
-					
-					//pFrmFaceMatch->GetDlgItem(IDC_STATIC_MAIN)->Invalidate();
-
-
-				/*
-					FaceImageCount++;
-					if(FaceImageCount==10)
+					if(pFrmFaceMatch->list_size>0)
 					{
-						FaceImageCount = 0;
-					}
-					if(pFrmFaceMatch->FaceImage[FaceImageCount] == NULL)
-					{
-						pFrmFaceMatch->FaceImage[FaceImageCount] = (char *)calloc(OUT_ENBASE64_SIZE(bitmapSize) ,sizeof(char));
-						if(pFrmFaceMatch->FaceImage[FaceImageCount] == NULL)
+						if(!pFrmFaceMatch->b_getFace)
 						{
-							// 内存申请失败
-							continue;
+							if(pFrmFaceMatch->face_image_list[pFrmFaceMatch->face_image_count] == NULL)
+							{
+								pFrmFaceMatch->face_image_list[pFrmFaceMatch->face_image_count] = (unsigned char*)calloc(bitmapSize,sizeof(unsigned char));
+							}
+							memcpy(pFrmFaceMatch->face_image_list[pFrmFaceMatch->face_image_count],pFrmFaceMatch->tempRGB,bitmapSize);
+							pFrmFaceMatch->face_image_count++;
+							if(pFrmFaceMatch->face_image_count == 10)
+							{
+								pFrmFaceMatch->face_image_count = 0;
+							}
 						}
 					}
-					if(base64_encode(pFrmFaceMatch->FaceImage[FaceImageCount], sizeof(char) * OUT_ENBASE64_SIZE(bitmapSize),
-									(unsigned char *)buffer, bitmapSize) == 0)
-					{
-						free(pFrmFaceMatch->FaceImage[FaceImageCount]);
-						pFrmFaceMatch->FaceImage[FaceImageCount] = NULL;
-					}
-					*/
 				}
-
 				catch(...)
 				{
 					continue;
@@ -88,7 +80,7 @@ DWORD WINAPI DetectThread(void *p)
 			{			
 				Sleep(100);
 			}
-			
+
 		}
 		catch(...)
 		{
@@ -106,21 +98,32 @@ DWORD WINAPI DetectThread(void *p)
 IMPLEMENT_DYNAMIC(CFrmFaceMatch, CDialog)
 
 CFrmFaceMatch::CFrmFaceMatch(CWnd* pParent /*=NULL*/)
-	: CDialog(CFrmFaceMatch::IDD, pParent)
+: CDialog(CFrmFaceMatch::IDD, pParent)
 {
 	for(int i=0;i<10;i++)
 	{
-		FaceImage[i] = NULL;
+		face_image_list[i] = NULL;
 	}
-	
 	tempRGB=NULL;
+	TCHAR CurrentDir[260]="D:\\FaceLoginOCX\\";
+	//GetCurrentDirectory(260, CurrentDir);
+	InitializeFaceCloud(CurrentDir);
 }
 
 CFrmFaceMatch::~CFrmFaceMatch()
 {
 	//StopThread();
 	UnInitializeFaceCloud();
-	
+		
+	for(int i=0;i<10;i++)
+	{
+		if(face_image_list[i] != NULL)
+		{
+			free(face_image_list[i]);
+			face_image_list[i] = NULL;
+		}
+	}
+
 	if(tempRGB)
 	{
 		free(tempRGB);
@@ -137,15 +140,12 @@ void CFrmFaceMatch::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CFrmFaceMatch, CDialog)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_BTN_START, &CFrmFaceMatch::OnBnClickedBtnStart)
 END_MESSAGE_MAP()
 
 BOOL CFrmFaceMatch::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
-	TCHAR CurrentDir[260]="";
-	GetCurrentDirectory(260, CurrentDir);
-	InitializeFaceCloud(CurrentDir);
 
 	GetDlgItem(IDC_STATIC_MAIN)->GetWindowRect(&old_DrawRect);
 	//全部移到10 10的框
@@ -166,6 +166,55 @@ BOOL CFrmFaceMatch::OnInitDialog()
 
 
 // CFrmFaceMatch message handlers
+void CFrmFaceMatch::OnBnClickedBtnStart()
+{
+	// TODO: Add your control notification handler code here
+	if(m_bThreadWork && m_pThreadDetect)
+	{
+		m_bThreadWork = false;
+		Sleep(100);
+
+		if(false == m_bIsClose)
+		{
+			TerminateThread(m_pThreadDetect,0);
+			m_pThreadDetect=NULL;
+		}
+		Sleep(100);
+		CloseCamera();
+		Invalidate();
+	}
+
+	if(m_cbDevice.GetCount()>0)
+	{
+		CString tmp;
+		tmp.Format("%d", m_cbDevice.GetCurSel());
+		m_common->SetReg("Camera", tmp);
+		if(!OpenCameraCB(m_cbDevice.GetCurSel(), false , &m_lVideoWidth, &m_lVideoHeight)) //不弹出属性选择窗口，用代码制定图像宽和高
+		{
+			fprintf(stderr, "Can not open camera.\n");
+			MessageBox("摄像头初始化失败","提示");
+			CloseCamera();
+			return;
+		}
+
+		Invalidate(true);
+		if(m_lVideoWidth > 0)
+		{
+			//比例缩放
+			DrawRect=m_common->SetDrawSize((CStatic *)GetDlgItem(IDC_STATIC_MAIN),
+					old_DrawRect,m_lVideoWidth,m_lVideoHeight,&DrawScale);
+
+			m_bThreadWork = true;
+			m_pThreadDetect=NULL;
+			m_pThreadDetect=CreateThread(NULL,0,DetectThread,this,0,NULL);
+		}
+		else
+		{
+			MessageBox("未找到设备","提示");
+		}
+	}
+}
+
 /************************************
 * 初始化参数
 *************************************/
@@ -176,6 +225,8 @@ void CFrmFaceMatch::InitParameters()
 	m_bThreadWork = false;
 	m_lVideoWidth = 0;
 	m_lVideoHeight = 0;
+	face_image_count = 0;
+	b_getFace = false;
 }
 
 /************************************
@@ -185,7 +236,17 @@ int CFrmFaceMatch::StartThread()
 {
 	InitParameters();
 	if(m_common->InitialDevice(m_cbDevice, &m_lVideoWidth, &m_lVideoHeight))//设备初始化
-	{
+	{	
+		for(int i=0;i<10;i++)
+		{
+			if(face_image_list[i])
+			{
+				free(face_image_list[i]);
+				face_image_list[i] = NULL;
+			}
+			//face_image_list[i] = (unsigned char*)calloc(3*m_lVideoWidth*m_lVideoHeight,sizeof(unsigned char));
+		}
+
 		if(tempRGB)
 		{
 			free(tempRGB);
@@ -225,6 +286,14 @@ int CFrmFaceMatch::StopThread()
 		CloseCamera();
 		Invalidate();
 
+		for(int i=0;i<10;i++)
+		{
+			if(face_image_list[i])
+			{
+				free(face_image_list[i]);
+				face_image_list[i] = NULL;
+			}
+		}
 		if(tempRGB)
 		{
 			free(tempRGB);
@@ -253,13 +322,8 @@ void CFrmFaceMatch::OnClose()
 
 void CFrmFaceMatch::CloseWindow()
 {
-	FILE *fp=fopen("D:\\error.txt","a+");
-	if(fp)
-	{
-		fprintf(fp,"Close window here!\n");
-		fclose(fp);
-	}
 	m_bIsClose = true;
 	StopThread();
 }
+
 

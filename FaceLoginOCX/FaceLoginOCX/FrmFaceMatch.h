@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "afxwin.h"
 
-#include "FaceCloudDLL.h"
+#include "FaceDetectDLL.h"
 // CFrmFaceMatch dialog
 
 class CFrmFaceMatch : public CDialog
@@ -36,13 +36,15 @@ public:
 	HANDLE m_pThreadDetect;
 
 
-	char* FaceImage[10];
+	int face_image_count;
+	bool b_getFace;	//正在获取的图像，防止正在获取时，buf被修改
+	unsigned char *face_image_list[10];
 
 	int Face_count;
 	RECT Face_range[32];
 	unsigned char *tempRGB;
 	int list_size;
-	RwFaceRect face_rect_list[32];
+	FaceRect face_rect_list[32];
 	//初始化的画面矩形框 永远不变
 	CRect old_DrawRect;
 	//绘制图案的矩形框。
@@ -56,4 +58,5 @@ protected:
 public:
 	CComboBox m_cbDevice;
 	afx_msg void OnClose();
+	afx_msg void OnBnClickedBtnStart();
 };

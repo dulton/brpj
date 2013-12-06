@@ -5,6 +5,7 @@
 #include "FaceLoginOCXCtrl.h"
 #include "FaceLoginOCXPropPage.h"
 #include "base64_codec.h"
+#include "YUV2RGB.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,7 +32,7 @@ END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CFaceLoginOCXCtrl, COleControl)
 	DISP_FUNCTION_ID(CFaceLoginOCXCtrl, "GetImageTest", dispidGetImageTest, GetImageTest, VT_BSTR, VTS_NONE)
-	DISP_FUNCTION_ID(CFaceLoginOCXCtrl, "GetFaceImage", dispidGetFaceImage, GetFaceImage, VT_BSTR, VTS_I2)
+	DISP_FUNCTION_ID(CFaceLoginOCXCtrl, "GetFaceImage", dispidGetFaceImage, GetFaceImage, VT_BSTR, VTS_NONE)
 	DISP_FUNCTION_ID(CFaceLoginOCXCtrl, "GetCamNum", dispidGetCamNum, GetCamNum, VT_I2, VTS_NONE)
 	DISP_FUNCTION_ID(CFaceLoginOCXCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE)
 
@@ -369,18 +370,48 @@ int CFaceLoginOCXCtrl::GetCamNum()
 /************************************
 * 获取人脸图片
 *************************************/
-char *CFaceLoginOCXCtrl::GetFaceImage(int ImageNum)
+BSTR CFaceLoginOCXCtrl::GetFaceImage()
 {
-	if(faceMatch.FaceImage[ImageNum] == NULL)
+	faceMatch.b_getFace = true;
+	CString strFaceImage="";
+	for(int i=0;i<10;i++)
 	{
-		return "";
-	}
-	else
-	{
-		return faceMatch.FaceImage[ImageNum];
-	}
-}
+		CString tempImage="";
+		if(faceMatch.face_image_list[i] != NULL)
+		{
+			unsigned char *jpegBuffer;
+			unsigned long jpegSize;
+			jpegBuffer = (unsigned char *)calloc(3*faceMatch.m_lVideoWidth*faceMatch.m_lVideoHeight,sizeof(unsigned char));
+			EncodeToJPEGBuffer(faceMatch.face_image_list[i],
+								faceMatch.m_lVideoWidth,
+								faceMatch.m_lVideoHeight,
+								jpegBuffer,
+								&jpegSize);
 
+			char *base64buffer = (char *)calloc(OUT_ENBASE64_SIZE(jpegSize) , sizeof(char));
+			if(base64buffer != NULL)
+			{
+				if (base64_encode(base64buffer, sizeof(char) * OUT_ENBASE64_SIZE(jpegSize),
+								(unsigned char *)jpegBuffer, jpegSize) != 0)
+				{
+					tempImage=base64buffer;
+				}
+				free(base64buffer);
+				base64buffer = NULL;
+			}
+			free(jpegBuffer);
+			jpegBuffer = NULL;
+			free(faceMatch.face_image_list[i]);
+			faceMatch.face_image_list[i] = NULL;
+			if(i==0)
+				strFaceImage = tempImage;
+			else
+				strFaceImage = strFaceImage + ";" + tempImage;
+		}
+	}
+	faceMatch.b_getFace = false;
+	return strFaceImage.AllocSysString();
+}
 /************************************
 * base64获取测试
 *************************************/
