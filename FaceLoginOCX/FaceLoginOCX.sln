@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceLoginOCX", "FaceLoginOCX\FaceLoginOCX.vcproj", "{7FBAB105-DF66-4402-BB0E-606624ED76ED}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceLoginOCX", "FaceLoginOCX\FaceLoginOCX.vcxproj", "{7FBAB105-DF66-4402-BB0E-606624ED76ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
