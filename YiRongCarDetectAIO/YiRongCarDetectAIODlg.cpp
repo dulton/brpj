@@ -23,12 +23,16 @@ extern CDLGLogin DlgLogin;
 #include "DLGhelp.h"
 ////////////////////////////////////////
 #if	ALLTAB_DETECT_CAR_MODE
-	#include "DLGSetCar.h"
+#include "DLGSetCar.h"
 #else
-	#include "DLGSetElecar.h"
+#include "DLGSetElecar.h"
 #endif
 
+#define DETECTLIST_TIMER 123
+
 ////////////////////////////////////////
+#include "URLencode.h"
+#include "SignalDownload.h"
 
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
@@ -55,18 +59,18 @@ class CAboutDlg : public CDialog
 public:
 	CAboutDlg();
 
-// Dialog Data
+	// Dialog Data
 	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAboutDlg)
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
-// Implementation
+	// Implementation
 protected:
 	//{{AFX_MSG(CAboutDlg)
 	//}}AFX_MSG
@@ -88,7 +92,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-		// No message handlers
+	// No message handlers
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -96,13 +100,17 @@ END_MESSAGE_MAP()
 // CYiRongCarDetectAIODlg dialog
 
 CYiRongCarDetectAIODlg::CYiRongCarDetectAIODlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CYiRongCarDetectAIODlg::IDD, pParent)
+: CDialog(CYiRongCarDetectAIODlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CYiRongCarDetectAIODlg)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	DlgMain=this;
+	m_DetectListTimer=0;
+	m_DetectListTimerFlag=0;
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+		oldnid[i]=-1;
 }
 
 void CYiRongCarDetectAIODlg::DoDataExchange(CDataExchange* pDX)
@@ -187,7 +195,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	if (pSysMenu != NULL)
 	{
 		CString strAboutMenu="关于 "MESSAGEBOX_TITLE"(&A)...";
-	//	strAboutMenu.LoadString(IDS_ABOUTBOX);
+		//	strAboutMenu.LoadString(IDS_ABOUTBOX);
 		if (!strAboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
@@ -199,7 +207,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
+
 
 	/////////////////////////////////////////////////
 	//
@@ -224,8 +232,61 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	str.Format("当前登陆用户:%s",DlgLogin.CurrentUser.user);
 	DlgMain->GetDlgItem(IDC_STATIC_USERNAME)->SetWindowText(str);
 
+	//屏蔽菜单
+	if(DlgLogin.SilentMode)
+	{
+		GetMenu()->GetSubMenu(1)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+		GetMenu()->GetSubMenu(1)->EnableMenuItem(1,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+		GetMenu()->GetSubMenu(1)->EnableMenuItem(2,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+		GetMenu()->GetSubMenu(3)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
+	}
+
+#if ALLTAB_CLIENT_MODE
+
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(3,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(5,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(6,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(12,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
+
+	GetMenu()->GetSubMenu(3)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(3)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
+	//定时1s
+	m_DetectListTimer = SetTimer(DETECTLIST_TIMER,500,NULL);
+	m_DetectListTimerFlag=1;
+
+#endif
+
+
+
+	//改菜单背景色要的定义 放到STDAFX.H
+	//#ifndef WINVER
+	//#define WINVER 0x0501 
+	//#endif
+
+	////改变菜单栏颜色
+	//CBrush* NewBrush; 
+	//NewBrush = new CBrush;
+	//NewBrush->CreateSolidBrush(RGB(183,200,211)); 	//改变菜单栏颜色
+	//MENUINFO MenuInfo = {0};
+	//MenuInfo.cbSize = sizeof(MenuInfo); 
+	//MenuInfo.hbrBack = *NewBrush; 
+	//// 用刷子改成您想要的背景颜色
+	//MenuInfo.fMask = MIM_BACKGROUND; 
+	//MenuInfo.dwStyle = MNS_AUTODISMISS;
+	//CMenu* pMenu = this->GetMenu(); 
+	//if(IsMenu(pMenu->m_hMenu)) 
+	//{
+	//SetMenuInfo(pMenu->m_hMenu,	&MenuInfo); 
+	//}
+
 	// TODO: Add extra initialization here
-	
+
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -244,26 +305,26 @@ void CYiRongCarDetectAIODlg::OnSysCommand(UINT nID, LPARAM lParam)
 //为了菜单勾选事件增加的
 void CYiRongCarDetectAIODlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 {
-    ASSERT(pPopupMenu != NULL);
-    // Check the enabled state of various menu items. 
-	
-    CCmdUI state;
-    state.m_pMenu = pPopupMenu;
-    ASSERT(state.m_pOther == NULL);
-    ASSERT(state.m_pParentMenu == NULL); 
-	
-    // Determine if menu is popup in top-level menu and set m_pOther to
-    // it if so (m_pParentMenu == NULL indicates that it is secondary popup).
-    HMENU hParentMenu;
-    if (AfxGetThreadState()->m_hTrackingMenu == pPopupMenu->m_hMenu)
-        state.m_pParentMenu = pPopupMenu;    // Parent == child for tracking popup.
-    else if ((hParentMenu = ::GetMenu(m_hWnd)) != NULL)
-    {
-        CWnd* pParent = this;
+	ASSERT(pPopupMenu != NULL);
+	// Check the enabled state of various menu items. 
+
+	CCmdUI state;
+	state.m_pMenu = pPopupMenu;
+	ASSERT(state.m_pOther == NULL);
+	ASSERT(state.m_pParentMenu == NULL); 
+
+	// Determine if menu is popup in top-level menu and set m_pOther to
+	// it if so (m_pParentMenu == NULL indicates that it is secondary popup).
+	HMENU hParentMenu;
+	if (AfxGetThreadState()->m_hTrackingMenu == pPopupMenu->m_hMenu)
+		state.m_pParentMenu = pPopupMenu;    // Parent == child for tracking popup.
+	else if ((hParentMenu = ::GetMenu(m_hWnd)) != NULL)
+	{
+		CWnd* pParent = this;
 		// Child Windows don't have menus--need to go to the top!
-        if (pParent != NULL &&
+		if (pParent != NULL &&
 			(hParentMenu = ::GetMenu(pParent->m_hWnd)) != NULL)
-        {
+		{
 			int nIndexMax = ::GetMenuItemCount(hParentMenu);
 			for (int nIndex = 0; nIndex < nIndexMax; nIndex++)
 			{
@@ -274,20 +335,20 @@ void CYiRongCarDetectAIODlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL
 					break;
 				}
 			}
-        }
-    } 
-	
-    state.m_nIndexMax = pPopupMenu->GetMenuItemCount();
-    for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax;state.m_nIndex++)
-    {
-        state.m_nID = pPopupMenu->GetMenuItemID(state.m_nIndex);
-        if (state.m_nID == 0)
+		}
+	} 
+
+	state.m_nIndexMax = pPopupMenu->GetMenuItemCount();
+	for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax;state.m_nIndex++)
+	{
+		state.m_nID = pPopupMenu->GetMenuItemID(state.m_nIndex);
+		if (state.m_nID == 0)
 			continue; // Menu separator or invalid cmd - ignore it. 
-		
-        ASSERT(state.m_pOther == NULL);
-        ASSERT(state.m_pMenu != NULL);
-        if (state.m_nID == (UINT)-1)
-        {
+
+		ASSERT(state.m_pOther == NULL);
+		ASSERT(state.m_pMenu != NULL);
+		if (state.m_nID == (UINT)-1)
+		{
 			// Possibly a popup menu, route to first item of that popup.
 			state.m_pSubMenu = pPopupMenu->GetSubMenu(state.m_nIndex);
 			if (state.m_pSubMenu == NULL ||
@@ -297,29 +358,29 @@ void CYiRongCarDetectAIODlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL
 				continue;       // First item of popup can't be routed to.
 			}
 			state.DoUpdate(this, TRUE);   // Popups are never auto disabled.
-        }
-        else
-        {
+		}
+		else
+		{
 			// Normal menu item.
 			// Auto enable/disable if frame window has m_bAutoMenuEnable
 			// set and command is _not_ a system command.
 			state.m_pSubMenu = NULL;
 			state.DoUpdate(this, FALSE);
-        } 
-		
-        // Adjust for menu deletions and additions.
-        UINT nCount = pPopupMenu->GetMenuItemCount();
-        if (nCount < state.m_nIndexMax)
-        {
+		} 
+
+		// Adjust for menu deletions and additions.
+		UINT nCount = pPopupMenu->GetMenuItemCount();
+		if (nCount < state.m_nIndexMax)
+		{
 			state.m_nIndex -= (state.m_nIndexMax - nCount);
 			while (state.m_nIndex < nCount &&
 				pPopupMenu->GetMenuItemID(state.m_nIndex) == state.m_nID)
 			{
 				state.m_nIndex++;
 			}
-        }
-        state.m_nIndexMax = nCount;
-    }
+		}
+		state.m_nIndexMax = nCount;
+	}
 } 
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -351,20 +412,20 @@ void CYiRongCarDetectAIODlg::OnPaint()
 		//贴背景图	
 		CRect    rect;     
 		GetClientRect(&rect);     
-		
+
 		//从资源中载入位图     
 		CBitmap    bitmap;     
 		bitmap.LoadBitmap(IDB_BACK_MAIN);    
 		BITMAP bmp;
 		bitmap.GetBitmap(&bmp);
-		
+
 		CDC    memdc;     
 		memdc.CreateCompatibleDC(&dc);     
 		memdc.SelectObject(bitmap); 
 		dc.SetStretchBltMode(COLORONCOLOR);
 		dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
 		memdc.DeleteDC();
-		
+
 		CDialog::OnPaint();
 	}
 }
@@ -379,7 +440,7 @@ HCURSOR CYiRongCarDetectAIODlg::OnQueryDragIcon()
 void CYiRongCarDetectAIODlg::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialog::OnSize(nType, cx, cy);
-	
+
 	//窗口最小化与窗口大小无变化不处理
 	if ((cx ==0 && cy == 0) || 
 		(cx == m_clientRect.Width() && cy == m_clientRect.Height())) 
@@ -422,22 +483,27 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	int distance=5;
 
 	//打印日志条
-//	CRect printf_Rect;	//全局
-//	printf_Rect.top = 	m_clientRect.bottom-printf_height-distance/* + 5*/;
-//	printf_Rect.bottom = 	m_clientRect.bottom -distance/* - 10*/;
+	//	CRect printf_Rect;	//全局
+	//	printf_Rect.top = 	m_clientRect.bottom-printf_height-distance/* + 5*/;
+	//	printf_Rect.bottom = 	m_clientRect.bottom -distance/* - 10*/;
 	printf_Rect.top = 	m_clientRect.bottom-printf_height/* + 5*/;
 	printf_Rect.bottom = 	m_clientRect.bottom /* - 10*/;
 	printf_Rect.left = m_clientRect.left +distance/* + 10*/;
 	printf_Rect.right = m_clientRect.right-distance-200;
 	//必须 样式=重叠，边框=调整大小
 	GetDlgItem(IDC_STATIC_PRINTF)->MoveWindow(printf_Rect);
+
+
 	//用户栏
-	printf_Rect.left = printf_Rect.right+distance/* + 10*/;
-	printf_Rect.right = m_clientRect.right-distance;
-	GetDlgItem(IDC_STATIC_USERNAME)->MoveWindow(printf_Rect);
+	CRect user_Rect;
+	user_Rect.top=printf_Rect.top;
+	user_Rect.bottom=printf_Rect.bottom;
+	user_Rect.left = printf_Rect.right+distance/* + 10*/;
+	user_Rect.right = m_clientRect.right-distance;
+	GetDlgItem(IDC_STATIC_USERNAME)->MoveWindow(user_Rect);
 
 	//底部减去日志条
-//	m_clientRect.bottom -=printf_height+distance;
+	//	m_clientRect.bottom -=printf_height+distance;
 	m_clientRect.bottom -=printf_height;
 
 	//TAB按钮
@@ -469,13 +535,13 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	tab_Rect.left = m_clientRect.left+distance;
 	tab_Rect.right = m_clientRect.left+tab_width+distance;
 	//必须 样式=重叠，边框=调整大小
-//	m_TabMain.MoveWindow(tab_Rect);
+	//	m_TabMain.MoveWindow(tab_Rect);
 
 	DlgDeviceTree.MoveWindow(tab_Rect);
 	DlgNormal.MoveWindow(tab_Rect);
 	DlgPtz.MoveWindow(tab_Rect);
 
-	//列表`
+	//列表
 	CRect list_Rect;
 	list_Rect.top = m_clientRect.bottom-distance-list_height/* + 5*/;
 	list_Rect.bottom = m_clientRect.bottom-distance/* - 10*/;
@@ -512,15 +578,19 @@ void CYiRongCarDetectAIODlg::OnOK()
 void CYiRongCarDetectAIODlg::OnCancel()
 {
 	// TODO: Add your control notification handler code here
-/*
-#if ALLTAB_LOGIN_WIN_MODE
+	if(m_DetectListTimer) 
+		KillTimer(m_DetectListTimer); 
+	m_DetectListTimer = 0;
+	m_DetectListTimerFlag=0;
+	/*
+	#if ALLTAB_LOGIN_WIN_MODE
 	//退出系统
 	//退出框
 	DlgLogin.flag=LOGIN_EXIT;
 	if( IDCANCEL == DlgLogin.DoModal())
-		return ;
-#endif
-*/
+	return ;
+	#endif
+	*/
 	if(DlgLogin.SilentMode)
 		DlgMain->NewLogMessage("退出");
 	else
@@ -546,6 +616,9 @@ void CYiRongCarDetectAIODlg::OnCancel()
 #endif
 	Sleep(200);
 	////////////////lynn/////////////////
+
+
+
 
 	CDialog::OnCancel();
 }
@@ -592,7 +665,7 @@ void CYiRongCarDetectAIODlg::OnButtonNormal()
 	DlgNormal.ShowWindow(SW_SHOW);
 	//lynn
 	DlgNormal.UpdateNormalWnd();
-	
+
 	DlgPtz.ShowWindow(SW_HIDE);
 
 	m_b_tree.LoadBitmaps(IDB_TAB_TREE_CLOSE,NULL,NULL,NULL);
@@ -606,7 +679,7 @@ void CYiRongCarDetectAIODlg::OnButtonNormal()
 void CYiRongCarDetectAIODlg::OnButtonPtz() 
 {
 	// TODO: Add your control notification handler code here
-	
+
 	DlgDeviceTree.ShowWindow(SW_HIDE);
 	DlgNormal.ShowWindow(SW_HIDE);
 	DlgPtz.ShowWindow(SW_SHOW);
@@ -623,46 +696,46 @@ void CYiRongCarDetectAIODlg::OnButtonPtz()
 //初始化切换栏
 void CYiRongCarDetectAIODlg::TabMainInit(void)
 {
-	m_TabMain.InsertItem(0,"设备");
-	m_TabMain.InsertItem(1,"常规");
-	m_TabMain.InsertItem(2,"云台");
+m_TabMain.InsertItem(0,"设备");
+m_TabMain.InsertItem(1,"常规");
+m_TabMain.InsertItem(2,"云台");
 
-	DlgDeviceTree.Create(IDD_DEVICE_TREE,&m_TabMain);
-	DlgNormal.Create(IDD_NORMAL,&m_TabMain);
-	DlgPtz.Create(IDD_PTZ,&m_TabMain);
-	OnSelchangeTabMain(NULL,NULL);
+DlgDeviceTree.Create(IDD_DEVICE_TREE,&m_TabMain);
+DlgNormal.Create(IDD_NORMAL,&m_TabMain);
+DlgPtz.Create(IDD_PTZ,&m_TabMain);
+OnSelchangeTabMain(NULL,NULL);
 }
 
 //切换 切换栏
 void CYiRongCarDetectAIODlg::OnSelchangeTabMain(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	UpdateData(TRUE);
-	// TODO: Add your control notification handler code here
-	int i=m_TabMain.GetCurSel();
+UpdateData(TRUE);
+// TODO: Add your control notification handler code here
+int i=m_TabMain.GetCurSel();
 
-	switch(i)
-	{
-	case 0:
-		DlgDeviceTree.ShowWindow(SW_SHOW);
-		DlgNormal.ShowWindow(SW_HIDE);
-		DlgPtz.ShowWindow(SW_HIDE);
-		break;
-	case 1:
-		DlgDeviceTree.ShowWindow(SW_HIDE);
-		DlgNormal.ShowWindow(SW_SHOW);
-		//lynn
-		DlgNormal.UpdateNormalWnd();
+switch(i)
+{
+case 0:
+DlgDeviceTree.ShowWindow(SW_SHOW);
+DlgNormal.ShowWindow(SW_HIDE);
+DlgPtz.ShowWindow(SW_HIDE);
+break;
+case 1:
+DlgDeviceTree.ShowWindow(SW_HIDE);
+DlgNormal.ShowWindow(SW_SHOW);
+//lynn
+DlgNormal.UpdateNormalWnd();
 
-		DlgPtz.ShowWindow(SW_HIDE);
-		break;
-	case 2:
-		DlgDeviceTree.ShowWindow(SW_HIDE);
-		DlgNormal.ShowWindow(SW_HIDE);
-		DlgPtz.ShowWindow(SW_SHOW);
-		break;
-	default:
-		break;
-	}
+DlgPtz.ShowWindow(SW_HIDE);
+break;
+case 2:
+DlgDeviceTree.ShowWindow(SW_HIDE);
+DlgNormal.ShowWindow(SW_HIDE);
+DlgPtz.ShowWindow(SW_SHOW);
+break;
+default:
+break;
+}
 }
 */
 
@@ -983,7 +1056,7 @@ void CYiRongCarDetectAIODlg::OnMenuitemSetRecord()
 		MessageBox("无 定时录像设置 权限，请联系管理员",MESSAGEBOX_TITLE);
 		return ;
 	}
-	
+
 	DlgSetRecord.DoModal();
 }
 
@@ -1071,7 +1144,9 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 	m_ListCar.InsertColumn(10, _T("黑名单"), LVCFMT_LEFT, 50);
 	m_ListCar.InsertColumn(11, _T("图片路径"), LVCFMT_LEFT, 0);
 	m_ListCar.InsertColumn(12, _T("服务器模式"), LVCFMT_LEFT, 0);
-
+	m_ListCar.InsertColumn(13, _T("NID"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(14, _T("图片大小"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(15, _T("CAMID"), LVCFMT_LEFT, 0);
 #else
 
 	m_ListCar.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 40);
@@ -1085,6 +1160,9 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 	m_ListCar.InsertColumn(8, _T("黑名单"), LVCFMT_LEFT, 50);
 	m_ListCar.InsertColumn(9, _T("图片路径"), LVCFMT_LEFT, 0);
 	m_ListCar.InsertColumn(10, _T("服务器模式"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(11, _T("NID"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(12, _T("图片大小"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(13, _T("CAMID"), LVCFMT_LEFT, 0);
 
 #endif
 	m_ListCar.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
@@ -1096,20 +1174,133 @@ void CYiRongCarDetectAIODlg::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResu
 {
 	LPNMITEMACTIVATE pNMIA = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO: Add your control notification handler code here
-	char str[260];
+	char str[ZOG_MAX_PATH_STR];
+
+#if ALLTAB_CLIENT_MODE
+
+#if OPEN_TOMCAT_MODE
+	DisplayTomcatPic(pNMIA->iItem);
+#else
+	//仅客户端+数据库
+	if(DlgSetSystem.m_check_savenet)
+		DisplayNetPic(pNMIA->iItem);
+#endif
+
+
+#else
+	//服务器通用
 
 #if ALLTAB_DETECT_CAR_MODE
-//汽车
-	m_ListCar.GetItemText(pNMIA->iItem,11,str,260);
+	//汽车
+	m_ListCar.GetItemText(pNMIA->iItem,11,str,ZOG_MAX_PATH_STR);
 #else
-//电动车
-	m_ListCar.GetItemText(pNMIA->iItem,9,str,260);
+	//电动车
+	m_ListCar.GetItemText(pNMIA->iItem,9,str,ZOG_MAX_PATH_STR);
 #endif
 
 	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
 
+#endif
+
 	*pResult = 0;
 }
+//需要NET列表 为NID
+void CYiRongCarDetectAIODlg::DisplayNetPic(int iItem)
+{
+	char str[ZOG_MAX_PATH_STR];
+
+	unsigned long int nid;
+	unsigned long int size;
+	bool tempget;
+
+	unsigned char *data=NULL;
+
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	m_ListCar.GetItemText(iItem,13,str,ZOG_MAX_PATH_STR);
+#else
+	//电动车
+	m_ListCar.GetItemText(iItem,11,str,ZOG_MAX_PATH_STR);
+#endif
+
+	sscanf(str,"%d",&nid);
+
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	m_ListCar.GetItemText(iItem,14,str,ZOG_MAX_PATH_STR);
+#else
+	//电动车
+	m_ListCar.GetItemText(iItem,12,str,ZOG_MAX_PATH_STR);
+#endif
+
+	sscanf(str,"%d",&size);
+	//获取数据 保存到临时文件
+	data=(unsigned char *)calloc(size,sizeof(unsigned char));
+
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	tempget=OracleIO.CAR_MatchResult_GetPicture(nid,data);
+#else
+	//电动车
+	tempget=OracleIO.ELECAR_MatchResult_GetPicture(nid,data);
+#endif
+
+	sprintf(str,"%s\\yrcdtempResultListpic.jpg",DlgSetSystem.m_path_detect);
+
+	if(tempget)
+	{
+		FILE *fp=NULL;
+
+		fp=fopen(str,"wb");
+		if(fp)
+		{
+			fwrite(data,size,1,fp);
+			fclose(fp);
+			Sleep(100);
+			//保存后打开
+			ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+		}
+	}
+
+	free(data);
+	data=NULL;
+
+}
+
+//需要NET列表 为NID
+void CYiRongCarDetectAIODlg::DisplayTomcatPic(int iItem)
+{
+	char url[1024];
+	char url2[1024];
+	char str[ZOG_MAX_PATH_STR];
+	char fail[1024]="";
+
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	m_ListCar.GetItemText(iItem,11,url,ZOG_MAX_PATH_STR);
+#else
+	//电动车
+	m_ListCar.GetItemText(iItem,9,url,ZOG_MAX_PATH_STR);
+#endif
+
+	sprintf(str,"%s\\yrcdtempResultListpic.jpg",DlgSetSystem.m_path_detect);
+
+	SignalDownload sd;
+	sd.InitData();
+	EncodeURI(url,url2,1024);
+	if(false == sd.HTTPDownload(url2,str,fail,10,0))
+	{
+		sd.DestroyData();
+		return ;
+	}
+
+	sd.DestroyData();
+	Sleep(100);
+	//保存后打开
+	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+}
+
 //NMTVCUSTOMDRAW
 //高亮
 void CYiRongCarDetectAIODlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
@@ -1174,7 +1365,7 @@ void CYiRongCarDetectAIODlg::ShowRuntimeMessage(char *msgStr,int windowflag)
 	{
 		GetDlgItem(IDC_STATIC_PRINTF)->SetWindowText(msgStr);
 		//增加刷新。否则叠加
-		InvalidateRect(printf_Rect, FALSE);
+		InvalidateRect(printf_Rect, TRUE);
 	}
 }
 
@@ -1225,10 +1416,173 @@ HBRUSH CYiRongCarDetectAIODlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 }
 
 
-void CYiRongCarDetectAIODlg::OnTimer(UINT nIDEvent) 
+void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
-	
+
 	CDialog::OnTimer(nIDEvent);
+	UpdateData(TRUE);
+
+#if ALLTAB_CLIENT_MODE
+
+	if(nIDEvent == DETECTLIST_TIMER && m_DetectListTimerFlag)
+	{
+		int res;
+		//只有正在预览的才推送
+		for(int j=0;j<MAX_DEVICE_NUM;j++)
+		{
+			if(DlgScreen.m_videoInfo[j].isplay)
+			{
+
+#if ALLTAB_DETECT_CAR_MODE
+				res=OracleIO.CAR_MatchResult_ReadforListOne(DlgScreen.m_videoInfo[j].camID ,&HistoryClientDATA);
+				//(OracleIO.CAR_MatchResult_ReadforListAll(&HistoryClientDATA))
+
+				if(1==res)
+				{
+					if(oldnid[j] !=HistoryClientDATA.nid)
+					{
+						oldnid[j] =HistoryClientDATA.nid;
+
+						char str[260];
+						int nItem;
+
+						//插入列表
+						if(m_ListCarTotal >=200)
+						{
+							m_ListCar.DeleteAllItems();
+							m_ListCarTotal=0;
+						}
+
+						m_ListCarTotal++;
+						sprintf(str,"%d",m_ListCarTotal);
+						nItem = m_ListCar.InsertItem(0,str);
+
+						sprintf(HistoryClientTimeformat,"%04d-%02d-%02d %02d:%02d:%02d",
+							HistoryClientDATA.year,
+							HistoryClientDATA.mon,
+							HistoryClientDATA.day,
+							HistoryClientDATA.hour,
+							HistoryClientDATA.min,
+							HistoryClientDATA.sec);
+
+						m_ListCar.SetItemText(nItem,1,HistoryClientTimeformat);
+						m_ListCar.SetItemText(nItem,2,HistoryClientDATA.name);
+						m_ListCar.SetItemText(nItem,3,HistoryClientDATA.ip);
+						m_ListCar.SetItemText(nItem,4,HistoryClientDATA.plate);
+
+						sprintf(str,"%d",HistoryClientDATA.reliability);
+						m_ListCar.SetItemText(nItem,5,str);
+
+						m_ListCar.SetItemText(nItem,6,HistoryClientDATA.direction);
+						m_ListCar.SetItemText(nItem,7,	HistoryClientDATA.platecolor);
+						m_ListCar.SetItemText(nItem,8,	HistoryClientDATA.platetype);
+						m_ListCar.SetItemText(nItem,9,	HistoryClientDATA.carcolor);
+						if(HistoryClientDATA.nflag)
+							m_ListCar.SetItemText(nItem,10,	"是");
+						else
+							m_ListCar.SetItemText(nItem,10,	"否");
+
+						m_ListCar.SetItemText(nItem,11,	HistoryClientDATA.path);
+
+						m_ListCar.SetItemText(nItem,12,	"是");
+
+						sprintf(str,"%d",HistoryClientDATA.nid);
+						m_ListCar.SetItemText(nItem,13,	str);
+
+						sprintf(str,"%d",HistoryClientDATA.picsize);
+						m_ListCar.SetItemText(nItem,14,	str);
+
+						sprintf(str,"%d",HistoryClientDATA.ncamid);
+						m_ListCar.SetItemText(nItem,15,	str);
+					}
+				}
+				else if(-1==res)
+				{
+					m_DetectListTimerFlag=0;
+					break;
+				}
+#else
+				res=OracleIO.ELECAR_MatchResult_ReadforlistOne(DlgScreen.m_videoInfo[j].camID ,&HistoryClientDATA);
+				//	if(OracleIO.ELECAR_MatchResult_ReadforlistAll(&HistoryClientDATA))
+				if(1==res)
+				{
+					if(oldnid[j] !=HistoryClientDATA.nid)
+					{
+						oldnid[j] =HistoryClientDATA.nid;
+
+						char str[260];
+						int nItem;
+
+						//插入列表
+						if(m_ListCarTotal >=200)
+						{
+							m_ListCar.DeleteAllItems();
+							m_ListCarTotal=0;
+						}
+
+						m_ListCarTotal++;
+						sprintf(str,"%d",m_ListCarTotal);
+						nItem = m_ListCar.InsertItem(0,str);
+
+						sprintf(HistoryClientTimeformat,"%04d-%02d-%02d %02d:%02d:%02d",
+							HistoryClientDATA.year,
+							HistoryClientDATA.mon,
+							HistoryClientDATA.day,
+							HistoryClientDATA.hour,
+							HistoryClientDATA.min,
+							HistoryClientDATA.sec);
+
+						m_ListCar.SetItemText(nItem,1,HistoryClientTimeformat);
+						m_ListCar.SetItemText(nItem,2,HistoryClientDATA.name);
+						m_ListCar.SetItemText(nItem,3,HistoryClientDATA.ip);
+						m_ListCar.SetItemText(nItem,4,HistoryClientDATA.plate);
+
+						sprintf(str,"%d",HistoryClientDATA.reliability);
+						m_ListCar.SetItemText(nItem,5,str);
+
+						m_ListCar.SetItemText(nItem,6,HistoryClientDATA.direction);
+						m_ListCar.SetItemText(nItem,7,	HistoryClientDATA.platecolor);
+
+						if(HistoryClientDATA.nflag)
+							m_ListCar.SetItemText(nItem,8,	"是");
+						else
+							m_ListCar.SetItemText(nItem,8,	"否");
+
+						m_ListCar.SetItemText(nItem,9,	HistoryClientDATA.path);
+
+						m_ListCar.SetItemText(nItem,10,	"是");
+
+						sprintf(str,"%d",HistoryClientDATA.nid);
+						m_ListCar.SetItemText(nItem,11,	str);
+
+						sprintf(str,"%d",HistoryClientDATA.picsize);
+						m_ListCar.SetItemText(nItem,12,	str);
+
+						sprintf(str,"%d",HistoryClientDATA.ncamid);
+						m_ListCar.SetItemText(nItem,13,	str);
+					}
+				}
+				else if(-1==res)
+				{
+					m_DetectListTimerFlag=0;
+					break;
+				}
+#endif
+			}
+		}
+		UpdateData(FALSE);
+		if(	0== m_DetectListTimerFlag)
+		{
+			for(int i=0;i<MAX_DEVICE_NUM;i++)
+			{
+				DlgScreen.StopPlay(i);
+			}
+			AfxMessageBox(OracleIO.errormessage);
+			CDialog::OnCancel();
+			return ;
+		}
+	}
+#endif
 }
 

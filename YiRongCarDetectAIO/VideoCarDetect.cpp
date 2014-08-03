@@ -405,7 +405,7 @@ int CVideoCarDetect::WriteDBResult()
 	int nItem;
 	
 	int yrvm_first;
-	int nid;
+	long nid;
 	char Timeformat[32];
 	FILE *fp;
 	bool isBlack=false;
@@ -438,7 +438,7 @@ int CVideoCarDetect::WriteDBResult()
 			
 			/*
 			r=lc_plate_get_small_picture(CarHandle,CarInfo[i].SmallJpg,&CarInfo[i].SmallJpgSize,i);
-			if(LC_PLATE_SUCCESS==r && JpgSize>0 && JpgSize< 1110400)
+			if(LC_PLATE_SUCCESS==r && JpgSize>0 && JpgSize< 3110400)
 			{
 			sprintf(str,"%s-small.jpg",CarInfo[i].Str);
 			fp=fopen(str,"wb");
@@ -457,7 +457,7 @@ int CVideoCarDetect::WriteDBResult()
 	{
 		ge=lc_plate_get_plate_picture(CarHandle,Jpg,&JpgSize);
 		
-		if(LC_PLATE_SUCCESS==ge && JpgSize>0 && JpgSize< 1110400 )
+		if(LC_PLATE_SUCCESS==ge && JpgSize>0 && JpgSize< 3110400 )
 		{
 			//修改了时间
 			CTime nowtime=starttime+totalsec;
@@ -468,7 +468,25 @@ int CVideoCarDetect::WriteDBResult()
 				nowtime.GetHour(),
 				nowtime.GetMinute(),
 				nowtime.GetSecond());
-			
+#if OPEN_TOMCAT_MODE
+			//改存到TOMCAT地址
+			sprintf(dirstr,"%s\\%04d-%02d-%02d",
+				DlgSetSystem.m_tomcat_dir.GetBuffer(0),
+				nowtime.GetYear(),
+				nowtime.GetMonth(),
+				nowtime.GetDay());
+
+			CreateDirectory(dirstr, NULL);
+
+			sprintf(dirstr,"%s\\%04d-%02d-%02d\\%d",
+				DlgSetSystem.m_tomcat_dir.GetBuffer(0),
+				nowtime.GetYear(),
+				nowtime.GetMonth(),
+				nowtime.GetDay(),
+				camid);
+
+			CreateDirectory(dirstr, NULL);
+#else			
 			sprintf(dirstr,"%s\\%04d-%02d-%02d",
 				DlgSetSystem.m_path_detect.GetBuffer(0),
 				nowtime.GetYear(),
@@ -477,15 +495,15 @@ int CVideoCarDetect::WriteDBResult()
 			
 			CreateDirectory(dirstr, NULL);
 			
-			sprintf(dirstr,"%s\\%04d-%02d-%02d\\%s",
+			sprintf(dirstr,"%s\\%04d-%02d-%02d\\%d",
 				DlgSetSystem.m_path_detect.GetBuffer(0),
 				nowtime.GetYear(),
 				nowtime.GetMonth(),
 				nowtime.GetDay(),
-				l_ipaddr);
+				camid);
 			
 			CreateDirectory(dirstr, NULL);
-			
+#endif			
 			yrvm_first=0;
 			
 			for(i=0;i<CarTotal;i++)
@@ -528,6 +546,39 @@ int CVideoCarDetect::WriteDBResult()
 				}
 				
 				bool tempadd;
+#if OPEN_TOMCAT_MODE
+				char tomcatpathURL[1024];
+
+				sprintf(tomcatpathURL,"%s/%04d-%02d-%02d/%d/%s %d %s %s %d "
+					//					"%d %d %d %d"
+					" %s %s %s %s %d .jpg",	\
+					DlgSetSystem.m_tomcat_url.GetBuffer(0),
+					nowtime.GetYear(),
+					nowtime.GetMonth(),
+					nowtime.GetDay(),
+					camid,
+					timestr,camid,l_ipaddr,
+					CarInfo[i].Str,
+					CarInfo[i].Reliability,	
+					//					CarInfo[i].CarRect.x0,CarInfo[i].CarRect.x1,CarInfo[i].CarRect.y0,CarInfo[i].CarRect.y1,
+					//CarColor(CarInfo[i].ColorId),CarDirection(CarInfo[i].Direction),CarType(CarInfo[i].Type),
+					CarInfo[i].PlateColor,CarDirection(CarInfo[i].Direction),CarInfo[i].PlateType,
+					CarInfo[i].CarColor,
+					JpgSize);
+
+				//TOMCAT 照片不写数据库
+				tempadd=OracleIO.CAR_MatchResult_AddNewNoPicData(
+					&isBlack,
+					camid,
+					CarInfo[i].PlateType,
+					CarInfo[i].PlateColor,	
+					CarDirection(CarInfo[i].Direction),
+					CarInfo[i].CarColor,
+					CarInfo[i].Str,
+					CarInfo[i].Reliability,	
+					tomcatpathURL,
+					JpgSize);
+#else
 				//网络保存
 				if(DlgSetSystem.m_check_savenet)
 				{
@@ -560,6 +611,7 @@ int CVideoCarDetect::WriteDBResult()
 						JpgSize,Jpg);
 					
 				}
+#endif
 				if(tempadd)
 				{
 					//插入列表
@@ -584,10 +636,15 @@ int CVideoCarDetect::WriteDBResult()
 					
 					DlgVDmain->m_list.SetItemText(nItem,9,	pathstr);
 					
+#if OPEN_TOMCAT_MODE
+					DlgVDmain->m_list.SetItemText(nItem,10,	"否");
+#else
 					if(DlgSetSystem.m_check_savenet)
 						DlgVDmain->m_list.SetItemText(nItem,10,	"是");
 					else
 						DlgVDmain->m_list.SetItemText(nItem,10,	"否");
+#endif
+
 				}
 				else
 				{
@@ -629,6 +686,34 @@ int CVideoCarDetect::WriteDBResult()
 				}
 				
 				bool tempadd;
+#if OPEN_TOMCAT_MODE
+
+				char tomcatpathURL[1024];
+
+				sprintf(tomcatpathURL,"%s/%04d-%02d-%02d/%d/%s %d %s %s %d %s %d .jpg",	\
+					DlgSetSystem.m_tomcat_url.GetBuffer(0),
+					nowtime.GetYear(),
+					nowtime.GetMonth(),
+					nowtime.GetDay(),
+					camid,
+					timestr,camid,l_ipaddr,
+					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+					CarInfo[i].Reliability,
+					CarDirection(CarInfo[i].Direction),
+					JpgSize);
+
+				//TOMCAT 照片不写数据库
+				tempadd=OracleIO.ELECAR_MatchResult_AddNewNoPicdata(
+					&isBlack,
+					camid,
+					"绿牌",	
+					CarDirection(CarInfo[i].Direction),
+					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+					CarInfo[i].Reliability,	
+					tomcatpathURL,
+					JpgSize);
+#else
+
 				//网络保存
 				if(DlgSetSystem.m_check_savenet)
 				{
@@ -656,6 +741,7 @@ int CVideoCarDetect::WriteDBResult()
 						pathstr,
 						JpgSize,Jpg);
 				}
+#endif
 				if(tempadd)
 				{
 					//插入列表
@@ -680,10 +766,16 @@ int CVideoCarDetect::WriteDBResult()
 					
 					DlgVDmain->m_list.SetItemText(nItem,7,	pathstr);
 					
+#if OPEN_TOMCAT_MODE
+					DlgVDmain->m_list.SetItemText(nItem,8,	"否");
+#else
+
 					if(DlgSetSystem.m_check_savenet)
 						DlgVDmain->m_list.SetItemText(nItem,8,	"是");
 					else
 						DlgVDmain->m_list.SetItemText(nItem,8,	"否");
+#endif
+
 				}
 				else
 				{
@@ -989,7 +1081,7 @@ int CVideoCarDetect::NoWriteDBResult()
 			
 			/*
 			r=lc_plate_get_small_picture(CarHandle,CarInfo[i].SmallJpg,&CarInfo[i].SmallJpgSize,i);
-			if(LC_PLATE_SUCCESS==r && JpgSize>0 && JpgSize< 1110400)
+			if(LC_PLATE_SUCCESS==r && JpgSize>0 && JpgSize< 3110400)
 			{
 			sprintf(str,"%s-small.jpg",CarInfo[i].Str);
 			fp=fopen(str,"wb");
@@ -1008,7 +1100,7 @@ int CVideoCarDetect::NoWriteDBResult()
 	{
 		ge=lc_plate_get_plate_picture(CarHandle,Jpg,&JpgSize);
 		
-		if(LC_PLATE_SUCCESS==ge && JpgSize>0 && JpgSize< 1110400 )
+		if(LC_PLATE_SUCCESS==ge && JpgSize>0 && JpgSize< 3110400 )
 		{
 			//修改了时间
 			

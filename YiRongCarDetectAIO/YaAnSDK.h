@@ -47,7 +47,7 @@ public:
 
 public:
 	void		SDKInit();
-	bool        StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd,int subtype);
+	bool        StartPlay(int screenNo,char *name,char *sip,WORD port,int channel,char *user,char *psw,HWND hWnd,int subtype);
 	void        StopPlay(int screenNo);
 
 	int         Capture(int screenNo,char *filename);
@@ -56,7 +56,7 @@ public:
 	void		LinkProcess(int screenNo,int lParam);
 	int			GetWndIndex(int LoginHandle);
 	void		PtzControl(long lLoginID, int type, BOOL dwStop, int param);
-	bool		PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd);
+	bool		PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd);
 	void		PtzStopPlay();
 };
 

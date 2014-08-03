@@ -426,7 +426,7 @@ void CDLGHistoryVideo::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	m_List.GetItemText(pNMIA->iItem,7,str,260);
 	char cmdstr[512];
 
-	sprintf(cmdstr,"/e,/select,%s",str);
+	sprintf(cmdstr,"/e,/select,\"%s\"",str);
 
 	//打开文件所在的文件夹
 	ShellExecute(this->m_hWnd,

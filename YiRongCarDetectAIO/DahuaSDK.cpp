@@ -212,13 +212,13 @@ void CDahuaSDK::SDKInit()
 	CLIENT_SetConnectTime(10000, 100);
 }
 
-bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype)
+bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd,int subtype)
 {
 	StopPlay(screenNo);
 
 	NET_DEVICEINFO stDevInfo = {0};
 	int nError = 0;
-	int nChannelID = 0; // 预览通道号
+	int nChannelID = channel; // 预览通道号
 
 	m_LoginHandle[screenNo] = CLIENT_Login(sip, nPort, user, psw, &stDevInfo, &nError);
 
@@ -231,8 +231,14 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user
 			DlgMain->ShowCameraMessage(name,msg,0);
 		}
 
+#if DISPLAY_PREVIEW
 		//开启预览
 		m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID, hWnd, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
+#else
+
+		m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID,(HWND)-1, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
+
+#endif
 		if (m_RealHandle[screenNo] == -1)
 		{
 			return false;
@@ -240,7 +246,8 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user
 
 		// 设置回调函数处理数据
 		CLIENT_SetRealDataCallBackEx(m_RealHandle[screenNo], RealDataCallBackEx, 0, 0x00000006);
-		DlgMain->ShowCameraMessage(name,"连接成功",0);
+		
+		DlgMain->ShowCameraMessage(name,"连接成功",FALSE);
 		return true;
 	}
 	else
@@ -273,11 +280,11 @@ void CDahuaSDK::StopPlay(int screenNo)
 	}
 }
 
-bool CDahuaSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd)
+bool CDahuaSDK::PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd)
 {
 	NET_DEVICEINFO stDevInfo = {0};
 	int nError = 0;
-	int nChannelID = 0; // 预览通道号
+	int nChannelID = channel; // 预览通道号
 
 	m_ptzLoginHandle = CLIENT_Login(sip, nPort, user, psw, &stDevInfo, &nError);
 

@@ -55,7 +55,7 @@ BOOL CPlayWnd::OnEraseBkgnd(CDC* pDC)
 	pDC->FillRect(&rt,&br);
 
 	return TRUE;
-	return CWnd::OnEraseBkgnd(pDC);
+	//return CWnd::OnEraseBkgnd(pDC);
 }
 
 

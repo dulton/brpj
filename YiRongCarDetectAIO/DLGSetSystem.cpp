@@ -38,6 +38,8 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_path_haikang = _T("海康播放器\\VSPlayer.exe");
 	m_path_yaan = _T("亚安播放器\\RealMp4Play.exe");
 	m_ftp_path = _T("/");
+	m_tomcat_dir = _T("D:\\tomcatname\\webapps\\YRCapturePic");
+	m_tomcat_url = _T("http://10.142.50.126:8089/YRCapturePic");
 	//}}AFX_DATA_INIT
 
 }
@@ -78,6 +80,8 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_path_yaan, 260);
 	DDX_Text(pDX, IDC_EDIT_FTP_PATH, m_ftp_path);
 	DDV_MaxChars(pDX, m_ftp_path, 260);
+	DDX_Text(pDX, IDC_EDIT_TOMCAT_DIR, m_tomcat_dir);
+	DDX_Text(pDX, IDC_EDIT_TOMCAT_URL, m_tomcat_url);
 	//}}AFX_DATA_MAP
 }
 
@@ -91,6 +95,7 @@ BEGIN_MESSAGE_MAP(CDLGSetSystem, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_HAIKANG_PATH, OnButtonHaikangPath)
 	ON_BN_CLICKED(IDC_BUTTON_DAHUA_PATH, OnButtonDahuaPath)
 	ON_BN_CLICKED(IDC_BUTTON_YAAN_PATH, OnButtonYaanPath)
+	ON_BN_CLICKED(IDC_BUTTON_TOMCAT_DIR, OnButtonTomcatDir)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -119,6 +124,26 @@ BOOL CDLGSetSystem::OnInitDialog()
 	GetDlgItem(IDC_STATIC_FTP_PATH)->ShowWindow(TRUE);
 	GetDlgItem(IDC_EDIT_FTP_PATH)->ShowWindow(TRUE);
 #endif
+
+#if ALLTAB_CLIENT_MODE
+
+	m_check_savenet = TRUE;
+	GetDlgItem(IDC_CHECK_SAVENET)->ShowWindow(FALSE);
+#endif
+
+
+#if (OPEN_TOMCAT_MODE && !ALLTAB_CLIENT_MODE)
+	
+	GetDlgItem(IDC_STATIC_TOMCAT_DIR)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_TOMCAT_URL)->ShowWindow(TRUE);
+
+	GetDlgItem(IDC_EDIT_TOMCAT_DIR)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_TOMCAT_URL)->ShowWindow(TRUE);
+	GetDlgItem(IDC_BUTTON_TOMCAT_DIR)->ShowWindow(TRUE);
+
+#endif
+
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -318,6 +343,9 @@ void CDLGSetSystem::readini(char *path)
 	char	path_haikang[ZOG_MAX_PATH_STR]="";
 	char	path_yaan[ZOG_MAX_PATH_STR]="";
 
+	char	tomcat_dir[ZOG_MAX_PATH_STR] = "";
+	char	tomcat_url[ZOG_MAX_PATH_STR] = ""; 
+
 	////////////////////////////////////
 	if(GetPrivateProfileStruct("Alarm", "CheckPic", &check_alarmpic, sizeof(int), path))
 		m_check_alarmpic=check_alarmpic;
@@ -362,12 +390,22 @@ void CDLGSetSystem::readini(char *path)
 			m_ftp_psw=ftp_psw;
 		}
 	}
-	if(GetPrivateProfileString("FTP", "path", "", ftp_path, ZOG_MAX_NAME_STR, path))
+	if(GetPrivateProfileString("FTP", "path", "", ftp_path, ZOG_MAX_PATH_STR, path))
 		m_ftp_path=ftp_path;
+
+	if(GetPrivateProfileString("TomCat", "Dir", "", tomcat_dir, ZOG_MAX_PATH_STR, path))
+		m_tomcat_dir=tomcat_dir;
+	if(GetPrivateProfileString("TomCat", "Url", "", tomcat_url, ZOG_MAX_PATH_STR, path))
+		m_tomcat_url=tomcat_url;
 
 	CreateDirectory(m_path_capbmp, NULL);
 	CreateDirectory(m_path_detect, NULL);
 	CreateDirectory(m_path_record, NULL);
+
+#if ALLTAB_CLIENT_MODE
+	m_check_savenet=TRUE;
+#endif
+
 }
 //写ini
 void CDLGSetSystem::writeini(char *path)
@@ -399,6 +437,9 @@ void CDLGSetSystem::writeini(char *path)
 	WritePrivateProfileString("FTP", "password",  ftp_psw_ext, path);
 
 	WritePrivateProfileString("FTP", "path",  m_ftp_path.GetBuffer(0), path);
+
+	WritePrivateProfileString("TomCat", "Dir",  m_tomcat_dir.GetBuffer(0), path);
+	WritePrivateProfileString("TomCat", "Url",  m_tomcat_url.GetBuffer(0), path);
 }
 
 void CDLGSetSystem::OnButtonHaikangPath() 
@@ -436,6 +477,29 @@ void CDLGSetSystem::OnButtonYaanPath()
 	if(dlg.DoModal()==IDOK)
 	{
 		m_path_yaan=dlg.GetPathName();
+		UpdateData(FALSE);
+	}
+}
+
+void CDLGSetSystem::OnButtonTomcatDir() 
+{
+	// TODO: Add your control notification handler code here
+	//保存目录
+	BROWSEINFO   bi;                           //创建BROWSEINFO结构体
+	TCHAR   Buffer[512]= " ";
+	TCHAR   FullPath[512]= " ";
+	bi.hwndOwner   =   GetSafeHwnd();               //窗口句柄
+	bi.pidlRoot   =   NULL;
+	bi.pszDisplayName   =   Buffer;            //返回选择的目录名的缓冲区
+	bi.lpszTitle   =   "Selection ";           //弹出的窗口的文字提示
+	bi.ulFlags   =   BIF_RETURNONLYFSDIRS   ;  //只返回目录。其他标志看MSDN
+	bi.lpfn   =   NULL;               //回调函数，有时很有用
+	bi.lParam   =   0;
+	bi.iImage   =   0;
+	ITEMIDLIST*   pidl   =   ::SHBrowseForFolder(&bi);   //显示弹出窗口，ITEMIDLIST很重要
+	if(::SHGetPathFromIDList(pidl,FullPath)) //在ITEMIDLIST中得到目录名的整个路径
+	{
+		m_tomcat_dir=FullPath;
 		UpdateData(FALSE);
 	}
 }

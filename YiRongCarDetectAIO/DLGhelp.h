@@ -22,7 +22,9 @@ public:
 		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
-
+BOOL OnInitDialog() ;
+virtual void OnOK();
+virtual void OnCancel();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGhelp)
@@ -35,9 +37,8 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDLGhelp)
-	virtual void OnOK();
-	virtual void OnCancel();
-	BOOL OnInitDialog() ;
+	
+	
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -106,6 +106,7 @@ BEGIN_MESSAGE_MAP(CDLGVideoDetect, CDialog)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST, OnNMCustomdrawList)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER, OnReleasedcaptureSlider)
 	//}}AFX_MSG_MAP
+
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -323,12 +324,24 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 	
 	// Allocate video frame
 	pFrame=avcodec_alloc_frame();
-	
+	if(pFrame==NULL)
+	{
+		// Close the codec
+		avcodec_close(pCodecCtx);
+		av_close_input_file(pFormatCtx);
+		return -1;
+	}
+
 	// Allocate an AVFrame structure
 	pFrameRGB=avcodec_alloc_frame();
 	if(pFrameRGB==NULL)
+	{
+		av_free(pFrame);
+		avcodec_close(pCodecCtx);
+		// Close the video file
+		av_close_input_file(pFormatCtx);
 		return -1;
-
+	}
 	// Determine required buffer size and allocate buffer
 	numBytes=avpicture_get_size(PIX_FMT_BGR24 , pCodecCtx->width,pCodecCtx->height);
 	buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
@@ -339,7 +352,7 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 	avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_BGR24,pCodecCtx->width, pCodecCtx->height);
 
 	// 计算总时长
-	int tns, thh, tmm, tss,us;
+	unsigned long long  tns, thh, tmm, tss,us;
 	//秒
 	tns  = pFormatCtx->duration / AV_TIME_BASE;
 	//微秒
@@ -351,14 +364,21 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 	//秒
 	tss  = (tns % 60);
 
-	int total=pCodecCtx->frame_number;
-	//计算的帧数 不一定准
-	pDlg->fps=pFormatCtx->streams[0]->r_frame_rate.num/pFormatCtx->streams[0]->r_frame_rate.den;
-	if(0 == total )
-		total=(tns+us/100.0)*(pDlg->fps)+1;
+
+	unsigned long long totalframe=pCodecCtx->frame_number;
+	if(0 == totalframe )
+		totalframe=pFormatCtx->streams[videoStream]->duration/3600;
+
+	if(0!=pCodecCtx->time_base.num)
+		//计算的帧数
+		pDlg->fps=pCodecCtx->time_base.den/pCodecCtx->time_base.num;
+	else
+		pDlg->fps=pFormatCtx->streams[videoStream]->duration/3600/(tns+us/100.0+1)+1;
 
 	//设置进度条
-	pDlg->m_slider.SetRange(0,total,TRUE);
+	//pDlg->m_slider.SetRange(0,total,TRUE);
+	//秒模式
+	pDlg->m_slider.SetRange(0,tns,TRUE);
 	pDlg->m_slider.ClearSel(TRUE);
 	pDlg->m_slider.SetPos(0);
 	//重设跳转地
@@ -368,9 +388,10 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 	pDlg->speedflag=true;
 
 	char time[64]="";
-	sprintf(time,"%d:%02d:%02d",thh,tmm,tss);
+	_stprintf(time,_T("%02I64u:%02I64u:%02I64u"),thh,tmm,tss);
 	pDlg->GetDlgItem(IDC_STATIC_ENDTIME)->SetWindowText(time);
-	int nowtime;
+	unsigned long long nowtime;
+	unsigned long long nowtimeshow=0;
 
 	//定位到N帧 关键 lStart/fps= 秒 
 //	int lStart=390;
@@ -400,16 +421,26 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 
 				/////////////////////////////////////////////////////////////
 				//第N帧
-			//	if(0==packet.dts%50) //少刷新几次。防止无法跳转
+			//	if(0==packet.dts%25) //少刷新几次。防止无法跳转
 			//		pDlg->m_slider.SetPos(packet.dts);
-
-				pDlg->m_slider.SetSelection(0,packet.dts);
-				pDlg->m_slider.SetRange(0,total,TRUE);
+			//帧模式
+			//	pDlg->m_slider.SetSelection(0,packet.dts);
+			//	pDlg->m_slider.SetRange(0,total,TRUE);
 				//当前时间
-				nowtime=packet.dts/(pDlg->fps);
-				sprintf(time,"%d:%02d:%02d",
+				if(0==pFormatCtx->streams[videoStream]->first_dts)
+					nowtime=packet.dts/pDlg->fps;
+				else
+					//仅在特定情况下使用 需要重新计算
+					nowtime=(packet.dts-(pFormatCtx->streams[videoStream]->first_dts))/3600/pDlg->fps;
+
+				_stprintf(time,_T("%02I64u:%02I64u:%02I64u"),
 					nowtime/3600,(nowtime % 3600)/60,nowtime%60);
 				pDlg->GetDlgItem(IDC_STATIC_STARTTIME)->SetWindowText(time);
+				//秒模式
+				pDlg->m_slider.SetSelection(0,nowtime);
+				pDlg->m_slider.SetRange(0,tns,TRUE);
+				if(0==packet.dts%(pDlg->fps))
+					pDlg->m_slider.SetPos(nowtime);
 				/////////////////////////////////////////////////////////////
 
 				//传帧到回调里
@@ -424,10 +455,21 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 		av_free_packet(&packet);
 			
 
+	
 		//跳转
 		if(pDlg->sliderSeekflag)
 		{
-			av_seek_frame(pFormatCtx, -1, pDlg->sliderSeek/(pDlg->fps)*AV_TIME_BASE, AVSEEK_FLAG_BACKWARD);
+			struct AVRational tempq={1, AV_TIME_BASE};
+			//sliderSeek为秒;如果为帧 (sliderSeek/fps)
+			int64_t t=pDlg->sliderSeek*AV_TIME_BASE;
+
+			int64_t seek_target;
+			//换算时间
+			seek_target= av_rescale_q(pDlg->sliderSeek*AV_TIME_BASE, tempq, pFormatCtx->streams[videoStream]->time_base);
+			//跳转
+			av_seek_frame(pFormatCtx, videoStream, seek_target+pFormatCtx->streams[videoStream]->first_dts, AVSEEK_FLAG_BACKWARD);
+
+			avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
 			pDlg->sliderSeekflag=false;
 		}
 
@@ -462,12 +504,13 @@ DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
 
 	if(VideoPlay(pDlg->m_edit_file.GetBuffer(0),pDlg) <0)
 		pDlg->MessageBox("播放文件失败");
-		
+	
 	if(	PLAY_FLAG_STOP != pDlg->playflag)
 	{
 		pDlg->playflag=PLAY_FLAG_STOP;
 		pDlg->EnablePlayState();
 	}
+	
 	return 0;
 }
 
@@ -519,7 +562,7 @@ void CDLGVideoDetect::OnCancel()
 void CDLGVideoDetect::OnButtonFile() 
 {
 	// TODO: Add your control notification handler code here
-	char szFilter[]="h264 Files (*.avi)|*.avi|*.*|*.*||";
+	char szFilter[]="h264 Files (*.avi)|*.avi|h264 Files (*.mp4)|*.mp4|h264 Files (*.mkv)|*.mkv|*.*|*.*||";
 	CFileDialog dlg(TRUE,"avi","",OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
 		szFilter);
 	if(dlg.DoModal()==IDOK)
@@ -662,20 +705,20 @@ void CDLGVideoDetect::EnablePlayState()
 /////////////////////////////////////////////////////
 		GetDlgItem(IDC_CHECK_WRITE_DB)->EnableWindow(TRUE);
 
-			if(m_check_writedb)
-	{
-		GetDlgItem(IDC_COMBO_AREA)->EnableWindow(TRUE);
-		GetDlgItem(IDC_COMBO_CAM)->EnableWindow(TRUE);
-		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(TRUE);
-		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(TRUE);
-	}
-	else
-	{
-		GetDlgItem(IDC_COMBO_AREA)->EnableWindow(FALSE);
-		GetDlgItem(IDC_COMBO_CAM)->EnableWindow(FALSE);
-		GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(FALSE);
-		GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(FALSE);
-	}
+		if(m_check_writedb)
+		{
+			GetDlgItem(IDC_COMBO_AREA)->EnableWindow(TRUE);
+			GetDlgItem(IDC_COMBO_CAM)->EnableWindow(TRUE);
+			GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(TRUE);
+			GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(TRUE);
+		}
+		else
+		{
+			GetDlgItem(IDC_COMBO_AREA)->EnableWindow(FALSE);
+			GetDlgItem(IDC_COMBO_CAM)->EnableWindow(FALSE);
+			GetDlgItem(IDC_DATETIMEPICKER_STARTHOUR)->EnableWindow(FALSE);
+			GetDlgItem(IDC_DATETIMEPICKER_STARTMON)->EnableWindow(FALSE);
+		}
 
 		GetDlgItem(IDC_BUTTON_PAUSE)->SetWindowText("暂停识别");
 		GetDlgItem(IDC_BUTTON_SPEED)->SetWindowText("全速播放");
@@ -683,7 +726,6 @@ void CDLGVideoDetect::EnablePlayState()
 	default:break;
 	}
 }
-
 //设置摄像头名称
 void CDLGVideoDetect::OnCloseupComboArea() 
 {
@@ -913,3 +955,4 @@ void CDLGVideoDetect::OnReleasedcaptureSlider(NMHDR* pNMHDR, LRESULT* pResult)
 	sliderSeekflag=true;
 	sliderSeek=m_slider.GetPos();
 }
+

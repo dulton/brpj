@@ -80,14 +80,11 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 	CHaikangSDK *HaikangSDK = (CHaikangSDK *)dwUser;
 	int screenNo = DlgMain->DlgScreen.m_video.m_haikang.GetHandleWindID(lRealHandle);
 	LONG lPort = HaikangSDK->m_lPort[screenNo];
-	CWnd* pWnd = DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
-	if (!pWnd)
-	{
-		return;
-	}
+	CWnd* pWnd=NULL;
 	switch (dwDataType)
 	{
 	case NET_DVR_SYSHEAD: //系统头
+		
 		if (lPort < 0)
 		{
 			if (PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
@@ -112,11 +109,22 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 			{
 				break;
 			}
+#if DISPLAY_PREVIEW
+			pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
+			if (!pWnd)
+			{
+				return;
+			}
 			if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 			{
 				break;
 			}
-
+#else
+			if (!PlayM4_Play(lPort,NULL)) //播放开始
+			{
+				break;
+			}
+#endif
 		}
 	case NET_DVR_STREAMDATA:   //码流数据
 		if (dwBufSize > 0 && lPort != -1)
@@ -173,7 +181,8 @@ void CHaikangSDK::SDKInit()
 	NET_DVR_SetReconnect(10000, true);
 }
 
-bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype)
+bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,
+							char *user,char *psw,HWND hWnd,int subtype)
 {
 	if(m_LoginHandle[screenNo] != -1)
 	{
@@ -200,7 +209,7 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,char *us
 	NET_DVR_CLIENTINFO ClientInfo = {0};
 	//需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
 	ClientInfo.hPlayWnd = NULL;
-	ClientInfo.lChannel = 1;		//预览通道号
+	ClientInfo.lChannel = channel;		//预览通道号
 	//最高位(31)为0表示主码流，为1表示子码流0～30位表示连接方式：0－TCP方式；1－UDP方式；2－多播方式；3－RTP方式;
 	if(subtype == 0)
 		ClientInfo.lLinkMode = 0;
@@ -306,7 +315,7 @@ exitPTZCtrl:
 	return;
 }
 
-bool CHaikangSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd)
+bool CHaikangSDK::PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd)
 {
 	//---------------------------------------
 	// 注册设备
@@ -322,7 +331,7 @@ bool CHaikangSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWn
 	NET_DVR_CLIENTINFO ClientInfo = {0};
 	//需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
 	ClientInfo.hPlayWnd = hWnd;
-	ClientInfo.lChannel = 1;		//预览通道号
+	ClientInfo.lChannel = channel;		//预览通道号
 	//主码流
 	ClientInfo.lLinkMode = 0;
 	ClientInfo.sMultiCastIP = NULL;	//多播地址，需要多播预览时配置

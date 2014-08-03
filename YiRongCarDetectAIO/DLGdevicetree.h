@@ -25,7 +25,7 @@ public:
 	CDLGAddDevice DlgAddDevice;
 
 	//}}AFX_DATA
-	IPLIST iplist[1024];
+	IPLIST iplist[MAX_AREA];
 	int iptotal;
 
 

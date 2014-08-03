@@ -198,9 +198,9 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_ReadAllOrgName error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_ReadAllOrgName error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -232,9 +232,9 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_AddNewArea error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_AddNewArea error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -250,15 +250,15 @@ bool IO::DEVICE_DeleteArea(int areaID)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_DeleteArea error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_DeleteArea error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
 
 
-bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,
+bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,
 							 CString user,CString password,long venderID)
 {
 	try
@@ -286,6 +286,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 			m_pRecordsetPtr->PutCollect("scameraname", _variant_t(CamName));
 			m_pRecordsetPtr->PutCollect("sipserver", _variant_t(sip));
 			m_pRecordsetPtr->PutCollect("sport", _variant_t((long)port));
+			m_pRecordsetPtr->PutCollect("channel", _variant_t((long)channel));
 			m_pRecordsetPtr->PutCollect("suser", _variant_t(user));
 			m_pRecordsetPtr->PutCollect("spwd", _variant_t(password));
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
@@ -300,9 +301,9 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_AddNewCamera error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_AddNewCamera error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -342,11 +343,14 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			variant_t password = m_pRecordsetPtr->GetCollect("spwd");
 			variant_t ncamera = m_pRecordsetPtr->GetCollect("ncamera");
 			variant_t venderID = m_pRecordsetPtr->GetCollect("svenderid");
+			variant_t channel = m_pRecordsetPtr->GetCollect("channel");//20140718
 			
 			IPLIST CameraInfo;
 			CameraInfo.area = AreaName;
 			CameraInfo.camID = ncamera;
 			CameraInfo.venderID = venderID;
+			CameraInfo.channel = channel;//20140718
+
 			if(sip.vt != NULL && sip !=temp)
 			{
 				CameraInfo.ip = sip.bstrVal;
@@ -381,9 +385,9 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_ReadCameraInfo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_ReadCameraInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -399,9 +403,9 @@ bool IO::DEVICE_DeleteCamera(int cameraID)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_DeleteCamera error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_DeleteCamera error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -417,14 +421,14 @@ bool IO::DEVICE_DeleteCameraWithAreaID(int AreaID)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_DeleteCameraWithAreaID error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_DeleteCameraWithAreaID error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
 
-bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,
+bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,
 								 CString user,CString password,long venderID)
 {
 	try
@@ -439,8 +443,9 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		variant_t a = m_pRecordsetPtr->GetCollect("nid");
 		long nid = a;
 		strSql.Format(_T("update tb_device set scameraname='%s',\
-																  sipserver='%s',sport=%d,suser='%s',spwd='%s',\
-																  nid=%d,svenderid = %d where ncamera=%d"), CamName,sip,port,user,password,nid,venderID,CamID);
+						sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
+						nid=%d,svenderid = %d where ncamera=%d"), 
+						CamName,sip,port,channel,user,password,nid,venderID,CamID);
 		
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -455,9 +460,9 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::DEVICE_UpdateCameraInfo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_UpdateCameraInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -512,9 +517,9 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::USER_AddNewUser error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_AddNewUser error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -530,9 +535,9 @@ bool IO::USER_DeletetUser(unsigned long int nid)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::USER_DeletetUser error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_DeletetUser error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -567,9 +572,9 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::USER_UpdateUserInfo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_UpdateUserInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -625,9 +630,9 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::USER_ReadUserInfoWithName error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_ReadUserInfoWithName error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -683,9 +688,9 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::USER_ReadUserInfoWithNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_ReadUserInfoWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -734,9 +739,9 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::USER_ReadAllUserInfo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_ReadAllUserInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -780,9 +785,9 @@ bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::LOG_AddNewSystemLog error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::LOG_AddNewSystemLog error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -829,9 +834,9 @@ unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTi
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::LOG_GetSystemLogNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::LOG_GetSystemLogNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -909,9 +914,9 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::LOG_ReadSystemLog error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::LOG_ReadSystemLog error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1001,13 +1006,86 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_MatchResult_AddNew error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_MatchResult_AddNew error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
 }
+
+bool IO::CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
+								char *plate,int reliability,char *path,unsigned long int picsize)
+{
+	try
+	{
+		while(IOwriteLock)
+		{
+			Sleep(100);
+		}
+		
+		IOwriteLock=true;
+		
+		CString strSql = _T("select seq_match_result_car.nextval as nid from dual");	    //获取电动车图像数据nid
+		
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+		
+		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		
+		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
+		
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		
+		_variant_t CamIp = m_pRecordsetPtr->GetCollect("sipserver");
+		_variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
+		
+		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+		
+		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_match_result_car", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+		
+		if(SUCCEEDED(hr))
+		{
+			m_pRecordsetPtr->AddNew();
+			m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+			m_pRecordsetPtr->PutCollect("ncamera", _variant_t((long)CAMID));
+			m_pRecordsetPtr->PutCollect("scameraname", _variant_t(CamName));
+			m_pRecordsetPtr->PutCollect("sip", _variant_t(CamIp));
+			m_pRecordsetPtr->PutCollect("stype", _variant_t(platetype));
+			m_pRecordsetPtr->PutCollect("scolour", _variant_t(platecolor));
+			m_pRecordsetPtr->PutCollect("sdirection", _variant_t(direction));
+			m_pRecordsetPtr->PutCollect("scolor", _variant_t(carcolor));
+			m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(plate));
+			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
+			m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
+			m_pRecordsetPtr->PutCollect("nsize", _variant_t((long)picsize));
+			
+			m_pRecordsetPtr->Update();
+			m_pRecordsetPtr->Close(); 
+			
+			CAR_AlarmResult_Execute(id,isblack);
+			
+			IOwriteLock=false;
+			return true;
+		}
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_MatchResult_AddNewNoPicData error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
 
 bool IO::CAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 {
@@ -1044,9 +1122,9 @@ bool IO::CAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_MatchResult_GetPicture error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_MatchResult_GetPicture error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1086,9 +1164,9 @@ bool IO::CAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_AlarmResult_GetPicture error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_AlarmResult_GetPicture error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1220,9 +1298,9 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_MatchResult_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_MatchResult_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -1354,9 +1432,9 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_AlarmResult_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_AlarmResult_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -1473,9 +1551,9 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_MatchResult_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_MatchResult_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1592,10 +1670,216 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_AlarmResult_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_AlarmResult_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
+	}  
+}
+
+int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
+{
+	try
+	{
+		CString	strSql = _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  order by a.nid desc)  where  rownum=1");
+
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return 0;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			variant_t var;
+			variant_t temp; 
+			temp.ChangeType(VT_NULL);
+			CString str;
+			struct HISTORY_DETECT_ST result = {0};
+
+			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+			var = m_pRecordsetPtr->GetCollect("scameraname");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.name, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sip");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.ip, str.GetBuffer(0));
+			}
+			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
+			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				&result.year,&result.mon,&result.day,
+				&result.hour,&result.min,&result.sec);
+			var = m_pRecordsetPtr->GetCollect("stype");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platetype, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolour");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platecolor, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sdirection");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.direction, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolor");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.carcolor, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scarnumber");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.plate, str.GetBuffer(0));
+			}
+			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
+			var = m_pRecordsetPtr->GetCollect("sfile");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.path, str.GetBuffer(0));
+			}
+			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
+
+			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			
+
+			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
+
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+
+		return 1;
+	}
+	catch(_com_error e)
+	{
+		
+		errormessage.Format("IO::CAR_MatchResult_ReadforListAll error：%s", e.ErrorMessage());
+		
+		return -1;
+	}  
+}
+
+int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *HistoryList)
+{
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  where a.ncamera=%d order by a.nid desc)  where  rownum=1"),
+			camid);
+
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return 0;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			variant_t var;
+			variant_t temp; 
+			temp.ChangeType(VT_NULL);
+			CString str;
+			struct HISTORY_DETECT_ST result = {0};
+
+			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+			var = m_pRecordsetPtr->GetCollect("scameraname");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.name, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sip");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.ip, str.GetBuffer(0));
+			}
+			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
+			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				&result.year,&result.mon,&result.day,
+				&result.hour,&result.min,&result.sec);
+			var = m_pRecordsetPtr->GetCollect("stype");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platetype, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolour");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platecolor, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sdirection");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.direction, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolor");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.carcolor, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scarnumber");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.plate, str.GetBuffer(0));
+			}
+			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
+			var = m_pRecordsetPtr->GetCollect("sfile");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.path, str.GetBuffer(0));
+			}
+			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
+
+			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+
+
+			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
+
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+
+		return 1;
+	}
+	catch(_com_error e)
+	{
+		
+		errormessage.Format("IO::CAR_MatchResult_ReadforListOne error：%s", e.ErrorMessage());
+	
+		return -1;
 	}  
 }
 
@@ -1638,9 +1922,9 @@ bool IO::CAR_AlarmResult_Execute(int nid,bool *isblack)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_AlarmResult_Execute error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_AlarmResult_Execute error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1663,9 +1947,9 @@ unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startT
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_MatchResult_Count error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_MatchResult_Count error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -1754,13 +2038,84 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *plate
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_MatchResult_AddNew error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_MatchResult_AddNew error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
 }
+bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
+								   char *plate,int reliability,
+								   char *path,unsigned long int picsize)
+{
+	try
+	{
+		while(IOwriteLock)
+		{
+			Sleep(100);
+		}
+		
+		IOwriteLock=true;
+		
+		CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
+		
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+		
+		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		
+		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
+		
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		
+		_variant_t CamIp = m_pRecordsetPtr->GetCollect("sipserver");
+		_variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
+		
+		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+		
+		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_match_result_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+		
+		if(SUCCEEDED(hr))
+		{
+			m_pRecordsetPtr->AddNew();
+			m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+			m_pRecordsetPtr->PutCollect("ncamera", _variant_t((long)CAMID));
+			m_pRecordsetPtr->PutCollect("scameraname", _variant_t(CamName));
+			m_pRecordsetPtr->PutCollect("sip", _variant_t(CamIp));
+			m_pRecordsetPtr->PutCollect("scolour", _variant_t(platecolor));
+			m_pRecordsetPtr->PutCollect("sdirection", _variant_t(direction));
+			m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(plate));
+			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
+			m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
+			m_pRecordsetPtr->PutCollect("nsize", _variant_t((long)picsize));
+			
+			m_pRecordsetPtr->Update();
+			m_pRecordsetPtr->Close(); 
+			
+			ELECAR_AlarmResult_Execute(id,isblack);
+			
+			IOwriteLock=false;
+			return true;
+		}
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_MatchResult_AddNewNoPicdata error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
 
 bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 {
@@ -1797,9 +2152,9 @@ bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_MatchResult_GetPicture error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_MatchResult_GetPicture error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1839,9 +2194,9 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_AlarmResult_GetPicture error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_AlarmResult_GetPicture error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -1931,9 +2286,9 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_MatchResult_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_MatchResult_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -2023,9 +2378,9 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_AlarmResult_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_AlarmResult_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -2130,9 +2485,9 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_MatchResult_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_MatchResult_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2237,12 +2592,192 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_AlarmResult_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_AlarmResult_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
+
+int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
+{
+	try
+	{
+		CString	strSql = _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  order by a.nid desc)  where  rownum=1");
+	
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return 0;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			variant_t var;
+			variant_t temp; 
+			temp.ChangeType(VT_NULL);
+			CString str;
+			struct HISTORY_DETECT_ST result = {0};
+
+			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+			var = m_pRecordsetPtr->GetCollect("scameraname");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.name, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sip");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.ip, str.GetBuffer(0));
+			}
+			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
+			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				&result.year,&result.mon,&result.day,
+				&result.hour,&result.min,&result.sec);
+			var = m_pRecordsetPtr->GetCollect("sdirection");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.direction, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scarnumber");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.plate, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolour");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platecolor, str.GetBuffer(0));
+			}
+			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
+			var = m_pRecordsetPtr->GetCollect("sfile");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.path, str.GetBuffer(0));
+			}
+			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
+			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+
+			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
+
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+		
+		return 1;
+	
+	}
+	catch(_com_error e)
+	{
+		
+		errormessage.Format("IO::ELECAR_MatchResult_ReadforlistAll error：%s", e.ErrorMessage());
+		
+		return -1;
+	}  
+}
+
+
+int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_ST *HistoryList)
+{
+	try
+	{
+		CString	strSql;
+		strSql.Format( _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  where a.ncamera=%d order by a.nid desc)  where  rownum=1"),
+			camid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return 0;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			variant_t var;
+			variant_t temp; 
+			temp.ChangeType(VT_NULL);
+			CString str;
+			struct HISTORY_DETECT_ST result = {0};
+
+			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+			var = m_pRecordsetPtr->GetCollect("scameraname");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.name, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("sip");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.ip, str.GetBuffer(0));
+			}
+			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
+			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
+				&result.year,&result.mon,&result.day,
+				&result.hour,&result.min,&result.sec);
+			var = m_pRecordsetPtr->GetCollect("sdirection");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.direction, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scarnumber");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.plate, str.GetBuffer(0));
+			}
+			var = m_pRecordsetPtr->GetCollect("scolour");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.platecolor, str.GetBuffer(0));
+			}
+			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
+			var = m_pRecordsetPtr->GetCollect("sfile");
+			if(var.vt != NULL && var !=temp)
+			{
+				str = var.bstrVal;
+				strcpy(result.path, str.GetBuffer(0));
+			}
+			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
+			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+
+			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
+
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+
+		return 1;
+
+	}
+	catch(_com_error e)
+	{
+		
+		errormessage.Format("IO::ELECAR_MatchResult_ReadforlistOne error：%s", e.ErrorMessage());
+		
+		return -1;
+	}  
+}
+
 
 bool IO::ELECAR_AlarmResult_Execute(int nid,bool *isblack)
 {
@@ -2283,9 +2818,9 @@ bool IO::ELECAR_AlarmResult_Execute(int nid,bool *isblack)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_AlarmResult_Execute error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_AlarmResult_Execute error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2308,9 +2843,9 @@ unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *sta
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_MatchResult_Count error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_MatchResult_Count error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -2347,9 +2882,9 @@ bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_AddNew error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_AddNew error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2365,9 +2900,9 @@ bool IO::CAR_BlackTable_DeleteWithNid(unsigned long int nid)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_DeleteWithNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_DeleteWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2394,9 +2929,9 @@ bool IO::CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_Edit error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_Edit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2415,9 +2950,9 @@ unsigned long IO::CAR_BlackTable_GetNum(void)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -2495,9 +3030,9 @@ bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> 
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2557,9 +3092,9 @@ bool IO::CAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_ReadOne error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_ReadOne error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2574,9 +3109,9 @@ bool IO::CAR_BlackTable_DeleteAll(void)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::CAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2613,9 +3148,9 @@ bool IO::ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_AddNew error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_AddNew error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2631,9 +3166,9 @@ bool IO::ELECAR_BlackTable_DeleteWithNid(unsigned long int nid)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_DeleteWithNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_DeleteWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2660,9 +3195,9 @@ bool IO::ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_Edit error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_Edit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2681,9 +3216,9 @@ unsigned long IO::ELECAR_BlackTable_GetNum(void)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -2761,9 +3296,9 @@ bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_S
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2823,9 +3358,9 @@ bool IO::ELECAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_ReadOne error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_ReadOne error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2840,9 +3375,9 @@ bool IO::ELECAR_BlackTable_DeleteAll(void)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::ELECAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2886,9 +3421,9 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::VIDEO_AddNewVideo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::VIDEO_AddNewVideo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -2936,9 +3471,9 @@ bool IO::VIDEO_DeleteVideo(unsigned long int nid)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::VIDEO_DeleteVideo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::VIDEO_DeleteVideo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -2999,9 +3534,9 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::VIDEO_GetNum error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::VIDEO_GetNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return 0;
 	}  
 }
@@ -3106,9 +3641,9 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::VIDEO_Read error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::VIDEO_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3155,9 +3690,9 @@ bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_AddNew error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_AddNew error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3172,9 +3707,9 @@ bool IO::RECORD_PlanTable_DeleteWithNid(unsigned long int nid)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3190,9 +3725,9 @@ bool IO::RECORD_PlanTable_DeleteWithCamID(unsigned long int camID)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3239,9 +3774,9 @@ bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_Edit error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_Edit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3307,9 +3842,9 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_ReadOne error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_ReadOne error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3393,9 +3928,9 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_ReadAll error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_ReadAll error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3420,9 +3955,9 @@ bool IO::RECORD_PlanTable_SetRecordState(unsigned long nid,int enable)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_SetRecordState error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_SetRecordState error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3447,9 +3982,9 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::RECORD_PlanTable_UpdateCamInfo error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		CString in_errormessage;
+		in_errormessage.Format("IO::RECORD_PlanTable_UpdateCamInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		return false;
 	}  
 }
@@ -3549,9 +4084,9 @@ unsigned long int IO::YRVM_getElectricCarOracleTempNid(void)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_getElectricCarOracleTempNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_getElectricCarOracleTempNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -3643,9 +4178,9 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_writeElectricCarTempPhotoToOracleDB error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_writeElectricCarTempPhotoToOracleDB error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -3696,9 +4231,9 @@ bool IO::YRVM_writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Di
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_writeElectricCarTempInfoToOracleDB error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_writeElectricCarTempInfoToOracleDB error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -3729,9 +4264,9 @@ unsigned long int IO::YRVM_getCarOracleTempNid(void)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_getCarOracleTempNid error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_getCarOracleTempNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -3822,9 +4357,9 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_writeCarTempPhotoToOracleDB error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_writeCarTempPhotoToOracleDB error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -3878,9 +4413,9 @@ bool IO::YRVM_writeCarTempInfoToOracleDB(char *CarStr,char* PlateColor,int Direc
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_writeCarTempInfoToOracleDB error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_writeCarTempInfoToOracleDB error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -3916,9 +4451,9 @@ void IO::YRVM_ExecuteInsertMatchCarResultProcedure(unsigned long int id)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_ExecuteInsertMatchCarResultProcedure error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_ExecuteInsertMatchCarResultProcedure error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 	}  
 }
 
@@ -3954,9 +4489,9 @@ void IO::YRVM_ExecuteInsertMatchVehicleResultProcedure(unsigned long int id)
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_ExecuteInsertMatchVehicleResultProcedure error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_ExecuteInsertMatchVehicleResultProcedure error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 	}  
 	
 }
@@ -4039,9 +4574,9 @@ bool IO::YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSiz
 	}
 	catch(_com_error e)
 	{
-		CString errormessage;
-		errormessage.Format("IO::YRVM_writeTempFaceDataToOracleDB error：%s", e.ErrorMessage());
-		AfxMessageBox(errormessage);
+		
+		in_errormessage.Format("IO::YRVM_writeTempFaceDataToOracleDB error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  

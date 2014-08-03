@@ -64,7 +64,7 @@ public:
 	bool cutpic; 
 	//进度条跳转触发
 	bool sliderSeekflag;
-	unsigned long int sliderSeek;
+	unsigned long long sliderSeek;
 
 	int fps;
 	CTime StartTime;
@@ -109,6 +109,7 @@ protected:
 	afx_msg void OnReleasedcaptureSlider(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
 };
 
 //{{AFX_INSERT_LOCATION}}

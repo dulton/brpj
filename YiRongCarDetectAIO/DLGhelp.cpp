@@ -52,23 +52,46 @@ BOOL CDLGhelp::OnInitDialog()
 	//结果输出到平台 模式 =1  单机版=0 
 	if(YRVM_PINGTAI_MODE)
 	{
-		modeflag="P";
+		modeflag="联机 ";
 
 		if(0==ALLTAB_DETECT_CAR_MODE)
 		{
 			//电动车混合模式
 			if(YRVM_PINGTAI_ELECAR_MIX_MODE)
-				modeflag+="C";
+				modeflag+="机";
 			else
-				modeflag+="E";
+				modeflag+="电";
 		}
 	}
 	else
-		modeflag="S";
+		modeflag="单机 ";
+
+	if(OPEN_CARDETECT_CODE)
+		modeflag+="开识别 ";
+	else
+		modeflag+="无识别 ";
+
+	if(ALLTAB_DETECT_CAR_MODE)
+		modeflag+="机动车 ";
+	else
+		modeflag+="电动车 ";
+
+	if(ALLTAB_CLIENT_MODE)
+		modeflag+="客户端 ";
+	else
+		modeflag+="服务端 ";
+
+	if(OPEN_VS2008_POCO_FTP)
+		modeflag+="FTP ";
+
+	if(OPEN_TOMCAT_MODE)
+		modeflag+="TOMCAT共享 ";
+	else
+		modeflag+="数据库共享 ";
 
 
 	CString str;
-	str.Format("分支%s  构建时间:%s-%s",modeflag.GetBuffer(0),__DATE__,__TIME__);
+	str.Format("%s\n构建时间:%s",modeflag.GetBuffer(0),__DATE__);
 	GetDlgItem(IDC_STATIC_TIME)->SetWindowText(str);
 
 	return TRUE;  // return TRUE unless you set the focus to a control

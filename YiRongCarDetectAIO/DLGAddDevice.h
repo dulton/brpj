@@ -36,6 +36,7 @@ public:
 	CString	m_AddArea;
 	CString	m_CamArea;
 	int		m_CamPort;
+	int		m_CamChannel;
 	//}}AFX_DATA
 
 

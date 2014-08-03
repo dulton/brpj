@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CDLGhelp
+LastClass=CDLGSetSystem
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "yirongcardetectaio.h"
@@ -32,38 +32,38 @@ Class20=CAboutDlg
 Class21=CYiRongCarDetectAIODlg
 
 ResourceCount=28
-Resource1=IDD_SET_PTZ
-Resource2=IDD_VIDEO_DETECT
-Resource3=IDD_SCREEN
-Resource4=IDD_PTZ
+Resource1=IDD_SET_BLACK
+Resource2=IDD_WARNNING
+Resource3=IDD_LOGIN
+Resource4=IDD_SET_RECORD
 Resource5=IDD_YIRONGCARDETECTAIO_DIALOG
-Resource6=IDD_ANALYSE_FLOWRATE
-Resource7=IDD_NORMAL
-Resource8=IDD_WARNNING
-Resource9=IDD_SET_CAR
-Resource10=IDD_HISTORY_DETECT
-Resource11=IDR_MENU_RCTREE
-Resource12=IDD_SET_BLACK
-Resource13=IDD_HISTORY_REPORT
-Resource14=IDD_ABOUTBOX
-Resource15=IDD_LOGIN
-Resource16=IDD_SET_ELECAR
-Resource17=IDD_BLACK_INOUT
-Resource18=IDD_SHORTCUT
-Resource19=IDD_ADD_DEVICE
-Resource20=IDD_SET_SYSTEM
-Resource21=IDR_MENU
-Resource22=IDD_SET_USER
+Resource6=IDD_ADD_DEVICE
+Resource7=IDD_HISTORY_VIDEO
+Resource8=IDD_HISTORY_DETECT
+Resource9=IDD_SHORTCUT
+Resource10=IDD_SET_USER
+Resource11=IDD_HISTORY_REPORT
+Resource12=IDD_OPEN_CLOSE_PREVIEW
+Resource13=IDD_PTZ
+Resource14=IDD_DEVICE_TREE
+Resource15=IDD_VIDEO_DETECT
+Resource16=IDD_SCREEN
+Resource17=IDD_SET_CAR
+Resource18=IDD_ABOUTBOX
+Resource19=IDD_ANALYSE_FLOWRATE
+Resource20=IDD_NORMAL
+Resource21=IDD_SET_ELECAR
+Resource22=IDD_BLACK_INOUT
 Class22=CDLGSetPTZ
-Resource23=IDD_HELP
+Resource23=IDR_MENU_RCTREE
 Class23=CDLGSetRecord
-Resource24=IDD_DEVICE_TREE
+Resource24=IDR_MENU
 Class24=CDLGBlackInOut
-Resource25=IDD_HISTORY_VIDEO
+Resource25=IDD_SET_PTZ
 Class25=CDLGAnalyseFlowrate
-Resource26=IDD_SET_RECORD
+Resource26=IDD_HELP
 Class26=CDLGVideoDetect
-Resource27=IDD_OPEN_CLOSE_PREVIEW
+Resource27=IDD_SET_SYSTEM
 Class27=CDLGhelp
 Resource28=IDR_MENU_RCTREE1
 
@@ -78,7 +78,9 @@ Type=0
 BaseClass=CDialog
 HeaderFile=DLGAddDevice.h
 ImplementationFile=DLGAddDevice.cpp
-LastObject=CDLGAddDevice
+LastObject=IDC_EDIT_CAM_CHANNEL
+Filter=D
+VirtualFilter=dWC
 
 [CLS:CDLGdevicetree]
 Type=0
@@ -225,7 +227,7 @@ HeaderFile=YiRongCarDetectAIODlg.h
 ImplementationFile=YiRongCarDetectAIODlg.cpp
 Filter=W
 VirtualFilter=dWC
-LastObject=ID_MENUITEM_VIDEODETECT
+LastObject=CYiRongCarDetectAIODlg
 
 [DLG:IDD_DIALOG1]
 Type=1
@@ -234,7 +236,7 @@ Class=CDLGAddArea
 [DLG:IDD_ADD_DEVICE]
 Type=1
 Class=CDLGAddDevice
-ControlCount=19
+ControlCount=21
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_STATIC,static,1342308352
@@ -254,6 +256,8 @@ Control16=IDC_COMBO_CAMAREA,combobox,1344339971
 Control17=IDC_STATIC_ADDAREA_NOTE,static,1342308352
 Control18=IDC_STATIC,static,1342308352
 Control19=IDC_COMBO_CAMVENDER,combobox,1344339971
+Control20=IDC_STATIC,static,1342308352
+Control21=IDC_EDIT_CAM_CHANNEL,edit,1350631552
 
 [DLG:IDD_DEVICE_TREE]
 Type=1
@@ -580,7 +584,7 @@ Control29=IDC_STATIC,button,1342177287
 [DLG:IDD_SET_SYSTEM]
 Type=1
 Class=CDLGSetSystem
-ControlCount=46
+ControlCount=51
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_STATIC,button,1342177287
@@ -627,6 +631,11 @@ Control43=IDC_EDIT_YAAN_PATH,edit,1484849280
 Control44=IDC_BUTTON_YAAN_PATH,button,1342242816
 Control45=IDC_EDIT_FTP_PATH,edit,1082196096
 Control46=IDC_STATIC_FTP_PATH,static,1073872896
+Control47=IDC_STATIC_TOMCAT_URL,static,1073872896
+Control48=IDC_EDIT_TOMCAT_URL,edit,1082196096
+Control49=IDC_STATIC_TOMCAT_DIR,static,1073872896
+Control50=IDC_EDIT_TOMCAT_DIR,edit,1216413824
+Control51=IDC_BUTTON_TOMCAT_DIR,button,1073807360
 
 [DLG:IDD_SET_USER]
 Type=1
@@ -697,12 +706,12 @@ Type=1
 Class=CYiRongCarDetectAIODlg
 ControlCount=7
 Control1=IDC_LIST_CAR,SysListView32,1350631429
-Control2=IDC_STATIC,static,1342177294
-Control3=IDC_STATIC_PRINTF,static,1342308352
-Control4=IDC_BUTTON_TREE,button,1342242827
-Control5=IDC_BUTTON_NORMAL,button,1342242827
-Control6=IDC_BUTTON_PTZ,button,1342242827
-Control7=IDC_STATIC_USERNAME,static,1342308352
+Control2=IDC_STATIC_PRINTF,static,1342308352
+Control3=IDC_BUTTON_TREE,button,1342242827
+Control4=IDC_BUTTON_NORMAL,button,1342242827
+Control5=IDC_BUTTON_PTZ,button,1342242827
+Control6=IDC_STATIC_USERNAME,static,1342308352
+Control7=IDC_STATIC,static,1342177294
 
 [MNU:IDR_MENU]
 Type=1

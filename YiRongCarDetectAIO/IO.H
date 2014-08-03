@@ -109,6 +109,7 @@ typedef struct
 	CString psw;
 	long port;
 	long int venderID;			//0---海康,1---大华
+	long channel;				//20140718
 }IPLIST;
 
 
@@ -193,6 +194,10 @@ struct HISTORY_DETECT_ST
 	char path[260];
 	//图像大小
 	unsigned long int picsize;
+	//黑名单标志
+	int nflag;
+	//摄像头编号
+	unsigned long int ncamid; 
 };
 
 struct BLACK_DATA_ST
@@ -229,7 +234,7 @@ public:
 	// ELECAR_MatchResult_AddNew 函数
 	bool IOwriteLock;
 
-
+	CString errormessage;
 public:
 	IO(void);
 	~IO(void);
@@ -241,13 +246,13 @@ public:
 	bool DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList);	//读取所有的区域
 	bool DEVICE_AddNewArea(CString AreaName);					//新增区域
 	bool DEVICE_DeleteArea(int areaID);							//删除区域
-	bool DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,	\
+	bool DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,	\
 							CString user,CString password,long venderID);
 	bool DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList);			//读某个区域所有的摄像机信息
 	bool DEVICE_DeleteCamera(int cameraID);											//删除摄像机
 	bool DEVICE_DeleteCameraWithAreaID(int AreaID);									//删除某个区域的所有摄像机
-	bool DEVICE_UpdateCameraInfo(long CamID,CString AreaName,\
-								CString CamName,CString sip,int port,CString user,CString password,long venderID);
+	bool DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,\
+								CString user,CString password,long venderID);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息
@@ -265,6 +270,8 @@ public:
 	/**************************汽车结果表、报警表*******************************/
 	bool CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetype,char *platecolor,char *direction,char *carcolor,
 								char *plate,int reliability,char *path,unsigned long int picsize,unsigned char *picdata);
+	bool CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
+								char *plate,int reliability,char *path,unsigned long int picsize);
 	bool CAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data);	//获取比对结果表图片数据
 	bool CAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data);	//获取报警表图片数据
 	unsigned long CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
@@ -274,6 +281,9 @@ public:
 	bool CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool CAR_AlarmResult_Execute(int nid,bool *isblack);
+	int CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList);//客户端专用 仅查最新一条
+	int CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *HistoryList);
+
 	//统计分析
 	unsigned long int CAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime);
 
@@ -281,6 +291,10 @@ public:
 	bool ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
 								   char *plate,int reliability,
 								   char *path,unsigned long int picsize,unsigned char *picdata);
+	bool ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
+									char *plate,int reliability,
+								   char *path,unsigned long int picsize);
+
 	bool ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data);	//获取电动车比对结果表图片数据
 	bool ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data);	//获取报警表图片数据
 	unsigned long ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
@@ -290,6 +304,9 @@ public:
 	bool ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool ELECAR_AlarmResult_Execute(int nid,bool *isblack);
+	int ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList);
+	int ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_ST *HistoryList);
+
 	//统计分析
 	unsigned long int ELECAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime);
 

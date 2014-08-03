@@ -138,7 +138,7 @@ void CYaAnSDK::SDKInit()
 	VSNET_ClientWaitTime(10,1000);
 }
 
-bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,char *psw,HWND hWnd,int subtype)
+bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,int channel,char *user,char *psw,HWND hWnd,int subtype)
 {
 	StopPlay(screenNo);
 
@@ -153,7 +153,7 @@ bool CYaAnSDK::StartPlay(int screenNo,char *name,char *sip,WORD port,char *user,
 	m_chinfo.m_tranType   = 3;
 	m_chinfo.m_useoverlay = FALSE;
 	m_chinfo.nColorKey    = RGB(192,0,192);
-	m_chinfo.m_ch         = 0;
+	m_chinfo.m_ch         = channel;
 	m_chinfo.m_buffnum    = 20;
 	m_chinfo.m_hVideohWnd = hWnd;
 	m_chinfo.context      = this;
@@ -320,7 +320,7 @@ void CYaAnSDK::PtzControl(long lLoginID, int type, BOOL dwStop, int param)
 	}
 }
 
-bool CYaAnSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd)
+bool CYaAnSDK::PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd)
 {
 	CHANNEL_CLIENTINFO pVSChann;
 
@@ -333,7 +333,7 @@ bool CYaAnSDK::PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd)
 	pVSChann.m_tranType   = 3;
 	pVSChann.m_useoverlay = FALSE;
 	pVSChann.nColorKey    = RGB(192,0,192);
-	pVSChann.m_ch         = 0;
+	pVSChann.m_ch         = channel;
 	pVSChann.m_buffnum    = 20;
 	pVSChann.m_hVideohWnd = hWnd;
 	pVSChann.context      = NULL;

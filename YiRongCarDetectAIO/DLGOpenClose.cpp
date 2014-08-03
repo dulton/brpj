@@ -333,6 +333,7 @@ void CDLGOpenClose::OpenListPreview(void)
 											DlgMain->DlgDeviceTree.iplist[treeid].name.GetBuffer(0),
 											DlgMain->DlgDeviceTree.iplist[treeid].ip.GetBuffer(0),
 											DlgMain->DlgDeviceTree.iplist[treeid].port,
+											DlgMain->DlgDeviceTree.iplist[treeid].channel,
 											DlgMain->DlgDeviceTree.iplist[treeid].user.GetBuffer(0),
 											DlgMain->DlgDeviceTree.iplist[treeid].psw.GetBuffer(0),
 											m_winno,

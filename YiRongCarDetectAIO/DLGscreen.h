@@ -32,6 +32,7 @@ enum DEVICE_VENDERID_ENUM
 	VENDER_TYPE_HAIKANG=0, 
 	VENDER_TYPE_DAHUA=1, 
 	VENDER_TYPE_YAAN=2, 
+	VENDER_TYPE_YAAN_NEW=3, 
 };
 */
 //设备信息
@@ -54,6 +55,7 @@ struct DEVICE_INFO
 	CString recordPath;
 	CTime startTime;
 	bool planRecord;
+	long channel;
 };
 
 
@@ -139,7 +141,7 @@ public:
 	void DeleteDevice(CString sip);
 
 	void SwitchMultiWnd(int nSplit);
-	bool StartPlay(int id,char *area,char *name,char *ip,int port,
+	bool StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
 		char *user,char *psw,int subtype,int screenNo,int venderID);
 	void StopPlay(int screenNo);
 	void Capture(char *filename);

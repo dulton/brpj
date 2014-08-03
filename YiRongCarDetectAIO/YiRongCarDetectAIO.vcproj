@@ -51,6 +51,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="ffmpeginclude"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;TUNE"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -77,6 +78,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="ffmpeglib\*.lib"
 				OutputFile=".\Release/YiRongCarDetectAIO.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -144,8 +146,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="ffmpeginclude"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;TUNE"
+				AdditionalIncludeDirectories="ffmpeginclude;&quot;.\curl-7.32.0\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;TUNE;BUILDING_LIBCURL;HTTP_ONLY"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -375,6 +377,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\DLGhelp.cpp"
+				>
 			</File>
 			<File
 				RelativePath="DLGHistoryReport.cpp"
@@ -881,6 +887,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SignalDownload.cpp"
+				>
+			</File>
+			<File
 				RelativePath="StdAfx.cpp"
 				>
 				<FileConfiguration
@@ -901,6 +911,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\URLencode.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\VideoCarDetect.cpp"
@@ -945,6 +959,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\YaAnSDKNew.cpp"
+				>
 			</File>
 			<File
 				RelativePath="YiRongCarDetectAIO.cpp"
@@ -1152,7 +1170,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SignalDownload.h"
+				>
+			</File>
+			<File
 				RelativePath="StdAfx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\typedefine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\URLencode.h"
 				>
 			</File>
 			<File
@@ -1165,6 +1195,10 @@
 			</File>
 			<File
 				RelativePath="YaAnSDK.h"
+				>
+			</File>
+			<File
+				RelativePath=".\YaAnSDKNew.h"
 				>
 			</File>
 			<File
@@ -1234,6 +1268,10 @@
 			</File>
 			<File
 				RelativePath="res\logo.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\logo_elecar.bmp"
 				>
 			</File>
 			<File
@@ -1820,6 +1858,10 @@
 				RelativePath="res\YiRongCarDetectAIO.rc2"
 				>
 			</File>
+			<File
+				RelativePath=".\res\YiRongCarDetectAIO3.ico"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath="ReadMe.txt"
@@ -1827,5 +1869,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="YiRongCarDetectAIO.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

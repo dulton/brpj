@@ -87,10 +87,10 @@ public:
 	long m_ptzLoginHandle;
 
 	void SDKInit();
-	bool StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype);
+	bool StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd,int subtype);
 	void StopPlay(int screenNo);
 	void Capture(long pHandle,char *filename);
-	bool PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd);
+	bool PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd);
 	void PtzStopPlay();
 	void PtzControl(long lLoginID, int type, BOOL dwStop, int param);
 	char *RuntimeMessage(void);

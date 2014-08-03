@@ -61,7 +61,7 @@ BOOL CDLGdevicetree::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_DeviceTree.SetBkColor(RGB(232,248,254));
+	m_DeviceTree.SetBkColor(RGB(232,248,254));	//Ê÷ÁÐ±í±³¾°É«
 
 	OnMenuitemUpdate();
 
@@ -199,6 +199,7 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				DlgAddDevice.m_CamName,\
 				DlgAddDevice.m_CamIpAddr,\
 				DlgAddDevice.m_CamPort,\
+				DlgAddDevice.m_CamChannel,\
 				DlgAddDevice.m_CamUser,\
 				DlgAddDevice.m_CamPsw,
 				DlgAddDevice.VenderComboCur);
@@ -240,6 +241,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].ip = CameraList[j].ip;
 			iplist[iptotal].name = CameraList[j].name;
 			iplist[iptotal].port = CameraList[j].port;
+			iplist[iptotal].channel = CameraList[j].channel;
 			iplist[iptotal].psw = CameraList[j].psw;
 			iplist[iptotal].user = CameraList[j].user;
 			iplist[iptotal].Parent_item = hItem;
@@ -293,6 +295,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 				}
 				DlgAddDevice.AreaComboCur = count;
 				DlgAddDevice.m_CamPort = iplist[i].port;
+				DlgAddDevice.m_CamChannel = iplist[i].channel;
 				DlgAddDevice.m_CamIpAddr = iplist[i].ip;
 				DlgAddDevice.m_CamName = iplist[i].name;
 				DlgAddDevice.m_CamPsw = iplist[i].psw;
@@ -312,6 +315,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 						DlgAddDevice.m_CamName,\
 						DlgAddDevice.m_CamIpAddr,\
 						DlgAddDevice.m_CamPort,\
+						DlgAddDevice.m_CamChannel,\
 						DlgAddDevice.m_CamUser,\
 						DlgAddDevice.m_CamPsw,\
 						DlgAddDevice.VenderComboCur);
@@ -339,6 +343,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 									iplist[i].name.GetBuffer(0),
 									iplist[i].ip.GetBuffer(0),
 									iplist[i].port,
+									iplist[i].channel,//20140718
 									iplist[i].user.GetBuffer(0),
 									iplist[i].psw.GetBuffer(0),
 									j,
@@ -430,7 +435,7 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 
 	// TODO: Add your control notification handler code here
 	CPoint point;
-	CMenu menu;
+
 
 	GetCursorPos(&point);
 	CPoint PointInTree = point;
@@ -453,19 +458,22 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 			}
 
 			int screenNo = DlgMain->DlgScreen.GetCurWindId();
+
 			DlgMain->DlgScreen.StartPlay(
 				iplist[ItemCount].camID,
 				iplist[ItemCount].area.GetBuffer(0),
 				iplist[ItemCount].name.GetBuffer(0),
 				iplist[ItemCount].ip.GetBuffer(0),
 				iplist[ItemCount].port,
+				iplist[ItemCount].channel,//20140718
 				iplist[ItemCount].user.GetBuffer(0),
 				iplist[ItemCount].psw.GetBuffer(0),
 				screenNo,
 				0,
 				iplist[ItemCount].venderID);
-		
+			
 		}
 	}
-	*pResult = 0;
+
+	(*pResult) = 0;
 }

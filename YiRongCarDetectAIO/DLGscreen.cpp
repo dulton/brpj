@@ -22,7 +22,7 @@ extern CDLGSetSystem DlgSetSystem;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define RECORD_TIMER 1
+#define RECORD_TIMER 111
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGscreen dialog
@@ -208,6 +208,7 @@ void CDLGscreen::GetCurWindCamInfo(int nCuWinID,struct DEVICE_INFO &Info)
 	Info.name = m_videoInfo[nCuWinID].name;
 	Info.playHandle = m_videoInfo[nCuWinID].playHandle;
 	Info.port = m_videoInfo[nCuWinID].port;
+	Info.channel =  m_videoInfo[nCuWinID].channel;
 	Info.psw = m_videoInfo[nCuWinID].psw;
 	Info.subtype = m_videoInfo[nCuWinID].subtype;
 	Info.user= m_videoInfo[nCuWinID].user;
@@ -272,7 +273,7 @@ void CDLGscreen::CarDetectSet(void)
 }
 
 //开始播放
-bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
+bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
 						   char *user,char *psw,int screenNo,int subtype,int venderID)
 {
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
@@ -286,7 +287,7 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
 		StopPlay(screenNo);
 	}
 
-	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, user, psw, pWnd->m_hWnd, subtype);
+	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, channel, user, psw, pWnd->m_hWnd, subtype);
 	if(ret)
 	{
 		m_videoInfo[screenNo].subtype = subtype;		//主码流
@@ -297,6 +298,7 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,
 		m_videoInfo[screenNo].user = user;
 		m_videoInfo[screenNo].psw = psw;
 		m_videoInfo[screenNo].port = port;
+		m_videoInfo[screenNo].channel = channel;
 		m_videoInfo[screenNo].camID = id;
 		m_videoInfo[screenNo].playHandle = m_video.m_RealHandle[screenNo];
 		m_videoInfo[screenNo].venderID = venderID;
@@ -413,7 +415,8 @@ void CDLGscreen::StopRecord(int screenNo)
 //抓拍图像
 void CDLGscreen::Capture(char *filename)
 {
-	m_video.Capture(m_videoInfo[m_curScreen].venderID,m_videoInfo[m_curScreen].playHandle,filename);
+	//m_video.Capture(m_videoInfo[m_curScreen].venderID,m_videoInfo[m_curScreen].playHandle,filename);
+	m_video.Capture(m_videoInfo[m_curScreen].venderID,m_curScreen,filename);
 }
 
 //删除设备

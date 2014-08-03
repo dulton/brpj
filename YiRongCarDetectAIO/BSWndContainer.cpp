@@ -685,12 +685,21 @@ void CBSWndContainer::DrawActivePage(BOOL bFlag)
 		CDC *pDC=GetDC();
 		if(!pDC) return;
 
-//		pDC->Draw3dRect(&rt,m_clrTopLeft, m_clrBottomRight);	
+//		pDC->Draw3dRect(&rt,m_clrTopLeft, m_clrBottomRight);
+
+		pDC->Draw3dRect(&rt,RGB(255,128,0), RGB(255,128,0));		//16窗口选中色
+		rt.InflateRect(1,1);
 		pDC->Draw3dRect(&rt,RGB(255,128,0), RGB(255,128,0));
 
 		ReleaseDC(pDC);
 	}
 	else
+	{
+		//	InvalidateRect(&rt);
+
 		InvalidateRect(&rt);
+		rt.InflateRect(1,1);
+		InvalidateRect(&rt);
+	}
 }
 

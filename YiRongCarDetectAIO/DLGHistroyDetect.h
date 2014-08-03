@@ -100,6 +100,7 @@ public:
 	//ÆÁ±Î²Ù×÷
 	void OnOK();
 	void DisplayNetPic(int iItem);
+	void DisplayTomcatPic(int iItem);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

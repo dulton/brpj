@@ -37,6 +37,8 @@ public:
 	CString	m_path_haikang;
 	CString	m_path_yaan;
 	CString	m_ftp_path;
+	CString	m_tomcat_dir;
+	CString	m_tomcat_url;
 	//}}AFX_DATA
 	TCHAR SystemIniPath[ZOG_MAX_PATH_STR];
 
@@ -73,6 +75,7 @@ protected:
 	afx_msg void OnButtonHaikangPath();
 	afx_msg void OnButtonDahuaPath();
 	afx_msg void OnButtonYaanPath();
+	afx_msg void OnButtonTomcatDir();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

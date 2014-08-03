@@ -26,11 +26,12 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	m_CamUser = _T("");
 	m_AddArea = _T("");
 	m_CamArea = _T("");
+	m_CamPort = 0;
 	AreaCount = 0;
 	AreaComboCur = 0;
-	m_CamPort = 0;
 	AddAreaFlag = false;
 	VenderComboCur = 0;
+	m_CamChannel = 0;
 	//}}AFX_DATA_INIT
 }
 
@@ -39,8 +40,8 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDLGAddDevice)
-	DDX_Control(pDX, IDC_COMBO_CAMVENDER, m_camVender);
 	DDX_Control(pDX, IDC_COMBO_CAMAREA, m_AreaComboCtrl);
+	DDX_Control(pDX, IDC_COMBO_CAMVENDER, m_camVender);
 	DDX_Text(pDX, IDC_EDIT_CAM_IPADDR, m_CamIpAddr);
 	DDX_Text(pDX, IDC_EDIT_CAM_NAME, m_CamName);
 	DDX_Text(pDX, IDC_EDIT_CAM_PSW, m_CamPsw);
@@ -49,6 +50,7 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_AddArea, 32);
 	DDX_CBString(pDX, IDC_COMBO_CAMAREA, m_CamArea);
 	DDX_Text(pDX, IDC_EDIT_CAM_PORT, m_CamPort);
+	DDX_Text(pDX, IDC_EDIT_CAM_CHANNEL, m_CamChannel);
 	//}}AFX_DATA_MAP
 }
 

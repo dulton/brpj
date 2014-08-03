@@ -100,6 +100,16 @@ BOOL CDLGnormal::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+#if ALLTAB_CLIENT_MODE
+
+	GetDlgItem(IDC_BUTTON_OPEN_RECORD)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_OPEN_RECORD_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CLOSE_RECORD_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_SET_CAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_SET_BLACK)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_HISTORY_VIDEO)->EnableWindow(FALSE);
+#endif
+
 	switch(DlgMain->DlgShortCut.screenmode)
 	{
 	case SCREEN_1MODE:
@@ -668,6 +678,7 @@ void CDLGnormal::StartPlay(int screenNo)
 							CameraInfo.name.GetBuffer(0),
 							CameraInfo.ip.GetBuffer(0),
 							CameraInfo.port,
+							CameraInfo.channel,
 							CameraInfo.user.GetBuffer(0),
 							CameraInfo.psw.GetBuffer(0),
 							screenNo,

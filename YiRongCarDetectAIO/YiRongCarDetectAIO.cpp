@@ -64,7 +64,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 	CoInitialize(NULL);
 	//当前路径
 	GetCurrentDirectory(ZOG_MAX_PATH_STR, CurrentDir);
-	sprintf(DlgSetSystem.SystemIniPath,"%s\\systeminfo.ini",CurrentDir);
+	sprintf(DlgSetSystem.SystemIniPath,"%s\\yrsysteminfo.ini",CurrentDir);
 	
 	//ZOGNA//UP
 	//读系统配置表

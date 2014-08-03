@@ -8,6 +8,9 @@
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
+#include "URLencode.h"
+#include "SignalDownload.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -532,6 +535,12 @@ void CDLGHistroyDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	char str[ZOG_MAX_PATH_STR];
 
+
+#if OPEN_TOMCAT_MODE 
+
+	DisplayTomcatPic(pNMIA->iItem);
+#else
+
 	//网络
 	if(DlgSetSystem.m_check_savenet)
 	{
@@ -553,7 +562,7 @@ void CDLGHistroyDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 		else
 			ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
 	}
-
+#endif
 	*pResult = 0;
 }
 
@@ -635,6 +644,43 @@ void CDLGHistroyDetect::DisplayNetPic(int iItem)
 	data=NULL;
 	
 }
+
+//需要NET列表 为NID
+void CDLGHistroyDetect::DisplayTomcatPic(int iItem)
+{
+	char url[ZOG_MAX_PATH_STR];
+	char url2[ZOG_MAX_PATH_STR*3];
+	char str[ZOG_MAX_PATH_STR];
+	char fail[1024];
+
+#if ALLTAB_DETECT_CAR_MODE
+	//汽车
+	m_List.GetItemText(iItem,10,url,ZOG_MAX_PATH_STR);
+#else
+	//电动车
+	m_List.GetItemText(iItem,8,url,ZOG_MAX_PATH_STR);
+#endif
+
+	sprintf(str,"%s\\yrcdtempResultListpic.jpg",DlgSetSystem.m_path_detect);
+
+	SignalDownload sd;
+	sd.InitData();
+
+	EncodeURI(url,url2,ZOG_MAX_PATH_STR*3);
+
+	if(false == sd.HTTPDownload(url2,str,fail,10,0))
+	{
+		sd.DestroyData();
+		return ;
+	}
+
+	sd.DestroyData();
+	//保存后打开
+	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+}
+
+
 void CDLGHistroyDetect::OnCheckTime() 
 {
 	// TODO: Add your control notification handler code here

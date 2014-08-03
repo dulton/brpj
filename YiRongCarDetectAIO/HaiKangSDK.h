@@ -21,11 +21,12 @@ public:
 	CString CapturePath[MAX_DEVICE_NUM];
 
 	void SDKInit();
-	bool StartPlay(int screenNo,char *name,char *sip,int nPort,char *user,char *psw,HWND hWnd,int subtype);
+	bool StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,
+					char *user,char *psw,HWND hWnd,int subtype);
 	void StopPlay(int screenNo);
 	void Capture(int screenNo,char *filename);
 	void PtzControl(LONG lRealHandle, int type, BOOL dwStop, int param);
-	bool PtzStartPlay(char *sip,int nPort,char *user,char *psw,HWND hWnd);
+	bool PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd);
 	void PtzStopPlay();
 	//通过port获取到窗口号
 	int GetPortWndindex(long lport);

@@ -48,7 +48,8 @@
 //	KeyColor
 
 //#define		VIDEO_BACK_COLOR	RGB(111,104,160)
-#define		VIDEO_BACK_COLOR	RGB(85,161,231)
+
+#define		VIDEO_BACK_COLOR	RGB(85,161,231)//16´°¿Ú±³¾°É«
 
 /////////////////////////////////////////////////////////////////////////////
 // CPlayWnd dialog

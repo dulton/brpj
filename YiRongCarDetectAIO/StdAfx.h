@@ -10,6 +10,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+	//改菜单背景色要的定义 放到STDAFX.H
+	//#ifndef WINVER
+	//#define WINVER 0x0501 
+	//#endif
+
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
@@ -83,17 +88,26 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 
 *************************************/
 
+//客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
+#define ALLTAB_CLIENT_MODE 1
+
+//开启预览显示  服务器 关闭=0 特有
+#define DISPLAY_PREVIEW 0
+
 //汽车模式 1 电动车模式 0
-//切换电动车和汽车。A.记得换到IDD主窗口里换LOGO，B.到ICON里换图标
+//切换电动车和汽车。
+//A.记得换到IDD主窗口里换LOGO。 电动车用 IDB_LOGO_ELECAR 和汽车用 IDB_LOGO
+//B.在rc文件里搜索IDR_MAINFRAME的路径 修改路径 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\YiRongCarDetectAIO3.ico"
+//C.到RES文件夹里 将 YiRongCarDetectAIO.ico 文件用对应的图标替换掉
 #define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 1
+#define OPEN_CARDETECT_CODE 0
 
 //开启人脸识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
 #define OPEN_FACEDETECT_CODE 0
 
-//结果输出到平台 模式 =1  单机版=0 
+//结果输出到YRVM平台 模式 =1  单机版=0 
 #define YRVM_PINGTAI_MODE	0
 
 //结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
@@ -101,10 +115,15 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 
 
 //弹出框登录 1 不弹出窗登录0 //预留 请务必为1
+//免登陆已经不用这个了 
+//改为	DlgLogin.SilentMode
 #define ALLTAB_LOGIN_WIN_MODE 1
 
 //开启POCO-FTP功能 需要2008编译
 #define OPEN_VS2008_POCO_FTP	0
+
+//TOMCAT 模式
+#define OPEN_TOMCAT_MODE 1
 
 
 ///////////////////////////
@@ -138,7 +157,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #endif
 
 //最多增加区域
-#define MAX_AREA 1024
+#define MAX_AREA 5120
 
 //最大显示多少个摄像头窗口
 #define MAX_DEVICE_NUM 16

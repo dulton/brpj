@@ -39,6 +39,14 @@ public:
 
 	//}}AFX_DATA
 
+	UINT  m_DetectListTimer;
+	int  m_DetectListTimerFlag;
+	long int oldnid[MAX_DEVICE_NUM];
+	struct HISTORY_DETECT_ST HistoryClientDATA;
+	char HistoryClientTimeformat[64];
+	void DisplayNetPic(int iItem);
+	void DisplayTomcatPic(int iItem);
+
 	//快捷按钮
 	CDLGshortcut DlgShortCut;
 	//分屏的屏幕
@@ -85,7 +93,7 @@ public:
 	afx_msg void OnMenuitemHistoryCar();
 	afx_msg void OnMenuitemHistoryAlarm();
 	afx_msg void OnMenuitemSetBlack();
-
+	afx_msg void OnMenuitemHelp();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CYiRongCarDetectAIODlg)
 	protected:
@@ -120,7 +128,7 @@ protected:
 	afx_msg void OnMenuitemAlarm();
 	afx_msg void OnMenuitemRecord();
 	afx_msg void OnMenuitemAbout();
-	afx_msg void OnMenuitemHelp();
+
 	afx_msg void OnMenuitemSystemReport();
 	afx_msg void OnMenuitemBlackIn();
 	afx_msg void OnMenuitemBlackOut();
@@ -142,7 +150,7 @@ protected:
 	afx_msg void OnButtonNormal();
 	afx_msg void OnButtonPtz();
 	afx_msg void OnMenuitemSetrecord();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnMenuitemVideodetect();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

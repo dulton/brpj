@@ -73,6 +73,15 @@ BOOL CDLGshortcut::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+#if ALLTAB_CLIENT_MODE
+
+	GetDlgItem(IDC_BUTTON_CAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_ALARM)->EnableWindow(FALSE);
+	GetDlgItem(IDC_SET_CAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(FALSE);
+
+#endif
+
 	//识别按钮图片
 	CarBMP();
 	m_Car.SizeToContent();		//自适应图片大小
