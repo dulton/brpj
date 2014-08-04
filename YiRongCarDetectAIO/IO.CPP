@@ -259,7 +259,7 @@ bool IO::DEVICE_DeleteArea(int areaID)
 
 
 bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,
-							 CString user,CString password,long venderID)
+							 CString user,CString password,long venderID,CString Rtspurl,int RTP)
 {
 	try
 	{
@@ -293,6 +293,10 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 			m_pRecordsetPtr->PutCollect("ncamera", _variant_t(ncamera));
 			m_pRecordsetPtr->PutCollect("svenderid", _variant_t(venderID));
 			
+			m_pRecordsetPtr->PutCollect("rtspurl", _variant_t(Rtspurl));
+			m_pRecordsetPtr->PutCollect("rtpmode", _variant_t((long)RTP));
+
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
 			return true;   		
@@ -344,30 +348,54 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			variant_t ncamera = m_pRecordsetPtr->GetCollect("ncamera");
 			variant_t venderID = m_pRecordsetPtr->GetCollect("svenderid");
 			variant_t channel = m_pRecordsetPtr->GetCollect("channel");//20140718
+
+			variant_t rtspurl = m_pRecordsetPtr->GetCollect("rtspurl");//20140718
+			variant_t RTP = m_pRecordsetPtr->GetCollect("rtpmode");//20140718
 			
 			IPLIST CameraInfo;
 			CameraInfo.area = AreaName;
 			CameraInfo.camID = ncamera;
 			CameraInfo.venderID = venderID;
 			CameraInfo.channel = channel;//20140718
+			CameraInfo.RTP = RTP;
 
 			if(sip.vt != NULL && sip !=temp)
 			{
 				CameraInfo.ip = sip.bstrVal;
 			}
+			else
+				CameraInfo.ip="";
+
 			if(CamName.vt != NULL && CamName !=temp)
 			{
 				CameraInfo.name = CamName.bstrVal;
 			}
+			else
+				CameraInfo.name="";
+
 			CameraInfo.port = port;
+
 			if(password.vt != NULL && password !=temp)
 			{
 				CameraInfo.psw = password.bstrVal;
 			}
+			else
+				CameraInfo.psw="";
+
 			if(user.vt != NULL && user !=temp)
 			{
 				CameraInfo.user = user.bstrVal;
 			}
+			else
+				CameraInfo.user="";
+
+			if(rtspurl.vt != NULL && rtspurl !=temp)
+			{
+				CameraInfo.Rtspurl = rtspurl.bstrVal;
+			}
+			else
+				CameraInfo.Rtspurl="";
+
 			//strcpy(CameraInfo.area, AreaName);
 			CameraList.push_back(CameraInfo);
 			
@@ -429,7 +457,7 @@ bool IO::DEVICE_DeleteCameraWithAreaID(int AreaID)
 }
 
 bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,
-								 CString user,CString password,long venderID)
+								 CString user,CString password,long venderID,CString Rtspurl,int RTP)
 {
 	try
 	{
@@ -444,8 +472,8 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		long nid = a;
 		strSql.Format(_T("update tb_device set scameraname='%s',\
 						sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
-						nid=%d,svenderid = %d where ncamera=%d"), 
-						CamName,sip,port,channel,user,password,nid,venderID,CamID);
+						nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d where ncamera=%d"), 
+						CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,CamID);
 		
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  

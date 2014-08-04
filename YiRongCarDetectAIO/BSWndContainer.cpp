@@ -280,8 +280,12 @@ void CBSWndContainer::UpdateWnd()
 			p->MoveWindow(&rt);
 			p->ShowWindow(SW_SHOW);
 			i++;
+
+			WinSetRect(p,rt);
+
 		}
-		if( m_bDrawActive && m_PageList.GetCount()>1 ) DrawActivePage(TRUE);
+		if( m_bDrawActive && m_PageList.GetCount()>1 ) 
+			DrawActivePage(TRUE);
 	}
 	else
 	{ //单屏状态
@@ -289,18 +293,41 @@ void CBSWndContainer::UpdateWnd()
 		{
 			CWnd *p=m_PageList.GetNext(pos);
 			if(p==m_pActivePage)
+			{
 				p->MoveWindow(&rtContainer);
+			
+				WinSetRect(p,rtContainer);
+			}
 			else 
 			{
 				if(m_bFullScreen)
+				{
 					p->MoveWindow(0,0,1,1);
+					WinSetRect(p,CRect(0,0,1,1));
+				}
 				else
+				{
 					p->MoveWindow(rtContainer.right+1,rtContainer.bottom+1,1,1);
+					WinSetRect(p,CRect(rtContainer.right+1,rtContainer.bottom+1,1,1));
+				}
 			}
+
 		}
 	}
 }
+void CBSWndContainer::WinSetRect(CWnd *p,CRect rt)
+{
+	int j;
+	for(j=1;j<MAX_DEVICE_NUM;j++)
+	{
+		if(p== &(DlgMain->DlgScreen.m_screenPannel.m_wndVideo[j]))
+		{
+			m_winrect[j]=rt;
+			return ;
+		}
+	}
 
+}
 int GetCurrentScreenMonitorRect(HWND hWnd,RECT& ScreenRect)
 {
 	/*
@@ -678,13 +705,14 @@ void CBSWndContainer::DrawActivePage(BOOL bFlag)
 	CRect rt;
 	m_pActivePage->GetWindowRect(&rt);
 	ScreenToClient(&rt);
-	rt.InflateRect(1,1);
 
+
+	rt.InflateRect(1,1);
+	
 	if(bFlag)
 	{
 		CDC *pDC=GetDC();
 		if(!pDC) return;
-
 //		pDC->Draw3dRect(&rt,m_clrTopLeft, m_clrBottomRight);
 
 		pDC->Draw3dRect(&rt,RGB(255,128,0), RGB(255,128,0));		//16窗口选中色
@@ -700,6 +728,9 @@ void CBSWndContainer::DrawActivePage(BOOL bFlag)
 		InvalidateRect(&rt);
 		rt.InflateRect(1,1);
 		InvalidateRect(&rt);
+
 	}
+	
+		
 }
 

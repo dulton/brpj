@@ -110,6 +110,8 @@ typedef struct
 	long port;
 	long int venderID;			//0---海康,1---大华
 	long channel;				//20140718
+	CString Rtspurl;
+	long RTP;
 }IPLIST;
 
 
@@ -247,12 +249,12 @@ public:
 	bool DEVICE_AddNewArea(CString AreaName);					//新增区域
 	bool DEVICE_DeleteArea(int areaID);							//删除区域
 	bool DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,	\
-							CString user,CString password,long venderID);
+							CString user,CString password,long venderID,CString Rtspurl,int RTP);
 	bool DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList);			//读某个区域所有的摄像机信息
 	bool DEVICE_DeleteCamera(int cameraID);											//删除摄像机
 	bool DEVICE_DeleteCameraWithAreaID(int AreaID);									//删除某个区域的所有摄像机
 	bool DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,\
-								CString user,CString password,long venderID);
+								CString user,CString password,long venderID,CString Rtspurl,int RTP);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息

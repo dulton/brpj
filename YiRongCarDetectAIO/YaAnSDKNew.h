@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define YAAN_NEW_SDK 0
 
-#if YAAN_NEW_SDK
+
+#if OPEN_YAAN_NEW_SDK
 
 typedef struct
 {

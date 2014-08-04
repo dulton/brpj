@@ -7,6 +7,7 @@
 // DLGAddDevice.h : header file
 //
 #include "IO.h"
+#include "afxwin.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGAddDevice dialog
@@ -20,6 +21,7 @@ public:
 	int  AreaComboCur;
 	bool AddAreaFlag;
 	int  VenderComboCur;
+	int RTPComboCur;
 
 public:
 	CDLGAddDevice(CWnd* pParent = NULL);   // standard constructor
@@ -37,6 +39,9 @@ public:
 	CString	m_CamArea;
 	int		m_CamPort;
 	int		m_CamChannel;
+
+	CString m_CamRtspurl;
+	CComboBox m_CamRTP;
 	//}}AFX_DATA
 
 
@@ -58,6 +63,8 @@ protected:
 	afx_msg void OnMenuitemEdit();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnCbnCloseupComboCamvender();
 };
 
 //{{AFX_INSERT_LOCATION}}

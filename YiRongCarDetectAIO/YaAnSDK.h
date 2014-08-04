@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if OPEN_YAAN_SDK
+
 typedef struct
 {
 	char m_filemask[16];
@@ -60,4 +62,7 @@ public:
 	void		PtzStopPlay();
 };
 
+#endif
+
 #endif // !defined(AFX_VIDEOCHANNEL_H__D1736789_C3E0_4E20_88A2_304B89946F22__INCLUDED_)
+

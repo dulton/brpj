@@ -5,7 +5,7 @@
 #include "stdafx.h"
 
 
-#if YAAN_NEW_SDK
+#if OPEN_YAAN_NEW_SDK
 
 #include "YaAnSDKNew.h"
 //////////////////////////////////

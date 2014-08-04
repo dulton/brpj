@@ -202,7 +202,9 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				DlgAddDevice.m_CamChannel,\
 				DlgAddDevice.m_CamUser,\
 				DlgAddDevice.m_CamPsw,
-				DlgAddDevice.VenderComboCur);
+				DlgAddDevice.VenderComboCur,
+				DlgAddDevice.m_CamRtspurl,
+				DlgAddDevice.RTPComboCur);
 		}
 		OnMenuitemUpdate();
 	}
@@ -246,6 +248,9 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].user = CameraList[j].user;
 			iplist[iptotal].Parent_item = hItem;
 			iplist[iptotal].venderID = CameraList[j].venderID;
+			iplist[iptotal].Rtspurl= CameraList[j].Rtspurl;
+			iplist[iptotal].RTP= CameraList[j].RTP;
+	
 			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,hItem);		//添加设备节点
 			iplist[iptotal].item = childItem;
 			iptotal++;
@@ -301,6 +306,10 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.m_CamPsw = iplist[i].psw;
 				DlgAddDevice.m_CamUser = iplist[i].user;
 				DlgAddDevice.VenderComboCur = iplist[i].venderID;
+				DlgAddDevice.m_CamRtspurl= iplist[i].Rtspurl;
+				DlgAddDevice.RTPComboCur= iplist[i].RTP;
+
+
 				if(DlgAddDevice.DoModal() == IDOK)
 				{
 					//修改定时录制计划
@@ -318,7 +327,9 @@ void CDLGdevicetree::OnMenuitemEdit()
 						DlgAddDevice.m_CamChannel,\
 						DlgAddDevice.m_CamUser,\
 						DlgAddDevice.m_CamPsw,\
-						DlgAddDevice.VenderComboCur);
+						DlgAddDevice.VenderComboCur,
+						DlgAddDevice.m_CamRtspurl,
+						DlgAddDevice.RTPComboCur);
 					
 					OnMenuitemUpdate();
 
@@ -348,7 +359,9 @@ void CDLGdevicetree::OnMenuitemEdit()
 									iplist[i].psw.GetBuffer(0),
 									j,
 									0,
-									iplist[i].venderID);
+									iplist[i].venderID,
+									iplist[i].Rtspurl.GetBuffer(0),
+									iplist[i].RTP);
 								
 								//恢复状态
 								if(beforedetect)
@@ -470,7 +483,9 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				iplist[ItemCount].psw.GetBuffer(0),
 				screenNo,
 				0,
-				iplist[ItemCount].venderID);
+				iplist[ItemCount].venderID,
+				iplist[ItemCount].Rtspurl.GetBuffer(0),
+				iplist[ItemCount].RTP);
 			
 		}
 	}

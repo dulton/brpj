@@ -190,6 +190,9 @@ protected:
 	///////////////////////////////////////////////////
 	WINDOWPLACEMENT m_OldWndPlacement; //用来保存原窗口位置 
 	CRect m_FullScreenRect; //表示全屏显示时的窗口位置
+
+	CRect m_winrect[MAX_DEVICE_NUM]; 
+	void WinSetRect(CWnd *p,CRect rt);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // private member for inter user
 private:

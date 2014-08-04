@@ -20,7 +20,8 @@ void CMyCamera::SDKInit()
 }
 
 bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,int channel,
-						  char *user,char *psw,HWND hWnd,int subtype)
+						  char *user,char *psw,HWND hWnd,int subtype,
+						  char *Rtspurl,int RTP)
 {
 	bool ret = false;
 	switch(venderID)
@@ -33,6 +34,7 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 				m_RealHandle[screenNo] = m_haikang.m_RealHandle[screenNo];
 			}
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
 			ret = m_dahua.StartPlay(screenNo,name, sip, nPort, channel, user, psw, hWnd, subtype);
 			if(ret)
@@ -41,6 +43,8 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 				m_RealHandle[screenNo] = m_dahua.m_RealHandle[screenNo];
 			}
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			ret = m_yaAn.StartPlay(screenNo,name, sip, channel, nPort, user, psw, hWnd, subtype);
 			if(ret)
@@ -49,7 +53,8 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 				m_RealHandle[screenNo] = m_yaAn.m_RealHandle[screenNo];
 			}
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			ret = m_yaAnNew.StartPlay(screenNo,name, sip, nPort, user, psw, hWnd, subtype);
 			if(ret)
@@ -71,13 +76,17 @@ void CMyCamera::StopPlay(int venderID,int screenNo)
 		case VENDER_TYPE_HAIKANG:
 			m_haikang.StopPlay(screenNo);
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
 			m_dahua.StopPlay(screenNo);
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			m_yaAn.StopPlay(screenNo);
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			m_yaAnNew.StopPlay(screenNo);
 			break;
@@ -96,13 +105,17 @@ void CMyCamera::Capture(int venderID,int screenNo,char *filename)
 		case VENDER_TYPE_HAIKANG:
 			m_haikang.Capture(screenNo,filename);
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
 			m_dahua.Capture(screenNo,filename);
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			m_yaAn.Capture(screenNo,filename);
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			m_yaAnNew.Capture(screenNo,filename);
 			break;
@@ -120,13 +133,17 @@ void CMyCamera::PtzControl(int venderID, int screenNo, int type, BOOL dwStop, in
 		case VENDER_TYPE_HAIKANG:
 			m_haikang.PtzControl(m_RealHandle[screenNo],type,dwStop,param);
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
 			m_dahua.PtzControl(m_LoginHandle[screenNo],type,dwStop,param);
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			m_yaAn.PtzControl(m_LoginHandle[screenNo],type,dwStop,param);
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			m_yaAnNew.PtzControl(m_LoginHandle[screenNo],type,dwStop,param);
 			break;
@@ -145,13 +162,17 @@ int CMyCamera::StartRecord(int venderID,int screenNo,char *filename)
 		case VENDER_TYPE_HAIKANG:
 			iRet = m_haikang.StartRecord(screenNo,filename);
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
 			iRet = m_dahua.StartRecord(screenNo,filename);
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			iRet = m_yaAn.StartRecord(screenNo,filename);
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			iRet = m_yaAnNew.StartRecord(screenNo,filename);
 			break;
@@ -169,13 +190,17 @@ void CMyCamera::StopRecord(int venderID,int screenNo)
 		case VENDER_TYPE_HAIKANG:
 			m_haikang.StopRecord(screenNo);
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
 			m_dahua.StopRecord(screenNo);
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			m_yaAn.StopRecord(screenNo);
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			m_yaAnNew.StopRecord(screenNo);
 			break;

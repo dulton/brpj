@@ -234,6 +234,7 @@
 #define IDC_EDIT_SPEED                  1040
 #define IDC_STATIC_PRINTF               1041
 #define IDC_COMBO1                      1042
+#define IDC_COMBO_RTP                   1042
 #define IDC_COMBO_STREAM                1043
 #define IDC_BUTTON5                     1044
 #define IDC_BUTTON_SPEED                1044
@@ -474,6 +475,12 @@
 #define IDC_STATIC_TIME                 1390
 #define IDC_STATIC_TOMCAT_DIR           1391
 #define IDC_STATIC_TOMCAT_URL           1392
+#define IDC_DISPLAY_PREVIEW             1393
+#define IDC_EDIT_RTSPURL                1394
+#define IDC_STATIC_CHANNEL              1395
+#define IDC_STATIC_PORT                 1396
+#define IDC_STATIC_RTP                  1397
+#define IDC_STATIC_RTSP                 1398
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -517,7 +524,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        351
 #define _APS_NEXT_COMMAND_VALUE         32819
-#define _APS_NEXT_CONTROL_VALUE         1393
+#define _APS_NEXT_CONTROL_VALUE         1399
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

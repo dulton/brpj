@@ -7,6 +7,10 @@
 #ifndef _DAHUA_SDK_
 #define _DAHUA_SDK_
 
+
+#if	OPEN_DAHUA_SDK
+
+
 #include <afx.h>
 
 /////////////////////////////////////////////////////////////////////////
@@ -102,22 +106,7 @@ public:
 
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif
 
 
 

@@ -18,6 +18,7 @@ static char THIS_FILE[] = __FILE__;
 
 CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGAddDevice::IDD, pParent)
+	, m_CamRtspurl(_T(""))
 {
 	//{{AFX_DATA_INIT(CDLGAddDevice)
 	m_CamIpAddr = _T("");
@@ -32,6 +33,8 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	AddAreaFlag = false;
 	VenderComboCur = 0;
 	m_CamChannel = 0;
+	m_CamRtspurl = _T("");
+	 RTPComboCur=0;
 	//}}AFX_DATA_INIT
 }
 
@@ -52,6 +55,8 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_CAM_PORT, m_CamPort);
 	DDX_Text(pDX, IDC_EDIT_CAM_CHANNEL, m_CamChannel);
 	//}}AFX_DATA_MAP
+	DDX_Text(pDX, IDC_EDIT_RTSPURL, m_CamRtspurl);
+	DDX_Control(pDX, IDC_COMBO_RTP, m_CamRTP);
 }
 
 
@@ -59,6 +64,7 @@ BEGIN_MESSAGE_MAP(CDLGAddDevice, CDialog)
 	//{{AFX_MSG_MAP(CDLGAddDevice)
 	ON_BN_CLICKED(IDC_BUTTON_ADDAREA, OnButtonAddarea)
 	//}}AFX_MSG_MAP
+	ON_CBN_CLOSEUP(IDC_COMBO_CAMVENDER, &CDLGAddDevice::OnCbnCloseupComboCamvender)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -82,7 +88,14 @@ BOOL CDLGAddDevice::OnInitDialog()
 	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_CAMVENDER);
 	comboctrl->SetCurSel(VenderComboCur);
 
+	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_RTP);
+	comboctrl->SetCurSel(RTPComboCur);
+
 	this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("");
+	
+	UpdateData(FALSE);
+
+	OnCbnCloseupComboCamvender();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -90,11 +103,12 @@ BOOL CDLGAddDevice::OnInitDialog()
 
 void CDLGAddDevice::OnOK() 
 {
+	UpdateData(TRUE);
 	// TODO: Add extra validation here
 	AreaComboCur = m_AreaComboCtrl.GetCurSel();
 	VenderComboCur = m_camVender.GetCurSel();
+	RTPComboCur = m_CamRTP.GetCurSel();
 
-	UpdateData(TRUE);
 	if(AddAreaFlag == false)
 	{
 		if(m_CamName.IsEmpty())
@@ -102,9 +116,14 @@ void CDLGAddDevice::OnOK()
 			MessageBox("摄像机名称不能为空",MESSAGEBOX_TITLE);
 			return;
 		}
-		if(m_CamIpAddr.IsEmpty())
+		if((VenderComboCur != VENDER_TYPE_STREAM) && m_CamIpAddr.IsEmpty())
 		{
 			MessageBox("IP地址不能为空",MESSAGEBOX_TITLE);
+			return;
+		}
+		if((VenderComboCur == VENDER_TYPE_STREAM) && m_CamRtspurl.IsEmpty())
+		{
+			MessageBox("流媒体地址不能为空",MESSAGEBOX_TITLE);
 			return;
 		}
 		if(m_CamUser.IsEmpty())
@@ -117,6 +136,30 @@ void CDLGAddDevice::OnOK()
 			MessageBox("密码不能为空",MESSAGEBOX_TITLE);
 			return;
 		}
+
+#if	(!OPEN_YAAN_NEW_SDK) 
+		if(VenderComboCur ==VENDER_TYPE_YAAN_NEW )
+		{
+			MessageBox("版本不支持 亚安新版 摄像头 ",MESSAGEBOX_TITLE);
+			return;
+		}
+#endif
+#if	(!OPEN_YAAN_SDK) 
+		if(VenderComboCur ==VENDER_TYPE_YAAN )
+		{
+			MessageBox("版本不支持 亚安 摄像头",MESSAGEBOX_TITLE);
+			return;
+		}
+#endif
+#if	(!OPEN_DAHUA_SDK) 
+		if(VenderComboCur ==VENDER_TYPE_DAHUA )
+		{
+			MessageBox("版本不支持 大华 摄像头",MESSAGEBOX_TITLE);
+			return;
+		}
+#endif
+
+
 	}
 	CDialog::OnOK();
 }
@@ -141,12 +184,42 @@ void CDLGAddDevice::OnButtonAddarea()
 			this->GetDlgItem(IDC_EDIT_CAM_NAME)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_CAM_IPADDR)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_CAM_PORT)->EnableWindow(0);
+			this->GetDlgItem(IDC_EDIT_CAM_CHANNEL)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_CAM_USER)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_CAM_PSW)->EnableWindow(0);
 			this->GetDlgItem(IDC_COMBO_CAMVENDER)->EnableWindow(0);
+			this->GetDlgItem(IDC_COMBO_RTP)->EnableWindow(0);
+			this->GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(0);
 			this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("请按确定，系统将为您新增一个区域");
 			AddAreaFlag = true;
 		}
 	}
 }
 
+
+void CDLGAddDevice::OnCbnCloseupComboCamvender()
+{
+	// TODO: Add your control notification handler code here
+
+	UpdateData(TRUE);
+	
+	if( m_camVender.GetCurSel() ==VENDER_TYPE_STREAM)
+	{
+		GetDlgItem(IDC_COMBO_RTP)->EnableWindow(1);
+		GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(1);
+
+		GetDlgItem(IDC_EDIT_CAM_IPADDR)->EnableWindow(0);
+		GetDlgItem(IDC_EDIT_CAM_PORT)->EnableWindow(0);
+		GetDlgItem(IDC_EDIT_CAM_CHANNEL)->EnableWindow(0);
+	}
+	else
+	{
+		GetDlgItem(IDC_COMBO_RTP)->EnableWindow(0);
+		GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(0);
+
+		GetDlgItem(IDC_EDIT_CAM_IPADDR)->EnableWindow(1);
+		GetDlgItem(IDC_EDIT_CAM_PORT)->EnableWindow(1);
+		GetDlgItem(IDC_EDIT_CAM_CHANNEL)->EnableWindow(1);
+	}
+
+}

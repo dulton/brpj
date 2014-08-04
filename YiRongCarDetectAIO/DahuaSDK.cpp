@@ -1,5 +1,8 @@
 
 #include "stdafx.h"
+
+#if	OPEN_DAHUA_SDK
+
 #include "DahuaSDK.h"
 //////////////////////////////////
 #include "CarDetect.h"
@@ -8,6 +11,8 @@
 #include "YiRongCarDetectAIODlg.h"
 extern CYiRongCarDetectAIODlg *DlgMain;
 
+#include "DLGSetSystem.h"
+extern CDLGSetSystem DlgSetSystem;
 
 //#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
 
@@ -231,14 +236,16 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channe
 			DlgMain->ShowCameraMessage(name,msg,0);
 		}
 
-#if DISPLAY_PREVIEW
-		//¿ªÆôÔ¤ÀÀ
-		m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID, hWnd, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
-#else
+		if(DlgSetSystem.m_display_preview)
+		{
+			//¿ªÆôÔ¤ÀÀ
+			m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID, hWnd, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
+		}
+		else
+		{	
+			m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID,(HWND)-1, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
+		}
 
-		m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID,(HWND)-1, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
-
-#endif
 		if (m_RealHandle[screenNo] == -1)
 		{
 			return false;
@@ -630,5 +637,7 @@ void CDahuaSDK::GetConnectError(char *name,int error,int flag)
 	}
 }
 
-
 //#endif
+
+
+#endif

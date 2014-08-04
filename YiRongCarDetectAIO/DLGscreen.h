@@ -33,6 +33,7 @@ enum DEVICE_VENDERID_ENUM
 	VENDER_TYPE_DAHUA=1, 
 	VENDER_TYPE_YAAN=2, 
 	VENDER_TYPE_YAAN_NEW=3, 
+	VENDER_TYPE_STREAM=4, 
 };
 */
 //设备信息
@@ -51,11 +52,13 @@ struct DEVICE_INFO
 	bool enableDetect;
 	long playHandle;
 	bool enableAlarm;
-	int  venderID;				//0---海康,1---大华
+	int  venderID;				//0---海康,1---大华  
 	CString recordPath;
 	CTime startTime;
 	bool planRecord;
 	long channel;
+	CString Rtspurl;
+	int RTP;
 };
 
 
@@ -142,7 +145,7 @@ public:
 
 	void SwitchMultiWnd(int nSplit);
 	bool StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
-		char *user,char *psw,int subtype,int screenNo,int venderID);
+		char *user,char *psw,int subtype,int screenNo,int venderID,char *Rtspurl,int RTP);
 	void StopPlay(int screenNo);
 	void Capture(char *filename);
 

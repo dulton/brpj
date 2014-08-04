@@ -10,6 +10,8 @@
 #include "YiRongCarDetectAIO.h"
 #include "YiRongCarDetectAIODlg.h"
 extern CYiRongCarDetectAIODlg *DlgMain;
+#include "DLGSetSystem.h"
+extern CDLGSetSystem DlgSetSystem;
 
 //#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
 
@@ -109,22 +111,26 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 			{
 				break;
 			}
-#if DISPLAY_PREVIEW
-			pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
-			if (!pWnd)
+			if(DlgSetSystem.m_display_preview)
 			{
-				return;
+				pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
+				if (!pWnd)
+				{
+					return;
+				}
+				if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
+				{
+					break;
+				}
 			}
-			if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
+			else
 			{
-				break;
+
+				if (!PlayM4_Play(lPort,NULL)) //播放开始
+				{
+					break;
+				}
 			}
-#else
-			if (!PlayM4_Play(lPort,NULL)) //播放开始
-			{
-				break;
-			}
-#endif
 		}
 	case NET_DVR_STREAMDATA:   //码流数据
 		if (dwBufSize > 0 && lPort != -1)

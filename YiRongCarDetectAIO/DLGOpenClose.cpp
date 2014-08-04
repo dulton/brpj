@@ -338,7 +338,9 @@ void CDLGOpenClose::OpenListPreview(void)
 											DlgMain->DlgDeviceTree.iplist[treeid].psw.GetBuffer(0),
 											m_winno,
 											0,
-											DlgMain->DlgDeviceTree.iplist[treeid].venderID);
+											DlgMain->DlgDeviceTree.iplist[treeid].venderID,
+											DlgMain->DlgDeviceTree.iplist[treeid].Rtspurl.GetBuffer(0),
+											DlgMain->DlgDeviceTree.iplist[treeid].RTP);
 					if(ret)
 					{
 						if(m_winno==DlgMain->DlgScreen.GetCurWindId())

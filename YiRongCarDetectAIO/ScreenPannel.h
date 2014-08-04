@@ -40,12 +40,12 @@ public:
 	int SetShowPlayWin(int nMain, int nSub=0);
 	CWnd * GetPage(int nIndex);
 
+	CPlayWnd m_wndVideo[MAX_DEVICE_NUM];
+	int nLastSplit;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // private member for inter user
 private:
 	
-	CPlayWnd m_wndVideo[16];
-	int nLastSplit;
 };
 
 

@@ -3,6 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#if OPEN_YAAN_SDK
+
 #include "YaAnSDK.h"
 //////////////////////////////////
 #include "CarDetect.h"
@@ -364,3 +367,5 @@ void CYaAnSDK::PtzStopPlay()
 		m_ptzLoginHandle = -1;
 	}
 }
+
+#endif

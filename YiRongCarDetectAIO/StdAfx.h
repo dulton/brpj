@@ -60,6 +60,11 @@ typedef enum _PTZ_Command
 //当前摄像头厂家
 #define ALLTAB_CAMERA_INC_TYPE CAMERA_INC_HAIKANG
 
+//摄像头开启
+#define OPEN_YAAN_NEW_SDK 0
+#define OPEN_YAAN_SDK 0
+#define OPEN_DAHUA_SDK 0
+
 //工程 使用ushow2的库
 /*************************************
 //发布指南，目前分5种
@@ -89,10 +94,8 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
-#define ALLTAB_CLIENT_MODE 1
+#define ALLTAB_CLIENT_MODE 0
 
-//开启预览显示  服务器 关闭=0 特有
-#define DISPLAY_PREVIEW 0
 
 //汽车模式 1 电动车模式 0
 //切换电动车和汽车。

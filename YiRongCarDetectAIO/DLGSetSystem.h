@@ -78,6 +78,8 @@ protected:
 	afx_msg void OnButtonTomcatDir();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	BOOL m_display_preview;
 };
 
 //{{AFX_INSERT_LOCATION}}

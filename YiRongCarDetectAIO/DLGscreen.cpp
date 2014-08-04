@@ -213,6 +213,8 @@ void CDLGscreen::GetCurWindCamInfo(int nCuWinID,struct DEVICE_INFO &Info)
 	Info.subtype = m_videoInfo[nCuWinID].subtype;
 	Info.user= m_videoInfo[nCuWinID].user;
 	Info.venderID = m_videoInfo[nCuWinID].venderID;
+	Info.Rtspurl = m_videoInfo[nCuWinID].Rtspurl;
+	Info.RTP = m_videoInfo[nCuWinID].RTP;
 }
 
 //开启/关闭车牌识别
@@ -274,7 +276,8 @@ void CDLGscreen::CarDetectSet(void)
 
 //开始播放
 bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
-						   char *user,char *psw,int screenNo,int subtype,int venderID)
+						   char *user,char *psw,int screenNo,int subtype,int venderID,
+						   char *Rtspurl,int RTP)
 {
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
 	if (!pWnd)
@@ -287,7 +290,7 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 		StopPlay(screenNo);
 	}
 
-	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, channel, user, psw, pWnd->m_hWnd, subtype);
+	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, channel, user, psw, pWnd->m_hWnd, subtype,Rtspurl,RTP);
 	if(ret)
 	{
 		m_videoInfo[screenNo].subtype = subtype;		//主码流
@@ -302,6 +305,8 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 		m_videoInfo[screenNo].camID = id;
 		m_videoInfo[screenNo].playHandle = m_video.m_RealHandle[screenNo];
 		m_videoInfo[screenNo].venderID = venderID;
+		m_videoInfo[screenNo].Rtspurl = Rtspurl;
+		m_videoInfo[screenNo].RTP = RTP;
 
 		DlgMain->DlgNormal.UpdateNormalWnd();
 	}

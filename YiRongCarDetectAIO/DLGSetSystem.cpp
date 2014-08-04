@@ -18,11 +18,13 @@ static char THIS_FILE[] = __FILE__;
 
 CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGSetSystem::IDD, pParent)
+	, m_display_preview(FALSE)
 {
 	//{{AFX_DATA_INIT(CDLGSetSystem)
 	m_check_alarmpic = TRUE;
 	m_check_alarmwav = FALSE;
 	m_check_ftp = FALSE;
+	m_display_preview=TRUE;
 	m_recordfull = 1;
 	m_path_alarmwav = _T("bj.wav");
 	m_path_capbmp = _T("D:\\YRCapturePic");
@@ -83,6 +85,7 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_TOMCAT_DIR, m_tomcat_dir);
 	DDX_Text(pDX, IDC_EDIT_TOMCAT_URL, m_tomcat_url);
 	//}}AFX_DATA_MAP
+	DDX_Check(pDX, IDC_DISPLAY_PREVIEW, m_display_preview);
 }
 
 
@@ -129,6 +132,10 @@ BOOL CDLGSetSystem::OnInitDialog()
 
 	m_check_savenet = TRUE;
 	GetDlgItem(IDC_CHECK_SAVENET)->ShowWindow(FALSE);
+
+	m_display_preview=TRUE;
+	GetDlgItem(IDC_DISPLAY_PREVIEW)->ShowWindow(FALSE);
+	
 #endif
 
 
@@ -345,6 +352,7 @@ void CDLGSetSystem::readini(char *path)
 
 	char	tomcat_dir[ZOG_MAX_PATH_STR] = "";
 	char	tomcat_url[ZOG_MAX_PATH_STR] = ""; 
+	int check_displaypreview;
 
 	////////////////////////////////////
 	if(GetPrivateProfileStruct("Alarm", "CheckPic", &check_alarmpic, sizeof(int), path))
@@ -398,11 +406,15 @@ void CDLGSetSystem::readini(char *path)
 	if(GetPrivateProfileString("TomCat", "Url", "", tomcat_url, ZOG_MAX_PATH_STR, path))
 		m_tomcat_url=tomcat_url;
 
+	if(GetPrivateProfileStruct("View", "CheckDisplayPreview", &check_displaypreview, sizeof(int), path))
+		m_display_preview=check_displaypreview;
+
 	CreateDirectory(m_path_capbmp, NULL);
 	CreateDirectory(m_path_detect, NULL);
 	CreateDirectory(m_path_record, NULL);
 
 #if ALLTAB_CLIENT_MODE
+	m_display_preview=TRUE;
 	m_check_savenet=TRUE;
 #endif
 
@@ -440,6 +452,9 @@ void CDLGSetSystem::writeini(char *path)
 
 	WritePrivateProfileString("TomCat", "Dir",  m_tomcat_dir.GetBuffer(0), path);
 	WritePrivateProfileString("TomCat", "Url",  m_tomcat_url.GetBuffer(0), path);
+
+	WritePrivateProfileStruct("View", "CheckDisplayPreview", &m_display_preview, sizeof(int), path);
+	
 }
 
 void CDLGSetSystem::OnButtonHaikangPath() 

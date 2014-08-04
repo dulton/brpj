@@ -48,11 +48,19 @@ END_MESSAGE_MAP()
 BOOL CPlayWnd::OnEraseBkgnd(CDC* pDC) 
 {
 	// TODO: Add your message handler code here and/or call default
+	
 	CRect rt;
 	GetClientRect(&rt);
 	CBrush br;
 	br.CreateSolidBrush(VIDEO_BACK_COLOR);
 	pDC->FillRect(&rt,&br);
+
+	//ÏÔÊ¾Ô¤ÀÀÉãÏñÍ·Ãû³Æ
+	if( DlgMain->DlgScreen.m_videoInfo[m_nWndID].isplay)
+	{
+		pDC->SetTextColor(RGB(0,0,255));
+		pDC->DrawText(DlgMain->DlgScreen.m_videoInfo[m_nWndID].name,rt,DT_SINGLELINE|DT_LEFT|DT_VCENTER); 
+	}
 
 	return TRUE;
 	//return CWnd::OnEraseBkgnd(pDC);

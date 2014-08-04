@@ -115,6 +115,7 @@ BOOL CDLGSetPTZ::OnInitDialog()
 																curCamInfo.psw.GetBuffer(0),\
 																m_video.m_hWnd);
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgScreen.m_video.m_dahua.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 																curCamInfo.port,\
@@ -123,6 +124,8 @@ BOOL CDLGSetPTZ::OnInitDialog()
 																curCamInfo.psw.GetBuffer(0),\
 																m_video.m_hWnd);
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			DlgMain->DlgScreen.m_video.m_yaAn.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 																curCamInfo.port,\
@@ -131,7 +134,8 @@ BOOL CDLGSetPTZ::OnInitDialog()
 																curCamInfo.psw.GetBuffer(0),\
 																m_video.m_hWnd);
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			DlgMain->DlgScreen.m_video.m_yaAnNew.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 				curCamInfo.port,\
@@ -322,13 +326,17 @@ void CDLGSetPTZ::OnDestroy()
 		case VENDER_TYPE_HAIKANG:		//海康
 			DlgMain->DlgScreen.m_video.m_haikang.PtzStopPlay();
 			break;
+#if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgScreen.m_video.m_dahua.PtzStopPlay();
 			break;
+#endif
+#if OPEN_YAAN_SDK
 		case VENDER_TYPE_YAAN:
 			DlgMain->DlgScreen.m_video.m_yaAn.PtzStopPlay();
 			break;
-#if YAAN_NEW_SDK
+#endif
+#if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			DlgMain->DlgScreen.m_video.m_yaAnNew.PtzStopPlay();
 			break;

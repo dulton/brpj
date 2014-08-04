@@ -15,6 +15,7 @@ enum DEVICE_VENDERID_ENUM
 	VENDER_TYPE_DAHUA=1, 
 	VENDER_TYPE_YAAN=2, 
 	VENDER_TYPE_YAAN_NEW=3, 
+	VENDER_TYPE_STREAM=4, 
 };
 
 
@@ -25,17 +26,23 @@ public:
 	virtual ~CMyCamera();
 	long m_RealHandle[MAX_DEVICE_NUM];
 
+#if	OPEN_DAHUA_SDK
 	CDahuaSDK     m_dahua;
-	CHaikangSDK   m_haikang;
-	CYaAnSDK	  m_yaAn;
+#endif
 
-#if YAAN_NEW_SDK
+	CHaikangSDK   m_haikang;
+
+#if OPEN_YAAN_SDK
+	CYaAnSDK	  m_yaAn;
+#endif
+
+#if OPEN_YAAN_NEW_SDK
 	CYaAnSDKNew	  m_yaAnNew;
 #endif
 
 	void SDKInit();
 	bool StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,int channel,
-					char *user,char *psw,HWND hWnd,int subtype);
+					char *user,char *psw,HWND hWnd,int subtype,char *Rtspurl,int RTP);
 	void StopPlay(int venderID,int screenNo);
 	void Capture(int venderID,int screenNo,char *filename);
 	void PtzControl(int venderID, int screenNo, int type, BOOL dwStop, int param);

@@ -61,6 +61,9 @@ void CScreenPannel::OnPaint()
 
 	// TODO: Add your message handler code here
 	UpdateWnd();
+
+
+
 	// Do not call CWnd::OnPaint() for painting messages
 }
 
@@ -74,6 +77,7 @@ BOOL CScreenPannel::OnEraseBkgnd(CDC* pDC)
 	pDC->FillRect(&rt,&br);
 
 	return TRUE;
+	
 	return CWnd::OnEraseBkgnd(pDC);
 }
 
@@ -83,7 +87,7 @@ int CScreenPannel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	// TODO: Add your specialized creation code here
-	for(int i = 0; i < 16; i++)
+	for(int i = 0; i < MAX_DEVICE_NUM; i++)
 	{
 		m_wndVideo[i].Create(
 			NULL, 
@@ -107,7 +111,7 @@ int CScreenPannel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 int CScreenPannel::SetShowPlayWin(int nMain, int nSub)
 {
-	if (nSub < 0 || nSub > 16)
+	if (nSub < 0 || nSub > MAX_DEVICE_NUM)
 	{
 		nSub = 0;
 	}
@@ -242,15 +246,15 @@ void CScreenPannel::OnDestroy()
 	CWnd::OnDestroy();
 	
 	// TODO: Add your message handler code here
-	for(int i=0; i < 16; i++)
+	for(int i=0; i < MAX_DEVICE_NUM; i++)
 	{
-		m_wndVideo[0].DestroyWindow();
+		m_wndVideo[i].DestroyWindow();
 	}
 }
 
 CWnd * CScreenPannel::GetPage(int nIndex)
 {
-	if (nIndex >= 0 && nIndex < 16)
+	if (nIndex >= 0 && nIndex < MAX_DEVICE_NUM)
 	{
 		return &m_wndVideo[nIndex];
 	}

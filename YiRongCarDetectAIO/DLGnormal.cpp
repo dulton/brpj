@@ -683,7 +683,9 @@ void CDLGnormal::StartPlay(int screenNo)
 							CameraInfo.psw.GetBuffer(0),
 							screenNo,
 							m_stream,
-							CameraInfo.venderID);
+							CameraInfo.venderID,
+							CameraInfo.Rtspurl.GetBuffer(0),
+							CameraInfo.RTP);
 		if(ret)
 		{
 			if(screenNo==DlgMain->DlgScreen.GetCurWindId())
