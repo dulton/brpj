@@ -24,6 +24,10 @@ IO::~IO(void)
 #if YRVM_PINGTAI_MODE
 	YRVM_DisConnectionOracleDB();
 #endif
+
+	#if IVMS_ORACLE_DEVICETREE
+	IVMS_DisConnectionOracleDB();
+#endif
 }
 
 //断开与oracle数据库的连接
@@ -259,7 +263,7 @@ bool IO::DEVICE_DeleteArea(int areaID)
 
 
 bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,
-							 CString user,CString password,long venderID,CString Rtspurl,int RTP)
+							 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag)
 {
 	try
 	{
@@ -295,6 +299,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 			
 			m_pRecordsetPtr->PutCollect("rtspurl", _variant_t(Rtspurl));
 			m_pRecordsetPtr->PutCollect("rtpmode", _variant_t((long)RTP));
+			m_pRecordsetPtr->PutCollect("decodetag", _variant_t((long)DecodeTag));
 
 
 			m_pRecordsetPtr->Update();
@@ -351,13 +356,15 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 
 			variant_t rtspurl = m_pRecordsetPtr->GetCollect("rtspurl");//20140718
 			variant_t RTP = m_pRecordsetPtr->GetCollect("rtpmode");//20140718
-			
+			variant_t decodetag = m_pRecordsetPtr->GetCollect("decodetag");//20140718
+
 			IPLIST CameraInfo;
 			CameraInfo.area = AreaName;
 			CameraInfo.camID = ncamera;
 			CameraInfo.venderID = venderID;
 			CameraInfo.channel = channel;//20140718
 			CameraInfo.RTP = RTP;
+			CameraInfo.DecodeTag = decodetag;
 
 			if(sip.vt != NULL && sip !=temp)
 			{
@@ -457,7 +464,7 @@ bool IO::DEVICE_DeleteCameraWithAreaID(int AreaID)
 }
 
 bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,
-								 CString user,CString password,long venderID,CString Rtspurl,int RTP)
+								 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag)
 {
 	try
 	{
@@ -472,8 +479,8 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		long nid = a;
 		strSql.Format(_T("update tb_device set scameraname='%s',\
 						sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
-						nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d where ncamera=%d"), 
-						CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,CamID);
+						nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d,decodetag=%d where ncamera=%d"), 
+						CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,DecodeTag,CamID);
 		
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -4610,5 +4617,76 @@ bool IO::YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSiz
 	}  
 }
 
+
+#endif
+
+
+#if IVMS_ORACLE_DEVICETREE
+
+//断开与oracle数据库的连接
+bool IO::IVMS_DisConnectionOracleDB(void)
+{
+	try
+	{
+		if(IVMS_pConnection->State)
+		{
+			IVMS_pConnection->Close();
+			IVMS_state=false;
+			return true;
+		}
+	}
+	catch(_com_error e)        //捕捉异常
+	{
+		CString temp;
+		temp.Format(_T("错误信息:%s"),e.ErrorMessage());
+		//MessageBox(temp, _T("数据库断开连接失败信息提示"));
+		return false;
+	}	
+	
+	return false;
+}
+
+//连接数据库
+int IO::IVMS_ConnectionOracleDBTXT(char*  FileName)
+{
+	//ReadConfigTxt pConfig;
+	if(!ReadFile(FileName))
+	{
+		return ReadFile_FAIL;
+	}
+	
+	CString CstrConn;
+	
+	CstrConn.Format(_T("Provider=OraOLEDB.Oracle.1;User ID=%s;Password=%s;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)));Persist Security Info=False"),\
+		User, Psw, Ip, Port, DataBaseName);
+	
+	HRESULT hr;
+	if(SUCCEEDED(IVMS_pConnection.CreateInstance("ADODB.Connection")))
+	{
+		_bstr_t strConnect = _bstr_t(CstrConn);
+		
+		IVMS_pConnection->ConnectionTimeout = 30;
+		
+		try
+		{
+			hr = IVMS_pConnection->Open(strConnect,"","",adModeUnknown);
+		}
+		catch(_com_error e)
+		{
+			//CString temp;			
+			//temp.Format(_T("Error:%s"),e.ErrorMessage());  
+			//AfxMessageBox(temp);  
+			return ContOpen_FAIL;
+		}
+		
+		IVMS_state=true;
+		return Connectd_DONE;
+	}
+	else
+	{
+		//AfxMessageBox("Create ADODB Connection Instance Failed.");
+		return Instance_FAIL;
+	}
+}
 
 #endif

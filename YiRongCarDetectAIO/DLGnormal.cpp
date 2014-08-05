@@ -669,7 +669,7 @@ void CDLGnormal::StartPlay(int screenNo)
 {
 	struct DEVICE_INFO CameraInfo;
 	DlgMain->DlgScreen.GetCurWindCamInfo(screenNo,CameraInfo);
-	if(!(CameraInfo.ip.IsEmpty()))
+	if((!CameraInfo.ip.IsEmpty()) || (!CameraInfo.Rtspurl.IsEmpty()) )
 	{
 		bool ret = false;
 		ret = DlgMain->DlgScreen.StartPlay(
@@ -685,7 +685,8 @@ void CDLGnormal::StartPlay(int screenNo)
 							m_stream,
 							CameraInfo.venderID,
 							CameraInfo.Rtspurl.GetBuffer(0),
-							CameraInfo.RTP);
+							CameraInfo.RTP,
+							CameraInfo.DecodeTag);
 		if(ret)
 		{
 			if(screenNo==DlgMain->DlgScreen.GetCurWindId())

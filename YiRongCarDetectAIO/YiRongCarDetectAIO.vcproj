@@ -319,6 +319,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DLGAddIVMSdevice.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DLGAnalyseFlowrate.cpp"
 				>
 				<FileConfiguration
@@ -913,6 +917,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\StreamClientSDK.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\URLencode.cpp"
 				>
 			</File>
@@ -1050,6 +1058,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DLGAddIVMSdevice.h"
+				>
+			</File>
+			<File
 				RelativePath="DLGAnalyseFlowrate.h"
 				>
 			</File>
@@ -1175,6 +1187,10 @@
 			</File>
 			<File
 				RelativePath="StdAfx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StreamClientSDK.h"
 				>
 			</File>
 			<File

@@ -614,6 +614,12 @@ void CYiRongCarDetectAIODlg::OnCancel()
 #if YRVM_PINGTAI_MODE
 	OracleIO.YRVM_DisConnectionOracleDB();
 #endif
+
+#if IVMS_ORACLE_DEVICETREE
+	OracleIO.IVMS_DisConnectionOracleDB();
+#endif
+
+
 	Sleep(200);
 	////////////////lynn/////////////////
 

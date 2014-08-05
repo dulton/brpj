@@ -16,13 +16,7 @@
 
 #include "CarDetect.h"
 
-/*
-#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
-#include "DahuaSDK.h"
-#else if(ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
-#include "HaiKangSDK.h"
-#endif
-*/
+
 #include "myCamera.h"
 
 /*
@@ -57,8 +51,10 @@ struct DEVICE_INFO
 	CTime startTime;
 	bool planRecord;
 	long channel;
+	//国标流媒体
 	CString Rtspurl;
 	int RTP;
+	int DecodeTag;
 };
 
 
@@ -95,13 +91,6 @@ public:
 	CCarDetect	CarDetect[MAX_DEVICE_NUM];
 #endif
 
-/*
-#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
-	CDahuaSDK     m_video;
-#else if(ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
-	CHaikangSDK   m_video;
-#endif
-*/
 	CMyCamera   m_video;
 	UINT  m_recordtimer;
 
@@ -145,7 +134,7 @@ public:
 
 	void SwitchMultiWnd(int nSplit);
 	bool StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
-		char *user,char *psw,int subtype,int screenNo,int venderID,char *Rtspurl,int RTP);
+		char *user,char *psw,int subtype,int screenNo,int venderID,char *Rtspurl,int RTP,int DecodeTag);
 	void StopPlay(int screenNo);
 	void Capture(char *filename);
 

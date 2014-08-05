@@ -34,7 +34,8 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	VenderComboCur = 0;
 	m_CamChannel = 0;
 	m_CamRtspurl = _T("");
-	 RTPComboCur=0;
+	RTPComboCur=0;
+	DecodeTagComboCur=0;
 	//}}AFX_DATA_INIT
 }
 
@@ -57,6 +58,7 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 	DDX_Text(pDX, IDC_EDIT_RTSPURL, m_CamRtspurl);
 	DDX_Control(pDX, IDC_COMBO_RTP, m_CamRTP);
+	DDX_Control(pDX, IDC_COMBO_DECODETAG, m_CamDecodetag);
 }
 
 
@@ -91,6 +93,10 @@ BOOL CDLGAddDevice::OnInitDialog()
 	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_RTP);
 	comboctrl->SetCurSel(RTPComboCur);
 
+	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_DECODETAG);
+	comboctrl->SetCurSel(DecodeTagComboCur);
+
+
 	this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("");
 	
 	UpdateData(FALSE);
@@ -108,6 +114,7 @@ void CDLGAddDevice::OnOK()
 	AreaComboCur = m_AreaComboCtrl.GetCurSel();
 	VenderComboCur = m_camVender.GetCurSel();
 	RTPComboCur = m_CamRTP.GetCurSel();
+	DecodeTagComboCur=m_CamDecodetag.GetCurSel();
 
 	if(AddAreaFlag == false)
 	{
@@ -158,6 +165,23 @@ void CDLGAddDevice::OnOK()
 			return;
 		}
 #endif
+#if	(!OPEN_HAIKANG_SDK) 
+		if(VenderComboCur ==VENDER_TYPE_HAIKANG )
+		{
+			MessageBox("版本不支持 海康 摄像头",MESSAGEBOX_TITLE);
+			return;
+		}
+#endif
+
+	
+#if	(!OPEN_STREAM_CLIENT_SDK) 
+		if(VenderComboCur ==VENDER_TYPE_STREAM )
+		{
+			MessageBox("版本不支持 流媒体",MESSAGEBOX_TITLE);
+			return;
+		}
+#endif
+
 
 
 	}
@@ -190,6 +214,7 @@ void CDLGAddDevice::OnButtonAddarea()
 			this->GetDlgItem(IDC_COMBO_CAMVENDER)->EnableWindow(0);
 			this->GetDlgItem(IDC_COMBO_RTP)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(0);
+			this->GetDlgItem(IDC_COMBO_DECODETAG)->EnableWindow(0);
 			this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("请按确定，系统将为您新增一个区域");
 			AddAreaFlag = true;
 		}
@@ -207,6 +232,7 @@ void CDLGAddDevice::OnCbnCloseupComboCamvender()
 	{
 		GetDlgItem(IDC_COMBO_RTP)->EnableWindow(1);
 		GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(1);
+		GetDlgItem(IDC_COMBO_DECODETAG)->EnableWindow(1);
 
 		GetDlgItem(IDC_EDIT_CAM_IPADDR)->EnableWindow(0);
 		GetDlgItem(IDC_EDIT_CAM_PORT)->EnableWindow(0);
@@ -216,6 +242,7 @@ void CDLGAddDevice::OnCbnCloseupComboCamvender()
 	{
 		GetDlgItem(IDC_COMBO_RTP)->EnableWindow(0);
 		GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(0);
+		GetDlgItem(IDC_COMBO_DECODETAG)->EnableWindow(0);
 
 		GetDlgItem(IDC_EDIT_CAM_IPADDR)->EnableWindow(1);
 		GetDlgItem(IDC_EDIT_CAM_PORT)->EnableWindow(1);

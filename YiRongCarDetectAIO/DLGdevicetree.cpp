@@ -53,6 +53,7 @@ BEGIN_MESSAGE_MAP(CDLGdevicetree, CDialog)
 	ON_COMMAND(ID_MENUITEM_DELETEAREA, OnMenuitemDeletearea)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_DEVICE, OnDblclkTreeDevice)
 	//}}AFX_MSG_MAP
+	ON_COMMAND(ID_MENUITEM_ADDIVMSDEVICE, &CDLGdevicetree::OnMenuitemAddivmsdevice)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -204,7 +205,8 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				DlgAddDevice.m_CamPsw,
 				DlgAddDevice.VenderComboCur,
 				DlgAddDevice.m_CamRtspurl,
-				DlgAddDevice.RTPComboCur);
+				DlgAddDevice.RTPComboCur,
+				DlgAddDevice.DecodeTagComboCur);
 		}
 		OnMenuitemUpdate();
 	}
@@ -250,6 +252,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].venderID = CameraList[j].venderID;
 			iplist[iptotal].Rtspurl= CameraList[j].Rtspurl;
 			iplist[iptotal].RTP= CameraList[j].RTP;
+			iplist[iptotal].DecodeTag= CameraList[j].DecodeTag;
 	
 			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,hItem);		//添加设备节点
 			iplist[iptotal].item = childItem;
@@ -308,7 +311,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.VenderComboCur = iplist[i].venderID;
 				DlgAddDevice.m_CamRtspurl= iplist[i].Rtspurl;
 				DlgAddDevice.RTPComboCur= iplist[i].RTP;
-
+				DlgAddDevice.DecodeTagComboCur= iplist[i].DecodeTag;
 
 				if(DlgAddDevice.DoModal() == IDOK)
 				{
@@ -329,7 +332,8 @@ void CDLGdevicetree::OnMenuitemEdit()
 						DlgAddDevice.m_CamPsw,\
 						DlgAddDevice.VenderComboCur,
 						DlgAddDevice.m_CamRtspurl,
-						DlgAddDevice.RTPComboCur);
+						DlgAddDevice.RTPComboCur,
+						DlgAddDevice.DecodeTagComboCur);
 					
 					OnMenuitemUpdate();
 
@@ -361,7 +365,8 @@ void CDLGdevicetree::OnMenuitemEdit()
 									0,
 									iplist[i].venderID,
 									iplist[i].Rtspurl.GetBuffer(0),
-									iplist[i].RTP);
+									iplist[i].RTP,
+									iplist[i].DecodeTag);
 								
 								//恢复状态
 								if(beforedetect)
@@ -485,10 +490,16 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				0,
 				iplist[ItemCount].venderID,
 				iplist[ItemCount].Rtspurl.GetBuffer(0),
-				iplist[ItemCount].RTP);
+				iplist[ItemCount].RTP,
+				iplist[ItemCount].DecodeTag);
 			
 		}
 	}
 
 	(*pResult) = 0;
+}
+
+void CDLGdevicetree::OnMenuitemAddivmsdevice()
+{
+	// TODO: Add your command handler code here
 }

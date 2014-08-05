@@ -22,7 +22,7 @@ public:
 	bool AddAreaFlag;
 	int  VenderComboCur;
 	int RTPComboCur;
-
+	int DecodeTagComboCur;
 public:
 	CDLGAddDevice(CWnd* pParent = NULL);   // standard constructor
 
@@ -42,6 +42,7 @@ public:
 
 	CString m_CamRtspurl;
 	CComboBox m_CamRTP;
+	CComboBox m_CamDecodetag;
 	//}}AFX_DATA
 
 
@@ -65,6 +66,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnCbnCloseupComboCamvender();
+
 };
 
 //{{AFX_INSERT_LOCATION}}

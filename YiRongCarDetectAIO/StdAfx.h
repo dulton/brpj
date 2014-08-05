@@ -52,18 +52,19 @@ typedef enum _PTZ_Command
 	PTZ_CONTROL_AUTO = 18,							// 自动
 } PTZ_Command;
 
-//摄像机厂商定义
-#define CAMERA_INC_DAHUA 1
-#define CAMERA_INC_HAIKANG 2
-#define CAMERA_INC_YAAN 3
 
-//当前摄像头厂家
-#define ALLTAB_CAMERA_INC_TYPE CAMERA_INC_HAIKANG
 
 //摄像头开启
 #define OPEN_YAAN_NEW_SDK 0
 #define OPEN_YAAN_SDK 0
-#define OPEN_DAHUA_SDK 0
+#define OPEN_DAHUA_SDK 1
+#define OPEN_HAIKANG_SDK 1
+
+#define OPEN_STREAM_CLIENT_SDK 1
+
+//当 SystemTransform.dll 冲突 使用StreamClientSDK的覆盖HAIKANSDK的
+
+
 
 //工程 使用ushow2的库
 /*************************************
@@ -112,6 +113,8 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 
 //结果输出到YRVM平台 模式 =1  单机版=0 
 #define YRVM_PINGTAI_MODE	0
+//海康 市局设备树
+#define IVMS_ORACLE_DEVICETREE 1
 
 //结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
 #define YRVM_PINGTAI_ELECAR_MIX_MODE	0

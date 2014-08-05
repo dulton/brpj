@@ -107,6 +107,7 @@ BOOL CDLGSetPTZ::OnInitDialog()
 	GetDlgItem(IDC_STATIC_IP)->SetWindowText(curCamInfo.ip);
 	switch(curCamInfo.venderID)
 	{
+#if OPEN_HAIKANG_SDK
 		case VENDER_TYPE_HAIKANG:		//海康
 			DlgMain->DlgScreen.m_video.m_haikang.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 																curCamInfo.port,\
@@ -115,6 +116,7 @@ BOOL CDLGSetPTZ::OnInitDialog()
 																curCamInfo.psw.GetBuffer(0),\
 																m_video.m_hWnd);
 			break;
+#endif
 #if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgScreen.m_video.m_dahua.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
@@ -139,6 +141,17 @@ BOOL CDLGSetPTZ::OnInitDialog()
 		case VENDER_TYPE_YAAN_NEW:
 			DlgMain->DlgScreen.m_video.m_yaAnNew.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
 				curCamInfo.port,\
+				curCamInfo.user.GetBuffer(0),\
+				curCamInfo.psw.GetBuffer(0),\
+				m_video.m_hWnd);
+			break;
+#endif
+
+#if OPEN_STREAM_CLIENT_SDK
+	case VENDER_TYPE_STREAM:
+			DlgMain->DlgScreen.m_video.m_StreamClient.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
+				curCamInfo.port,\
+				curCamInfo.channel,\
 				curCamInfo.user.GetBuffer(0),\
 				curCamInfo.psw.GetBuffer(0),\
 				m_video.m_hWnd);
@@ -323,9 +336,11 @@ void CDLGSetPTZ::OnDestroy()
 	// TODO: Add your message handler code here
 	switch(curCamInfo.venderID)
 	{
+#if OPEN_HAIKANG_SDK
 		case VENDER_TYPE_HAIKANG:		//海康
 			DlgMain->DlgScreen.m_video.m_haikang.PtzStopPlay();
 			break;
+#endif
 #if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgScreen.m_video.m_dahua.PtzStopPlay();
@@ -339,6 +354,11 @@ void CDLGSetPTZ::OnDestroy()
 #if OPEN_YAAN_NEW_SDK
 		case VENDER_TYPE_YAAN_NEW:
 			DlgMain->DlgScreen.m_video.m_yaAnNew.PtzStopPlay();
+			break;
+#endif
+#if OPEN_STREAM_CLIENT_SDK
+		case VENDER_TYPE_STREAM:
+			DlgMain->DlgScreen.m_video.m_StreamClient.PtzStopPlay();
 			break;
 #endif
 		default:

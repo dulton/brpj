@@ -151,6 +151,41 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 		//MessageBox("连接数据库成功");
 	}
 #endif
+
+#if IVMS_ORACLE_DEVICETREE
+	OracleError = OracleIO.IVMS_ConnectionOracleDBTXT("IVMSDataBaseConfig.txt");
+	if(OracleError == ReadFile_FAIL)
+	{
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt="IVMS连接数据库";					//窗口标题
+		dlgw.m_warntxt="IVMS读数据库配置文件失败";	//窗口内容
+		dlgw.DoModal();
+		
+		return FALSE;
+	}
+	else if(OracleError == Instance_FAIL)
+	{
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt="IVMS连接数据库";					//窗口标题
+		dlgw.m_warntxt="IVMS数据库ADO初始化失败";	//窗口内容
+		dlgw.DoModal();
+		
+		return FALSE;
+	}
+	else if(OracleError == ContOpen_FAIL)
+	{
+		CDLGWarnning dlgw;
+		dlgw.m_wintxt="IVMS连接数据库";					//窗口标题
+		dlgw.m_warntxt="IVMS数据库无法连接:账号密码IP异常 或文件夹带()";	//窗口内容
+		dlgw.DoModal();
+
+		return FALSE;
+	}
+	else if(OracleError == Connectd_DONE)
+	{
+		//MessageBox("连接数据库成功");
+	}
+#endif
 	////////////////lynn/////////////////
 
 	LPWSTR *szArglist = NULL;  

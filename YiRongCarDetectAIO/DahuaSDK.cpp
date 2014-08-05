@@ -14,7 +14,7 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
-//#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_DAHUA)
+
 
 #include"dahuaSDK/dhnetsdk.h"
 #pragma comment( lib, "dahuaSDK/dhnetsdk.lib")

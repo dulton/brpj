@@ -84,11 +84,30 @@ BOOL CDLGhelp::OnInitDialog()
 	if(OPEN_VS2008_POCO_FTP)
 		modeflag+="FTP ";
 
-	if(OPEN_TOMCAT_MODE)
-		modeflag+="TOMCAT共享 ";
-	else
-		modeflag+="数据库共享 ";
+	if(IVMS_ORACLE_DEVICETREE)
+		modeflag+="同步平台树 ";
 
+	if(OPEN_TOMCAT_MODE)
+		modeflag+="TOMCAT共享 \n";
+	else
+		modeflag+="数据库共享 \n";
+
+	if(OPEN_YAAN_NEW_SDK)
+		modeflag+="支持亚安新版 ";
+
+	if(OPEN_YAAN_SDK)
+		modeflag+="支持亚安 ";
+
+	if(OPEN_DAHUA_SDK)
+		modeflag+="支持大华 ";
+
+	if(OPEN_HAIKANG_SDK)
+		modeflag+="支持海康 ";
+
+	if(OPEN_STREAM_CLIENT_SDK)
+		modeflag+="支持流媒体 ";
+
+	
 
 	CString str;
 	str.Format("%s\n构建时间:%s",modeflag.GetBuffer(0),__DATE__);

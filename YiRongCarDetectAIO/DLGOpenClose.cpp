@@ -340,7 +340,8 @@ void CDLGOpenClose::OpenListPreview(void)
 											0,
 											DlgMain->DlgDeviceTree.iplist[treeid].venderID,
 											DlgMain->DlgDeviceTree.iplist[treeid].Rtspurl.GetBuffer(0),
-											DlgMain->DlgDeviceTree.iplist[treeid].RTP);
+											DlgMain->DlgDeviceTree.iplist[treeid].RTP,
+											DlgMain->DlgDeviceTree.iplist[treeid].DecodeTag);
 					if(ret)
 					{
 						if(m_winno==DlgMain->DlgScreen.GetCurWindId())

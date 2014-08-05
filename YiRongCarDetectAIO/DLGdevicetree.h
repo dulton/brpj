@@ -60,6 +60,8 @@ protected:
 	afx_msg void OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnMenuitemAddivmsdevice();
 };
 
 //{{AFX_INSERT_LOCATION}}

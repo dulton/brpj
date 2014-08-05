@@ -1,5 +1,8 @@
 
 #include "stdafx.h"
+
+#if OPEN_HAIKANG_SDK
+
 #include "HaikangSDK.h"
 
 //////////////////////////////////
@@ -13,7 +16,7 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
-//#if (ALLTAB_CAMERA_INC_TYPE == CAMERA_INC_HAIKANG)
+
 
 #include "haikangSDK/HCNetSDK.h"
 #include "haikangSDK/plaympeg4.h"
@@ -132,6 +135,7 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 				}
 			}
 		}
+		break;
 	case NET_DVR_STREAMDATA:   //ÂëÁ÷Êý¾Ý
 		if (dwBufSize > 0 && lPort != -1)
 		{
@@ -140,6 +144,7 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 				break;
 			} 
 		}
+		break;
 	}
 }
 
@@ -440,3 +445,5 @@ int CHaikangSDK::StopRecord(int screenNo)
 }
 
 //#endif
+
+#endif

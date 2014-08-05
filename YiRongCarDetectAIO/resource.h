@@ -189,6 +189,7 @@
 #define IDD_VIDEO_DETECT                347
 #define IDB_LOGO_ELECAR                 349
 #define IDD_HELP                        350
+#define IDD_ADD_IVMS_DEVICE             351
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
@@ -236,9 +237,13 @@
 #define IDC_COMBO1                      1042
 #define IDC_COMBO_RTP                   1042
 #define IDC_COMBO_STREAM                1043
+#define IDC_COMBO5                      1043
 #define IDC_BUTTON5                     1044
 #define IDC_BUTTON_SPEED                1044
+#define IDC_COMBO6                      1044
 #define IDC_BUTTON6                     1045
+#define IDC_COMBO7                      1045
+#define IDC_COMBO_RTP2                  1046
 #define IDC_BUTTON8                     1047
 #define IDC_BUTTON9                     1048
 #define IDC_BUTTON10                    1049
@@ -423,6 +428,7 @@
 #define IDC_COMBO_SCREEN                1327
 #define IDC_COMBO_WINNO                 1328
 #define IDC_COMBO2                      1329
+#define IDC_COMBO_DECODETAG             1329
 #define IDC_COMBO3                      1330
 #define IDC_COMBO_PLATETYPE             1331
 #define IDC_COMBO_ENDWEEK               1332
@@ -517,13 +523,15 @@
 #define ID_MENUITEM_ADDDEVICE           32812
 #define ID_MENUITEM_DELETEAREA          32816
 #define ID_MENUITEM_VIDEODETECT         32818
+#define ID__32819                       32819
+#define ID_MENUITEM_ADDIVMSDEVICE       32820
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        351
-#define _APS_NEXT_COMMAND_VALUE         32819
+#define _APS_NEXT_RESOURCE_VALUE        353
+#define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1399
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
