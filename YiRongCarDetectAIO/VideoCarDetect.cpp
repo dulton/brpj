@@ -379,6 +379,43 @@ bool CVideoCarDetect::ErrorPlateName(char *name)
 	else if(NULL!=strchr(name,'|'))
 		return true;
 	
+#if (!ALLTAB_DETECT_CAR_MODE)
+
+	char *p=&(name[strlen(name)-5]);
+
+	//5个符号相同 不是电动车
+	int j=p[0];
+
+	if(j==p[1] && 
+		j==p[2] && 
+		j==p[3] && 
+		j==p[4] )
+		return true;
+
+	//字母超过1个。不是电动车
+	j=0;
+	for(int i=0;i<5;i++)
+	{
+		if('A'<= p[i] && p[i] <='Z')
+			j++;
+	}
+
+	if(j>1)
+		true;
+	
+	//字母在中间3个。不是电动车
+	j=0;
+	for(int i=1;i<4;i++)
+	{
+		if('A'<= p[i] && p[i] <='Z')
+			j++;
+	}
+
+	if(j>0)
+		true;
+
+#endif
+
 	return false;
 }
 

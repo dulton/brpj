@@ -214,7 +214,7 @@ void CDahuaSDK::SDKInit()
 	CLIENT_Init(DisConnectFunc, 0);
 	CLIENT_SetSubconnCallBack(SubDisConnectFunc, 0);
 	CLIENT_SetAutoReconnect(AutoConnectFunc,0);
-	CLIENT_SetConnectTime(10000, 100);
+	CLIENT_SetConnectTime(10000, 10);
 }
 
 bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd,int subtype)

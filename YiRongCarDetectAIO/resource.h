@@ -193,6 +193,7 @@
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
+#define IDC_BUTTON_FIND                 1001
 #define IDC_LIST_CAR                    1002
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_BUTTON2                     1004
@@ -236,14 +237,14 @@
 #define IDC_STATIC_PRINTF               1041
 #define IDC_COMBO1                      1042
 #define IDC_COMBO_RTP                   1042
+#define IDC_COMBO_ROOT                  1042
 #define IDC_COMBO_STREAM                1043
-#define IDC_COMBO5                      1043
+#define IDC_COMBO_UNIT                  1043
 #define IDC_BUTTON5                     1044
 #define IDC_BUTTON_SPEED                1044
-#define IDC_COMBO6                      1044
+#define IDC_COMBO_REGION                1044
 #define IDC_BUTTON6                     1045
 #define IDC_COMBO7                      1045
-#define IDC_COMBO_RTP2                  1046
 #define IDC_BUTTON8                     1047
 #define IDC_BUTTON9                     1048
 #define IDC_BUTTON10                    1049
@@ -487,6 +488,7 @@
 #define IDC_STATIC_PORT                 1396
 #define IDC_STATIC_RTP                  1397
 #define IDC_STATIC_RTSP                 1398
+#define IDC_EDIT_FIND                   1399
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -532,7 +534,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1399
+#define _APS_NEXT_CONTROL_VALUE         1400
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

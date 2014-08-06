@@ -6,11 +6,12 @@
 #endif // _MSC_VER > 1000
 // CDLGHistoryReport.h : header file
 //
+#include "IO.h"
 #include <vector>
 #include <list>
 using namespace::std;
 
-#include "IO.h"
+
 
 #define HISTORY_REPORT_PAGE_MAX_NUM 40
 

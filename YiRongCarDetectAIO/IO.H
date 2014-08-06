@@ -213,6 +213,94 @@ struct BLACK_DATA_ST
 	char other[1024];	//其他信息
 };
 
+
+#if IVMS_ORACLE_DEVICETREE
+
+//根节点 和区县市 适用
+struct CONTROL_UNIT_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	//父ID
+	unsigned long int ParentId;
+	TCHAR name[260];
+	long comboxi;
+};
+//区域 派出所
+struct REGION_INFO_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	//父ID
+	unsigned long int ControlUnitId;
+	TCHAR name[260];
+	long comboxi;
+};
+
+//摄像头信息
+struct CAMERA_INFO_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	unsigned long int RegionId;
+	unsigned long int DeviceId;
+	unsigned long int ControlUnitId;
+	TCHAR IndexCode[128];
+	TCHAR name[260];
+	TCHAR ip[32];
+	long channel;			
+	long Type; //监控点类型，0-枪机/1-半球/2-快球/3-带云台枪击
+	long RTP;	//监控点连接协议,0-TCP/1-UDP/2-MCAST/3-RTP
+	long STREAM_TYPE;//0-主码流 1-子码流
+
+	TCHAR user[32];
+	TCHAR psw[32];
+	long port;
+	long venderID;			//0---海康,1---大华
+	long PAG_SERVER_ID;
+	long STREAM_SVR_ID;
+	long DecodeTag;
+
+};
+//摄像头信息
+struct CAMERA_INFO_LITE_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	unsigned long int RegionId;
+	TCHAR name[260];
+	long comboxi;
+
+};
+
+//PAG服务器
+struct PAG_SERVER_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	unsigned long int ControlUnitId;
+	unsigned long int NetZoneId;
+	TCHAR  ip[32];
+	unsigned long int DataPort;
+
+};
+
+
+//流媒体服务器
+struct STREAM_SERVER_ST
+{
+	//数据库的NID
+	unsigned long int nid;
+	unsigned long int ControlUnitId;
+	unsigned long int NetZoneId;
+	TCHAR  ip[32];
+	unsigned long int RtspPort;
+
+};
+
+#endif
+
+
 //ConnectionOracleDB 数据库连接函数 返回值 定义
 #define ReadFile_FAIL -1	//配置文件打开失败
 #define Instance_FAIL -2	//数据库ADO初始化失败
@@ -241,9 +329,16 @@ public:
 public:
 	IO(void);
 	~IO(void);
-	bool DisConnectionOracleDB(void);				//断开与oracle数据库的连接
+
 	void DeCode(char *src,char *dst);				//解密
 	bool ReadFile(char* FileName);					//读数据库配置文件
+	void VarSaveStr(TCHAR *dst,variant_t src);		//保存成字符串
+	void VarSaveStr2(TCHAR *dst,_RecordsetPtr &p,TCHAR *name);	//保存成字符串
+	long long VarSaveNumber2(_RecordsetPtr &p,TCHAR *name);
+	double VarSaveDouble2(_RecordsetPtr &p,TCHAR *name);
+	void IO::filterstring(char *str);
+
+	bool DisConnectionOracleDB(void);				//断开与oracle数据库的连接
 	int ConnectionOracleDBTXT(char* FileName);		//连接数据库
 	/**************************设备表*******************************/
 	bool DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList);	//读取所有的区域
@@ -385,11 +480,19 @@ public:
 
 	bool IVMS_state;
 	_ConnectionPtr IVMS_pConnection;					//创建oracle connection对象
+	_RecordsetPtr IVMS_pRecordsetPtr;					//创建数据记录集
 
 	bool IVMS_DisConnectionOracleDB(void);				//断开与oracle数据库的连接
 	int IVMS_ConnectionOracleDBTXT(char* FileName);		//连接数据库
 
-	
+int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit);
+int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo);
+int IO::IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver);
+int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver);
+int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regionid);
+int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *keyword);
+
+
 #endif
 
 

@@ -6,6 +6,7 @@
 #include "DLGdevicetree.h"
 #include "YiRongCarDetectAIODlg.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -18,6 +19,8 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 ////////////////lynn/////////////////
 #include "DLGLogin.h"
 extern CDLGLogin DlgLogin;
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGdevicetree dialog
@@ -501,5 +504,57 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CDLGdevicetree::OnMenuitemAddivmsdevice()
 {
+
+#if IVMS_ORACLE_DEVICETREE
+
 	// TODO: Add your command handler code here
+	if(!DlgLogin.CurrentUser.device)
+	{
+		MessageBox("无 设备管理 权限，请联系管理员",MESSAGEBOX_TITLE);
+		return ;
+	}
+
+	// TODO: Add your command handler code here
+	HTREEITEM Item = m_DeviceTree.GetRootItem();
+	int count = 0;
+	while(Item != NULL)
+	{
+		if(Item == m_selectItem)
+			break;
+		Item = m_DeviceTree.GetNextItem(Item,TVGN_NEXT);
+		count++;
+	}
+	DlgAddDevice.AreaComboCur = count;
+
+
+	if(DlgAddIVMSDevice.DoModal() == IDOK)
+	{
+		/*
+		if(DlgAddDevice.AddAreaFlag)
+		{
+			m_DeviceTree.InsertItem(DlgAddDevice.m_AddArea,TVI_ROOT);
+			OracleIO.DEVICE_AddNewArea(DlgAddDevice.m_AddArea);
+			DlgAddDevice.AddAreaFlag = false;
+		}
+		else
+		{
+			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,\
+				DlgAddDevice.m_CamName,\
+				DlgAddDevice.m_CamIpAddr,\
+				DlgAddDevice.m_CamPort,\
+				DlgAddDevice.m_CamChannel,\
+				DlgAddDevice.m_CamUser,\
+				DlgAddDevice.m_CamPsw,
+				DlgAddDevice.VenderComboCur,
+				DlgAddDevice.m_CamRtspurl,
+				DlgAddDevice.RTPComboCur,
+				DlgAddDevice.DecodeTagComboCur);
+		}
+		*/
+		OnMenuitemUpdate();
+	}
+#else
+		MessageBox("该版本 未接入平台",MESSAGEBOX_TITLE);
+	
+#endif
 }

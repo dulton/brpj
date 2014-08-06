@@ -8,24 +8,24 @@
 IO::IO(void)
 {
 	state=false;
-	
+
 #if YRVM_PINGTAI_MODE
 	YRVM_state=false;
 #endif
-	
+
 	IOwriteLock=false;
-	
+
 }
 
 IO::~IO(void)
 {
 	DisConnectionOracleDB();
-	
+
 #if YRVM_PINGTAI_MODE
 	YRVM_DisConnectionOracleDB();
 #endif
 
-	#if IVMS_ORACLE_DEVICETREE
+#if IVMS_ORACLE_DEVICETREE
 	IVMS_DisConnectionOracleDB();
 #endif
 }
@@ -49,7 +49,7 @@ bool IO::DisConnectionOracleDB(void)
 		//MessageBox(temp, _T("数据库断开连接失败信息提示"));
 		return false;
 	}	
-	
+
 	return false;
 }
 
@@ -59,12 +59,12 @@ void IO::DeCode(char *src,char *dst)
 {
 	int a,b;
 	int i,len,v;
-	
+
 	a=(src[0]-'0')*10+(src[1]-'0');
 	b=(src[2]-'0')*10+(src[3]-'0');
-	
+
 	len=_tcslen(src)/4-1;
-	
+
 	for(i=0;i<len;i++)
 	{
 		v=(src[(i+1)*4]-'0')*1000+
@@ -81,21 +81,21 @@ bool IO::ReadFile(TCHAR* FileName)
 {
 	TCHAR temp[RCT_MAX_STR_SIZE]="";
 	TCHAR tempchar[RCT_MAX_STR_SIZE]="";
-	
+
 	FILE *fp=_tfopen(FileName,_T("r"));
 	if(fp)
 	{
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
 		_stscanf(temp,_T("Ip:%s"),Ip);
-		
+
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
 		_stscanf(temp,_T("Port:%s"),Port);
-		
+
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
 		_stscanf(temp,_T("User:%s"),User);
-		
+
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
-		
+
 #if 1
 		//解密
 		_stscanf(temp,_T("Psw:%s"),tempchar);
@@ -105,13 +105,77 @@ bool IO::ReadFile(TCHAR* FileName)
 #endif
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
 		_stscanf(temp,_T("DataBaseName:%s"),DataBaseName);
-		
+
 		fclose(fp);
-		
+
 		return TRUE;
 	}
 	else
 		return FALSE;
+}
+
+void IO::VarSaveStr(TCHAR *dst,variant_t src)
+{
+	variant_t temp; 
+	if(src.vt != VT_NULL && src !=temp)
+	{
+		_tcscpy(dst, (_bstr_t)src.bstrVal);
+	}
+	else
+		_tcscpy(dst,"");
+}
+
+//STRING
+void IO::VarSaveStr2(TCHAR *dst,_RecordsetPtr &p,TCHAR *name)
+{
+	variant_t temp; 
+	variant_t src = p->GetCollect(name);
+	if(src.vt != VT_NULL && src !=temp)
+	{
+		_tcscpy(dst, (_bstr_t)src.bstrVal);
+	}
+	else
+		_tcscpy(dst,"");
+}
+
+long long IO::VarSaveNumber2(_RecordsetPtr &p,TCHAR *name)
+{
+	variant_t temp; 
+	variant_t src = p->GetCollect(name);
+	long long a;
+	if(src.vt != VT_NULL && src !=temp)
+	{
+		a=(long long)src.lVal;
+		a *= (src.decVal.sign == 128)? -1 : 1;
+
+		return a;
+	}
+	else
+		return 0;
+}
+
+double IO::VarSaveDouble2(_RecordsetPtr &p,TCHAR *name)
+{
+	variant_t temp; 
+	variant_t src = p->GetCollect(name);
+	if(src.vt != VT_NULL && src !=temp)
+	{
+		return (double)src.dblVal;
+	}
+	else
+		return 0.0;
+}
+//去除插入数据库时出现单引号
+void IO::filterstring(char *str)
+{
+	while(*str)   
+	{  
+		if( (*str) == '\'' )
+		{
+			(*str) = ' ';
+		}
+		str++;  
+	} 
 }
 
 //连接数据库
@@ -122,19 +186,19 @@ int IO::ConnectionOracleDBTXT(char*  FileName)
 	{
 		return ReadFile_FAIL;
 	}
-	
+
 	CString CstrConn;
-	
+
 	CstrConn.Format(_T("Provider=OraOLEDB.Oracle.1;User ID=%s;Password=%s;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)));Persist Security Info=False"),\
 		User, Psw, Ip, Port, DataBaseName);
-	
+
 	HRESULT hr;
 	if(SUCCEEDED(m_pConnection.CreateInstance("ADODB.Connection")))
 	{
 		_bstr_t strConnect = _bstr_t(CstrConn);
-		
+
 		m_pConnection->ConnectionTimeout = 30;
-		
+
 		try
 		{
 			hr = m_pConnection->Open(strConnect,"","",adModeUnknown);
@@ -146,7 +210,7 @@ int IO::ConnectionOracleDBTXT(char*  FileName)
 			//AfxMessageBox(temp);  
 			return ContOpen_FAIL;
 		}
-		
+
 		state=true;
 		return Connectd_DONE;
 	}
@@ -171,21 +235,21 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
 			variant_t temp; 
 			temp.ChangeType(VT_NULL);
 			struct DEVICE_AREA_ST DeviceArea = {0};
-			
+
 			var = m_pRecordsetPtr->GetCollect("sorgname");
 			if(var.vt != NULL && var !=temp)
 			{
 				CString str = var.bstrVal;
 				strcpy(DeviceArea.name, str.GetBuffer(0));
 			}
-			
+
 			DeviceArea.nid = (int)(long)m_pRecordsetPtr->GetCollect("nid");
 			DeviceAreaList.push_back(DeviceArea);
 			m_pRecordsetPtr->MoveNext();
@@ -216,11 +280,11 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 		CString strSql = _T("select seq_zd_org.nextval as nid from dual");			//获取机构nid
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
 		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from T_ZD_ORG t", \
 			m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -228,10 +292,10 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
-			
+
 			return true;   		
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -268,6 +332,11 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 	try
 	{
 		CString strSql;
+		char tempstr[260];
+		strcpy(tempstr,AreaName.GetBuffer(0));
+		filterstring(tempstr);
+		AreaName=tempstr;
+
 		strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
@@ -275,15 +344,15 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 			return false;
 		}
 		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql = _T("select seq_ncamera.nextval as ncamera from dual");	    //获取ncamera
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
 		long ncamera	= m_pRecordsetPtr->GetCollect("ncamera");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_device", \
 			m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -296,7 +365,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
 			m_pRecordsetPtr->PutCollect("ncamera", _variant_t(ncamera));
 			m_pRecordsetPtr->PutCollect("svenderid", _variant_t(venderID));
-			
+
 			m_pRecordsetPtr->PutCollect("rtspurl", _variant_t(Rtspurl));
 			m_pRecordsetPtr->PutCollect("rtpmode", _variant_t((long)RTP));
 			m_pRecordsetPtr->PutCollect("decodetag", _variant_t((long)DecodeTag));
@@ -322,6 +391,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 	try
 	{
 		CString strSql;
+		filterstring(AreaName);
 		strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
@@ -344,7 +414,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		{
 			variant_t temp; 
 			temp.ChangeType(VT_NULL);
-			
+
 			variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
 			variant_t sip = m_pRecordsetPtr->GetCollect("sipserver");
 			variant_t port = m_pRecordsetPtr->GetCollect("sport");
@@ -405,7 +475,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 
 			//strcpy(CameraInfo.area, AreaName);
 			CameraList.push_back(CameraInfo);
-			
+
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
@@ -469,6 +539,12 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 	try
 	{
 		CString strSql;
+
+		char tempstr[260];
+		strcpy(tempstr,AreaName.GetBuffer(0));
+		filterstring(tempstr);
+		AreaName=tempstr;
+
 		strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
@@ -476,12 +552,22 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 			return false;
 		}
 		variant_t a = m_pRecordsetPtr->GetCollect("nid");
+
+		strcpy(tempstr,CamName.GetBuffer(0));
+		filterstring(tempstr);
+		CamName=tempstr;
+
+		strcpy(tempstr,Rtspurl.GetBuffer(0));
+		filterstring(tempstr);
+		Rtspurl=tempstr;
+
+
 		long nid = a;
 		strSql.Format(_T("update tb_device set scameraname='%s',\
-						sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
-						nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d,decodetag=%d where ncamera=%d"), 
-						CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,DecodeTag,CamID);
-		
+						 sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
+						 nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d,decodetag=%d where ncamera=%d"), 
+						 CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,DecodeTag,CamID);
+
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
@@ -507,21 +593,22 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 	try
 	{
 		CString strSql;
+		filterstring(UserInfo.user);
 		strSql.Format(_T("select * from tb_user where suser='%s'"),UserInfo.user);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(!(m_pRecordsetPtr->BOF))
 		{
 			return false;
 		}
-		
+
 		strSql = _T("select seq_user.nextval as nid from dual");			//获取机构nid
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
 		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_user", \
 			m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -543,7 +630,7 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 			m_pRecordsetPtr->PutCollect("nlogquery", _variant_t((long)(UserInfo.historyreport)));			//系统日志查询
 			m_pRecordsetPtr->PutCollect("nmanager", _variant_t((long)(UserInfo.admin)));					//系统管理员
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));								//nid
-			
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
 			return true;   		
@@ -582,18 +669,19 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 	try
 	{
 		CString strSql;
+		filterstring(UserInfo.user);
 		strSql.Format(_T("update tb_user set suser='%s',spwd='%s',ndeviceallot=%d,\
-																					nphoto=%d,nvideo=%d,nview=%d,\
-																					nalarm=%d,nyuntai=%d,nparam=%d,\
-																					nvideoset=%d,ncarnumber=%d,nblack=%d,\
-																					nvideoquery=%d,nalarmquery=%d,ndistinguishquery=%d,\
-																					nlogquery=%d,nmanager=%d where nid=%d"),\
-																					UserInfo.user, UserInfo.psw, UserInfo.device,\
-																					UserInfo.capbmp, UserInfo.record, UserInfo.preview,\
-																					UserInfo.detect, UserInfo.ptz, UserInfo.systemset,\
-																					UserInfo.recordset, UserInfo.detectset, UserInfo.blackset,\
-																					UserInfo.historyvideo, UserInfo.historyalarm, UserInfo.historydetect,\
-																					UserInfo.historyreport, UserInfo.admin, UserInfo.nid);
+						 nphoto=%d,nvideo=%d,nview=%d,\
+						 nalarm=%d,nyuntai=%d,nparam=%d,\
+						 nvideoset=%d,ncarnumber=%d,nblack=%d,\
+						 nvideoquery=%d,nalarmquery=%d,ndistinguishquery=%d,\
+						 nlogquery=%d,nmanager=%d where nid=%d"),\
+						 UserInfo.user, UserInfo.psw, UserInfo.device,\
+						 UserInfo.capbmp, UserInfo.record, UserInfo.preview,\
+						 UserInfo.detect, UserInfo.ptz, UserInfo.systemset,\
+						 UserInfo.recordset, UserInfo.detectset, UserInfo.blackset,\
+						 UserInfo.historyvideo, UserInfo.historyalarm, UserInfo.historydetect,\
+						 UserInfo.historyreport, UserInfo.admin, UserInfo.nid);
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
@@ -619,6 +707,7 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 	try
 	{
 		CString	strsql;
+		filterstring(user);
 		strsql.Format(_T("select * from tb_user where suser='%s'"),user);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -629,7 +718,7 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		variant_t temp; 
 		CString str;
 		temp.ChangeType(VT_NULL);
-		
+
 		var = m_pRecordsetPtr->GetCollect("suser");
 		if(var.vt != NULL && var !=temp)
 		{
@@ -658,9 +747,9 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		UserInfo->historyreport = (int)(long)(m_pRecordsetPtr->GetCollect("nlogquery"));
 		UserInfo->admin = (int)(long)(m_pRecordsetPtr->GetCollect("nmanager"));
 		UserInfo->nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
-		
+
 		m_pRecordsetPtr->Close();
-		
+
 		return true;
 	}
 	catch(_com_error e)
@@ -687,7 +776,7 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		variant_t temp; 
 		CString str;
 		temp.ChangeType(VT_NULL);
-		
+
 		var = m_pRecordsetPtr->GetCollect("suser");
 		if(var.vt != NULL && var !=temp)
 		{
@@ -716,9 +805,9 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		UserInfo->historyreport = (int)(long)(m_pRecordsetPtr->GetCollect("nlogquery"));
 		UserInfo->admin = (int)(long)(m_pRecordsetPtr->GetCollect("nmanager"));
 		UserInfo->nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
-		
+
 		m_pRecordsetPtr->Close();
-		
+
 		return true;
 	}
 	catch(_com_error e)
@@ -750,7 +839,7 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 			variant_t var;
 			variant_t temp; 
 			temp.ChangeType(VT_NULL);
-			
+
 			var = m_pRecordsetPtr->GetCollect("suser");
 			if(var.vt != NULL && var !=temp)
 			{
@@ -758,7 +847,7 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 				strcpy(UserInfo.user, str.GetBuffer(0));
 			}
 			UserInfo.nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
-			
+
 			UserInfoList.push_back(UserInfo);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -790,26 +879,26 @@ bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_log.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id	= m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_log", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
 			m_pRecordsetPtr->PutCollect("susername", _variant_t(userName));
 			m_pRecordsetPtr->PutCollect("smark", _variant_t(logStr));
-			
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
 			IOwriteLock=false;
@@ -833,13 +922,14 @@ unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTi
 	try
 	{
 		CString	strSql="";
-		
+
 		CString tempSql="";
-		
+
 		strSql= _T("select count(1) from tb_log");
-		
+
 		if((flag&0x01) != 0)
 		{	
+			filterstring(userName);
 			if((flag&0x02) != 0)
 			{
 				tempSql.Format(_T(" where susername like '%%%s%%' and dcreatetime between to_date(%s,'yyyymmddhh24miss') and to_date(%s,'yyyymmddhh24miss')"),userName,startTime,endTime);
@@ -856,15 +946,15 @@ unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTi
 				tempSql.Format(_T(" where dcreatetime between to_date(%s,'yyyymmddhh24miss') and to_date(%s,'yyyymmddhh24miss')"),startTime,endTime);
 			}
 		}
-		
+
 		strSql = strSql + tempSql;
-		
+
 		strcpy(SQLstr,tempSql.GetBuffer(0));
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -881,11 +971,11 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 	try
 	{
 		CString	strSql = _T("select * from (select to_char(dcreatetime),smark,susername,rownum rn from tb_log");
-		
+
 		CString tempSql = SQLstr;
-		
+
 		CString numSql;
-		
+
 		if(0 != flag)
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
@@ -894,9 +984,9 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
 		}
-		
+
 		strSql = strSql + tempSql + numSql;
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -906,7 +996,7 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -914,7 +1004,7 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct HISTORY_REPORT_ST report = {0};
-			
+
 			var = m_pRecordsetPtr->GetCollect("smark");
 			if(var.vt != NULL && var !=temp)
 			{
@@ -931,7 +1021,7 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 				str = var.bstrVal;
 				strcpy(report.user, str.GetBuffer(0));
 			}
-			
+
 			HistoryList.push_back(report);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -944,7 +1034,7 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<st
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -965,32 +1055,32 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_match_result_car.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		_variant_t CamIp = m_pRecordsetPtr->GetCollect("sipserver");
 		_variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_match_result_car", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -1006,33 +1096,33 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
 			m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
 			m_pRecordsetPtr->PutCollect("nsize", _variant_t((long)picsize));
-			
+
 			char *m_pbuff = NULL;
-			
+
 			SAFEARRAYBOUND rgs[1];	
 			rgs[0].lLbound = 0;	   
 			rgs[0].cElements =	picsize;		
-			
+
 			SAFEARRAY *psa;	   
 			psa = SafeArrayCreate(VT_UI1,1,rgs); 
 			SafeArrayAccessData(psa,(void **)&m_pbuff);		
-			
+
 			memcpy(m_pbuff, picdata, picsize); 
-			
+
 			variant_t varBOLB;
 			varBOLB.vt = VT_ARRAY | VT_UI1;
 			varBOLB.parray = psa;
-			
+
 			m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			SafeArrayUnaccessData(psa);
-			
+
 			m_pRecordsetPtr->Close(); 
-			
+
 			CAR_AlarmResult_Execute(id,isblack);
-			
+
 			IOwriteLock=false;
 			return true;
 		}
@@ -1050,7 +1140,7 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 }
 
 bool IO::CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
-								char *plate,int reliability,char *path,unsigned long int picsize)
+										 char *plate,int reliability,char *path,unsigned long int picsize)
 {
 	try
 	{
@@ -1058,32 +1148,32 @@ bool IO::CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char 
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_match_result_car.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		_variant_t CamIp = m_pRecordsetPtr->GetCollect("sipserver");
 		_variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_match_result_car", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -1099,12 +1189,12 @@ bool IO::CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char 
 			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
 			m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
 			m_pRecordsetPtr->PutCollect("nsize", _variant_t((long)picsize));
-			
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
-			
+
 			CAR_AlarmResult_Execute(id,isblack);
-			
+
 			IOwriteLock=false;
 			return true;
 		}
@@ -1127,30 +1217,30 @@ bool IO::CAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 	try
 	{
 		CString strsql;
-		
+
 		strsql.Format(_T("select bpicture from tb_match_result_car where bpicture is not null and nid=%d"),NID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			return false;
 		}
-		
+
 		long lDatasize =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->ActualSize;	  //从数据库获取图片
-		
+
 		_variant_t varBLOB =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->GetChunk(lDatasize);
-		
+
 		if(varBLOB.vt == (VT_ARRAY | VT_UI1))
 		{
 			unsigned char * pbuffer = NULL;
-			
+
 			SafeArrayAccessData(varBLOB.parray,(void **)&pbuffer);
-            
+
 			memcpy(data, pbuffer, lDatasize);
-			
+
 			SafeArrayUnaccessData(varBLOB.parray);
-			
+
 			return true;
 		}
 		return false;
@@ -1169,30 +1259,30 @@ bool IO::CAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 	try
 	{
 		CString strsql;
-		
+
 		strsql.Format(_T("select bpicture from tb_alarm_car where bpicture is not null and nid=%d"),NID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			return false;
 		}
-		
+
 		long lDatasize =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->ActualSize;	  //从数据库获取图片
-		
+
 		_variant_t varBLOB =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->GetChunk(lDatasize);
-		
+
 		if(varBLOB.vt == (VT_ARRAY | VT_UI1))
 		{
 			unsigned char * pbuffer = NULL;
-			
+
 			SafeArrayAccessData(varBLOB.parray,(void **)&pbuffer);
-            
+
 			memcpy(data, pbuffer, lDatasize);
-			
+
 			SafeArrayUnaccessData(varBLOB.parray);
-			
+
 			return true;
 		}
 		return false;
@@ -1216,9 +1306,10 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		CString tempSql="";
 		bool hadwhere=false;		//检查语句中是否已经有where
 		strSql= _T("select count(1) from tb_match_result_car");
-		
+
 		if((flag&0x01) != 0)
 		{	
+			filterstring(CamName);
 			tempSql.Format(_T(" where scameraname like '%%%s%%'"),CamName);
 			hadwhere = true;
 			outSQL = outSQL + tempSql;
@@ -1226,6 +1317,7 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x02) != 0)
 		{
+			filterstring(sip);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sip like '%%%s%%'"),sip);
@@ -1240,6 +1332,7 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x04) != 0)
 		{
+			filterstring(plate);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scarnumber like '%%%s%%'"),plate);
@@ -1268,12 +1361,15 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x10) != 0)
 		{
+
+			filterstring(direction);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sdirection='%s'"),direction);
 			}
 			else
 			{
+
 				tempSql.Format(_T(" where sdirection='%s'"),direction);
 				hadwhere = true;
 			}
@@ -1282,8 +1378,10 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x20) != 0)
 		{
+			filterstring(platecolor);
 			if(hadwhere)
 			{
+
 				tempSql.Format(_T(" and scolour='%s'"),platecolor);
 			}
 			else
@@ -1296,6 +1394,8 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x40) != 0)
 		{
+
+			filterstring(platetype);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and stype='%s'"),platetype);
@@ -1310,6 +1410,7 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x80) != 0)
 		{
+			filterstring(carcolor);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scolor='%s'"),carcolor);
@@ -1322,13 +1423,13 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 			outSQL = outSQL + tempSql;
 			strSql = strSql + tempSql;
 		}
-		
+
 		strcpy(SQLstr,outSQL.GetBuffer(0));
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -1350,9 +1451,10 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		CString tempSql="";
 		bool hadwhere=false;		//检查语句中是否已经有where
 		strSql= _T("select count(1) from tb_alarm_car");
-		
+
 		if((flag&0x01) != 0)
 		{	
+			filterstring(CamName);
 			tempSql.Format(_T(" where scameraname like '%%%s%%'"),CamName);
 			hadwhere = true;
 			outSQL = outSQL + tempSql;
@@ -1360,6 +1462,7 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x02) != 0)
 		{
+			filterstring(sip);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sip like '%%%s%%'"),sip);
@@ -1374,6 +1477,7 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x04) != 0)
 		{
+			filterstring(plate);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scarnumber like '%%%s%%'"),plate);
@@ -1402,6 +1506,7 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x10) != 0)
 		{
+			filterstring(direction);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sdirection='%s'"),direction);
@@ -1416,6 +1521,7 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x20) != 0)
 		{
+			filterstring(platecolor);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scolour='%s'"),platecolor);
@@ -1430,6 +1536,8 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x40) != 0)
 		{
+
+			filterstring(platetype);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and stype='%s'"),platetype);
@@ -1444,6 +1552,8 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		}
 		if((flag&0x80) != 0)
 		{
+
+			filterstring(carcolor);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scolor='%s'"),carcolor);
@@ -1456,13 +1566,13 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 			outSQL = outSQL + tempSql;
 			strSql = strSql + tempSql;
 		}
-		
+
 		strcpy(SQLstr,outSQL.GetBuffer(0));
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -1479,11 +1589,11 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 	try
 	{
 		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_match_result_car");
-		
+
 		CString tempSql = SQLstr;
-		
+
 		CString numSql;
-		
+
 		if(0 != flag)
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
@@ -1492,9 +1602,9 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
 		}
-		
+
 		strSql = strSql + tempSql + numSql;
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -1504,7 +1614,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -1512,7 +1622,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
-			
+
 			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			var = m_pRecordsetPtr->GetCollect("scameraname");
 			if(var.vt != NULL && var !=temp)
@@ -1568,7 +1678,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			
+
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -1581,7 +1691,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -1598,11 +1708,11 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 	try
 	{
 		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_alarm_car");
-		
+
 		CString tempSql = SQLstr;
-		
+
 		CString numSql;
-		
+
 		if(0 != flag)
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
@@ -1611,9 +1721,9 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
 		}
-		
+
 		strSql = strSql + tempSql + numSql;
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -1623,7 +1733,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -1631,7 +1741,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
-			
+
 			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			var = m_pRecordsetPtr->GetCollect("scameraname");
 			if(var.vt != NULL && var !=temp)
@@ -1687,7 +1797,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			
+
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -1700,7 +1810,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -1795,7 +1905,7 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 
 			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
 			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
-			
+
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
 
@@ -1807,9 +1917,9 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 	}
 	catch(_com_error e)
 	{
-		
+
 		errormessage.Format("IO::CAR_MatchResult_ReadforListAll error：%s", e.ErrorMessage());
-		
+
 		return -1;
 	}  
 }
@@ -1911,9 +2021,9 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 	}
 	catch(_com_error e)
 	{
-		
+
 		errormessage.Format("IO::CAR_MatchResult_ReadforListOne error：%s", e.ErrorMessage());
-	
+
 		return -1;
 	}  
 }
@@ -1925,34 +2035,34 @@ bool IO::CAR_AlarmResult_Execute(int nid,bool *isblack)
 		bool iresult=false;
 		char serror[256];
 		bool black=false;
-		
+
 		_CommandPtr pCommandPtr = NULL;
 		pCommandPtr.CreateInstance(_uuidof(Command));
-		
+
 		_ParameterPtr pParameterPtr;
 		pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(int), _variant_t((long)nid));
 		pCommandPtr->Parameters->Append(pParameterPtr);	
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_cnt"), adInteger, adParamOutput, sizeof(bool), _variant_t(black));	
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(bool), _variant_t(iresult));	
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_errmessage"), adVarChar, adParamOutput, 256, _variant_t(serror));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pCommandPtr->CommandText = "pro_auto_match_car";
 		pCommandPtr->CommandType = adCmdStoredProc;	 
-		
+
 		pCommandPtr->ActiveConnection =	m_pConnection;
-		
+
 		pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
-		
+
 		iresult = pCommandPtr->Parameters->GetItem("o_result")->GetValue();
 		black = pCommandPtr->Parameters->GetItem("o_cnt")->GetValue();
 		(*isblack)=black;
-		
+
 		return iresult;
 	}
 	catch(_com_error e)
@@ -1969,15 +2079,15 @@ unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startT
 	try
 	{
 		CString	strSql="";
-		
+
 		strSql.Format(_T("select count(1) from tb_match_result_car where ncamera = %d \
-																						and dcreate between to_date(%s,'yyyymmddhh24miss') \
-																						and to_date(%s,'yyyymmddhh24miss')"),CAMID,startTime,endTime);
-		
+						 and dcreate between to_date(%s,'yyyymmddhh24miss') \
+						 and to_date(%s,'yyyymmddhh24miss')"),CAMID,startTime,endTime);
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long int num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -1999,32 +2109,32 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *plate
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		_variant_t CamIp = m_pRecordsetPtr->GetCollect("sipserver");
 		_variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_match_result_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -2038,33 +2148,33 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *plate
 			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
 			m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
 			m_pRecordsetPtr->PutCollect("nsize", _variant_t((long)picsize));
-			
+
 			char *m_pbuff = NULL;
-			
+
 			SAFEARRAYBOUND rgs[1];	
 			rgs[0].lLbound = 0;	   
 			rgs[0].cElements =	picsize;		
-			
+
 			SAFEARRAY *psa;	   
 			psa = SafeArrayCreate(VT_UI1,1,rgs); 
 			SafeArrayAccessData(psa,(void **)&m_pbuff);		
-			
+
 			memcpy(m_pbuff, picdata, picsize); 
-			
+
 			variant_t varBOLB;
 			varBOLB.vt = VT_ARRAY | VT_UI1;
 			varBOLB.parray = psa;
-			
+
 			m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			SafeArrayUnaccessData(psa);
-			
+
 			m_pRecordsetPtr->Close();
-			
+
 			ELECAR_AlarmResult_Execute(id,isblack);
-			
+
 			IOwriteLock=false;
 			return true;
 		}
@@ -2081,8 +2191,8 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *plate
 	}  
 }
 bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
-								   char *plate,int reliability,
-								   char *path,unsigned long int picsize)
+											char *plate,int reliability,
+											char *path,unsigned long int picsize)
 {
 	try
 	{
@@ -2090,32 +2200,32 @@ bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,ch
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		_variant_t CamIp = m_pRecordsetPtr->GetCollect("sipserver");
 		_variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_match_result_vehicle", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -2129,12 +2239,12 @@ bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,ch
 			m_pRecordsetPtr->PutCollect("ndegree", _variant_t((long)reliability));
 			m_pRecordsetPtr->PutCollect("sfile", _variant_t(path));
 			m_pRecordsetPtr->PutCollect("nsize", _variant_t((long)picsize));
-			
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
-			
+
 			ELECAR_AlarmResult_Execute(id,isblack);
-			
+
 			IOwriteLock=false;
 			return true;
 		}
@@ -2157,30 +2267,30 @@ bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 	try
 	{
 		CString strsql;
-		
+
 		strsql.Format(_T("select bpicture from tb_match_result_vehicle where bpicture is not null and nid=%d"),NID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			return false;
 		}
-		
+
 		long lDatasize =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->ActualSize;	  //从数据库获取图片
-		
+
 		_variant_t varBLOB =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->GetChunk(lDatasize);
-		
+
 		if(varBLOB.vt == (VT_ARRAY | VT_UI1))
 		{
 			unsigned char * pbuffer = NULL;
-			
+
 			SafeArrayAccessData(varBLOB.parray,(void **)&pbuffer);
-            
+
 			memcpy(data, pbuffer, lDatasize);
-			
+
 			SafeArrayUnaccessData(varBLOB.parray);
-			
+
 			return true;
 		}
 		return false;
@@ -2199,30 +2309,30 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 	try
 	{
 		CString strsql;
-		
+
 		strsql.Format(_T("select bpicture from tb_alarm_vehicle where bpicture is not null and nid=%d"),NID);
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
-		
+
 		if(m_pRecordsetPtr->BOF)
 		{
 			return false;
 		}
-		
+
 		long lDatasize =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->ActualSize;	  //从数据库获取图片
-		
+
 		_variant_t varBLOB =  m_pRecordsetPtr->GetFields()->GetItem("bpicture")->GetChunk(lDatasize);
-		
+
 		if(varBLOB.vt == (VT_ARRAY | VT_UI1))
 		{
 			unsigned char * pbuffer = NULL;
-			
+
 			SafeArrayAccessData(varBLOB.parray,(void **)&pbuffer);
-            
+
 			memcpy(data, pbuffer, lDatasize);
-			
+
 			SafeArrayUnaccessData(varBLOB.parray);
-			
+
 			return true;
 		}
 		return false;
@@ -2246,9 +2356,10 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 		CString tempSql="";
 		bool hadwhere=false;		//检查语句中是否已经有where
 		strSql= _T("select count(1) from tb_match_result_vehicle");
-		
+
 		if((flag&0x01) != 0)
 		{	
+			filterstring(CamName);
 			tempSql.Format(_T(" where scameraname like '%%%s%%'"),CamName);
 			hadwhere = true;
 			outSQL = outSQL + tempSql;
@@ -2256,6 +2367,7 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 		}
 		if((flag&0x02) != 0)
 		{
+			filterstring(sip);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sip like '%%%s%%'"),sip);
@@ -2270,6 +2382,7 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 		}
 		if((flag&0x04) != 0)
 		{
+			filterstring(plate);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scarnumber like '%%%s%%'"),plate);
@@ -2298,6 +2411,7 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 		}
 		if((flag&0x10) != 0)
 		{
+			filterstring(direction);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sdirection='%s'"),direction);
@@ -2310,13 +2424,13 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 			outSQL = outSQL + tempSql;
 			strSql = strSql + tempSql;
 		}
-		
+
 		strcpy(SQLstr,outSQL.GetBuffer(0));
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -2338,9 +2452,10 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 		CString tempSql="";
 		bool hadwhere=false;		//检查语句中是否已经有where
 		strSql= _T("select count(1) from tb_alarm_vehicle");
-		
+
 		if((flag&0x01) != 0)
 		{	
+			filterstring(CamName);
 			tempSql.Format(_T(" where scameraname like '%%%s%%'"),CamName);
 			hadwhere = true;
 			outSQL = outSQL + tempSql;
@@ -2348,6 +2463,7 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 		}
 		if((flag&0x02) != 0)
 		{
+			filterstring(sip);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sip like '%%%s%%'"),sip);
@@ -2362,6 +2478,7 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 		}
 		if((flag&0x04) != 0)
 		{
+			filterstring(plate);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and scarnumber like '%%%s%%'"),plate);
@@ -2389,7 +2506,8 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 			strSql = strSql + tempSql;
 		}
 		if((flag&0x10) != 0)
-		{
+		{						
+			filterstring(direction);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sdirection='%s'"),direction);
@@ -2402,13 +2520,13 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 			outSQL = outSQL + tempSql;
 			strSql = strSql + tempSql;
 		}
-		
+
 		strcpy(SQLstr,outSQL.GetBuffer(0));
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -2425,11 +2543,11 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 	try
 	{
 		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_match_result_vehicle");
-		
+
 		CString tempSql = SQLstr;
-		
+
 		CString numSql;
-		
+
 		if(0 != flag)
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
@@ -2438,9 +2556,9 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
 		}
-		
+
 		strSql = strSql + tempSql + numSql;
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -2450,7 +2568,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -2458,7 +2576,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
-			
+
 			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			var = m_pRecordsetPtr->GetCollect("scameraname");
 			if(var.vt != NULL && var !=temp)
@@ -2502,7 +2620,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			
+
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -2515,7 +2633,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -2532,11 +2650,11 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 	try
 	{
 		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_alarm_vehicle");
-		
+
 		CString tempSql = SQLstr;
-		
+
 		CString numSql;
-		
+
 		if(0 != flag)
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
@@ -2545,9 +2663,9 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
 		}
-		
+
 		strSql = strSql + tempSql + numSql;
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -2557,7 +2675,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -2565,7 +2683,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
-			
+
 			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			var = m_pRecordsetPtr->GetCollect("scameraname");
 			if(var.vt != NULL && var !=temp)
@@ -2609,7 +2727,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			
+
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -2622,7 +2740,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -2639,7 +2757,7 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 	try
 	{
 		CString	strSql = _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  order by a.nid desc)  where  rownum=1");
-	
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -2709,15 +2827,15 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
-		
+
 		return 1;
-	
+
 	}
 	catch(_com_error e)
 	{
-		
+
 		errormessage.Format("IO::ELECAR_MatchResult_ReadforlistAll error：%s", e.ErrorMessage());
-		
+
 		return -1;
 	}  
 }
@@ -2806,9 +2924,9 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 	}
 	catch(_com_error e)
 	{
-		
+
 		errormessage.Format("IO::ELECAR_MatchResult_ReadforlistOne error：%s", e.ErrorMessage());
-		
+
 		return -1;
 	}  
 }
@@ -2821,34 +2939,34 @@ bool IO::ELECAR_AlarmResult_Execute(int nid,bool *isblack)
 		bool iresult=false;
 		char serror[256];
 		bool black=false;
-		
+
 		_CommandPtr pCommandPtr = NULL;
 		pCommandPtr.CreateInstance(_uuidof(Command));
-		
+
 		_ParameterPtr pParameterPtr;
 		pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(nid), _variant_t((long)nid));
 		pCommandPtr->Parameters->Append(pParameterPtr);	
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_cnt"), adInteger, adParamOutput, sizeof(bool), _variant_t(black));	
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(bool), _variant_t(iresult));	
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_errmessage"), adVarChar, adParamOutput, 256, _variant_t(serror));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pCommandPtr->CommandText = "pro_auto_match_vehicle";
 		pCommandPtr->CommandType = adCmdStoredProc;	 
-		
+
 		pCommandPtr->ActiveConnection =	m_pConnection;
-		
+
 		pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
-		
+
 		iresult = pCommandPtr->Parameters->GetItem("o_result")->GetValue();
 		black = pCommandPtr->Parameters->GetItem("o_cnt")->GetValue();
 		(*isblack)=black;
-		
+
 		return iresult;
 	}
 	catch(_com_error e)
@@ -2865,15 +2983,15 @@ unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *sta
 	try
 	{
 		CString	strSql="";
-		
+
 		strSql.Format(_T("select count(1) from tb_match_result_vehicle where ncamera = %d \
-																							and dcreate between to_date(%s,'yyyymmddhh24miss') \
-																							and to_date(%s,'yyyymmddhh24miss')"),CAMID,startTime,endTime);
-		
+						 and dcreate between to_date(%s,'yyyymmddhh24miss') \
+						 and to_date(%s,'yyyymmddhh24miss')"),CAMID,startTime,endTime);
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long int num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -2890,15 +3008,15 @@ bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 	try
 	{
 		CString strSql = _T("select seq_black_car.nextval as nid from dual");
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id	= m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_car_black", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -2908,7 +3026,7 @@ bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 			m_pRecordsetPtr->PutCollect("slostname", _variant_t(BlackInfo.name));
 			m_pRecordsetPtr->PutCollect("sphone", _variant_t(BlackInfo.Phone));
 			m_pRecordsetPtr->PutCollect("smark", _variant_t(BlackInfo.other));
-			
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
 			return true;
@@ -2947,10 +3065,15 @@ bool IO::CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 	try
 	{
 		CString strSql;
+		filterstring(BlackInfo.plate);
+		filterstring(BlackInfo.brand);
+		filterstring(BlackInfo.name);
+		filterstring(BlackInfo.Phone);
+		filterstring(BlackInfo.other);
 		strSql.Format(_T("update tb_car_black set scarnumber='%s',\
-			sbrand='%s',slostname='%s',sphone='%s',smark='%s' where nid=%d"),\
-			BlackInfo.plate,BlackInfo.brand,BlackInfo.name,BlackInfo.Phone,BlackInfo.other,BlackInfo.nid);
-		
+						 sbrand='%s',slostname='%s',sphone='%s',smark='%s' where nid=%d"),\
+						 BlackInfo.plate,BlackInfo.brand,BlackInfo.name,BlackInfo.Phone,BlackInfo.other,BlackInfo.nid);
+
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
@@ -2976,11 +3099,11 @@ unsigned long IO::CAR_BlackTable_GetNum(void)
 	try
 	{
 		CString	strSql = _T("select count(1) from tb_car_black");
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;	
 	}
 	catch(_com_error e)
@@ -3007,7 +3130,7 @@ bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> 
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -3015,7 +3138,7 @@ bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> 
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct BLACK_DATA_ST black = {0};
-			
+
 			black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			var = m_pRecordsetPtr->GetCollect("scarnumber");
 			if(var.vt != NULL && var !=temp)
@@ -3047,7 +3170,7 @@ bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> 
 				str = var.bstrVal;
 				strcpy(black.other, str.GetBuffer(0));
 			}
-			
+
 			BlackList.push_back(black);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -3060,7 +3183,7 @@ bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> 
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -3083,12 +3206,12 @@ bool IO::CAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
 		{
 			return false;
 		}
-		
+
 		variant_t var;
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
-		
+
 		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 		var = m_pRecordsetPtr->GetCollect("scarnumber");
 		if(var.vt != NULL && var !=temp)
@@ -3120,9 +3243,9 @@ bool IO::CAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
 			str = var.bstrVal;
 			strcpy(black.other, str.GetBuffer(0));
 		}
-		
+
 		m_pRecordsetPtr->Close();
-		
+
 		return true;
 	}
 	catch(_com_error e)
@@ -3156,15 +3279,15 @@ bool IO::ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 	try
 	{
 		CString strSql = _T("select seq_black_vehicle.nextval as nid from dual");
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id	= m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_vehicle_black", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -3174,7 +3297,7 @@ bool IO::ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 			m_pRecordsetPtr->PutCollect("slostname", _variant_t(BlackInfo.name));
 			m_pRecordsetPtr->PutCollect("sphone", _variant_t(BlackInfo.Phone));
 			m_pRecordsetPtr->PutCollect("smark", _variant_t(BlackInfo.other));
-			
+
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
 			return true;
@@ -3213,10 +3336,15 @@ bool IO::ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 	try
 	{
 		CString strSql;
+		filterstring(BlackInfo.plate);
+		filterstring(BlackInfo.brand);
+		filterstring(BlackInfo.name);
+		filterstring(BlackInfo.Phone);
+		filterstring(BlackInfo.other);
 		strSql.Format(_T("update tb_vehicle_black set scarnumber='%s',\
-			sbrand='%s',slostname='%s',sphone='%s',smark='%s' where nid=%d"),\
-			BlackInfo.plate,BlackInfo.brand,BlackInfo.name,BlackInfo.Phone,BlackInfo.other,BlackInfo.nid);
-		
+						 sbrand='%s',slostname='%s',sphone='%s',smark='%s' where nid=%d"),\
+						 BlackInfo.plate,BlackInfo.brand,BlackInfo.name,BlackInfo.Phone,BlackInfo.other,BlackInfo.nid);
+
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
@@ -3242,11 +3370,11 @@ unsigned long IO::ELECAR_BlackTable_GetNum(void)
 	try
 	{
 		CString	strSql = _T("select count(1) from tb_vehicle_black");
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;	
 	}
 	catch(_com_error e)
@@ -3273,7 +3401,7 @@ bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_S
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -3281,7 +3409,7 @@ bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_S
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct BLACK_DATA_ST black = {0};
-			
+
 			black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			var = m_pRecordsetPtr->GetCollect("scarnumber");
 			if(var.vt != NULL && var !=temp)
@@ -3313,7 +3441,7 @@ bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_S
 				str = var.bstrVal;
 				strcpy(black.other, str.GetBuffer(0));
 			}
-			
+
 			BlackList.push_back(black);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -3326,7 +3454,7 @@ bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_S
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -3349,12 +3477,12 @@ bool IO::ELECAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
 		{
 			return false;
 		}
-		
+
 		variant_t var;
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
-		
+
 		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 		var = m_pRecordsetPtr->GetCollect("scarnumber");
 		if(var.vt != NULL && var !=temp)
@@ -3386,9 +3514,9 @@ bool IO::ELECAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
 			str = var.bstrVal;
 			strcpy(black.other, str.GetBuffer(0));
 		}
-		
+
 		m_pRecordsetPtr->Close();
-		
+
 		return true;
 	}
 	catch(_com_error e)
@@ -3426,31 +3554,34 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+		filterstring(camName);
+		filterstring(camIp);
+		filterstring(path);
+
 		strSql.Format(_T("insert into TB_VIDEO(nid,scameraname,sip,svenderid,sformat,sfilesize,dstarttime,dendtime,spath) \
-																															values(%d,'%s','%s',%d,'%s',%d, \
-																															to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
-																															to_date('%s','yyyy-mm-dd hh24:mi:ss'), '%s')"), \
-																															id,	\
-																															camName, \
-																															camIp, \
-																															camVender, \
-																															type, \
-																															size, \
-																															stime, \
-																															etime, \
-																															path);
-		
+						 values(%d,'%s','%s',%d,'%s',%d, \
+						 to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
+						 to_date('%s','yyyy-mm-dd hh24:mi:ss'), '%s')"), \
+						 id,	\
+						 camName, \
+						 camIp, \
+						 camVender, \
+						 type, \
+						 size, \
+						 stime, \
+						 etime, \
+						 path);
+
 		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
-		
+
 		IOwriteLock=false;
 		return true;
 	}
@@ -3464,33 +3595,33 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 	}  
 	/*
 	CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
-	
-	  m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-	  
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
-		  m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		  
-			HRESULT hr = m_pRecordsetPtr->Open("select nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss'),to_char(dendtime,'yyyy-mm-dd hh24:mi:ss'),spath from tb_video", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-			
-			  if(SUCCEEDED(hr))
-			  {
-			  m_pRecordsetPtr->AddNew();
-			  m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
-			  m_pRecordsetPtr->PutCollect("scameraname", _variant_t(camName));
-			  m_pRecordsetPtr->PutCollect("sip", _variant_t(camIp));
-			  m_pRecordsetPtr->PutCollect("svenderid", _variant_t((long)camVender));
-			  m_pRecordsetPtr->PutCollect("sformat", _variant_t(type));
-			  m_pRecordsetPtr->PutCollect("sfilesize", _variant_t((long)size));
-			  m_pRecordsetPtr->PutCollect("to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss')", _variant_t(stime));
-			  m_pRecordsetPtr->PutCollect("to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss')", _variant_t(etime));
-			  m_pRecordsetPtr->PutCollect("spath", _variant_t(path));
-			  
-				m_pRecordsetPtr->Update();
-				m_pRecordsetPtr->Close(); 
-				return true;
-				}
-				return false;
+
+	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+	long id = (long)m_pRecordsetPtr->GetCollect("nid");
+
+	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+	HRESULT hr = m_pRecordsetPtr->Open("select nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss'),to_char(dendtime,'yyyy-mm-dd hh24:mi:ss'),spath from tb_video", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+	if(SUCCEEDED(hr))
+	{
+	m_pRecordsetPtr->AddNew();
+	m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+	m_pRecordsetPtr->PutCollect("scameraname", _variant_t(camName));
+	m_pRecordsetPtr->PutCollect("sip", _variant_t(camIp));
+	m_pRecordsetPtr->PutCollect("svenderid", _variant_t((long)camVender));
+	m_pRecordsetPtr->PutCollect("sformat", _variant_t(type));
+	m_pRecordsetPtr->PutCollect("sfilesize", _variant_t((long)size));
+	m_pRecordsetPtr->PutCollect("to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss')", _variant_t(stime));
+	m_pRecordsetPtr->PutCollect("to_char(dstarttime,'yyyy-mm-dd hh24:mi:ss')", _variant_t(etime));
+	m_pRecordsetPtr->PutCollect("spath", _variant_t(path));
+
+	m_pRecordsetPtr->Update();
+	m_pRecordsetPtr->Close(); 
+	return true;
+	}
+	return false;
 	*/
 }
 
@@ -3522,9 +3653,10 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 		CString tempSql="";
 		bool hadwhere=false;		//检查语句中是否已经有where
 		strSql= _T("select count(1) from tb_video");
-		
+
 		if((flag&0x01) != 0)
 		{	
+			filterstring(camName);
 			tempSql.Format(_T(" where scameraname like '%%%s%%'"),camName);
 			hadwhere = true;
 			outSQL = outSQL + tempSql;
@@ -3532,6 +3664,7 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 		}
 		if((flag&0x02) != 0)
 		{
+			filterstring(camIp);
 			if(hadwhere)
 			{
 				tempSql.Format(_T(" and sip like '%%%s%%'"),camIp);
@@ -3558,13 +3691,13 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 			outSQL = outSQL + tempSql;
 			strSql = strSql + tempSql;
 		}
-		
+
 		strcpy(SQLstr,outSQL.GetBuffer(0));
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
-		
+
 		return num;
 	}
 	catch(_com_error e)
@@ -3581,11 +3714,11 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 	try
 	{
 		CString	strSql = _T("select * from (select nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime),to_char(dendtime),spath,rownum rn from tb_video");
-		
+
 		CString tempSql = SQLstr;
-		
+
 		CString numSql;
-		
+
 		if(0 != flag)
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
@@ -3594,9 +3727,9 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 		{
 			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
 		}
-		
+
 		strSql = strSql + tempSql + numSql;
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -3606,7 +3739,7 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -3614,51 +3747,51 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct HISTORY_VIDEO_ST result = {0};
-			
+
 			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			
+
 			var = m_pRecordsetPtr->GetCollect("scameraname");
 			if(var.vt != NULL && var !=temp)
 			{
 				str = var.bstrVal;
 				strcpy(result.name, str.GetBuffer(0));
 			}
-			
+
 			var = m_pRecordsetPtr->GetCollect("sip");
 			if(var.vt != NULL && var !=temp)
 			{
 				str = var.bstrVal;
 				strcpy(result.ip, str.GetBuffer(0));
 			}
-			
+
 			result.venderID = (long)m_pRecordsetPtr->GetCollect("svenderid");
-			
+
 			var = m_pRecordsetPtr->GetCollect("sformat");
 			if(var.vt != NULL && var !=temp)
 			{
 				str = var.bstrVal;
 				strcpy(result.format, str.GetBuffer(0));
 			}
-			
+
 			result.size = (long)m_pRecordsetPtr->GetCollect("sfilesize");
-			
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dstarttime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.StartYear,&result.StartMon,&result.StartDay,
 				&result.StartHour,&result.StartMin,&result.StartSec);
-			
+
 			vargetTime = m_pRecordsetPtr->GetCollect("to_char(dendtime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.EndYear,&result.EndMon,&result.EndDay,
 				&result.EndHour,&result.EndMin,&result.EndSec);
-			
+
 			var = m_pRecordsetPtr->GetCollect("spath");
 			if(var.vt != NULL && var !=temp)
 			{
 				str = var.bstrVal;
 				strcpy(result.path, str.GetBuffer(0));
 			}
-			
+
 			Videolist.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -3671,7 +3804,7 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HI
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -3688,37 +3821,37 @@ bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 	char sTime[32]={0};
 	char eTime[32]={0};
 	sprintf(sTime,"%04d-%02d-%02d %02d:%02d:%02d",
-						rPlan.StartYear,
-						rPlan.StartMon,
-						rPlan.StartDay,
-						rPlan.StartHour,
-						rPlan.StartMin,
-						rPlan.StartSec);
+		rPlan.StartYear,
+		rPlan.StartMon,
+		rPlan.StartDay,
+		rPlan.StartHour,
+		rPlan.StartMin,
+		rPlan.StartSec);
 	sprintf(eTime,"%04d-%02d-%02d %02d:%02d:%02d",
-						rPlan.EndYear,
-						rPlan.EndMon,
-						rPlan.EndDay,
-						rPlan.EndHour,
-						rPlan.EndMin,
-						rPlan.EndSec);
+		rPlan.EndYear,
+		rPlan.EndMon,
+		rPlan.EndDay,
+		rPlan.EndHour,
+		rPlan.EndMin,
+		rPlan.EndSec);
 
 	try
 	{
 		CString strSql = _T("select seq_record_plan.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
-		
+
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql.Format(_T("insert into TB_RECORD_PLAN(nid,ncamera,scameraarea,scameraname,sip,dailyflag,dateflag,weekflag, \
-													enableflag,startweek,endweek,starttime,endtime) \
-													values(%d,%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d, \
-													to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
-													to_date('%s','yyyy-mm-dd hh24:mi:ss'))"), \
-													id,rPlan.camid,rPlan.area,rPlan.name,rPlan.ip, \
-													rPlan.everyday,rPlan.usedate,rPlan.useweek,rPlan.enable,
-													rPlan.StartWeek,rPlan.EndWeek,sTime,eTime);
-		
+						 enableflag,startweek,endweek,starttime,endtime) \
+						 values(%d,%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d, \
+						 to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
+						 to_date('%s','yyyy-mm-dd hh24:mi:ss'))"), \
+						 id,rPlan.camid,rPlan.area,rPlan.name,rPlan.ip, \
+						 rPlan.everyday,rPlan.usedate,rPlan.useweek,rPlan.enable,
+						 rPlan.StartWeek,rPlan.EndWeek,sTime,eTime);
+
 		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 
 		return true;
@@ -3772,29 +3905,29 @@ bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
 	char sTime[32]={0};
 	char eTime[32]={0};
 	sprintf(sTime,"%04d-%02d-%02d %02d:%02d:%02d",
-						rPlan.StartYear,
-						rPlan.StartMon,
-						rPlan.StartDay,
-						rPlan.StartHour,
-						rPlan.StartMin,
-						rPlan.StartSec);
+		rPlan.StartYear,
+		rPlan.StartMon,
+		rPlan.StartDay,
+		rPlan.StartHour,
+		rPlan.StartMin,
+		rPlan.StartSec);
 	sprintf(eTime,"%04d-%02d-%02d %02d:%02d:%02d",
-						rPlan.EndYear,
-						rPlan.EndMon,
-						rPlan.EndDay,
-						rPlan.EndHour,
-						rPlan.EndMin,
-						rPlan.EndSec);
+		rPlan.EndYear,
+		rPlan.EndMon,
+		rPlan.EndDay,
+		rPlan.EndHour,
+		rPlan.EndMin,
+		rPlan.EndSec);
 	try
 	{
 		CString strSql;
 		strSql.Format(_T("update tb_record_plan set ncamera=%d,scameraarea='%s',scameraname='%s',sip='%s',\
-							dailyflag=%d,dateflag=%d,weekflag=%d,enableflag=%d,startweek=%d,endweek=%d,\
-							starttime=to_date('%s','yyyy-mm-dd hh24:mi:ss'),\
-							endtime=to_date('%s','yyyy-mm-dd hh24:mi:ss') where nid=%d"),\
-							rPlan.camid, rPlan.area, rPlan.name, rPlan.ip, \
-							rPlan.everyday, rPlan.usedate, rPlan.useweek, rPlan.enable, \
-							rPlan.StartWeek, rPlan.EndWeek, sTime, eTime, rPlan.nid);
+						 dailyflag=%d,dateflag=%d,weekflag=%d,enableflag=%d,startweek=%d,endweek=%d,\
+						 starttime=to_date('%s','yyyy-mm-dd hh24:mi:ss'),\
+						 endtime=to_date('%s','yyyy-mm-dd hh24:mi:ss') where nid=%d"),\
+						 rPlan.camid, rPlan.area, rPlan.name, rPlan.ip, \
+						 rPlan.everyday, rPlan.usedate, rPlan.useweek, rPlan.enable, \
+						 rPlan.StartWeek, rPlan.EndWeek, sTime, eTime, rPlan.nid);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -3827,12 +3960,12 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 		{
 			return false;
 		}
-		
+
 		variant_t var;
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
-		
+
 		rPlan->nid = nid;
 		rPlan->camid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 		rPlan->everyday = (long)m_pRecordsetPtr->GetCollect("dailyflag");
@@ -3860,19 +3993,19 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 			str = var.bstrVal;
 			strcpy(rPlan->ip, str.GetBuffer(0));
 		}
-		
+
 		variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(starttime)");
 		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
-				&rPlan->StartYear,&rPlan->StartMon,&rPlan->StartDay,
-				&rPlan->StartHour,&rPlan->StartMin,&rPlan->StartSec);
-			
+			&rPlan->StartYear,&rPlan->StartMon,&rPlan->StartDay,
+			&rPlan->StartHour,&rPlan->StartMin,&rPlan->StartSec);
+
 		vargetTime = m_pRecordsetPtr->GetCollect("to_char(endtime)");
 		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
-				&rPlan->EndYear,&rPlan->EndMon,&rPlan->EndDay,
-				&rPlan->EndHour,&rPlan->EndMin,&rPlan->EndSec);
+			&rPlan->EndYear,&rPlan->EndMon,&rPlan->EndDay,
+			&rPlan->EndHour,&rPlan->EndMin,&rPlan->EndSec);
 
 		m_pRecordsetPtr->Close();
-		
+
 		return true;
 	}
 	catch(_com_error e)
@@ -3899,7 +4032,7 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 		{
 			m_pRecordsetPtr->MoveFirst();
 		}
-		
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			variant_t var;
@@ -3907,7 +4040,7 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 			temp.ChangeType(VT_NULL);
 			CString str;
 			struct SET_RECORD_DATA_ST rPlan = {0};
-			
+
 			rPlan.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 			rPlan.camid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 			rPlan.everyday = (long)m_pRecordsetPtr->GetCollect("dailyflag");
@@ -3935,17 +4068,17 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 				str = var.bstrVal;
 				strcpy(rPlan.ip, str.GetBuffer(0));
 			}
-			
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(starttime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
-					&rPlan.StartYear,&rPlan.StartMon,&rPlan.StartDay,
-					&rPlan.StartHour,&rPlan.StartMin,&rPlan.StartSec);
-				
+				&rPlan.StartYear,&rPlan.StartMon,&rPlan.StartDay,
+				&rPlan.StartHour,&rPlan.StartMin,&rPlan.StartSec);
+
 			vargetTime = m_pRecordsetPtr->GetCollect("to_char(endtime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
-					&rPlan.EndYear,&rPlan.EndMon,&rPlan.EndDay,
-					&rPlan.EndHour,&rPlan.EndMin,&rPlan.EndSec);
-			
+				&rPlan.EndYear,&rPlan.EndMon,&rPlan.EndDay,
+				&rPlan.EndHour,&rPlan.EndMin,&rPlan.EndSec);
+
 			rPlanList.push_back(rPlan);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -3958,7 +4091,7 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 		{
 			return false;
 		}
-		
+
 		return false;
 	}
 	catch(_com_error e)
@@ -4002,7 +4135,12 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 	try
 	{
 		CString strSql;
-		strSql.Format(_T("update tb_record_plan set scameraarea='%s',scameraname='%s',sip='%s' where ncamera=%d"),area,camname,ip,camid);
+		filterstring(area);
+		filterstring(camname);
+		filterstring(ip);
+
+		strSql.Format(_T("update tb_record_plan set scameraarea='%s',scameraname='%s',sip='%s' where ncamera=%d"),
+			area,camname,ip,camid);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -4048,7 +4186,7 @@ bool IO::YRVM_DisConnectionOracleDB(void)
 		//MessageBox(temp, _T("数据库断开连接失败信息提示"));
 		return false;
 	}	
-	
+
 	return false;
 }
 
@@ -4060,19 +4198,19 @@ int IO::YRVM_ConnectionOracleDBTXT(char*  FileName)
 	{
 		return ReadFile_FAIL;
 	}
-	
+
 	CString CstrConn;
-	
+
 	CstrConn.Format(_T("Provider=OraOLEDB.Oracle.1;User ID=%s;Password=%s;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)));Persist Security Info=False"),\
 		User, Psw, Ip, Port, DataBaseName);
-	
+
 	HRESULT hr;
 	if(SUCCEEDED(YRVM_pConnection.CreateInstance("ADODB.Connection")))
 	{
 		_bstr_t strConnect = _bstr_t(CstrConn);
-		
+
 		YRVM_pConnection->ConnectionTimeout = 30;
-		
+
 		try
 		{
 			hr = YRVM_pConnection->Open(strConnect,"","",adModeUnknown);
@@ -4084,7 +4222,7 @@ int IO::YRVM_ConnectionOracleDBTXT(char*  FileName)
 			//AfxMessageBox(temp);  
 			return ContOpen_FAIL;
 		}
-		
+
 		YRVM_state=true;
 		return Connectd_DONE;
 	}
@@ -4103,23 +4241,23 @@ unsigned long int IO::YRVM_getElectricCarOracleTempNid(void)
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		unsigned long int id=0;
-		
+
 		CString strSql = _T("select seq_temp_photo_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		
+
 		id = (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		IOwriteLock=false;
 		return id;
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_getElectricCarOracleTempNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4136,27 +4274,27 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql;
-		
+
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		//如果没有这个摄像头
 		variant_t var;
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
-		
+
 		var =(long)  m_pRecordsetPtr->GetCollect("ncameraid"); 
-		
+
 		unsigned long int cameraid;
 		if(var.vt != NULL && var !=temp)
 			cameraid=(long)var;
@@ -4165,11 +4303,11 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select nid, ncamera, bpicture, ssize, sgettype, sip, nflag from tb_temp_photo_vehicle", YRVM_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -4179,41 +4317,41 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 			m_pRecordsetPtr->PutCollect("sgettype", _variant_t((long)1));
 			m_pRecordsetPtr->PutCollect("sip", _variant_t(IpAddr));
 			m_pRecordsetPtr->PutCollect("nflag", _variant_t((long)0));
-			
+
 			char *m_pbuff = NULL;
-			
+
 			SAFEARRAYBOUND rgs[1];	
 			rgs[0].lLbound = 0;	   
 			rgs[0].cElements =	ImageSize;		
-			
+
 			SAFEARRAY *psa;	   
 			psa = SafeArrayCreate(VT_UI1,1,rgs); 
 			SafeArrayAccessData(psa,(void **)&m_pbuff);		
-			
+
 			memcpy(m_pbuff, Image, ImageSize); 
-			
+
 			variant_t varBOLB;
 			varBOLB.vt = VT_ARRAY | VT_UI1;
 			varBOLB.parray = psa;
-			
+
 			m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			SafeArrayUnaccessData(psa);
-			
+
 			m_pRecordsetPtr->Close(); 
-			
+
 			IOwriteLock=false;
 			return true;   		
-			
+
 		}
 		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_writeElectricCarTempPhotoToOracleDB error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4230,19 +4368,19 @@ bool IO::YRVM_writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Di
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_temp_electric_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		
+
 		unsigned long int nvehicleid	= (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select nphoto, nvehicleid, scarnumber, scarnumtype, ncarnumflag, srate from tb_temp_electric_vehicle", YRVM_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -4252,21 +4390,21 @@ bool IO::YRVM_writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Di
 			m_pRecordsetPtr->PutCollect("scarnumtype", _variant_t(Color));
 			m_pRecordsetPtr->PutCollect("ncarnumflag", _variant_t((long)Direction));
 			m_pRecordsetPtr->PutCollect("srate", _variant_t(Reliability));
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			m_pRecordsetPtr->Close(); 
-			
+
 			IOwriteLock=false;
 			return true;   		
-			
+
 		}
 		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_writeElectricCarTempInfoToOracleDB error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4283,23 +4421,23 @@ unsigned long int IO::YRVM_getCarOracleTempNid(void)
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		unsigned long int id;
-		
+
 		CString strSql = _T("select seq_temp_photo_car.nextval as nid from dual");	    //获取临时车辆图像数据nid
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		
+
 		id	=(long) m_pRecordsetPtr->GetCollect("nid");
-		
+
 		IOwriteLock=false;
 		return id;
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_getCarOracleTempNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4316,26 +4454,26 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql;
-		
+
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		variant_t var;
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
-		
+
 		var =(long)  m_pRecordsetPtr->GetCollect("ncameraid"); 
-		
+
 		unsigned long int cameraid;
 		if(var.vt != NULL && var !=temp)
 			cameraid=(long)var;
@@ -4344,11 +4482,11 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 			IOwriteLock=false;
 			return false;
 		}
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select nid, ncamera, bpicture, ssize, sgettype, sip, nflag from tb_temp_photo_car", YRVM_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -4358,41 +4496,41 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 			m_pRecordsetPtr->PutCollect("sgettype", _variant_t((long) 1));
 			m_pRecordsetPtr->PutCollect("sip", _variant_t(IpAddr));
 			m_pRecordsetPtr->PutCollect("nflag", _variant_t((long) 0));
-			
+
 			char *m_pbuff = NULL;
-			
+
 			SAFEARRAYBOUND rgs[1];	
 			rgs[0].lLbound = 0;	   
 			rgs[0].cElements =	ImageSize;		
-			
+
 			SAFEARRAY *psa;	   
 			psa = SafeArrayCreate(VT_UI1,1,rgs); 
 			SafeArrayAccessData(psa,(void **)&m_pbuff);		
-			
+
 			memcpy(m_pbuff, Image, ImageSize); 
-	
+
 			variant_t varBOLB;
 			varBOLB.vt = VT_ARRAY | VT_UI1;
 			varBOLB.parray = psa;
-			
+
 			m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			SafeArrayUnaccessData(psa);
-			
+
 			m_pRecordsetPtr->Close(); 
-			
+
 			IOwriteLock=false;
 			return true;   		
-			
+
 		}
 		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_writeCarTempPhotoToOracleDB error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4409,19 +4547,19 @@ bool IO::YRVM_writeCarTempInfoToOracleDB(char *CarStr,char* PlateColor,int Direc
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select seq_temp_car.nextval as nid from dual");	    //获取电动车图像数据nid
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		
+
 		unsigned long int ncarid	=(long) m_pRecordsetPtr->GetCollect("nid");
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select nphoto, ncarid, scarnumber, stype, scategory, scarnumtype, ncarnumflag, srate,scolor from tb_temp_car", YRVM_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
@@ -4434,21 +4572,21 @@ bool IO::YRVM_writeCarTempInfoToOracleDB(char *CarStr,char* PlateColor,int Direc
 			m_pRecordsetPtr->PutCollect("ncarnumflag", _variant_t((long) Direction));
 			m_pRecordsetPtr->PutCollect("srate", _variant_t(Reliability));
 			m_pRecordsetPtr->PutCollect("scolor", _variant_t(CarColor));
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			m_pRecordsetPtr->Close(); 
-			
+
 			IOwriteLock=false;
 			return true;   		
-			
+
 		}
 		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_writeCarTempInfoToOracleDB error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4463,30 +4601,30 @@ void IO::YRVM_ExecuteInsertMatchCarResultProcedure(unsigned long int id)
 	{
 		_CommandPtr pCommandPtr = NULL;
 		pCommandPtr.CreateInstance(_uuidof(Command));
-		
+
 		_ParameterPtr pParameterPtr;
 		pParameterPtr = pCommandPtr->CreateParameter(_T("i_taskid"), adInteger, adParamInput, sizeof(long), _variant_t((long)NULL));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(long), _variant_t((long)id));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_match_succes_num"), adInteger, adParamOutput, sizeof(long), _variant_t((long)NULL));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(long), _variant_t((long)NULL));	
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pCommandPtr->CommandText = "pro_auto_match_car";
 		pCommandPtr->CommandType = adCmdStoredProc;	 
-		
+
 		pCommandPtr->ActiveConnection =	YRVM_pConnection;
-		
+
 		pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_ExecuteInsertMatchCarResultProcedure error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 	}  
@@ -4499,36 +4637,36 @@ void IO::YRVM_ExecuteInsertMatchVehicleResultProcedure(unsigned long int id)
 	{
 		_CommandPtr pCommandPtr = NULL;
 		pCommandPtr.CreateInstance(_uuidof(Command));
-		
+
 		_ParameterPtr pParameterPtr;
 		pParameterPtr = pCommandPtr->CreateParameter(_T("i_taskid"), adInteger, adParamInput, sizeof(long), _variant_t((long)NULL));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("i_nid"), adInteger, adParamInput, sizeof(long), _variant_t((long)id));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_match_succes_num"), adInteger, adParamOutput, sizeof(long), _variant_t((long)NULL));
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
+
 		pParameterPtr = pCommandPtr->CreateParameter(_T("o_result"), adInteger, adParamOutput, sizeof(long), _variant_t((long)NULL));	
 		pCommandPtr->Parameters->Append(pParameterPtr);
-		
-		
+
+
 		pCommandPtr->CommandText = "pro_auto_match_vehicle";
 		pCommandPtr->CommandType = adCmdStoredProc;	 
-		
+
 		pCommandPtr->ActiveConnection =	YRVM_pConnection;
-		
-		
+
+
 		pCommandPtr->Execute(NULL, NULL, adCmdStoredProc);	
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_ExecuteInsertMatchVehicleResultProcedure error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 	}  
-	
+
 }
 
 //将摄像头抓拍人脸数据写入oracle数据库临时人员表中      //new add by ethink.wang  at 2012-8-8 17:12
@@ -4540,64 +4678,64 @@ bool IO::YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSiz
 		{
 			Sleep(100);
 		}
-		
+
 		IOwriteLock=true;
-		
+
 		CString strSql = _T("select SEQ_TEMP_ID.nextval as nid from dual");			          //获取临时人员人脸图像数据nid
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
-		
+
 		unsigned long int id	= (long)m_pRecordsetPtr->GetCollect("nid");
-		
+
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), sip);	    //获取当前连接监控摄像头IP所对应的摄像头编号
-		
+
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
-		
+
 		unsigned long int cameraid = (long)m_pRecordsetPtr->GetCollect("ncameraid"); 
-		
+
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		
+
 		HRESULT hr = m_pRecordsetPtr->Open("select nid, ncamera, bpicture from TB_TEMP_PHOTO", YRVM_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);		    //待定	  yrvm.TB_TEMP_PHOTO
-		
+
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();	 
 			m_pRecordsetPtr->PutCollect("nid", _variant_t((long)id));                  //id    
 			m_pRecordsetPtr->PutCollect("ncamera", _variant_t((long)cameraid));				 //device ip
-			
+
 			char *m_pbuff = NULL;
-			
+
 			SAFEARRAYBOUND rgs[1];	
 			rgs[0].lLbound = 0;	   
 			rgs[0].cElements =	ImageSize;		
-			
+
 			SAFEARRAY *psa;	   
 			psa = SafeArrayCreate(VT_UI1,1,rgs); 
 			SafeArrayAccessData(psa,(void **)&m_pbuff);		
-			
+
 			memcpy(m_pbuff, Image, ImageSize); 
-			
+
 			variant_t varBOLB;
 			varBOLB.vt = VT_ARRAY | VT_UI1;		   //Indicates a SAFEARRAY pointer |  Indicates a byte
 			varBOLB.parray = psa;
-			
+
 			m_pRecordsetPtr->GetFields()->GetItem("bpicture")->AppendChunk(varBOLB);	  //picture
-			
+
 			m_pRecordsetPtr->Update();
-			
+
 			SafeArrayUnaccessData(psa);
-			
+
 			m_pRecordsetPtr->Close(); 
 			//m_pRecordsetPtr->Release();
-			
+
 			CString insertsql;
-			
+
 			insertsql.Format(_T("update TB_TEMP_PHOTO set nflag = 0 where nid = %d"), id);
-			
+
 			_variant_t RecordAffected;
-			
+
 			YRVM_pConnection->Execute((_bstr_t)insertsql, &RecordAffected, adCmdText);	 
-			
+
 			IOwriteLock=false;
 			return true;
 		}
@@ -4609,7 +4747,7 @@ bool IO::YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSiz
 	}
 	catch(_com_error e)
 	{
-		
+		CString in_errormessage;
 		in_errormessage.Format("IO::YRVM_writeTempFaceDataToOracleDB error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
@@ -4642,7 +4780,7 @@ bool IO::IVMS_DisConnectionOracleDB(void)
 		//MessageBox(temp, _T("数据库断开连接失败信息提示"));
 		return false;
 	}	
-	
+
 	return false;
 }
 
@@ -4654,19 +4792,19 @@ int IO::IVMS_ConnectionOracleDBTXT(char*  FileName)
 	{
 		return ReadFile_FAIL;
 	}
-	
+
 	CString CstrConn;
-	
+
 	CstrConn.Format(_T("Provider=OraOLEDB.Oracle.1;User ID=%s;Password=%s;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=%s)(PORT=%s))(CONNECT_DATA=(SERVICE_NAME=%s)));Persist Security Info=False"),\
 		User, Psw, Ip, Port, DataBaseName);
-	
+
 	HRESULT hr;
 	if(SUCCEEDED(IVMS_pConnection.CreateInstance("ADODB.Connection")))
 	{
 		_bstr_t strConnect = _bstr_t(CstrConn);
-		
+
 		IVMS_pConnection->ConnectionTimeout = 30;
-		
+
 		try
 		{
 			hr = IVMS_pConnection->Open(strConnect,"","",adModeUnknown);
@@ -4678,7 +4816,7 @@ int IO::IVMS_ConnectionOracleDBTXT(char*  FileName)
 			//AfxMessageBox(temp);  
 			return ContOpen_FAIL;
 		}
-		
+
 		IVMS_state=true;
 		return Connectd_DONE;
 	}
@@ -4687,6 +4825,300 @@ int IO::IVMS_ConnectionOracleDBTXT(char*  FileName)
 		//AfxMessageBox("Create ADODB Connection Instance Failed.");
 		return Instance_FAIL;
 	}
+}
+
+//获取根节点   全读
+int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		Controlunit.clear();
+		_stprintf(strsql,
+			_T("select * from CONTROL_UNIT"));
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			struct CONTROL_UNIT_ST tempdata= {0};
+			//填充数据
+
+			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
+			tempdata.ParentId=VarSaveNumber2(IVMS_pRecordsetPtr,"PARENT_ID");
+			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
+
+			Controlunit.push_back(tempdata);
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadControlunit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+
+
+//获取区域 节点 全读
+int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		RegionInfo.clear();
+		_stprintf(strsql,
+			_T("select * from REGION_INFO") );
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			struct REGION_INFO_ST tempdata= {0};
+			//填充数据
+
+			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
+			tempdata.ControlUnitId=VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
+			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
+
+			RegionInfo.push_back(tempdata);
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadRegionInfo error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+
+
+//获取流媒体服务器 全读
+int IO::IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		Streamserver.clear();
+		_stprintf(strsql,
+			_T("select * from STREAM_SERVER") );
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			struct STREAM_SERVER_ST tempdata= {0};
+			//填充数据
+
+			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_SV_ID");
+			tempdata.ControlUnitId=VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
+			tempdata.NetZoneId=VarSaveNumber2(IVMS_pRecordsetPtr,"NET_ZONE_ID");
+			tempdata.RtspPort=VarSaveNumber2(IVMS_pRecordsetPtr,"RTSP_PORT");
+			VarSaveStr2(tempdata.ip,IVMS_pRecordsetPtr,_T("IP_ADDR"));
+
+			Streamserver.push_back(tempdata);
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadStreamserver error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+//获取PAG服务器 全读
+int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		PAGserver.clear();
+		_stprintf(strsql,
+			_T("select * from PAG_SERVER") );
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			struct PAG_SERVER_ST tempdata= {0};
+			//填充数据
+
+			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"PAG_SERVER_ID");
+			tempdata.ControlUnitId=VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
+			tempdata.NetZoneId=VarSaveNumber2(IVMS_pRecordsetPtr,"NET_ZONE_ID");
+			tempdata.DataPort=VarSaveNumber2(IVMS_pRecordsetPtr,"DATA_PORT");
+			VarSaveStr2(tempdata.ip,IVMS_pRecordsetPtr,_T("IP_ADDR"));
+
+			PAGserver.push_back(tempdata);
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadPAGserver error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+
+//获取设备信息  全读
+int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regionid)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		Caminfo.clear();
+		_stprintf(strsql,
+			_T("select t.camera_id,t.region_id,t.name from CAMERA_INFO t where t.region_id=%d"),regionid );
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+		struct CAMERA_INFO_LITE_ST tempdata= {0};
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			//填充数据
+
+			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_ID");
+			tempdata.RegionId=VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
+			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
+
+			Caminfo.push_back(tempdata);
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadCaminfoALL error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+
+//获取设备信息  全读
+int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *keyword)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		Caminfo.clear();
+		filterstring(keyword);
+		_stprintf(strsql,
+			_T("select t.camera_id,t.region_id,t.name from CAMERA_INFO t where t.name like '%%%s%%'"),keyword);
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return 0;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+		struct CAMERA_INFO_LITE_ST tempdata= {0};
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			//填充数据
+
+			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_ID");
+			tempdata.RegionId=VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
+			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
+
+			Caminfo.push_back(tempdata);
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadCaminfoFind error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return -1;
+	}  
+	return 1;
+
 }
 
 #endif

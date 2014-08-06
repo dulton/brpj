@@ -102,16 +102,20 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 		{
 			if (!PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
 			{
+				PlayM4_FreePort(lPort);
 				break;
 			}
 
 			if (!PlayM4_OpenStream(lPort, pBuffer, dwBufSize, 1920*1080)) //打开流接口
 			{
+				PlayM4_FreePort(lPort);
 				break;
 			}
 
 			if (!PlayM4_SetDisplayCallBack(lPort, RemoteDisplayCBFun))
 			{
+				PlayM4_CloseStream(lPort);
+				PlayM4_FreePort(lPort);
 				break;
 			}
 			if(DlgSetSystem.m_display_preview)
@@ -119,10 +123,14 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 				pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
 				if (!pWnd)
 				{
+					PlayM4_CloseStream(lPort);
+					PlayM4_FreePort(lPort);
 					return;
 				}
 				if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 				{
+					PlayM4_CloseStream(lPort);
+					PlayM4_FreePort(lPort);
 					break;
 				}
 			}
@@ -131,6 +139,8 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 
 				if (!PlayM4_Play(lPort,NULL)) //播放开始
 				{
+					PlayM4_CloseStream(lPort);
+					PlayM4_FreePort(lPort);
 					break;
 				}
 			}
@@ -244,11 +254,15 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int chan
 
 void CHaikangSDK::StopPlay(int screenNo)
 {
+	PlayM4_Stop(m_lPort[screenNo]);
+	PlayM4_CloseStream(m_lPort[screenNo]);
+	PlayM4_FreePort(m_lPort[screenNo]);
 	//关闭预览
 	NET_DVR_StopRealPlay(m_RealHandle[screenNo]);
 	//注销用户
 	NET_DVR_Logout_V30(m_LoginHandle[screenNo]);
-
+	m_LoginHandle[screenNo] = -1;
+	m_lPort[screenNo]=-1;
 #if OPEN_CARDETECT_CODE 	
 	//停止识别
 	if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)

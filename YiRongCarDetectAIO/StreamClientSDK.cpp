@@ -228,16 +228,21 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 		{
 			if (!PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
 			{
+				PlayM4_FreePort(lPort);
 				break;
 			}
 
 			if (!PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
 			{
+				PlayM4_FreePort(lPort);
 				break;
 			}
 
 			if (!PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
 			{
+
+				PlayM4_CloseStream(lPort);
+				PlayM4_FreePort(lPort);
 				break;
 			}
 			if(DlgSetSystem.m_display_preview)
@@ -245,10 +250,14 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
 				if (!pWnd)
 				{
+					PlayM4_CloseStream(lPort);
+					PlayM4_FreePort(lPort);
 					return 0;
 				}
 				if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 				{
+					PlayM4_CloseStream(lPort);
+					PlayM4_FreePort(lPort);
 					break;
 				}
 			}
@@ -256,6 +265,8 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 			{
 				if (!PlayM4_Play(lPort,NULL)) //播放开始
 				{
+					PlayM4_CloseStream(lPort);
+					PlayM4_FreePort(lPort);
 					break;
 				}
 			}
@@ -273,8 +284,6 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 		}
 		break; 
 	case STREAM_PLAYBACK_FINISH:    // 回放/下载至结束 =;
-		int i;
-		i=0;
 		break; 
 	default: 
 		break; 
@@ -414,6 +423,9 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 void CStreamClientSDK::StopPlay(int screenNo)
 {
 	PlayM4_Stop(m_lPort[screenNo]);
+	PlayM4_CloseStream(m_lPort[screenNo]);
+
+	PlayM4_FreePort(m_lPort[screenNo]);
 	//关闭预览
 	StreamClient_Stop(m_RealHandle[screenNo]);
 	//注销用户

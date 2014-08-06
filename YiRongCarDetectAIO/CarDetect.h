@@ -91,6 +91,7 @@ public:
 	CCarDetect();
 	virtual ~CCarDetect();
 
+
 	void SetRange();
 	void SetRedRect();
 	void SetDeskew();

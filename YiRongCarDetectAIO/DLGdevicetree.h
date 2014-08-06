@@ -7,6 +7,7 @@
 // DLGdevicetree.h : header file
 //
 #include "DLGAddDevice.h"
+#include "DLGAddIVMSdevice.h"
 #include "IO.h"
 /////////////////////////////////////////////////////////////////////////////
 // CDLGdevicetree dialog
@@ -23,6 +24,10 @@ public:
 	CTreeCtrl	m_DeviceTree;
 	HTREEITEM	m_selectItem;
 	CDLGAddDevice DlgAddDevice;
+
+#if IVMS_ORACLE_DEVICETREE
+	CDLGAddIVMSdevice DlgAddIVMSDevice;
+#endif
 
 	//}}AFX_DATA
 	IPLIST iplist[MAX_AREA];
