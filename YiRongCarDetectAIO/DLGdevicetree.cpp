@@ -27,10 +27,10 @@ extern CDLGLogin DlgLogin;
 
 
 CDLGdevicetree::CDLGdevicetree(CWnd* pParent /*=NULL*/)
-	: CDialog(CDLGdevicetree::IDD, pParent)
+: CDialog(CDLGdevicetree::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDLGdevicetree)
-		// NOTE: the ClassWizard will add member initialization here
+	// NOTE: the ClassWizard will add member initialization here
 	m_selectItem = NULL;
 	iptotal = 0;
 	//}}AFX_DATA_INIT
@@ -79,9 +79,9 @@ void CDLGdevicetree::AutoSize()
 {
 	CRect rc(0, 0, 0, 0);
 	GetClientRect(&rc);
-//	GetParent()->GetClientRect(&rc);
-//	((CTabCtrl*)GetParent())->AdjustRect(FALSE, &rc);
-//	MoveWindow(rc);
+	//	GetParent()->GetClientRect(&rc);
+	//	((CTabCtrl*)GetParent())->AdjustRect(FALSE, &rc);
+	//	MoveWindow(rc);
 
 	//树
 	CRect tree_Rect;
@@ -109,18 +109,18 @@ void CDLGdevicetree::OnPaint()
 	CPaintDC dc(this); // device context for painting
 
 	// TODO: Add your message handler code here
-	
+
 	// Do not call CDialog::OnPaint() for painting messages
 	//贴背景图	
 	CRect    rect;     
 	GetClientRect(&rect);     
-	
+
 	//从资源中载入位图     
 	CBitmap    bitmap;     
 	bitmap.LoadBitmap(IDB_BACK_TREE);    
 	BITMAP bmp;
 	bitmap.GetBitmap(&bmp);
-	
+
 	CDC    memdc;     
 	memdc.CreateCompatibleDC(&dc);     
 	memdc.SelectObject(bitmap); 
@@ -144,8 +144,8 @@ void CDLGdevicetree::OnRclickTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 	UINT nFlag = TVHT_ONITEM;// 当在 m_DeviceTree 上右击时
 	m_selectItem = m_DeviceTree.HitTest( PointInTree, &nFlag );
 
-// lynn 20130419 屏蔽修复 空树时无法右击的BUG
-//	if(m_selectItem != NULL)
+	// lynn 20130419 屏蔽修复 空树时无法右击的BUG
+	//	if(m_selectItem != NULL)
 	{
 		if(m_DeviceTree.GetParentItem(m_selectItem) == NULL)
 		{
@@ -174,10 +174,14 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 	// TODO: Add your command handler code here
 	HTREEITEM Item = m_DeviceTree.GetRootItem();
 	int count = 0;
+	bool flag=true;
 	while(Item != NULL)
 	{
 		if(Item == m_selectItem)
+		{
+			flag=false;
 			break;
+		}
 		Item = m_DeviceTree.GetNextItem(Item,TVGN_NEXT);
 		count++;
 	}
@@ -199,6 +203,11 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 		}
 		else
 		{
+			if(flag)
+			{
+				MessageBox("请在添加设备 中 添加区域",MESSAGEBOX_TITLE);
+				return ;
+			}
 			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,\
 				DlgAddDevice.m_CamName,\
 				DlgAddDevice.m_CamIpAddr,\
@@ -256,7 +265,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].Rtspurl= CameraList[j].Rtspurl;
 			iplist[iptotal].RTP= CameraList[j].RTP;
 			iplist[iptotal].DecodeTag= CameraList[j].DecodeTag;
-	
+
 			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,hItem);		//添加设备节点
 			iplist[iptotal].item = childItem;
 			iptotal++;
@@ -337,7 +346,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 						DlgAddDevice.m_CamRtspurl,
 						DlgAddDevice.RTPComboCur,
 						DlgAddDevice.DecodeTagComboCur);
-					
+
 					OnMenuitemUpdate();
 
 					//必须放到	OnMenuitemUpdate后面 否则IPLIST还未更新
@@ -349,11 +358,11 @@ void CDLGdevicetree::OnMenuitemEdit()
 							if(DlgMain->DlgScreen.GetCurWindPlayState(j))
 							{
 								bool beforedetect=DlgMain->DlgScreen.GetDetectState(j);
-								
+
 								bool beforealarm=DlgMain->DlgScreen.GetAlarmState(j);
-								
+
 								bool beforerecord=DlgMain->DlgScreen.GetRecordState(j);
-								
+
 								//重新播放
 								DlgMain->DlgScreen.StartPlay(
 									iplist[i].camID,
@@ -370,11 +379,11 @@ void CDLGdevicetree::OnMenuitemEdit()
 									iplist[i].Rtspurl.GetBuffer(0),
 									iplist[i].RTP,
 									iplist[i].DecodeTag);
-								
+
 								//恢复状态
 								if(beforedetect)
 									DlgMain->DlgNormal.OpenDetect(j);
-								
+
 								if(beforealarm)
 								{
 									DlgMain->DlgNormal.OpenDetect(j);
@@ -495,7 +504,7 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				iplist[ItemCount].Rtspurl.GetBuffer(0),
 				iplist[ItemCount].RTP,
 				iplist[ItemCount].DecodeTag);
-			
+
 		}
 	}
 
@@ -516,45 +525,47 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 
 	// TODO: Add your command handler code here
 	HTREEITEM Item = m_DeviceTree.GetRootItem();
+	bool flag=true;
 	int count = 0;
 	while(Item != NULL)
 	{
 		if(Item == m_selectItem)
+		{
+			flag=false;
 			break;
+		}
 		Item = m_DeviceTree.GetNextItem(Item,TVGN_NEXT);
 		count++;
+
 	}
-	DlgAddDevice.AreaComboCur = count;
+	if(flag)
+	{
+		MessageBox("请在添加设备 中 添加区域",MESSAGEBOX_TITLE);
+		return ;
+	}
 
 
 	if(DlgAddIVMSDevice.DoModal() == IDOK)
 	{
 		/*
-		if(DlgAddDevice.AddAreaFlag)
-		{
-			m_DeviceTree.InsertItem(DlgAddDevice.m_AddArea,TVI_ROOT);
-			OracleIO.DEVICE_AddNewArea(DlgAddDevice.m_AddArea);
-			DlgAddDevice.AddAreaFlag = false;
-		}
-		else
-		{
-			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,\
-				DlgAddDevice.m_CamName,\
-				DlgAddDevice.m_CamIpAddr,\
-				DlgAddDevice.m_CamPort,\
-				DlgAddDevice.m_CamChannel,\
-				DlgAddDevice.m_CamUser,\
-				DlgAddDevice.m_CamPsw,
-				DlgAddDevice.VenderComboCur,
-				DlgAddDevice.m_CamRtspurl,
-				DlgAddDevice.RTPComboCur,
-				DlgAddDevice.DecodeTagComboCur);
-		}
+
+		OracleIO.DEVICE_AddNewCamera(DlgAddDevice.AreaList[count].name,\
+		DlgAddDevice.m_CamName,\
+		DlgAddDevice.m_CamIpAddr,\
+		DlgAddDevice.m_CamPort,\
+		DlgAddDevice.m_CamChannel,\
+		DlgAddDevice.m_CamUser,\
+		DlgAddDevice.m_CamPsw,
+		DlgAddDevice.VenderComboCur,
+		DlgAddDevice.m_CamRtspurl,
+		DlgAddDevice.RTPComboCur,
+		DlgAddDevice.DecodeTagComboCur);
+
 		*/
 		OnMenuitemUpdate();
 	}
 #else
-		MessageBox("该版本 未接入平台",MESSAGEBOX_TITLE);
-	
+	MessageBox("该版本 未接入平台",MESSAGEBOX_TITLE);
+
 #endif
 }

@@ -410,7 +410,7 @@ bool CCarDetect::ErrorPlateName(char *name)
 	j=0;
 	for(int i=0;i<5;i++)
 	{
-		if('A'<= p[i] && p[i] <='Z')
+		if( p[i]>= 'A' && p[i] <='Z')
 			j++;
 	}
 
@@ -421,7 +421,7 @@ bool CCarDetect::ErrorPlateName(char *name)
 	j=0;
 	for(int i=1;i<4;i++)
 	{
-		if('A'<= p[i] && p[i] <='Z')
+		if( p[i]>='A' && p[i] <='Z')
 			j++;
 	}
 

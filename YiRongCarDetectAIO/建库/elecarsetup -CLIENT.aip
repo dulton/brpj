@@ -5,7 +5,7 @@
     <ROW Property="ALLUSERS" Value="2"/>
     <ROW Property="ARPCOMMENTS" Value="此 Installer 数据库包含了安装 [|ProductName] 所需的逻辑和数据。" ValueLocId="*"/>
     <ROW Property="Manufacturer" Value="elecar" ValueLocId="*"/>
-    <ROW Property="ProductCode" Value="2052:{D3AA8853-BBBE-4011-9500-276C780438E2} " Type="16"/>
+    <ROW Property="ProductCode" Value="2052:{D3AA8853-BBBE-4011-9500-276C780438E1} " Type="16"/>
     <ROW Property="ProductLanguage" Value="2052"/>
     <ROW Property="ProductName" Value="电动车车牌识别分析应用软件客户端" ValueLocId="*"/>
     <ROW Property="ProductVersion" Value="1.0.0"/>
@@ -16,163 +16,209 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
-    <ROW Directory="Language_Packs_DIR" Directory_Parent="__4_DIR" DefaultDir="Langua~1|Language Packs"/>
+    <ROW Directory="ODAC_DIR" Directory_Parent="APPDIR" DefaultDir="ODAC"/>
     <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
-    <ROW Directory="__1_DIR" Directory_Parent="APPDIR" DefaultDir="海康播放器"/>
-    <ROW Directory="__2_DIR" Directory_Parent="APPDIR" DefaultDir="亚安播放器"/>
-    <ROW Directory="__3_DIR" Directory_Parent="SHORTCUTDIR" DefaultDir="播放器"/>
-    <ROW Directory="__4_DIR" Directory_Parent="APPDIR" DefaultDir="加密狗升级"/>
-    <ROW Directory="__DIR" Directory_Parent="APPDIR" DefaultDir="大华播放器"/>
-    <ROW Directory="lang_RealMp4Play_DIR" Directory_Parent="__2_DIR" DefaultDir="lang_R~1|lang_RealMp4Play"/>
-    <ROW Directory="zh_CN_DIR" Directory_Parent="Language_Packs_DIR" DefaultDir="zh_CN"/>
+    <ROW Directory="bin_DIR" Directory_Parent="oledb_DIR" DefaultDir="bin"/>
+    <ROW Directory="instantclient_11_2_DIR" Directory_Parent="ODAC_DIR" DefaultDir="instan~1|instantclient_11_2"/>
+    <ROW Directory="oledb_1_DIR" Directory_Parent="oledb_DIR" DefaultDir="oledb"/>
+    <ROW Directory="oledb_DIR" Directory_Parent="ODAC_DIR" DefaultDir="oledb"/>
+    <ROW Directory="vc8_DIR" Directory_Parent="instantclient_11_2_DIR" DefaultDir="vc8"/>
+    <ROW Directory="vc9_DIR" Directory_Parent="instantclient_11_2_DIR" DefaultDir="vc9"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="AACDecoder.dll" ComponentId="{CCFEFF93-FDA1-4011-A2B9-A7C5DC108A5E}" Directory_="__DIR" Attributes="0" KeyPath="AACDecoder.dll"/>
     <ROW Component="AI_ExePath" ComponentId="{04080C5E-7421-4414-BD63-519BF2181AEC}" Directory_="APPDIR" Attributes="4" KeyPath="AI_ExePath"/>
-    <ROW Component="AmrDll.dll" ComponentId="{F3A78091-05F6-4386-992C-67A8D2F6EE5C}" Directory_="__DIR" Attributes="0" KeyPath="AmrDll.dll"/>
-    <ROW Component="CamSearch.dll" ComponentId="{C04E3C4C-4029-4830-836F-4B86215DF96C}" Directory_="__2_DIR" Attributes="0" KeyPath="CamSearch.dll"/>
     <ROW Component="DataBaseConfig.exe" ComponentId="{7E4ADD68-FBE3-48F4-AD0B-586C920EC503}" Directory_="APPDIR" Attributes="0" KeyPath="DataBaseConfig.exe"/>
-    <ROW Component="DecNetCtrl.dll" ComponentId="{681F7BB1-6774-4E2F-9967-B901912D85E8}" Directory_="__2_DIR" Attributes="0" KeyPath="DecNetCtrl.dll"/>
-    <ROW Component="DecTrans.dll" ComponentId="{DE4573B9-3D6E-4729-8E83-EDFF8CEABBE8}" Directory_="__2_DIR" Attributes="0" KeyPath="DecTrans.dll"/>
     <ROW Component="DllDeinterlace.dll" ComponentId="{F537C97B-5ED7-48B9-890A-EE2CF7B21CED}" Directory_="APPDIR" Attributes="0" KeyPath="DllDeinterlace.dll"/>
-    <ROW Component="DllDeinterlace.dll_1" ComponentId="{F5543FF6-0BFF-4A4E-8023-2915E85330AA}" Directory_="__DIR" Attributes="0" KeyPath="DllDeinterlace.dll_1"/>
-    <ROW Component="FileAnalyzer.dll" ComponentId="{A753CDF3-885D-4B74-B419-BFBA7BDBF61C}" Directory_="__1_DIR" Attributes="0" KeyPath="FileAnalyzer.dll"/>
-    <ROW Component="FileEdit.dll" ComponentId="{3E7214C4-CAA3-4EEE-9FC7-541225948882}" Directory_="__1_DIR" Attributes="0" KeyPath="FileEdit.dll"/>
-    <ROW Component="FormatConvertDll.dll" ComponentId="{9730732D-A673-414F-82D8-C854AFE6680D}" Directory_="__1_DIR" Attributes="0" KeyPath="FormatConvertDll.dll"/>
     <ROW Component="HCNetSDK.dll" ComponentId="{3F0FCBA7-0A79-4FCC-AF71-95AED6F41085}" Directory_="APPDIR" Attributes="0" KeyPath="HCNetSDK.dll"/>
-    <ROW Component="LAudioFilter.ax" ComponentId="{4C380ACF-B7C0-4026-889F-B02149FB8E2D}" Directory_="__2_DIR" Attributes="0" KeyPath="LAudioFilter.ax" Type="0"/>
-    <ROW Component="MP3Decoder.dll" ComponentId="{82CC927A-4B97-43BE-B872-87D19E35C9E5}" Directory_="__DIR" Attributes="0" KeyPath="MP3Decoder.dll"/>
-    <ROW Component="Microsoft.VC90.CRT.manifest" ComponentId="{9AE5A4DF-DF57-4CEF-885C-4E030BFB03AB}" Directory_="__1_DIR" Attributes="0" KeyPath="Microsoft.VC90.CRT.manifest" Type="0"/>
     <ROW Component="NetClient.dll" ComponentId="{EC00209B-78F5-436A-B242-C744E1E4B123}" Directory_="APPDIR" Attributes="0" KeyPath="NetClient.dll"/>
     <ROW Component="NetPlaySDK.dll" ComponentId="{5257017D-A34B-476A-90BE-CE5528F1B91B}" Directory_="APPDIR" Attributes="0" KeyPath="NetPlaySDK.dll"/>
+    <ROW Component="OraOLEDB11.dll" ComponentId="{B2EFAD50-91BD-450B-9BAA-B972B713D581}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11.dll"/>
+    <ROW Component="OraOLEDB11.tlb" ComponentId="{8C15B422-3570-4027-99BB-57216F3094E2}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11.tlb" Type="0"/>
+    <ROW Component="OraOLEDB11d.dll" ComponentId="{BCD5968D-CFAF-4224-A57E-25A4FDE9DD6B}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11d.dll"/>
+    <ROW Component="OraOLEDB11e.dll" ComponentId="{5E69780F-C99F-4E55-9C3B-EB54DEC8DF89}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11e.dll"/>
+    <ROW Component="OraOLEDB11f.dll" ComponentId="{A8A0AD74-1D20-48ED-9823-28F013F95184}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11f.dll"/>
+    <ROW Component="OraOLEDB11i.dll" ComponentId="{7F4C3CB3-B6D0-46A1-AFF7-9F764C13CE05}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11i.dll"/>
+    <ROW Component="OraOLEDB11ja.dll" ComponentId="{3E252AF8-D294-4EDE-A606-388D6C8BCB42}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11ja.dll"/>
+    <ROW Component="OraOLEDB11ko.dll" ComponentId="{6B05FDF3-86B5-442E-90F8-D29109D8564C}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11ko.dll"/>
+    <ROW Component="OraOLEDB11ptb.dll" ComponentId="{5BCAC45E-001D-46DE-BC14-B68106B944FA}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11ptb.dll"/>
+    <ROW Component="OraOLEDB11us.dll" ComponentId="{37F51422-6947-4797-8679-A66522E42F02}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11us.dll"/>
+    <ROW Component="OraOLEDB11zhs.dll" ComponentId="{F0DC36A0-54EF-4E6D-8650-47FE4DC548C2}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11zhs.dll"/>
+    <ROW Component="OraOLEDB11zht.dll" ComponentId="{1FD5FCBA-18C0-4A95-93EC-4F536576382F}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDB11zht.dll"/>
+    <ROW Component="OraOLEDBgmr11.dll" ComponentId="{94D0C6DF-5F10-4C76-85ED-EA1AAFA414C9}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDBgmr11.dll"/>
+    <ROW Component="OraOLEDBpus11.dll" ComponentId="{8B526575-E961-484A-8A3A-9CF8FF0BB27B}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDBpus11.dll"/>
+    <ROW Component="OraOLEDBrfc11.dll" ComponentId="{DB1B0587-15FA-4F60-A438-EDE493205116}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDBrfc11.dll"/>
+    <ROW Component="OraOLEDBrmc11.dll" ComponentId="{337B7D3C-0200-4135-BAED-69B7D333FB23}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDBrmc11.dll"/>
+    <ROW Component="OraOLEDBrst11.dll" ComponentId="{217685DF-2E44-4DDB-BB59-184A567B90AB}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDBrst11.dll"/>
+    <ROW Component="OraOLEDButl11.dll" ComponentId="{931EC450-574B-417E-AC53-1059365FEE0B}" Directory_="bin_DIR" Attributes="0" KeyPath="OraOLEDButl11.dll"/>
+    <ROW Component="OraOledbIC11.dll" ComponentId="{E1A5FEA1-4C89-448C-A23D-30CE62C3356F}" Directory_="oledb_DIR" Attributes="0" KeyPath="OraOledbIC11.dll"/>
     <ROW Component="PlayCtrl.dll" ComponentId="{15D8EB8A-6525-4199-8E2D-F7FBA27C6E70}" Directory_="APPDIR" Attributes="0" KeyPath="PlayCtrl.dll"/>
-    <ROW Component="PlayCtrl.dll_1" ComponentId="{1073C5FE-8C6C-462B-874F-512BDC41356E}" Directory_="__1_DIR" Attributes="0" KeyPath="PlayCtrl.dll_1"/>
-    <ROW Component="PlayerSDK.dll" ComponentId="{FAA8739C-40C6-4AA5-ABFB-32687B3F7FFB}" Directory_="__2_DIR" Attributes="0" KeyPath="PlayerSDK.dll"/>
-    <ROW Component="RealMp4En.dll" ComponentId="{097CE8A7-FFFF-4F4E-85FF-C4C061B63232}" Directory_="__2_DIR" Attributes="0" KeyPath="RealMp4En.dll"/>
-    <ROW Component="RealMp4Play.exe" ComponentId="{16B4421F-22EE-4D17-B771-142B21D620A5}" Directory_="__2_DIR" Attributes="0" KeyPath="RealMp4Play.exe"/>
+    <ROW Component="RTSPClientSync.dll" ComponentId="{8EC32C38-4A60-4E66-8445-2AADCD58C3B2}" Directory_="APPDIR" Attributes="0" KeyPath="RTSPClientSync.dll"/>
     <ROW Component="SHORTCUTDIR" ComponentId="{7CAA7926-25DF-4216-8E2A-4B3C9DA30791}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="SecureUpdate.dll" ComponentId="{9D39D0F2-CBA2-44ED-8098-3A93B9A4C4B3}" Directory_="__4_DIR" Attributes="0" KeyPath="SecureUpdate.dll"/>
-    <ROW Component="SecureUpdateUtility.dll" ComponentId="{62198C35-6B8F-410D-B657-73D1E5510D51}" Directory_="zh_CN_DIR" Attributes="0" KeyPath="SecureUpdateUtility.dll"/>
-    <ROW Component="SingleDecode.dll" ComponentId="{7C96799A-D656-4A99-9326-A5DD4F05F68E}" Directory_="__1_DIR" Attributes="0" KeyPath="SingleDecode.dll"/>
+    <ROW Component="StreamClient.dll" ComponentId="{476F87D3-4175-46EE-881C-86BB6D22FB32}" Directory_="APPDIR" Attributes="0" KeyPath="StreamClient.dll"/>
     <ROW Component="StreamTransClient.dll" ComponentId="{F46A26C5-5BF7-44F1-B122-A523224F196B}" Directory_="APPDIR" Attributes="0" KeyPath="StreamTransClient.dll"/>
     <ROW Component="SystemTransform.dll" ComponentId="{898BCA9F-ACCF-40A0-83DA-64A4A3544BF9}" Directory_="APPDIR" Attributes="0" KeyPath="SystemTransform.dll"/>
-    <ROW Component="UpdateTool.exe" ComponentId="{8175EB86-56E8-4115-A47D-7C634D20D769}" Directory_="__4_DIR" Attributes="0" KeyPath="UpdateTool.exe"/>
-    <ROW Component="VSPlayer.exe" ComponentId="{D05224CB-7279-490E-BA21-10B011F76AA6}" Directory_="__1_DIR" Attributes="0" KeyPath="VSPlayer.exe"/>
+    <ROW Component="TransportEngine.dll" ComponentId="{E8D9E799-08A6-4D00-B999-69B1B6E45AB3}" Directory_="APPDIR" Attributes="0" KeyPath="TransportEngine.dll"/>
     <ROW Component="YiRongCarDetectAIO.exe" ComponentId="{4B4EB8B2-2267-4165-B006-88043EE2125D}" Directory_="APPDIR" Attributes="0" KeyPath="YiRongCarDetectAIO.exe"/>
-    <ROW Component="_" ComponentId="{48AAD986-ED82-495F-B18D-67911F296C2A}" Directory_="__3_DIR" Attributes="0"/>
+    <ROW Component="adrci.exe" ComponentId="{3B590F1F-5D76-4AC9-8756-0F7D4CDB0268}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="adrci.exe"/>
+    <ROW Component="adrci.sym" ComponentId="{7430740D-4BA5-4EB2-9672-497CEE43040C}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="adrci.sym" Type="0"/>
+    <ROW Component="atl80.dll" ComponentId="{DDD0220A-26CA-4A4F-8CC3-FF85165B4C1B}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="atl80.dll"/>
     <ROW Component="avcodec.dll" ComponentId="{D8BA1044-985F-446E-ABB3-EC15580AF512}" Directory_="APPDIR" Attributes="0" KeyPath="avcodec.dll"/>
     <ROW Component="avdevice.dll" ComponentId="{9C1A1E54-924B-4E7B-BDE4-EAA156545679}" Directory_="APPDIR" Attributes="0" KeyPath="avdevice.dll"/>
     <ROW Component="avfilter.dll" ComponentId="{C08ECB65-C0E8-4CA2-BA26-98818103642B}" Directory_="APPDIR" Attributes="0" KeyPath="avfilter.dll"/>
     <ROW Component="avformat.dll" ComponentId="{48E93A74-FCBA-45B3-A017-FB39509443D6}" Directory_="APPDIR" Attributes="0" KeyPath="avformat.dll"/>
     <ROW Component="avutil.dll" ComponentId="{90313A6A-3D40-4A38-B350-A41210D81C5C}" Directory_="APPDIR" Attributes="0" KeyPath="avutil.dll"/>
     <ROW Component="bj.wav" ComponentId="{A77C339D-635C-4BAD-85BB-F2F7998EFE2C}" Directory_="APPDIR" Attributes="0" KeyPath="bj.wav" Type="0"/>
+    <ROW Component="configure.bat" ComponentId="{E28B8D64-2C79-447E-9D41-602BA13E9C2F}" Directory_="ODAC_DIR" Attributes="0" KeyPath="configure.bat" Type="0"/>
     <ROW Component="dhdvr.dll" ComponentId="{174C88FB-8766-4F0F-AD25-1857A57053AB}" Directory_="APPDIR" Attributes="0" KeyPath="dhdvr.dll"/>
     <ROW Component="dhnetsdk.dll" ComponentId="{3BFAD32C-B3DB-4841-930C-569C71A32E45}" Directory_="APPDIR" Attributes="0" KeyPath="dhnetsdk.dll"/>
     <ROW Component="dhplay.dll" ComponentId="{432FAF62-8070-47AC-8D82-1D45F200A4F4}" Directory_="APPDIR" Attributes="0" KeyPath="dhplay.dll"/>
-    <ROW Component="dhplay.dll_1" ComponentId="{3FC85D59-B67B-4482-8CFE-ADE8F7B99727}" Directory_="__DIR" Attributes="0" KeyPath="dhplay.dll_1"/>
     <ROW Component="dllh264.dll" ComponentId="{918179CD-FD69-4399-B084-1B901580B16B}" Directory_="APPDIR" Attributes="0" KeyPath="dllh264.dll"/>
-    <ROW Component="dllh264.dll_1" ComponentId="{4A1A3925-47FA-4227-9E74-867E33794BF9}" Directory_="__DIR" Attributes="0" KeyPath="dllh264.dll_1"/>
-    <ROW Component="dllmpeg4.dll" ComponentId="{5708048C-8010-4D04-9131-7384482EAADF}" Directory_="__DIR" Attributes="0" KeyPath="dllmpeg4.dll"/>
-    <ROW Component="en.lan" ComponentId="{572B796A-2BEF-4DE5-ACD8-5415D1716922}" Directory_="lang_RealMp4Play_DIR" Attributes="0" KeyPath="en.lan" Type="0"/>
-    <ROW Component="exe" ComponentId="{CD19F171-CAC4-4486-BFC6-DE4AA4847B51}" Directory_="APPDIR" Attributes="0" KeyPath="exe"/>
-    <ROW Component="exe_1" ComponentId="{A8F1BDAC-D344-4D98-8EF2-EAA2C7B06E30}" Directory_="APPDIR" Attributes="0" KeyPath="exe_1"/>
-    <ROW Component="explore2fs.exe" ComponentId="{37919303-E9C3-4E5E-80C2-C9D0B5372B2E}" Directory_="__2_DIR" Attributes="0" KeyPath="explore2fs.exe"/>
+    <ROW Component="genezi.exe" ComponentId="{A8031162-CB0A-4FC4-A229-850C5BAB8A9F}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="genezi.exe"/>
+    <ROW Component="hLog.dll" ComponentId="{88A31E47-A597-4E04-A148-51C44F2A13CC}" Directory_="APPDIR" Attributes="0" KeyPath="hLog.dll"/>
     <ROW Component="hi_h264dec_w.dll" ComponentId="{A0CBC2FB-4D23-4235-9C50-078F7E356155}" Directory_="APPDIR" Attributes="0" KeyPath="hi_h264dec_w.dll"/>
-    <ROW Component="hi_h264dec_w.dll_1" ComponentId="{4EDBCB99-ED8D-4492-A7BD-C73D51E36A56}" Directory_="__2_DIR" Attributes="0" KeyPath="hi_h264dec_w.dll_1"/>
+    <ROW Component="hpr.dll" ComponentId="{450497B4-3EEF-4797-89D5-03E3C2EBC77C}" Directory_="APPDIR" Attributes="0" KeyPath="hpr.dll"/>
+    <ROW Component="installodac.bat" ComponentId="{C8C60126-CE78-407B-8AB6-D109ACC95684}" Directory_="APPDIR" Attributes="0" KeyPath="installodac.bat"/>
     <ROW Component="jpeg8.dll" ComponentId="{7B63EA37-D381-4A89-BE91-0BD9AF715664}" Directory_="APPDIR" Attributes="0" KeyPath="jpeg8.dll"/>
-    <ROW Component="jpegdec.dll" ComponentId="{80D1FCCF-70AE-4299-B3D9-8D11AA58AC26}" Directory_="__DIR" Attributes="0" KeyPath="jpegdec.dll"/>
-    <ROW Component="mfc90u.dll" ComponentId="{4E840B85-EDB1-48C1-8A11-93B0DDA7652B}" Directory_="__1_DIR" Attributes="0" KeyPath="mfc90u.dll"/>
+    <ROW Component="mfc71.dll" ComponentId="{C9C03C0F-4AB2-44AF-A0CE-61D08E1C1B2A}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="mfc71.dll"/>
+    <ROW Component="mfc80.dll" ComponentId="{7F6A2A15-EE59-4708-9FB3-D5AAC5794D58}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="mfc80.dll"/>
+    <ROW Component="mfc80u.dll" ComponentId="{B5531025-26D4-44CE-911A-61E1826D0F96}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="mfc80u.dll"/>
+    <ROW Component="mfcm80.dll" ComponentId="{BC1BA09C-E257-4CC0-B347-701D1EC3948E}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="mfcm80.dll"/>
+    <ROW Component="mfcm80u.dll" ComponentId="{08F50D37-390C-48C1-B1C1-A112A8090099}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="mfcm80u.dll"/>
     <ROW Component="msado15.dll" ComponentId="{F5425976-CF87-451D-B21A-60CB8001820C}" Directory_="APPDIR" Attributes="0" KeyPath="msado15.dll"/>
+    <ROW Component="msvcm80.dll" ComponentId="{E8326685-0834-4651-BAF0-94FED6381779}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="msvcm80.dll"/>
+    <ROW Component="msvcp80.dll" ComponentId="{51CC2940-7AB7-4FA5-AB06-0950CB40AB54}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="msvcp80.dll"/>
     <ROW Component="msvcr100.dll" ComponentId="{4AD14C2B-1E9D-470A-9B31-0E95CA5E7CFF}" Directory_="APPDIR" Attributes="0" KeyPath="msvcr100.dll"/>
-    <ROW Component="msvcr90.dll" ComponentId="{AC0B7699-E1F4-4AFC-B528-2EBB9D396A4E}" Directory_="__1_DIR" Attributes="0" KeyPath="msvcr90.dll"/>
-    <ROW Component="plate_dll.dll" ComponentId="{7B98BDDB-3DE9-4E66-B116-1C5AB1F3AA1C}" Directory_="APPDIR" Attributes="0" KeyPath="plate_dll.dll"/>
-    <ROW Component="player264demo.exe" ComponentId="{71A62757-B9DB-4363-A081-79EAED47A5E1}" Directory_="__DIR" Attributes="0" KeyPath="player264demo.exe"/>
+    <ROW Component="msvcr71.dll" ComponentId="{008AB3DA-7060-4D6C-9D17-B50CECE30E47}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="msvcr71.dll"/>
+    <ROW Component="msvcr80.dll" ComponentId="{F6144FE0-D1EA-46C4-8C6B-1794215992D3}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="msvcr80.dll"/>
+    <ROW Component="oci.dll" ComponentId="{3311C55E-A18F-4A00-9046-D9B3C267545D}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="oci.dll"/>
+    <ROW Component="ocijdbc11.dll" ComponentId="{635344D5-78FB-4A92-B507-9912FF7A0489}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="ocijdbc11.dll"/>
+    <ROW Component="ociw32.dll" ComponentId="{EDCAA1D5-DE7C-42B3-9B60-7EE714FCB7D4}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="ociw32.dll"/>
+    <ROW Component="orannzsbb11.dll" ComponentId="{9ECAD469-79E3-43E9-A19C-89B552233362}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="orannzsbb11.dll"/>
+    <ROW Component="oraocci11.dll" ComponentId="{2BD7C0FD-050C-4DD6-9E28-3A945D15F9E9}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="oraocci11.dll"/>
+    <ROW Component="oraocci11.dll_1" ComponentId="{A782DDF2-0B71-4BAB-A0FB-6C02286C32A9}" Directory_="vc8_DIR" Attributes="0" KeyPath="oraocci11.dll_1"/>
+    <ROW Component="oraocci11.dll_2" ComponentId="{AE463504-5ED6-417D-B6D8-D91638176126}" Directory_="vc9_DIR" Attributes="0" KeyPath="oraocci11.dll_2"/>
+    <ROW Component="oraocci11.sym" ComponentId="{237B2AFC-54DE-46F2-A9CE-2F257D18394D}" Directory_="vc8_DIR" Attributes="0" KeyPath="oraocci11.sym_1" Type="0"/>
+    <ROW Component="oraocci11.sym_1" ComponentId="{C7EF0BD0-8B5E-4712-8185-E26D776F860C}" Directory_="vc9_DIR" Attributes="0" KeyPath="oraocci11.sym_2" Type="0"/>
+    <ROW Component="oraociei11.dll" ComponentId="{6F9999C4-1169-4889-AC5C-3E9AD360931E}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="oraociei11.dll"/>
+    <ROW Component="orasql11.dll" ComponentId="{D317D98E-92A5-43E3-BB8B-3A47269C2459}" Directory_="instantclient_11_2_DIR" Attributes="0" KeyPath="orasql11.dll"/>
     <ROW Component="pthreadGC2.dll" ComponentId="{F4FB1B3C-EC89-498E-8823-F29A62156117}" Directory_="APPDIR" Attributes="0" KeyPath="pthreadGC2.dll"/>
+    <ROW Component="readme.txt" ComponentId="{E25FEB78-6878-47FF-8904-C0E6824DDCA6}" Directory_="oledb_1_DIR" Attributes="0" KeyPath="readme.txt" Type="0"/>
     <ROW Component="swscale.dll" ComponentId="{DEC23F04-93E6-41EF-B3F6-04733E9B5C7F}" Directory_="APPDIR" Attributes="0" KeyPath="swscale.dll"/>
+    <ROW Component="unstallodac.bat" ComponentId="{F5152F2D-A67F-4D0B-826F-E58097A872A7}" Directory_="APPDIR" Attributes="0" KeyPath="unstallodac.bat"/>
     <ROW Component="xvidcore.dll" ComponentId="{05736D86-62B5-43A3-9879-6C9501466389}" Directory_="APPDIR" Attributes="0" KeyPath="xvidcore.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="AI32BitFiles" Title="32-bit" Description="32-bit Executables and Libraries" Display="3" Level="1" Directory_="APPDIR" Attributes="0" Components="SHORTCUTDIR"/>
-    <ROW Feature="AIOtherFiles" Title="Common" Description="Shared Resource and Regular Files" Display="5" Level="1" Directory_="APPDIR" Attributes="0" Components="en.lan"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="描述" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AACDecoder.dll AI_ExePath AmrDll.dll CamSearch.dll DataBaseConfig.exe DecNetCtrl.dll DecTrans.dll DllDeinterlace.dll DllDeinterlace.dll_1 FileAnalyzer.dll FileEdit.dll FormatConvertDll.dll HCNetSDK.dll LAudioFilter.ax MP3Decoder.dll Microsoft.VC90.CRT.manifest NetClient.dll NetPlaySDK.dll PlayCtrl.dll PlayCtrl.dll_1 PlayerSDK.dll RealMp4En.dll RealMp4Play.exe SecureUpdate.dll SecureUpdateUtility.dll SingleDecode.dll StreamTransClient.dll SystemTransform.dll UpdateTool.exe VSPlayer.exe YiRongCarDetectAIO.exe _ avcodec.dll avdevice.dll avfilter.dll avformat.dll avutil.dll bj.wav dhdvr.dll dhnetsdk.dll dhplay.dll dhplay.dll_1 dllh264.dll dllh264.dll_1 dllmpeg4.dll exe exe_1 explore2fs.exe hi_h264dec_w.dll hi_h264dec_w.dll_1 jpeg8.dll jpegdec.dll mfc90u.dll msado15.dll msvcr100.dll msvcr90.dll plate_dll.dll player264demo.exe pthreadGC2.dll swscale.dll xvidcore.dll"/>
+    <ROW Feature="AIOtherFiles" Title="Common" Description="Shared Resource and Regular Files" Display="5" Level="1" Directory_="APPDIR" Attributes="0"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="描述" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_ExePath DataBaseConfig.exe DllDeinterlace.dll HCNetSDK.dll NetClient.dll NetPlaySDK.dll OraOLEDB11.dll OraOLEDB11.tlb OraOLEDB11d.dll OraOLEDB11e.dll OraOLEDB11f.dll OraOLEDB11i.dll OraOLEDB11ja.dll OraOLEDB11ko.dll OraOLEDB11ptb.dll OraOLEDB11us.dll OraOLEDB11zhs.dll OraOLEDB11zht.dll OraOLEDBgmr11.dll OraOLEDBpus11.dll OraOLEDBrfc11.dll OraOLEDBrmc11.dll OraOLEDBrst11.dll OraOLEDButl11.dll OraOledbIC11.dll PlayCtrl.dll RTSPClientSync.dll StreamClient.dll StreamTransClient.dll SystemTransform.dll TransportEngine.dll YiRongCarDetectAIO.exe adrci.exe adrci.sym atl80.dll avcodec.dll avdevice.dll avfilter.dll avformat.dll avutil.dll bj.wav configure.bat dhdvr.dll dhnetsdk.dll dhplay.dll dllh264.dll genezi.exe hLog.dll hi_h264dec_w.dll hpr.dll installodac.bat jpeg8.dll mfc71.dll mfc80.dll mfc80u.dll mfcm80.dll mfcm80u.dll msado15.dll msvcm80.dll msvcp80.dll msvcr100.dll msvcr71.dll msvcr80.dll oci.dll ocijdbc11.dll ociw32.dll orannzsbb11.dll oraocci11.dll oraocci11.dll_1 oraocci11.dll_2 oraocci11.sym oraocci11.sym_1 oraociei11.dll orasql11.dll pthreadGC2.dll readme.txt swscale.dll unstallodac.bat xvidcore.dll"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="AACDecoder.dll" Component_="AACDecoder.dll" FileName="AACDec~1.dll|AACDecoder.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\AACDecoder.dll" SelfReg="false" NextFile="AmrDll.dll"/>
-    <ROW File="AmrDll.dll" Component_="AmrDll.dll" FileName="AmrDll.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\AmrDll.dll" SelfReg="false" NextFile="dhplay.dll_1"/>
-    <ROW File="CamSearch.dll" Component_="CamSearch.dll" FileName="CamSea~1.dll|CamSearch.dll" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\CamSearch.dll" SelfReg="false" NextFile="DecNetCtrl.dll"/>
+    <ROW File="BASIC_README" Component_="adrci.sym" FileName="BASIC_~1|BASIC_README" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\BASIC_README" SelfReg="false" NextFile="genezi.exe"/>
     <ROW File="DataBaseConfig.exe" Component_="DataBaseConfig.exe" FileName="DataBa~1.exe|DataBaseConfig.exe" Attributes="0" SourcePath="..\电动车客户端\DataBaseConfig.exe" SelfReg="false" NextFile="DataBaseConfig.txt"/>
     <ROW File="DataBaseConfig.txt" Component_="bj.wav" FileName="DataBa~1.txt|DataBaseConfig.txt" Attributes="0" SourcePath="..\电动车客户端\DataBaseConfig.txt" SelfReg="false" NextFile="dhdvr.dll"/>
-    <ROW File="DecNetCtrl.dll" Component_="DecNetCtrl.dll" FileName="DecNet~1.dll|DecNetCtrl.dll" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\DecNetCtrl.dll" SelfReg="false" NextFile="DecTrans.dll"/>
-    <ROW File="DecTrans.dll" Component_="DecTrans.dll" FileName="DecTrans.dll" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\DecTrans.dll" SelfReg="false" NextFile="explore2fs.exe"/>
     <ROW File="DllDeinterlace.dll" Component_="DllDeinterlace.dll" FileName="DllDei~1.dll|DllDeinterlace.dll" Attributes="0" SourcePath="..\电动车客户端\DllDeinterlace.dll" SelfReg="false" NextFile="dllh264.dll"/>
-    <ROW File="DllDeinterlace.dll_1" Component_="DllDeinterlace.dll_1" FileName="DllDei~1.dll|DllDeinterlace.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\DllDeinterlace.dll" SelfReg="false" NextFile="dllh264.dll_1"/>
-    <ROW File="FileAnalyzer.dll" Component_="FileAnalyzer.dll" FileName="FileAn~1.dll|FileAnalyzer.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\FileAnalyzer.dll" SelfReg="false" NextFile="FileEdit.dll"/>
-    <ROW File="FileEdit.dll" Component_="FileEdit.dll" FileName="FileEdit.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\FileEdit.dll" SelfReg="false" NextFile="FormatConvertDll.dll"/>
-    <ROW File="FormatConvertDll.dll" Component_="FormatConvertDll.dll" FileName="Format~1.dll|FormatConvertDll.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\FormatConvertDll.dll" SelfReg="false" NextFile="mfc90u.dll"/>
     <ROW File="HCNetSDK.dll" Component_="HCNetSDK.dll" FileName="HCNetSDK.dll" Attributes="0" SourcePath="..\电动车客户端\HCNetSDK.dll" SelfReg="false" NextFile="hi_h264dec_w.dll"/>
-    <ROW File="LAudioFilter.ax" Component_="LAudioFilter.ax" FileName="LAudio~1.ax|LAudioFilter.ax" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\LAudioFilter.ax" SelfReg="false" NextFile="LParser.ax"/>
-    <ROW File="LParser.ax" Component_="LAudioFilter.ax" FileName="LParser.ax" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\LParser.ax" SelfReg="false" NextFile="LVideoFilter.ax"/>
-    <ROW File="LVideoFilter.ax" Component_="LAudioFilter.ax" FileName="LVideo~1.ax|LVideoFilter.ax" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\LVideoFilter.ax" SelfReg="false" NextFile="PlayerSDK.dll"/>
-    <ROW File="MP3Decoder.dll" Component_="MP3Decoder.dll" FileName="MP3Dec~1.dll|MP3Decoder.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\MP3Decoder.dll" SelfReg="false" NextFile="player264demo.exe"/>
-    <ROW File="Microsoft.VC90.CRT.manifest" Component_="Microsoft.VC90.CRT.manifest" FileName="Micros~1.man|Microsoft.VC90.CRT.manifest" Attributes="0" SourcePath="..\电动车客户端\海康播放器\Microsoft.VC90.CRT.manifest" SelfReg="false" NextFile="Microsoft.VC90.MFC.manifest"/>
-    <ROW File="Microsoft.VC90.MFC.manifest" Component_="Microsoft.VC90.CRT.manifest" FileName="Micros~2.man|Microsoft.VC90.MFC.manifest" Attributes="0" SourcePath="..\电动车客户端\海康播放器\Microsoft.VC90.MFC.manifest" SelfReg="false" NextFile="msvcr90.dll"/>
+    <ROW File="Microsoft.VC80.ATL.manifest" Component_="adrci.sym" FileName="Micros~1.man|Microsoft.VC80.ATL.manifest" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\Microsoft.VC80.ATL.manifest" SelfReg="false" NextFile="Microsoft.VC80.CRT.manifest"/>
+    <ROW File="Microsoft.VC80.CRT.manifest" Component_="adrci.sym" FileName="Micros~2.man|Microsoft.VC80.CRT.manifest" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\Microsoft.VC80.CRT.manifest" SelfReg="false" NextFile="Microsoft.VC80.MFC.manifest"/>
+    <ROW File="Microsoft.VC80.MFC.manifest" Component_="adrci.sym" FileName="Micros~3.man|Microsoft.VC80.MFC.manifest" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\Microsoft.VC80.MFC.manifest" SelfReg="false" NextFile="msvcm80.dll"/>
     <ROW File="NetClient.dll" Component_="NetClient.dll" FileName="NetCli~1.dll|NetClient.dll" Attributes="0" SourcePath="..\电动车客户端\NetClient.dll" SelfReg="false" NextFile="NetPlaySDK.dll"/>
-    <ROW File="NetPlaySDK.dll" Component_="NetPlaySDK.dll" FileName="NetPla~1.dll|NetPlaySDK.dll" Attributes="0" SourcePath="..\电动车客户端\NetPlaySDK.dll" SelfReg="false" NextFile="plate_dll.dll"/>
+    <ROW File="NetPlaySDK.dll" Component_="NetPlaySDK.dll" FileName="NetPla~1.dll|NetPlaySDK.dll" Attributes="0" SourcePath="..\电动车客户端\NetPlaySDK.dll" SelfReg="false" NextFile="PlayCtrl.dll"/>
+    <ROW File="OraOLEDB11.dll" Component_="OraOLEDB11.dll" FileName="OraOLE~1.dll|OraOLEDB11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11.dll" SelfReg="false" NextFile="OraOLEDB11.tlb"/>
+    <ROW File="OraOLEDB11.tlb" Component_="OraOLEDB11.tlb" FileName="OraOLE~1.tlb|OraOLEDB11.tlb" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11.tlb" SelfReg="false" NextFile="OraOLEDB11d.dll"/>
+    <ROW File="OraOLEDB11d.dll" Component_="OraOLEDB11d.dll" FileName="OraOLE~2.dll|OraOLEDB11d.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11d.dll" SelfReg="false" NextFile="OraOLEDB11e.dll"/>
+    <ROW File="OraOLEDB11e.dll" Component_="OraOLEDB11e.dll" FileName="OraOLE~3.dll|OraOLEDB11e.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11e.dll" SelfReg="false" NextFile="OraOLEDB11f.dll"/>
+    <ROW File="OraOLEDB11f.dll" Component_="OraOLEDB11f.dll" FileName="OraOLE~4.dll|OraOLEDB11f.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11f.dll" SelfReg="false" NextFile="OraOLEDB11i.dll"/>
+    <ROW File="OraOLEDB11i.dll" Component_="OraOLEDB11i.dll" FileName="OraOLE~5.dll|OraOLEDB11i.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11i.dll" SelfReg="false" NextFile="OraOLEDB11ja.dll"/>
+    <ROW File="OraOLEDB11ja.dll" Component_="OraOLEDB11ja.dll" FileName="OraOLE~6.dll|OraOLEDB11ja.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11ja.dll" SelfReg="false" NextFile="OraOLEDB11ko.dll"/>
+    <ROW File="OraOLEDB11ko.dll" Component_="OraOLEDB11ko.dll" FileName="OraOLE~7.dll|OraOLEDB11ko.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11ko.dll" SelfReg="false" NextFile="OraOLEDB11ptb.dll"/>
+    <ROW File="OraOLEDB11ptb.dll" Component_="OraOLEDB11ptb.dll" FileName="OraOLE~8.dll|OraOLEDB11ptb.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11ptb.dll" SelfReg="false" NextFile="OraOLEDB11us.dll"/>
+    <ROW File="OraOLEDB11us.dll" Component_="OraOLEDB11us.dll" FileName="OraOLE~9.dll|OraOLEDB11us.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11us.dll" SelfReg="false" NextFile="OraOLEDB11zhs.dll"/>
+    <ROW File="OraOLEDB11zhs.dll" Component_="OraOLEDB11zhs.dll" FileName="OraOL~10.dll|OraOLEDB11zhs.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11zhs.dll" SelfReg="false" NextFile="OraOLEDB11zht.dll"/>
+    <ROW File="OraOLEDB11zht.dll" Component_="OraOLEDB11zht.dll" FileName="OraOL~11.dll|OraOLEDB11zht.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDB11zht.dll" SelfReg="false" NextFile="OraOLEDBgmr11.dll"/>
+    <ROW File="OraOLEDBgmr11.dll" Component_="OraOLEDBgmr11.dll" FileName="OraOL~12.dll|OraOLEDBgmr11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDBgmr11.dll" SelfReg="false" NextFile="OraOLEDBpus11.dll"/>
+    <ROW File="OraOLEDBpus11.dll" Component_="OraOLEDBpus11.dll" FileName="OraOL~13.dll|OraOLEDBpus11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDBpus11.dll" SelfReg="false" NextFile="OraOLEDBrfc11.dll"/>
+    <ROW File="OraOLEDBrfc11.dll" Component_="OraOLEDBrfc11.dll" FileName="OraOL~14.dll|OraOLEDBrfc11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDBrfc11.dll" SelfReg="false" NextFile="OraOLEDBrmc11.dll"/>
+    <ROW File="OraOLEDBrmc11.dll" Component_="OraOLEDBrmc11.dll" FileName="OraOL~15.dll|OraOLEDBrmc11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDBrmc11.dll" SelfReg="false" NextFile="OraOLEDBrst11.dll"/>
+    <ROW File="OraOLEDBrst11.dll" Component_="OraOLEDBrst11.dll" FileName="OraOL~16.dll|OraOLEDBrst11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDBrst11.dll" SelfReg="false" NextFile="OraOLEDButl11.dll"/>
+    <ROW File="OraOLEDButl11.dll" Component_="OraOLEDButl11.dll" FileName="OraOL~17.dll|OraOLEDButl11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\bin\OraOLEDButl11.dll" SelfReg="false" NextFile="readme.txt"/>
+    <ROW File="OraOledbIC11.dll" Component_="OraOledbIC11.dll" FileName="OraOle~1.dll|OraOledbIC11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\OraOledbIC11.dll" SelfReg="false" NextFile="readme.txt_1"/>
     <ROW File="PlayCtrl.dll" Component_="PlayCtrl.dll" FileName="PlayCtrl.dll" Attributes="0" SourcePath="..\电动车客户端\PlayCtrl.dll" SelfReg="false" NextFile="pthreadGC2.dll"/>
-    <ROW File="PlayCtrl.dll_1" Component_="PlayCtrl.dll_1" FileName="PlayCtrl.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\PlayCtrl.dll" SelfReg="false" NextFile="SingleDecode.dll"/>
-    <ROW File="PlayerSDK.dll" Component_="PlayerSDK.dll" FileName="Player~1.dll|PlayerSDK.dll" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\PlayerSDK.dll" SelfReg="false" NextFile="RealMp4En.dll"/>
-    <ROW File="RealMp4En.dll" Component_="RealMp4En.dll" FileName="RealMp~1.dll|RealMp4En.dll" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\RealMp4En.dll" SelfReg="false" NextFile="RealMp4Play.exe"/>
-    <ROW File="RealMp4Play.exe" Component_="RealMp4Play.exe" FileName="RealMp~1.exe|RealMp4Play.exe" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\RealMp4Play.exe" SelfReg="false"/>
-    <ROW File="SecureUpdate.dll" Component_="SecureUpdate.dll" FileName="Secure~1.dll|SecureUpdate.dll" Attributes="0" SourcePath="..\电动车客户端\加密狗升级\SecureUpdate.dll" SelfReg="false" NextFile="UpdateTool.exe"/>
-    <ROW File="SecureUpdateUtility.dll" Component_="SecureUpdateUtility.dll" FileName="Secure~1.dll|SecureUpdateUtility.dll" Attributes="0" SourcePath="..\电动车客户端\加密狗升级\Language Packs\zh_CN\SecureUpdateUtility.dll" SelfReg="false" NextFile="SecureUpdate.dll"/>
-    <ROW File="SingleDecode.dll" Component_="SingleDecode.dll" FileName="Single~1.dll|SingleDecode.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\SingleDecode.dll" SelfReg="false" NextFile="VSPlayer.exe"/>
+    <ROW File="RTSPClientSync.dll" Component_="RTSPClientSync.dll" FileName="RTSPCl~1.dll|RTSPClientSync.dll" Attributes="0" SourcePath="..\电动车客户端\RTSPClientSync.dll" SelfReg="false" NextFile="StreamClient.dll"/>
+    <ROW File="StreamClient.dll" Component_="StreamClient.dll" FileName="Stream~2.dll|StreamClient.dll" Attributes="0" SourcePath="..\电动车客户端\StreamClient.dll" SelfReg="false" NextFile="TransportEngine.dll"/>
     <ROW File="StreamTransClient.dll" Component_="StreamTransClient.dll" FileName="Stream~1.dll|StreamTransClient.dll" Attributes="0" SourcePath="..\电动车客户端\StreamTransClient.dll" SelfReg="false" NextFile="swscale.dll"/>
     <ROW File="SystemTransform.dll" Component_="SystemTransform.dll" FileName="System~1.dll|SystemTransform.dll" Attributes="0" SourcePath="..\电动车客户端\SystemTransform.dll" SelfReg="false" NextFile="xvidcore.dll"/>
-    <ROW File="UpdateTool.exe" Component_="UpdateTool.exe" FileName="Update~1.exe|UpdateTool.exe" Attributes="0" SourcePath="..\电动车客户端\加密狗升级\UpdateTool.exe" SelfReg="false" NextFile="CamSearch.dll"/>
-    <ROW File="VSPlayer.exe" Component_="VSPlayer.exe" FileName="VSPlayer.exe" Attributes="0" SourcePath="..\电动车客户端\海康播放器\VSPlayer.exe" SelfReg="false" NextFile="SecureUpdateUtility.dll"/>
-    <ROW File="YRVMDataBaseConfig.txt" Component_="bj.wav" FileName="YRVMDa~1.txt|YRVMDataBaseConfig.txt" Attributes="0" SourcePath="..\电动车客户端\YRVMDataBaseConfig.txt" SelfReg="false" NextFile="YRVMDataBaseConfig125.txt"/>
-    <ROW File="YRVMDataBaseConfig125.txt" Component_="bj.wav" FileName="YRVMDa~2.txt|YRVMDataBaseConfig125.txt" Attributes="0" SourcePath="..\电动车客户端\YRVMDataBaseConfig125.txt" SelfReg="false" NextFile="YRVMDataBaseConfigTEST.txt"/>
-    <ROW File="YRVMDataBaseConfigTEST.txt" Component_="bj.wav" FileName="YRVMDa~3.txt|YRVMDataBaseConfigTEST.txt" Attributes="0" SourcePath="..\电动车客户端\YRVMDataBaseConfigTEST.txt" SelfReg="false" NextFile="exe"/>
-    <ROW File="YiRongCarDetectAIO.exe" Component_="YiRongCarDetectAIO.exe" FileName="YiRong~1.exe|YiRongCarDetectAIO.exe" Attributes="0" SourcePath="..\电动车客户端\YiRongCarDetectAIO.exe" SelfReg="false" NextFile="YRVMDataBaseConfig.txt"/>
+    <ROW File="TransportEngine.dll" Component_="TransportEngine.dll" FileName="Transp~1.dll|TransportEngine.dll" Attributes="0" SourcePath="..\电动车客户端\TransportEngine.dll" SelfReg="false" NextFile="configure.bat"/>
+    <ROW File="YiRongCarDetectAIO.exe" Component_="YiRongCarDetectAIO.exe" FileName="YiRong~1.exe|YiRongCarDetectAIO.exe" Attributes="0" SourcePath="..\电动车客户端\YiRongCarDetectAIO.exe" SelfReg="false" NextFile="hLog.dll"/>
+    <ROW File="adrci.exe" Component_="adrci.exe" FileName="adrci.exe" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\adrci.exe" SelfReg="false" NextFile="adrci.sym"/>
+    <ROW File="adrci.sym" Component_="adrci.sym" FileName="adrci.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\adrci.sym" SelfReg="false" NextFile="atl80.dll"/>
+    <ROW File="atl80.dll" Component_="atl80.dll" FileName="atl80.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\atl80.dll" SelfReg="false" NextFile="BASIC_README"/>
     <ROW File="avcodec.dll" Component_="avcodec.dll" FileName="avcodec.dll" Attributes="0" SourcePath="..\电动车客户端\avcodec.dll" SelfReg="false" NextFile="avdevice.dll"/>
     <ROW File="avdevice.dll" Component_="avdevice.dll" FileName="avdevice.dll" Attributes="0" SourcePath="..\电动车客户端\avdevice.dll" SelfReg="false" NextFile="avfilter.dll"/>
     <ROW File="avfilter.dll" Component_="avfilter.dll" FileName="avfilter.dll" Attributes="0" SourcePath="..\电动车客户端\avfilter.dll" SelfReg="false" NextFile="avformat.dll"/>
     <ROW File="avformat.dll" Component_="avformat.dll" FileName="avformat.dll" Attributes="0" SourcePath="..\电动车客户端\avformat.dll" SelfReg="false" NextFile="avutil.dll"/>
     <ROW File="avutil.dll" Component_="avutil.dll" FileName="avutil.dll" Attributes="0" SourcePath="..\电动车客户端\avutil.dll" SelfReg="false" NextFile="bj.wav"/>
     <ROW File="bj.wav" Component_="bj.wav" FileName="bj.wav" Attributes="0" SourcePath="..\电动车客户端\bj.wav" SelfReg="false" NextFile="DataBaseConfig.exe"/>
+    <ROW File="configure.bat" Component_="configure.bat" FileName="config~1.bat|configure.bat" Attributes="0" SourcePath="..\电动车客户端\ODAC\configure.bat" SelfReg="false" NextFile="install.bat"/>
     <ROW File="dhdvr.dll" Component_="dhdvr.dll" FileName="dhdvr.dll" Attributes="0" SourcePath="..\电动车客户端\dhdvr.dll" SelfReg="false" NextFile="dhnetsdk.dll"/>
     <ROW File="dhnetsdk.dll" Component_="dhnetsdk.dll" FileName="dhnetsdk.dll" Attributes="0" SourcePath="..\电动车客户端\dhnetsdk.dll" SelfReg="false" NextFile="dhplay.dll"/>
     <ROW File="dhplay.dll" Component_="dhplay.dll" FileName="dhplay.dll" Attributes="0" SourcePath="..\电动车客户端\dhplay.dll" SelfReg="false" NextFile="DllDeinterlace.dll"/>
-    <ROW File="dhplay.dll_1" Component_="dhplay.dll_1" FileName="dhplay.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\dhplay.dll" SelfReg="false" NextFile="DllDeinterlace.dll_1"/>
     <ROW File="dllh264.dll" Component_="dllh264.dll" FileName="dllh264.dll" Attributes="0" SourcePath="..\电动车客户端\dllh264.dll" SelfReg="false" NextFile="HCNetSDK.dll"/>
-    <ROW File="dllh264.dll_1" Component_="dllh264.dll_1" FileName="dllh264.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\dllh264.dll" SelfReg="false" NextFile="dllmpeg4.dll"/>
-    <ROW File="dllmpeg4.dll" Component_="dllmpeg4.dll" FileName="dllmpeg4.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\dllmpeg4.dll" SelfReg="false" NextFile="jpegdec.dll"/>
-    <ROW File="en.lan" Component_="en.lan" FileName="en.lan" Attributes="0" SourcePath="..\电动车\亚安播放器\lang_RealMp4Play\en.lan" SelfReg="false" NextFile="zh_cn.lan"/>
-    <ROW File="exe" Component_="exe" FileName="加密狗764~1.exe|加密狗 7.6.4.exe" Attributes="0" SourcePath="..\电动车客户端\加密狗 7.6.4.exe" SelfReg="false" NextFile="exe_1"/>
-    <ROW File="exe_1" Component_="exe_1" FileName="加密狗驱动.exe" Attributes="0" SourcePath="..\电动车客户端\加密狗驱动.exe" SelfReg="false" NextFile="systeminfo.ini"/>
-    <ROW File="explore2fs.exe" Component_="explore2fs.exe" FileName="explor~1.exe|explore2fs.exe" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\explore2fs.exe" SelfReg="false" NextFile="hi_h264dec_w.dll_1"/>
+    <ROW File="genezi.exe" Component_="genezi.exe" FileName="genezi.exe" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\genezi.exe" SelfReg="false" NextFile="genezi.sym"/>
+    <ROW File="genezi.sym" Component_="adrci.sym" FileName="genezi.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\genezi.sym" SelfReg="false" NextFile="mfc71.dll"/>
+    <ROW File="hLog.dll" Component_="hLog.dll" FileName="hLog.dll" Attributes="0" SourcePath="..\电动车客户端\hLog.dll" SelfReg="false" NextFile="hpr.dll"/>
     <ROW File="hi_h264dec_w.dll" Component_="hi_h264dec_w.dll" FileName="hi_h26~1.dll|hi_h264dec_w.dll" Attributes="0" SourcePath="..\电动车客户端\hi_h264dec_w.dll" SelfReg="false" NextFile="jpeg8.dll"/>
-    <ROW File="hi_h264dec_w.dll_1" Component_="hi_h264dec_w.dll_1" FileName="hi_h26~1.dll|hi_h264dec_w.dll" Attributes="0" SourcePath="..\电动车客户端\亚安播放器\hi_h264dec_w.dll" SelfReg="false" NextFile="LAudioFilter.ax"/>
+    <ROW File="hpr.dll" Component_="hpr.dll" FileName="hpr.dll" Attributes="0" SourcePath="..\电动车客户端\hpr.dll" SelfReg="false" NextFile="log4cxx.properties"/>
+    <ROW File="install.bat" Component_="configure.bat" FileName="install.bat" Attributes="0" SourcePath="..\电动车客户端\ODAC\install.bat" SelfReg="false" NextFile="adrci.exe"/>
+    <ROW File="installodac.bat" Component_="installodac.bat" FileName="instal~1.bat|installodac.bat" Attributes="0" SourcePath="..\电动车客户端\installodac.bat" SelfReg="false" NextFile="unstallodac.bat"/>
     <ROW File="jpeg8.dll" Component_="jpeg8.dll" FileName="jpeg8.dll" Attributes="0" SourcePath="..\电动车客户端\jpeg8.dll" SelfReg="false" NextFile="msado15.dll"/>
-    <ROW File="jpegdec.dll" Component_="jpegdec.dll" FileName="jpegdec.dll" Attributes="0" SourcePath="..\电动车客户端\大华播放器\jpegdec.dll" SelfReg="false" NextFile="MP3Decoder.dll"/>
-    <ROW File="mfc90u.dll" Component_="mfc90u.dll" FileName="mfc90u.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\mfc90u.dll" SelfReg="false" NextFile="Microsoft.VC90.CRT.manifest"/>
+    <ROW File="log4cxx.properties" Component_="bj.wav" FileName="log4cx~1.pro|log4cxx.properties" Attributes="0" SourcePath="..\电动车客户端\log4cxx.properties" SelfReg="false" NextFile="RTSPClientSync.dll"/>
+    <ROW File="mfc71.dll" Component_="mfc71.dll" FileName="mfc71.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\mfc71.dll" SelfReg="false" NextFile="mfc80.dll"/>
+    <ROW File="mfc80.dll" Component_="mfc80.dll" FileName="mfc80.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\mfc80.dll" SelfReg="false" NextFile="mfc80u.dll"/>
+    <ROW File="mfc80u.dll" Component_="mfc80u.dll" FileName="mfc80u.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\mfc80u.dll" SelfReg="false" NextFile="mfcm80.dll"/>
+    <ROW File="mfcm80.dll" Component_="mfcm80.dll" FileName="mfcm80.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\mfcm80.dll" SelfReg="false" NextFile="mfcm80u.dll"/>
+    <ROW File="mfcm80u.dll" Component_="mfcm80u.dll" FileName="mfcm80u.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\mfcm80u.dll" SelfReg="false" NextFile="Microsoft.VC80.ATL.manifest"/>
     <ROW File="msado15.dll" Component_="msado15.dll" FileName="msado15.dll" Attributes="0" SourcePath="..\电动车客户端\msado15.dll" SelfReg="false" NextFile="msado15.tlh"/>
     <ROW File="msado15.tlh" Component_="bj.wav" FileName="msado15.tlh" Attributes="0" SourcePath="..\电动车客户端\msado15.tlh" SelfReg="false" NextFile="msado15.tli"/>
     <ROW File="msado15.tli" Component_="bj.wav" FileName="msado15.tli" Attributes="0" SourcePath="..\电动车客户端\msado15.tli" SelfReg="false" NextFile="msvcr100.dll"/>
+    <ROW File="msvcm80.dll" Component_="msvcm80.dll" FileName="msvcm80.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\msvcm80.dll" SelfReg="false" NextFile="msvcp80.dll"/>
+    <ROW File="msvcp80.dll" Component_="msvcp80.dll" FileName="msvcp80.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\msvcp80.dll" SelfReg="false" NextFile="msvcr71.dll"/>
     <ROW File="msvcr100.dll" Component_="msvcr100.dll" FileName="msvcr100.dll" Attributes="0" SourcePath="..\电动车客户端\msvcr100.dll" SelfReg="false" NextFile="NetClient.dll"/>
-    <ROW File="msvcr90.dll" Component_="msvcr90.dll" FileName="msvcr90.dll" Attributes="0" SourcePath="..\电动车客户端\海康播放器\msvcr90.dll" SelfReg="false" NextFile="PlayCtrl.dll_1"/>
-    <ROW File="plate_dll.dll" Component_="plate_dll.dll" FileName="plate_~1.dll|plate_dll.dll" Attributes="0" SourcePath="..\电动车客户端\plate_dll.dll" SelfReg="false" NextFile="PlayCtrl.dll"/>
-    <ROW File="player264demo.exe" Component_="player264demo.exe" FileName="player~1.exe|player264demo.exe" Attributes="0" SourcePath="..\电动车客户端\大华播放器\player264demo.exe" SelfReg="false" NextFile="FileAnalyzer.dll"/>
+    <ROW File="msvcr71.dll" Component_="msvcr71.dll" FileName="msvcr71.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\msvcr71.dll" SelfReg="false" NextFile="msvcr80.dll"/>
+    <ROW File="msvcr80.dll" Component_="msvcr80.dll" FileName="msvcr80.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\msvcr80.dll" SelfReg="false" NextFile="oci.dll"/>
+    <ROW File="oci.dll" Component_="oci.dll" FileName="oci.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\oci.dll" SelfReg="false" NextFile="oci.sym"/>
+    <ROW File="oci.sym" Component_="adrci.sym" FileName="oci.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\oci.sym" SelfReg="false" NextFile="ocijdbc11.dll"/>
+    <ROW File="ocijdbc11.dll" Component_="ocijdbc11.dll" FileName="ocijdb~1.dll|ocijdbc11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\ocijdbc11.dll" SelfReg="false" NextFile="ocijdbc11.sym"/>
+    <ROW File="ocijdbc11.sym" Component_="adrci.sym" FileName="ocijdb~1.sym|ocijdbc11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\ocijdbc11.sym" SelfReg="false" NextFile="ociw32.dll"/>
+    <ROW File="ociw32.dll" Component_="ociw32.dll" FileName="ociw32.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\ociw32.dll" SelfReg="false" NextFile="ociw32.sym"/>
+    <ROW File="ociw32.sym" Component_="adrci.sym" FileName="ociw32.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\ociw32.sym" SelfReg="false" NextFile="ojdbc5.jar"/>
+    <ROW File="ojdbc5.jar" Component_="adrci.sym" FileName="ojdbc5.jar" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\ojdbc5.jar" SelfReg="false" NextFile="ojdbc6.jar"/>
+    <ROW File="ojdbc6.jar" Component_="adrci.sym" FileName="ojdbc6.jar" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\ojdbc6.jar" SelfReg="false" NextFile="orannzsbb11.dll"/>
+    <ROW File="orannzsbb11.dll" Component_="orannzsbb11.dll" FileName="orannz~1.dll|orannzsbb11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\orannzsbb11.dll" SelfReg="false" NextFile="orannzsbb11.sym"/>
+    <ROW File="orannzsbb11.sym" Component_="adrci.sym" FileName="orannz~1.sym|orannzsbb11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\orannzsbb11.sym" SelfReg="false" NextFile="oraocci11.dll"/>
+    <ROW File="oraocci11.dll" Component_="oraocci11.dll" FileName="oraocc~1.dll|oraocci11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\oraocci11.dll" SelfReg="false" NextFile="oraocci11.sym"/>
+    <ROW File="oraocci11.dll_1" Component_="oraocci11.dll_1" FileName="oraocc~1.dll|oraocci11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\vc8\oraocci11.dll" SelfReg="false" NextFile="oraocci11.sym_1"/>
+    <ROW File="oraocci11.dll_2" Component_="oraocci11.dll_2" FileName="oraocc~1.dll|oraocci11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\vc9\oraocci11.dll" SelfReg="false" NextFile="oraocci11.sym_2"/>
+    <ROW File="oraocci11.sym" Component_="adrci.sym" FileName="oraocc~1.sym|oraocci11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\oraocci11.sym" SelfReg="false" NextFile="oraociei11.dll"/>
+    <ROW File="oraocci11.sym_1" Component_="oraocci11.sym" FileName="oraocc~1.sym|oraocci11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\vc8\oraocci11.sym" SelfReg="false" NextFile="oraocci11.dll_2"/>
+    <ROW File="oraocci11.sym_2" Component_="oraocci11.sym_1" FileName="oraocc~1.sym|oraocci11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\vc9\oraocci11.sym" SelfReg="false" NextFile="xstreams.jar"/>
+    <ROW File="oraociei11.dll" Component_="oraociei11.dll" FileName="oraoci~1.dll|oraociei11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\oraociei11.dll" SelfReg="false" NextFile="oraociei11.sym"/>
+    <ROW File="oraociei11.sym" Component_="adrci.sym" FileName="oraoci~1.sym|oraociei11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\oraociei11.sym" SelfReg="false" NextFile="orasql11.dll"/>
+    <ROW File="orasql11.dll" Component_="orasql11.dll" FileName="orasql11.dll" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\orasql11.dll" SelfReg="false" NextFile="orasql11.sym"/>
+    <ROW File="orasql11.sym" Component_="adrci.sym" FileName="orasql11.sym" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\orasql11.sym" SelfReg="false" NextFile="oraocci11.dll_1"/>
     <ROW File="pthreadGC2.dll" Component_="pthreadGC2.dll" FileName="pthrea~1.dll|pthreadGC2.dll" Attributes="0" SourcePath="..\电动车客户端\pthreadGC2.dll" SelfReg="false" NextFile="StreamTransClient.dll"/>
+    <ROW File="readme.txt" Component_="readme.txt" FileName="readme.txt" Attributes="0" SourcePath="..\电动车客户端\ODAC\oledb\oledb\readme.txt" SelfReg="false" NextFile="OraOledbIC11.dll"/>
+    <ROW File="readme.txt_1" Component_="configure.bat" FileName="readme.txt" Attributes="0" SourcePath="..\电动车客户端\ODAC\readme.txt" SelfReg="false" NextFile="unconfigure.bat"/>
     <ROW File="swscale.dll" Component_="swscale.dll" FileName="swscale.dll" Attributes="0" SourcePath="..\电动车客户端\swscale.dll" SelfReg="false" NextFile="SystemTransform.dll"/>
-    <ROW File="systeminfo.ini" Component_="bj.wav" FileName="system~1.ini|systeminfo.ini" Attributes="0" SourcePath="..\电动车客户端\systeminfo.ini" SelfReg="false" NextFile="AACDecoder.dll"/>
+    <ROW File="unconfigure.bat" Component_="configure.bat" FileName="unconf~1.bat|unconfigure.bat" Attributes="0" SourcePath="..\电动车客户端\ODAC\unconfigure.bat" SelfReg="false" NextFile="uninstall.bat"/>
+    <ROW File="uninstall.bat" Component_="configure.bat" FileName="uninst~1.bat|uninstall.bat" Attributes="0" SourcePath="..\电动车客户端\ODAC\uninstall.bat" SelfReg="false" NextFile="installodac.bat"/>
+    <ROW File="unstallodac.bat" Component_="unstallodac.bat" FileName="unstal~1.bat|unstallodac.bat" Attributes="0" SourcePath="..\电动车客户端\unstallodac.bat" SelfReg="false"/>
+    <ROW File="xstreams.jar" Component_="adrci.sym" FileName="xstreams.jar" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\xstreams.jar" SelfReg="false" NextFile="OraOLEDB11.dll"/>
     <ROW File="xvidcore.dll" Component_="xvidcore.dll" FileName="xvidcore.dll" Attributes="0" SourcePath="..\电动车客户端\xvidcore.dll" SelfReg="false" NextFile="YiRongCarDetectAIO.exe"/>
-    <ROW File="zh_cn.lan" Component_="en.lan" FileName="zh-cn.lan" Attributes="0" SourcePath="..\电动车\亚安播放器\lang_RealMp4Play\zh-cn.lan" SelfReg="false" NextFile="avcodec.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." PackageFileName="电动车车牌识别分析应用软件setup" Languages="zh" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\install" MsiPackageType="AI_ALL"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." PackageFileName="电动车车牌识别分析应用软件 客户端setup " Languages="zh" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\install" MsiPackageType="AI_ALL"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
@@ -226,7 +272,6 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="201"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
-    <ROW Directory_="__3_DIR" Component_="_"/>
     <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
@@ -269,7 +314,6 @@
     <ROW IniFile="check" FileName="yrsyst~1.ini|yrsysteminfo.ini" DirProperty="APPDIR" Section="FTP" Key="check" Value="0000000000" Action="0" Component_="AI_ExePath"/>
     <ROW IniFile="password" FileName="yrsyst~1.ini|yrsysteminfo.ini" DirProperty="APPDIR" Section="FTP" Key="password" Value="1157" Action="0" Component_="AI_ExePath"/>
     <ROW IniFile="path" FileName="yrsyst~1.ini|yrsysteminfo.ini" DirProperty="APPDIR" Section="FTP" Key="path" Value="/" Action="0" Component_="AI_ExePath"/>
-    <ROW IniFile="showLang" FileName="lang.ini" DirProperty="__2_DIR" Section="LANGUAGE" Key="showLang" Value="chinese" Action="0" Component_="hi_h264dec_w.dll_1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -304,10 +348,9 @@
     <ROW Registry="AI_ExePath" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Value="[AI_SETUPEXEPATH]" Component_="AI_ExePath"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="_" Directory_="__3_DIR" Name="大华播放器" Component_="player264demo.exe" Target="[#player264demo.exe]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="__DIR"/>
-    <ROW Shortcut="__1" Directory_="SHORTCUTDIR" Name="卸载" Component_="AACDecoder.dll" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" Hotkey="0" Icon_="SystemFolder_msiexec.exe" IconIndex="0" ShowCmd="1"/>
-    <ROW Shortcut="__2" Directory_="__3_DIR" Name="海康播放器" Component_="VSPlayer.exe" Target="[#VSPlayer.exe]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="__1_DIR"/>
-    <ROW Shortcut="__3" Directory_="__3_DIR" Name="亚安播放器" Component_="RealMp4Play.exe" Target="[#RealMp4Play.exe]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="__2_DIR"/>
+    <ROW Shortcut="_" Directory_="SHORTCUTDIR" Name="安装数据库驱动" Component_="installodac.bat" Target="[#installodac.bat]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="__1" Directory_="SHORTCUTDIR" Name="卸载" Component_="PlayCtrl.dll" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" Hotkey="0" Icon_="SystemFolder_msiexec.exe" IconIndex="0" ShowCmd="1"/>
+    <ROW Shortcut="__2" Directory_="SHORTCUTDIR" Name="卸载数据库驱动" Component_="unstallodac.bat" Target="[#unstallodac.bat]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
     <ROW Shortcut="__4" Directory_="SHORTCUTDIR" Name="数据库配置" Component_="DataBaseConfig.exe" Target="[#DataBaseConfig.exe]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
     <ROW Shortcut="__5" Directory_="SHORTCUTDIR" Name="电动车识别软~1|电动车识别软件客户端" Component_="YiRongCarDetectAIO.exe" Target="[#YiRongCarDetectAIO.exe]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
   </COMPONENT>

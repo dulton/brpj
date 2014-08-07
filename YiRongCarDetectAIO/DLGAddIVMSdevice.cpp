@@ -22,8 +22,8 @@ extern IO OracleIO;
 IMPLEMENT_DYNAMIC(CDLGAddIVMSdevice, CDialog)
 
 CDLGAddIVMSdevice::CDLGAddIVMSdevice(CWnd* pParent /*=NULL*/)
-	: CDialog(CDLGAddIVMSdevice::IDD, pParent)
-	, m_edit_find(_T(""))
+: CDialog(CDLGAddIVMSdevice::IDD, pParent)
+, m_edit_find(_T(""))
 {
 
 }
@@ -94,6 +94,11 @@ void  CDLGAddIVMSdevice::InitALL(void)
 			beglist->comboxi=i;
 			i++;
 		}
+		else 	if( beglist->ParentId >0) //不是根也不是当前值
+		{
+			//防止干扰
+			beglist->comboxi=-1;
+		}
 	}
 	if(m_unit.GetCount()>0)
 		m_unit.SetCurSel(0);
@@ -117,24 +122,31 @@ BOOL CDLGAddIVMSdevice::OnInitDialog()
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+	// EXCEPTION: OCX Property Pages should return FALSE
 }
 // CDLGAddIVMSdevice message handlers
 
 void CDLGAddIVMSdevice::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
-	//OnOK();
 
-		UpdateData(TRUE);
-		if((Streamserver.size()<1 || PAGserver.size() <1) &&
-			m_camvender.GetCurSel() == 1)
-		{
-				MessageBox("流媒体服务器或PAG地址不存在,不支持该协议");
-				return ;
-		
-		}
+	UpdateData(TRUE);
+	if((Streamserver.size()<1 || PAGserver.size() <1) &&
+		m_camvender.GetCurSel() == 1)
+	{
+		MessageBox("流媒体服务器或PAG地址不存在,不支持该协议");
+		return ;
+	}
 
+	long id=m_cam.GetCurSel();
+	if(id<0)
+	{
+		MessageBox("未选择监控点，点 取消 关闭窗口");
+		return ;
+	}
+
+
+OnOK();
 }
 
 void CDLGAddIVMSdevice::OnBnClickedCancel()
@@ -150,7 +162,7 @@ void CDLGAddIVMSdevice::OnBnClickedButtonFind()
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
-	
+
 	if(m_edit_find.GetLength()<1)
 	{
 		InitALL();
@@ -184,22 +196,144 @@ void CDLGAddIVMSdevice::OnBnClickedButtonFind()
 		m_cam.SetCurSel(0);
 
 	UpdateData(FALSE);
-	
+
 }
 
 void CDLGAddIVMSdevice::OnCbnCloseupComboRoot()
 {
 	// TODO: Add your control notification handler code here
+	if(FindMode)
+		return ;
+	UpdateData(TRUE);
+
+	long i;
+	long id=m_root.GetCurSel();
+	if(id<0)
+		return ;
+	list<struct CONTROL_UNIT_ST>::iterator beglist;
+
+	for(beglist=Controlunit.begin();beglist!=Controlunit.end();beglist++)
+	{
+		if(id == beglist->comboxi && 0 == beglist->ParentId)
+		{
+			id=beglist->nid;
+			break;
+		}
+	}
+
+	m_unit.ResetContent();
+	for(beglist=Controlunit.begin(),i=0;beglist!=Controlunit.end();beglist++)
+	{
+		if(id == beglist->ParentId)
+		{
+			m_unit.AddString(beglist->name);
+			beglist->comboxi=i;
+			i++;
+		}
+		else 	if( beglist->ParentId >0) //不是根也不是当前值
+		{
+			//防止干扰
+			beglist->comboxi=-1;
+		}
+
+	}
+
+	if(m_unit.GetCount()>0)
+		m_unit.SetCurSel(0);
+
+	UpdateData(FALSE);
 }
 
 void CDLGAddIVMSdevice::OnCbnCloseupComboUnit()
 {
 	// TODO: Add your control notification handler code here
+	if(FindMode)
+		return ;
+	UpdateData(TRUE);
+
+	long i;
+	long id=m_unit.GetCurSel();
+	if(id<0)
+		return ;
+	list<struct CONTROL_UNIT_ST>::iterator beglist;
+
+	for(beglist=Controlunit.begin();beglist!=Controlunit.end();beglist++)
+	{
+		if(id == beglist->comboxi && 0 != beglist->ParentId)
+		{
+			id=beglist->nid;
+			break;
+		}
+	}
+
+	m_region.ResetContent();
+	list<struct REGION_INFO_ST>::iterator rbeglist;
+
+	for(rbeglist=RegionInfo.begin(),i=0;rbeglist!=RegionInfo.end();rbeglist++)
+	{
+		if(id == rbeglist->ControlUnitId)
+		{
+			m_region.AddString(rbeglist->name);
+			rbeglist->comboxi=i;
+			i++;
+		}
+		else 	
+		{
+			//防止干扰
+			rbeglist->comboxi=-1;
+		}
+	}
+	if(m_region.GetCount()>0)
+		m_region.SetCurSel(0);
+
+	UpdateData(FALSE);
 }
 
 void CDLGAddIVMSdevice::OnCbnCloseupComboRegion()
 {
 	// TODO: Add your control notification handler code here
+	if(FindMode)
+		return ;
+	UpdateData(TRUE);
+
+	long i;
+	long id=m_region.GetCurSel();
+	if(id<0)
+		return ;
+	list<struct REGION_INFO_ST>::iterator beglist;
+
+	for(beglist=RegionInfo.begin();beglist!=RegionInfo.end();beglist++)
+	{
+		if(id == beglist->comboxi)
+		{
+			id=beglist->nid;
+			break;
+		}
+	}
+
+	OracleIO.IVMS_ReadCaminfoALL(Caminfo,id);
+
+	m_cam.ResetContent();
+	list<struct CAMERA_INFO_LITE_ST>::iterator rbeglist;
+
+	for(rbeglist=Caminfo.begin(),i=0;rbeglist!=Caminfo.end();rbeglist++)
+	{
+		if(id == rbeglist->RegionId)
+		{
+			m_cam.AddString(rbeglist->name);
+			rbeglist->comboxi=i;
+			i++;
+		}
+		else
+		{
+			//防止干扰
+			rbeglist->comboxi=-1;
+		}
+	}
+	if(m_cam.GetCount()>0)
+		m_cam.SetCurSel(0);
+
+	UpdateData(FALSE);
 }
 
 void CDLGAddIVMSdevice::OnCbnCloseupComboCam()

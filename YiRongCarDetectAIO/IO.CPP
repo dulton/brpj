@@ -1929,8 +1929,14 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  where a.ncamera=%d order by a.nid desc)  where  rownum=1"),
-			camid);
+			char timestr[64];
+			CTime nowtime=CTime::GetTickCount();
+			sprintf(timestr,"%04d%02d%02d000000",
+				nowtime.GetYear(),
+				nowtime.GetMonth(),
+				nowtime.GetDay());
+		strSql.Format(_T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  where a.ncamera=%d  and a.dcreate> to_date('%s','yyyymmddhh24miss')  order by a.nid desc)  where  rownum=1"),
+			camid,timestr);
 
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
@@ -2846,8 +2852,15 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 	try
 	{
 		CString	strSql;
-		strSql.Format( _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  where a.ncamera=%d order by a.nid desc)  where  rownum=1"),
-			camid);
+		char timestr[64];
+			CTime nowtime=CTime::GetTickCount();
+			sprintf(timestr,"%04d%02d%02d000000",
+				nowtime.GetYear(),
+				nowtime.GetMonth(),
+				nowtime.GetDay());
+
+		strSql.Format( _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  where a.ncamera=%d and a.dcreate> to_date('%s','yyyymmddhh24miss')  order by a.nid desc)  where  rownum=1"),
+			camid,timestr);
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -4856,7 +4869,7 @@ int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit)
 			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
 			tempdata.ParentId=VarSaveNumber2(IVMS_pRecordsetPtr,"PARENT_ID");
 			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
-
+			tempdata.comboxi=-1;
 			Controlunit.push_back(tempdata);
 			IVMS_pRecordsetPtr->MoveNext();
 		}
@@ -4905,6 +4918,7 @@ int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo)
 			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
 			tempdata.ControlUnitId=VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
 			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
+			tempdata.comboxi=-1;
 
 			RegionInfo.push_back(tempdata);
 			IVMS_pRecordsetPtr->MoveNext();
@@ -5053,6 +5067,7 @@ int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regio
 			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_ID");
 			tempdata.RegionId=VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
 			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
+			tempdata.comboxi=-1;
 
 			Caminfo.push_back(tempdata);
 			IVMS_pRecordsetPtr->MoveNext();
@@ -5102,7 +5117,7 @@ int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *key
 			tempdata.nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_ID");
 			tempdata.RegionId=VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
 			VarSaveStr2(tempdata.name,IVMS_pRecordsetPtr,_T("NAME"));
-
+			tempdata.comboxi=-1;
 			Caminfo.push_back(tempdata);
 			IVMS_pRecordsetPtr->MoveNext();
 		}
