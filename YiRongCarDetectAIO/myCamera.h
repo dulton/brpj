@@ -8,15 +8,7 @@
 #include "YaAnSDKNew.h"
 #include "StreamClientSDK.h"
 
-//0---º£¿µ,1---´ó»ª
-enum DEVICE_VENDERID_ENUM
-{
-	VENDER_TYPE_HAIKANG=0, 
-	VENDER_TYPE_DAHUA=1, 
-	VENDER_TYPE_YAAN=2, 
-	VENDER_TYPE_YAAN_NEW=3, 
-	VENDER_TYPE_STREAM=4, 
-};
+
 
 
 class CMyCamera

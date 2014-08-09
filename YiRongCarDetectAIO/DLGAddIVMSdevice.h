@@ -39,6 +39,9 @@ public:
 	list<struct CAMERA_INFO_LITE_ST> Caminfo;
 	list<struct CAMERA_INFO_LITE_ST> CaminfoFind;
 
+	struct CAMERA_INFO_ST CamData;
+	CString Rtspurl;
+
 	bool FindMode;
 	void  InitALL(void);
 

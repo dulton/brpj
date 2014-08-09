@@ -544,24 +544,20 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 		return ;
 	}
 
-
 	if(DlgAddIVMSDevice.DoModal() == IDOK)
 	{
-		/*
-
 		OracleIO.DEVICE_AddNewCamera(DlgAddDevice.AreaList[count].name,\
-		DlgAddDevice.m_CamName,\
-		DlgAddDevice.m_CamIpAddr,\
-		DlgAddDevice.m_CamPort,\
-		DlgAddDevice.m_CamChannel,\
-		DlgAddDevice.m_CamUser,\
-		DlgAddDevice.m_CamPsw,
-		DlgAddDevice.VenderComboCur,
-		DlgAddDevice.m_CamRtspurl,
-		DlgAddDevice.RTPComboCur,
-		DlgAddDevice.DecodeTagComboCur);
+			DlgAddIVMSDevice.CamData.name,  
+			DlgAddIVMSDevice.CamData.ip,  
+			DlgAddIVMSDevice.CamData.port,
+			DlgAddIVMSDevice.CamData.channel,
+			DlgAddIVMSDevice.CamData.user,
+			DlgAddIVMSDevice.CamData.psw,
+			DlgAddIVMSDevice.CamData.venderID,
+			DlgAddIVMSDevice.Rtspurl,
+			DlgAddIVMSDevice.CamData.RTP,
+			DlgAddIVMSDevice.CamData.DecodeTag);
 
-		*/
 		OnMenuitemUpdate();
 	}
 #else

@@ -401,7 +401,7 @@ bool CVideoCarDetect::ErrorPlateName(char *name)
 	}
 
 	if(j>1)
-		true;
+		return true;
 	
 	//字母在中间3个。不是电动车
 	j=0;
@@ -412,7 +412,7 @@ bool CVideoCarDetect::ErrorPlateName(char *name)
 	}
 
 	if(j>0)
-		true;
+		return true;
 
 #endif
 

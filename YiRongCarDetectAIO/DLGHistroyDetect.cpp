@@ -131,7 +131,7 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 #else
 	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
 	m_List.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 180);
 	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 140);
 	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
 	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);

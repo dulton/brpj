@@ -120,6 +120,7 @@
     <ROW File="DataBaseConfig.txt" Component_="bj.wav" FileName="DataBa~1.txt|DataBaseConfig.txt" Attributes="0" SourcePath="..\电动车客户端\DataBaseConfig.txt" SelfReg="false" NextFile="dhdvr.dll"/>
     <ROW File="DllDeinterlace.dll" Component_="DllDeinterlace.dll" FileName="DllDei~1.dll|DllDeinterlace.dll" Attributes="0" SourcePath="..\电动车客户端\DllDeinterlace.dll" SelfReg="false" NextFile="dllh264.dll"/>
     <ROW File="HCNetSDK.dll" Component_="HCNetSDK.dll" FileName="HCNetSDK.dll" Attributes="0" SourcePath="..\电动车客户端\HCNetSDK.dll" SelfReg="false" NextFile="hi_h264dec_w.dll"/>
+    <ROW File="IVMSDataBaseConfig.txt" Component_="bj.wav" FileName="IVMSDa~1.txt|IVMSDataBaseConfig.txt" Attributes="0" SourcePath="..\电动车客户端\IVMSDataBaseConfig.txt" SelfReg="false"/>
     <ROW File="Microsoft.VC80.ATL.manifest" Component_="adrci.sym" FileName="Micros~1.man|Microsoft.VC80.ATL.manifest" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\Microsoft.VC80.ATL.manifest" SelfReg="false" NextFile="Microsoft.VC80.CRT.manifest"/>
     <ROW File="Microsoft.VC80.CRT.manifest" Component_="adrci.sym" FileName="Micros~2.man|Microsoft.VC80.CRT.manifest" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\Microsoft.VC80.CRT.manifest" SelfReg="false" NextFile="Microsoft.VC80.MFC.manifest"/>
     <ROW File="Microsoft.VC80.MFC.manifest" Component_="adrci.sym" FileName="Micros~3.man|Microsoft.VC80.MFC.manifest" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\Microsoft.VC80.MFC.manifest" SelfReg="false" NextFile="msvcm80.dll"/>
@@ -213,12 +214,12 @@
     <ROW File="swscale.dll" Component_="swscale.dll" FileName="swscale.dll" Attributes="0" SourcePath="..\电动车客户端\swscale.dll" SelfReg="false" NextFile="SystemTransform.dll"/>
     <ROW File="unconfigure.bat" Component_="configure.bat" FileName="unconf~1.bat|unconfigure.bat" Attributes="0" SourcePath="..\电动车客户端\ODAC\unconfigure.bat" SelfReg="false" NextFile="uninstall.bat"/>
     <ROW File="uninstall.bat" Component_="configure.bat" FileName="uninst~1.bat|uninstall.bat" Attributes="0" SourcePath="..\电动车客户端\ODAC\uninstall.bat" SelfReg="false" NextFile="installodac.bat"/>
-    <ROW File="unstallodac.bat" Component_="unstallodac.bat" FileName="unstal~1.bat|unstallodac.bat" Attributes="0" SourcePath="..\电动车客户端\unstallodac.bat" SelfReg="false"/>
+    <ROW File="unstallodac.bat" Component_="unstallodac.bat" FileName="unstal~1.bat|unstallodac.bat" Attributes="0" SourcePath="..\电动车客户端\unstallodac.bat" SelfReg="false" NextFile="IVMSDataBaseConfig.txt"/>
     <ROW File="xstreams.jar" Component_="adrci.sym" FileName="xstreams.jar" Attributes="0" SourcePath="..\电动车客户端\ODAC\instantclient_11_2\xstreams.jar" SelfReg="false" NextFile="OraOLEDB11.dll"/>
     <ROW File="xvidcore.dll" Component_="xvidcore.dll" FileName="xvidcore.dll" Attributes="0" SourcePath="..\电动车客户端\xvidcore.dll" SelfReg="false" NextFile="YiRongCarDetectAIO.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." PackageFileName="电动车车牌识别分析应用软件 客户端setup " Languages="zh" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\install" MsiPackageType="AI_ALL"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." PackageFileName="电动车车牌识别分析应用软件 客户端setup" Languages="zh" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\install" MsiPackageType="AI_ALL"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">

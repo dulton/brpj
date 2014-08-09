@@ -231,7 +231,6 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				PlayM4_FreePort(lPort);
 				break;
 			}
-
 			if (!PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
 			{
 				PlayM4_FreePort(lPort);

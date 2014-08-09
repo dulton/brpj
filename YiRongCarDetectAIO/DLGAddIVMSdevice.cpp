@@ -118,8 +118,10 @@ BOOL CDLGAddIVMSdevice::OnInitDialog()
 	OracleIO.IVMS_ReadStreamserver(Streamserver);
 	OracleIO.IVMS_ReadPAGserver(PAGserver);
 
+	m_camvender.SetCurSel(0);
 	InitALL();
 
+	Rtspurl="";
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -130,23 +132,121 @@ void CDLGAddIVMSdevice::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
 
+	/*
+	STREAM_SERVER.IP_ADDR   :554/pag://  PAG_SERVER.IP_ADDR  :7302:  CAMERA_INFO.INDEX_CODE:  CAMERA_INFO.CHAN_NUM :MAIN:TCP&streamform=gb28181 
+	rtsp://35.24.252.104:554/pag://35.24.252.104:7302:35010200001310012505:0:MAIN:TCP&streamform=gb28181 
+	rtsp://35.24.252.104:554/pag://35.24.252.104:7302:35010201001310013268:3:MAIN:TCP&streamform=gb28181
+	*/
+
 	UpdateData(TRUE);
 	if((Streamserver.size()<1 || PAGserver.size() <1) &&
 		m_camvender.GetCurSel() == 1)
 	{
-		MessageBox("流媒体服务器或PAG地址不存在,不支持该协议");
+		MessageBox("流媒体服务器或PAG地址不存在,不支持该协议",MESSAGEBOX_TITLE);
 		return ;
 	}
 
 	long id=m_cam.GetCurSel();
 	if(id<0)
 	{
-		MessageBox("未选择监控点，点 取消 关闭窗口");
+		MessageBox("未选择监控点，点 取消 关闭窗口",MESSAGEBOX_TITLE);
 		return ;
 	}
 
+	bool flag=true;
+	char tempstr[260];
+	list<struct CAMERA_INFO_LITE_ST>::iterator beglist;
+	if(FindMode)
+	{
+		for(beglist=CaminfoFind.begin();beglist!=CaminfoFind.end();beglist++)
+		{
+			if(id == beglist->comboxi)
+			{
+				id=beglist->nid;
+				flag=false;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for(beglist=Caminfo.begin();beglist!=Caminfo.end();beglist++)
+		{
+			if(id == beglist->comboxi)
+			{
+				id=beglist->nid;
+				flag=false;
+				break;
+			}
+		}
+	}
+	if(flag)
+	{
+		MessageBox("内部错误:未找到监控点",MESSAGEBOX_TITLE);
+		return ;
+	}
 
-OnOK();
+	OracleIO.IVMS_ReadCaminfoOne(&CamData,id,m_camvender.GetCurSel());
+
+	if(1==m_camvender.GetCurSel())
+	{
+		flag=true;
+
+		list<struct STREAM_SERVER_ST>::iterator sbeglist;
+
+		for(sbeglist=Streamserver.begin();sbeglist!=Streamserver.end();sbeglist++)
+		{
+			if(CamData.STREAM_SVR_ID == sbeglist->nid)
+			{
+				sprintf(tempstr,"rtsp://%s:%d/",sbeglist->ip,sbeglist->RtspPort);
+				flag=false;
+				break;
+			}
+		}
+		if(flag)
+		{
+			MessageBox("该摄像头的流媒体服务器未找到,不支持该协议",MESSAGEBOX_TITLE);
+			return ;
+		}
+
+		Rtspurl+=tempstr;
+
+		flag=true;
+		list<struct PAG_SERVER_ST>::iterator pbeglist;
+
+		for(pbeglist=PAGserver.begin();pbeglist!=PAGserver.end();pbeglist++)
+		{
+			if(CamData.PAG_SERVER_ID == pbeglist->nid)
+			{
+				sprintf(tempstr,"pag://%s:%d:",pbeglist->ip,pbeglist->DataPort);
+				flag=false;
+				break;
+			}
+		}
+		if(flag)
+		{
+			MessageBox("该摄像头的PAG服务器未找到,不支持该协议",MESSAGEBOX_TITLE);
+			return ;
+		}
+		Rtspurl+=tempstr;
+
+		sprintf(tempstr,"%s:%d:MAIN:",CamData.IndexCode,CamData.channel);
+
+		Rtspurl+=tempstr;
+
+		if(1==CamData.RTP)
+		{
+			sprintf(tempstr,"UDP&streamform=gb28181");
+		}
+		else
+			sprintf(tempstr,"TCP&streamform=gb28181");
+
+		Rtspurl+=tempstr;
+	}	
+
+	UpdateData(FALSE);
+
+	OnOK();
 }
 
 void CDLGAddIVMSdevice::OnBnClickedCancel()
@@ -173,7 +273,7 @@ void CDLGAddIVMSdevice::OnBnClickedButtonFind()
 
 	if(0==CaminfoFind.size() || 1!=re)
 	{
-		MessageBox("未找到信息");
+		MessageBox("未找到信息",MESSAGEBOX_TITLE);
 		return ;
 	}
 

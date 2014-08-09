@@ -1929,12 +1929,12 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 	try
 	{
 		CString	strSql;
-			char timestr[64];
-			CTime nowtime=CTime::GetTickCount();
-			sprintf(timestr,"%04d%02d%02d000000",
-				nowtime.GetYear(),
-				nowtime.GetMonth(),
-				nowtime.GetDay());
+		char timestr[64];
+		CTime nowtime=CTime::GetTickCount();
+		sprintf(timestr,"%04d%02d%02d000000",
+			nowtime.GetYear(),
+			nowtime.GetMonth(),
+			nowtime.GetDay());
 		strSql.Format(_T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  where a.ncamera=%d  and a.dcreate> to_date('%s','yyyymmddhh24miss')  order by a.nid desc)  where  rownum=1"),
 			camid,timestr);
 
@@ -2853,11 +2853,11 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 	{
 		CString	strSql;
 		char timestr[64];
-			CTime nowtime=CTime::GetTickCount();
-			sprintf(timestr,"%04d%02d%02d000000",
-				nowtime.GetYear(),
-				nowtime.GetMonth(),
-				nowtime.GetDay());
+		CTime nowtime=CTime::GetTickCount();
+		sprintf(timestr,"%04d%02d%02d000000",
+			nowtime.GetYear(),
+			nowtime.GetMonth(),
+			nowtime.GetDay());
 
 		strSql.Format( _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  where a.ncamera=%d and a.dcreate> to_date('%s','yyyymmddhh24miss')  order by a.nid desc)  where  rownum=1"),
 			camid,timestr);
@@ -5135,5 +5135,145 @@ int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *key
 	return 1;
 
 }
+
+
+//获取设备信息  全读
+int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connectflag)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		memset(Caminfo,0,sizeof(struct CAMERA_INFO_ST));
+		_stprintf(strsql,
+			_T("select * from CAMERA_INFO t where t.camera_id=%d"),camid );
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		char tempstr[64];
+		if(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			//填充数据
+
+			Caminfo->nid = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_ID");
+			Caminfo->RegionId = VarSaveNumber2(IVMS_pRecordsetPtr,"REGION_ID");
+			Caminfo->DeviceId = VarSaveNumber2(IVMS_pRecordsetPtr,"DEVICE_ID");
+
+			VarSaveStr2(Caminfo->IndexCode,IVMS_pRecordsetPtr,_T("INDEX_CODE"));
+			VarSaveStr2(Caminfo->name,IVMS_pRecordsetPtr,_T("NAME"));
+
+			Caminfo->channel = VarSaveNumber2(IVMS_pRecordsetPtr,"CHAN_NUM");
+			Caminfo->Type = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_TYPE");
+			Caminfo->RTP = VarSaveNumber2(IVMS_pRecordsetPtr,"CONNECT_TYPE");
+			if(Caminfo->RTP >2)
+				Caminfo->RTP =0;
+			Caminfo->STREAM_TYPE = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_TYPE");
+			Caminfo->STREAM_SVR_ID = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_SVR_ID");	
+			VarSaveStr2(tempstr,IVMS_pRecordsetPtr,_T("DECODE_TAG"));
+			//直连
+			if(connectflag)
+			{
+				if(0==strcmp(tempstr,"hikvision"))
+				{
+					Caminfo->DecodeTag=DECODETAG_HAIKANG;
+				}
+				else  if(0==strcmp(tempstr,"ga_h264"))
+				{
+					Caminfo->DecodeTag=DECODETAG_DAHUA;
+				}
+				Caminfo->venderID=VENDER_TYPE_STREAM;
+			}
+			else
+			{
+				if(0==strcmp(tempstr,"hikvision"))
+				{
+					Caminfo->DecodeTag=DECODETAG_HAIKANG;
+					Caminfo->venderID=VENDER_TYPE_HAIKANG;
+				}
+				else  if(0==strcmp(tempstr,"ga_h264"))
+				{
+					Caminfo->DecodeTag=DECODETAG_DAHUA;
+					Caminfo->venderID=VENDER_TYPE_DAHUA;
+				}
+			}
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadCaminfoOne CAMERA error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+
+	try
+	{
+		_stprintf(strsql,
+			_T("select * from DEVICE_INFO t where t.device_id=%d"),Caminfo->DeviceId );
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			//填充数据
+			Caminfo->ControlUnitId = VarSaveNumber2(IVMS_pRecordsetPtr,"CONTROL_UNIT_ID");
+			Caminfo->PAG_SERVER_ID = VarSaveNumber2(IVMS_pRecordsetPtr,"PAG_SERVER_ID");
+
+			VarSaveStr2(Caminfo->user,IVMS_pRecordsetPtr,_T("USER_NAME"));
+			VarSaveStr2(Caminfo->psw,IVMS_pRecordsetPtr,_T("USER_PWD"));
+
+			VarSaveStr2(Caminfo->ip,IVMS_pRecordsetPtr,_T("NETWORK_ADDR"));
+			Caminfo->port = VarSaveNumber2(IVMS_pRecordsetPtr,"NETWORK_PORT");	
+
+			//写死
+			if(	Caminfo->DecodeTag ==DECODETAG_HAIKANG)
+			{
+				strcpy(Caminfo->user,"admin");
+				strcpy(Caminfo->psw,"12345");
+				Caminfo->port=8000;
+			}
+			else if(	Caminfo->DecodeTag ==DECODETAG_DAHUA)
+			{
+				strcpy(Caminfo->user,"admin");
+				strcpy(Caminfo->psw,"admin");
+				Caminfo->port=37777;
+			}
+
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadCaminfoOne DEVICE error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+
+
 
 #endif

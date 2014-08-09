@@ -171,6 +171,7 @@
     <ROW File="FileEdit.dll" Component_="FileEdit.dll" FileName="FileEdit.dll" Attributes="0" SourcePath="..\电动车\海康播放器\FileEdit.dll" SelfReg="false" NextFile="FormatConvertDll.dll"/>
     <ROW File="FormatConvertDll.dll" Component_="FormatConvertDll.dll" FileName="Format~1.dll|FormatConvertDll.dll" Attributes="0" SourcePath="..\电动车\海康播放器\FormatConvertDll.dll" SelfReg="false" NextFile="mfc90u.dll"/>
     <ROW File="HCNetSDK.dll" Component_="HCNetSDK.dll" FileName="HCNetSDK.dll" Attributes="0" SourcePath="..\电动车\HCNetSDK.dll" SelfReg="false" NextFile="hi_h264dec_w.dll"/>
+    <ROW File="IVMSDataBaseConfig.txt" Component_="bj.wav" FileName="IVMSDa~1.txt|IVMSDataBaseConfig.txt" Attributes="0" SourcePath="..\电动车\IVMSDataBaseConfig.txt" SelfReg="false"/>
     <ROW File="LAudioFilter.ax" Component_="LAudioFilter.ax" FileName="LAudio~1.ax|LAudioFilter.ax" Attributes="0" SourcePath="..\电动车\亚安播放器\LAudioFilter.ax" SelfReg="false" NextFile="LParser.ax"/>
     <ROW File="LParser.ax" Component_="LAudioFilter.ax" FileName="LParser.ax" Attributes="0" SourcePath="..\电动车\亚安播放器\LParser.ax" SelfReg="false" NextFile="LVideoFilter.ax"/>
     <ROW File="LVideoFilter.ax" Component_="LAudioFilter.ax" FileName="LVideo~1.ax|LVideoFilter.ax" Attributes="0" SourcePath="..\电动车\亚安播放器\LVideoFilter.ax" SelfReg="false" NextFile="PlayerSDK.dll"/>
@@ -291,7 +292,7 @@
     <ROW File="swscale.dll" Component_="swscale.dll" FileName="swscale.dll" Attributes="0" SourcePath="..\电动车\swscale.dll" SelfReg="false" NextFile="SystemTransform.dll"/>
     <ROW File="unconfigure.bat" Component_="configure.bat" FileName="unconf~1.bat|unconfigure.bat" Attributes="0" SourcePath="..\电动车\ODAC\unconfigure.bat" SelfReg="false" NextFile="uninstall.bat"/>
     <ROW File="uninstall.bat" Component_="configure.bat" FileName="uninst~1.bat|uninstall.bat" Attributes="0" SourcePath="..\电动车\ODAC\uninstall.bat" SelfReg="false" NextFile="installodac.bat"/>
-    <ROW File="unstallodac.bat" Component_="unstallodac.bat" FileName="unstal~1.bat|unstallodac.bat" Attributes="0" SourcePath="..\电动车\unstallodac.bat" SelfReg="false"/>
+    <ROW File="unstallodac.bat" Component_="unstallodac.bat" FileName="unstal~1.bat|unstallodac.bat" Attributes="0" SourcePath="..\电动车\unstallodac.bat" SelfReg="false" NextFile="IVMSDataBaseConfig.txt"/>
     <ROW File="xstreams.jar" Component_="adrci.sym" FileName="xstreams.jar" Attributes="0" SourcePath="..\电动车\ODAC\instantclient_11_2\xstreams.jar" SelfReg="false" NextFile="OraOLEDB11.dll"/>
     <ROW File="xvidcore.dll" Component_="xvidcore.dll" FileName="xvidcore.dll" Attributes="0" SourcePath="..\电动车\xvidcore.dll" SelfReg="false" NextFile="YiRongCarDetectAIO.exe"/>
     <ROW File="zh_cn.lan" Component_="en.lan" FileName="zh-cn.lan" Attributes="0" SourcePath="..\电动车\亚安播放器\lang_RealMp4Play\zh-cn.lan" SelfReg="false" NextFile="LAudioFilter.ax"/>

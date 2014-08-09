@@ -492,7 +492,7 @@ int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver);
 int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regionid);
 int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *keyword);
 
-
+int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connectflag);
 #endif
 
 

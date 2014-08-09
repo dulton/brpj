@@ -1157,9 +1157,9 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 
 	m_ListCar.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 40);
 	m_ListCar.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_ListCar.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
+	m_ListCar.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 160);
 	m_ListCar.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
-	m_ListCar.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
+	m_ListCar.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 60);
 	m_ListCar.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
 	m_ListCar.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
 	m_ListCar.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);

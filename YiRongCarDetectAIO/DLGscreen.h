@@ -19,17 +19,6 @@
 
 #include "myCamera.h"
 
-/*
-//0---海康,1---大华
-enum DEVICE_VENDERID_ENUM
-{
-	VENDER_TYPE_HAIKANG=0, 
-	VENDER_TYPE_DAHUA=1, 
-	VENDER_TYPE_YAAN=2, 
-	VENDER_TYPE_YAAN_NEW=3, 
-	VENDER_TYPE_STREAM=4, 
-};
-*/
 //设备信息
 struct DEVICE_INFO 
 {

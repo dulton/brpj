@@ -52,6 +52,21 @@ typedef enum _PTZ_Command
 	PTZ_CONTROL_AUTO = 18,							// 自动
 } PTZ_Command;
 
+//0---海康,1---大华
+enum DEVICE_VENDERID_ENUM
+{
+	VENDER_TYPE_HAIKANG=0, 
+	VENDER_TYPE_DAHUA=1, 
+	VENDER_TYPE_YAAN=2, 
+	VENDER_TYPE_YAAN_NEW=3, 
+	VENDER_TYPE_STREAM=4, 
+};
+
+enum DEVICE_DECODETAG_ENUM
+{
+	DECODETAG_HAIKANG=0, 
+	DECODETAG_DAHUA=1, 
+};
 
 
 //摄像头开启
@@ -114,7 +129,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 //结果输出到YRVM平台 模式 =1  单机版=0 
 #define YRVM_PINGTAI_MODE	0
 //海康 市局设备树
-#define IVMS_ORACLE_DEVICETREE 0
+#define IVMS_ORACLE_DEVICETREE 1
 
 //结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
 #define YRVM_PINGTAI_ELECAR_MIX_MODE	0
