@@ -75,6 +75,7 @@ enum DEVICE_DECODETAG_ENUM
 #define OPEN_DAHUA_SDK 1
 #define OPEN_HAIKANG_SDK 1
 
+#define DB33_PLAYCTRL
 #define OPEN_STREAM_CLIENT_SDK 1
 
 //当 SystemTransform.dll 冲突 使用StreamClientSDK的覆盖HAIKANSDK的
@@ -110,7 +111,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
-#define ALLTAB_CLIENT_MODE 0
+#define ALLTAB_CLIENT_MODE 1
 
 
 //汽车模式 1 电动车模式 0
@@ -121,19 +122,10 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 1
+#define OPEN_CARDETECT_CODE 0
 
-//开启人脸识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_FACEDETECT_CODE 0
-
-//结果输出到YRVM平台 模式 =1  单机版=0 
-#define YRVM_PINGTAI_MODE	0
 //海康 市局设备树
 #define IVMS_ORACLE_DEVICETREE 1
-
-//结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
-#define YRVM_PINGTAI_ELECAR_MIX_MODE	0
-
 
 //弹出框登录 1 不弹出窗登录0 //预留 请务必为1
 //免登陆已经不用这个了 
@@ -146,7 +138,16 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 //TOMCAT 模式
 #define OPEN_TOMCAT_MODE 1
 
+//////////////////////////////////////////////////////
 
+//结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
+#define YRVM_PINGTAI_ELECAR_MIX_MODE	0
+
+//开启人脸识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
+#define OPEN_FACEDETECT_CODE 0
+
+//结果输出到YRVM平台 模式 =1  单机版=0 
+#define YRVM_PINGTAI_MODE	0
 ///////////////////////////
 //修改名称 记得把数据库配置程序的名称也改了
 //以及 关于 处的字符

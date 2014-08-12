@@ -77,16 +77,17 @@ BOOL CDLGAddDevice::OnInitDialog()
 	CDialog::OnInitDialog();
 	
 	// TODO: Add extra initialization here
-	CComboBox* comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_CAMAREA);
+	CComboBox* comboctrl;
 	for(int i=0;i<AreaCount;i++)
 	{
 		if(AreaList[i].name != NULL)
 		{
-			comboctrl->AddString(AreaList[i].name); 
+			m_AreaComboCtrl.AddString(AreaList[i].name); 
 		}
 	}
-	comboctrl->SetCurSel(AreaComboCur);
-	
+		
+	m_AreaComboCtrl.SetCurSel(AreaComboCur);
+
 	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_CAMVENDER);
 	comboctrl->SetCurSel(VenderComboCur);
 
@@ -98,8 +99,6 @@ BOOL CDLGAddDevice::OnInitDialog()
 
 
 	this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("");
-	
-	UpdateData(FALSE);
 
 	OnCbnCloseupComboCamvender();
 

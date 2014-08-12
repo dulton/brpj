@@ -18,6 +18,7 @@ extern CDLGSetSystem DlgSetSystem;
 #include "StreamClientSDK/StreamClient.h"
 #pragma comment(lib, "StreamClientSDK/StreamClient.lib")
 
+
 #include "DB33PlayCtrlSDK/PlayM4.h"
 #pragma comment(lib, "DB33PlayCtrlSDK/DB33PlayCtrl.lib")
 
@@ -35,7 +36,7 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 
 	if( ! DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].IsEmpty())
 	{
-		PlayM4_ConvertToBmpFile(pBuf, nSize, nWidth, nHeight, nType, 
+		DB33_PlayM4_ConvertToBmpFile(pBuf, nSize, nWidth, nHeight, nType, 
 			DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].GetBuffer(0));
 
 		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
@@ -91,7 +92,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 
 		if (lPort < 0)
 		{
-			if (PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
+			if (DB33_PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
 			{
 				DlgMain->DlgScreen.m_video.m_StreamClient.m_lPort[screenNo] = lPort;
 			}
@@ -99,17 +100,17 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 		//m_iPort = lPort; //第一次回调的是系统头，将获取的播放库port号赋值给全局port，下次回调数据时即使用此port号播放
 		if (ilen > 0)
 		{
-			if (!PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
+			if (!DB33_PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
 			{
 				break;
 			}
 
-			if (!PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
+			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
 			{
 				break;
 			}
 
-			if (!PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
+			if (!DB33_PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
 			{
 				break;
 			}
@@ -120,14 +121,14 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				{
 					return 0;
 				}
-				if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
+				if (!DB33_PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 				{
 					break;
 				}
 			}
 			else
 			{
-				if (!PlayM4_Play(lPort,NULL)) //播放开始
+				if (!DB33_PlayM4_Play(lPort,NULL)) //播放开始
 				{
 					break;
 				}
@@ -139,7 +140,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 	case STREAM_DATA:   // 码流数据 
 		if (ilen > 0 && lPort != -1)
 		{
-			if (!PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
+			if (!DB33_PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
 			{
 				break;
 			} 
@@ -162,7 +163,7 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 
 	if( ! DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].IsEmpty())
 	{
-		PlayM4_ConvertToBmpFile(pBuf, nSize, nWidth, nHeight, nType, 
+		DB33_PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, 
 			DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].GetBuffer(0));
 
 		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
@@ -207,6 +208,17 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype, void* pdata,
 								int ilen) 
 {
+/*
+
+	FILE *outfile = fopen("stream.txt", "a+");
+	if(NULL!= outfile)
+	{
+		 fwrite(pdata, ilen, 1, outfile);
+		 fclose(outfile);
+	}
+	
+	*/
+	
 	CStreamClientSDK *StreamClientSDK = (CStreamClientSDK *)userdata;
 
 	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetHandleWindID(sessionhandle);
@@ -218,7 +230,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 
 		if (lPort < 0)
 		{
-			if (PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
+			if (DB33_PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
 			{
 				DlgMain->DlgScreen.m_video.m_StreamClient.m_lPort[screenNo] = lPort;
 			}
@@ -226,22 +238,22 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 		//m_iPort = lPort; //第一次回调的是系统头，将获取的播放库port号赋值给全局port，下次回调数据时即使用此port号播放
 		if (ilen > 0)
 		{
-			if (!PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
+			if (!DB33_PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
 			{
-				PlayM4_FreePort(lPort);
+				DB33_PlayM4_FreePort(lPort);
 				break;
 			}
-			if (!PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
+			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
 			{
-				PlayM4_FreePort(lPort);
+				DB33_PlayM4_FreePort(lPort);
 				break;
 			}
 
-			if (!PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
+			if (!DB33_PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
 			{
 
-				PlayM4_CloseStream(lPort);
-				PlayM4_FreePort(lPort);
+				DB33_PlayM4_CloseStream(lPort);
+				DB33_PlayM4_FreePort(lPort);
 				break;
 			}
 			if(DlgSetSystem.m_display_preview)
@@ -249,23 +261,23 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
 				if (!pWnd)
 				{
-					PlayM4_CloseStream(lPort);
-					PlayM4_FreePort(lPort);
+					DB33_PlayM4_CloseStream(lPort);
+					DB33_PlayM4_FreePort(lPort);
 					return 0;
 				}
-				if (!PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
+				if (!DB33_PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 				{
-					PlayM4_CloseStream(lPort);
-					PlayM4_FreePort(lPort);
+					DB33_PlayM4_CloseStream(lPort);
+					DB33_PlayM4_FreePort(lPort);
 					break;
 				}
 			}
 			else
 			{
-				if (!PlayM4_Play(lPort,NULL)) //播放开始
+				if (!DB33_PlayM4_Play(lPort,NULL)) //播放开始
 				{
-					PlayM4_CloseStream(lPort);
-					PlayM4_FreePort(lPort);
+					DB33_PlayM4_CloseStream(lPort);
+					DB33_PlayM4_FreePort(lPort);
 					break;
 				}
 			}
@@ -276,7 +288,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 	case STREAM_DATA:   // 码流数据 
 		if (ilen > 0 && lPort != -1)
 		{
-			if (!PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
+			if (!DB33_PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
 			{
 				break;
 			} 
@@ -373,7 +385,7 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 			return false;
 		}
 
-		i=StreamClient_SetDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
+		i=StreamClient_SetPsDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
 		if(i)
 		{
 			DlgMain->ShowCameraMessage(name,(char*)StreamClient_GetErrMsgByErrCode(i),FALSE);
@@ -397,7 +409,6 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 		}
 
 		i=StreamClient_Start(m_RealHandle[screenNo], NULL, Rtspurl, "StreamClient",  transmethod, user, psw);
-
 		if(i)
 		{
 			DlgMain->ShowCameraMessage(name,(char*)StreamClient_GetErrMsgByErrCode(i),FALSE);
@@ -415,21 +426,23 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 
 		return false;
 	}
-
+	//DlgMain->ShowCameraMessage(name,"连接成功",FALSE);
 	return true;
 }
 
 void CStreamClientSDK::StopPlay(int screenNo)
 {
-	PlayM4_Stop(m_lPort[screenNo]);
-	PlayM4_CloseStream(m_lPort[screenNo]);
+	if(m_RealHandle[screenNo] >=0)
+	{
+		DB33_PlayM4_Stop(m_lPort[screenNo]);
+		DB33_PlayM4_CloseStream(m_lPort[screenNo]);
 
-	PlayM4_FreePort(m_lPort[screenNo]);
-	//关闭预览
-	StreamClient_Stop(m_RealHandle[screenNo]);
-	//注销用户
-	StreamClient_DestroySession(m_RealHandle[screenNo]);
-	
+		DB33_PlayM4_FreePort(m_lPort[screenNo]);
+		//关闭预览
+		StreamClient_Stop(m_RealHandle[screenNo]);
+		//注销用户
+		StreamClient_DestroySession(m_RealHandle[screenNo]);
+	}
 	m_lPort[screenNo]=-1;
 	m_RealHandle[screenNo]=-1;
 

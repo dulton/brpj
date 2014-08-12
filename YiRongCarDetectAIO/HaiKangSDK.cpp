@@ -39,7 +39,7 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 
 	if( ! DlgMain->DlgScreen.m_video.m_haikang.CapturePath[screenNo].IsEmpty())
 	{
-		PlayM4_ConvertToBmpFile(pBuf, nSize, nWidth, nHeight, nType, 
+		PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, 
 			DlgMain->DlgScreen.m_video.m_haikang.CapturePath[screenNo].GetBuffer(0));
 
 		DlgMain->DlgScreen.m_video.m_haikang.CapturePath[screenNo]="";

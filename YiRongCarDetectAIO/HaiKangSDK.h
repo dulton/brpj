@@ -6,7 +6,10 @@
 #ifndef _HAI_KANG_SDK_
 #define _HAI_KANG_SDK_
 
+
 #if OPEN_HAIKANG_SDK
+
+
 
 
 class CHaikangSDK

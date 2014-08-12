@@ -105,7 +105,6 @@ void  CDLGAddIVMSdevice::InitALL(void)
 	//全部显示模式
 	FindMode=false;
 
-	UpdateData(FALSE);
 }
 
 
