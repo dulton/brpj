@@ -307,7 +307,7 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 	}  
 }
 
-bool IO::DEVICE_DeleteArea(int areaID)
+bool IO::DEVICE_DeleteArea(long areaID)
 {
 	try
 	{
@@ -497,7 +497,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 	}  
 }
 
-bool IO::DEVICE_DeleteCamera(int cameraID)
+bool IO::DEVICE_DeleteCamera(long cameraID)
 {
 	try
 	{
@@ -515,7 +515,7 @@ bool IO::DEVICE_DeleteCamera(int cameraID)
 	}  
 }
 
-bool IO::DEVICE_DeleteCameraWithAreaID(int AreaID)
+bool IO::DEVICE_DeleteCameraWithAreaID(long AreaID)
 {
 	try
 	{
@@ -877,7 +877,7 @@ bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 	{
 		while(IOwriteLock)
 		{
-			Sleep(100);
+			Sleep(10);
 		}
 
 		IOwriteLock=true;
@@ -966,7 +966,7 @@ unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTi
 	}  
 }
 
-bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_REPORT_ST> &HistoryList)
+bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_REPORT_ST> &HistoryList)
 {
 	try
 	{
@@ -1584,7 +1584,7 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 	}  
 }
 
-bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
+bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
 {
 	try
 	{
@@ -1703,7 +1703,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list
 	}  
 }
 
-bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
+bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
 {
 	try
 	{
@@ -1926,6 +1926,13 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 
 int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *HistoryList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -1942,6 +1949,8 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+
+			IOwriteLock=false;
 			return 0;
 		}
 		else
@@ -2023,6 +2032,7 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 		}
 		m_pRecordsetPtr->Close();
 
+		IOwriteLock=false;
 		return 1;
 	}
 	catch(_com_error e)
@@ -2030,11 +2040,14 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 
 		errormessage.Format("IO::CAR_MatchResult_ReadforListOne error£º%s", e.ErrorMessage());
 
+		IOwriteLock=false;
 		return -1;
 	}  
+
+	IOwriteLock=false;
 }
 
-bool IO::CAR_AlarmResult_Execute(int nid,bool *isblack)
+bool IO::CAR_AlarmResult_Execute(long nid,bool *isblack)
 {
 	try
 	{
@@ -2204,7 +2217,7 @@ bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,ch
 	{
 		while(IOwriteLock)
 		{
-			Sleep(100);
+			Sleep(10);
 		}
 
 		IOwriteLock=true;
@@ -2544,7 +2557,7 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 	}  
 }
 
-bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
+bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
 {
 	try
 	{
@@ -2651,7 +2664,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,l
 	}  
 }
 
-bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
+bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
 {
 	try
 	{
@@ -2849,6 +2862,13 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 
 int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_ST *HistoryList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -2865,6 +2885,7 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return 0;
 		}
 		else
@@ -2931,7 +2952,7 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return 1;
 
 	}
@@ -2939,13 +2960,14 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 	{
 
 		errormessage.Format("IO::ELECAR_MatchResult_ReadforlistOne error£º%s", e.ErrorMessage());
-
+		IOwriteLock=false;
 		return -1;
 	}  
+	IOwriteLock=false;
 }
 
 
-bool IO::ELECAR_AlarmResult_Execute(int nid,bool *isblack)
+bool IO::ELECAR_AlarmResult_Execute(long nid,bool *isblack)
 {
 	try
 	{
@@ -3128,7 +3150,7 @@ unsigned long IO::CAR_BlackTable_GetNum(void)
 	}  
 }
 
-bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> &BlackList)
+bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList)
 {
 	try
 	{
@@ -3208,7 +3230,7 @@ bool IO::CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> 
 	}  
 }
 
-bool IO::CAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
+bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 {
 	try
 	{
@@ -3399,7 +3421,7 @@ unsigned long IO::ELECAR_BlackTable_GetNum(void)
 	}  
 }
 
-bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> &BlackList)
+bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList)
 {
 	try
 	{
@@ -3479,7 +3501,7 @@ bool IO::ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_S
 	}  
 }
 
-bool IO::ELECAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black)
+bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 {
 	try
 	{
@@ -3722,7 +3744,7 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 	}  
 }
 
-bool IO::VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_VIDEO_ST> &Videolist)
+bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_VIDEO_ST> &Videolist)
 {
 	try
 	{
@@ -4145,6 +4167,7 @@ bool IO::RECORD_PlanTable_SetRecordState(unsigned long nid,int enable)
 
 bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char *camname,char *ip)
 {
+
 	try
 	{
 		CString strSql;
@@ -5171,6 +5194,7 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 			VarSaveStr2(Caminfo->name,IVMS_pRecordsetPtr,_T("NAME"));
 
 			Caminfo->channel = VarSaveNumber2(IVMS_pRecordsetPtr,"CHAN_NUM");
+			
 			Caminfo->Type = VarSaveNumber2(IVMS_pRecordsetPtr,"CAMERA_TYPE");
 			Caminfo->RTP = VarSaveNumber2(IVMS_pRecordsetPtr,"CONNECT_TYPE");
 			if(Caminfo->RTP >2)

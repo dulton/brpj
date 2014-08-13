@@ -106,7 +106,7 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 				break;
 			}
 
-			if (!PlayM4_OpenStream(lPort, pBuffer, dwBufSize, 1920*1080)) //打开流接口
+			if (!PlayM4_OpenStream(lPort, pBuffer, dwBufSize, 1920*1080*3)) //打开流接口
 			{
 				PlayM4_FreePort(lPort);
 				break;
@@ -254,13 +254,16 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int chan
 
 void CHaikangSDK::StopPlay(int screenNo)
 {
-	PlayM4_Stop(m_lPort[screenNo]);
-	PlayM4_CloseStream(m_lPort[screenNo]);
-	PlayM4_FreePort(m_lPort[screenNo]);
+
 	//关闭预览
 	NET_DVR_StopRealPlay(m_RealHandle[screenNo]);
 	//注销用户
 	NET_DVR_Logout_V30(m_LoginHandle[screenNo]);
+	
+	PlayM4_Stop(m_lPort[screenNo]);
+	PlayM4_CloseStream(m_lPort[screenNo]);
+	PlayM4_FreePort(m_lPort[screenNo]);
+
 	m_LoginHandle[screenNo] = -1;
 	m_lPort[screenNo]=-1;
 #if OPEN_CARDETECT_CODE 	

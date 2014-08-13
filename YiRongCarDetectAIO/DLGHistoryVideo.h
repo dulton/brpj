@@ -68,9 +68,9 @@ public:
 
 	list<struct HISTORY_VIDEO_ST> list_history_video;
 
-	int ListTotal;
-	int ListNow;
-	int ListChoose;
+	long ListTotal;
+	long ListNow;
+	long ListChoose;
 	void DisplayerList(void);
 
 	int searchFlag;

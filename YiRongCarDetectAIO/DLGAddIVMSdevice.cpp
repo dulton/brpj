@@ -205,7 +205,16 @@ void CDLGAddIVMSdevice::OnBnClickedOk()
 		if(flag)
 		{
 			MessageBox("该摄像头的流媒体服务器未找到,不支持该协议",MESSAGEBOX_TITLE);
-			return ;
+			if(Streamserver.size()==1)
+			{
+				MessageBox("发现唯一的流媒体服务器,强制关联",MESSAGEBOX_TITLE);
+				sbeglist=Streamserver.begin();
+				sprintf(tempstr,"rtsp://%s:%d/",sbeglist->ip,sbeglist->RtspPort);
+			}
+			else
+			{
+				return ;
+			}
 		}
 
 		Rtspurl+=tempstr;
@@ -225,7 +234,16 @@ void CDLGAddIVMSdevice::OnBnClickedOk()
 		if(flag)
 		{
 			MessageBox("该摄像头的PAG服务器未找到,不支持该协议",MESSAGEBOX_TITLE);
-			return ;
+			if(PAGserver.size()==1)
+			{
+				MessageBox("发现唯一的PAG服务器,强制关联",MESSAGEBOX_TITLE);
+				pbeglist=PAGserver.begin();
+				sprintf(tempstr,"pag://%s:%d:",pbeglist->ip,pbeglist->DataPort);
+			}
+			else
+			{
+				return ;
+			}
 		}
 		Rtspurl+=tempstr;
 

@@ -15,6 +15,9 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
+#include "IO.h"
+extern IO OracleIO;
+
 #include "StreamClientSDK/StreamClient.h"
 #pragma comment(lib, "StreamClientSDK/StreamClient.lib")
 
@@ -23,140 +26,9 @@ extern CDLGSetSystem DlgSetSystem;
 #pragma comment(lib, "DB33PlayCtrlSDK/DB33PlayCtrl.lib")
 
 
-/*
-#include "haikangSDK/plaympeg4.h"
-#pragma comment(lib, "haikangSDK/PlayCtrl.lib")
-
-
 void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWidth,long nHeight,long nStamp,long nType,long nReserved)
 {
-	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetPortWndindex(nPort);
-	if(screenNo<0)
-		return;
-
-	if( ! DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].IsEmpty())
-	{
-		DB33_PlayM4_ConvertToBmpFile(pBuf, nSize, nWidth, nHeight, nType, 
-			DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].GetBuffer(0));
-
-		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
-	}
-
-	//在这做识别
-
-	//车牌识别
-#if OPEN_CARDETECT_CODE 	
-
-	//启用识别
-	if(DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
-	{
-		//拷贝数值
-		DlgMain->DlgScreen.CarDetect[screenNo].m_playhandle=screenNo;
-
-		DlgMain->DlgScreen.CarDetect[screenNo].alarmflag=
-			DlgMain->DlgScreen.m_videoInfo[screenNo].enableAlarm;
-
-		DlgMain->DlgScreen.CarDetect[screenNo].camid=
-			DlgMain->DlgScreen.m_videoInfo[screenNo].camID;
-
-		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].cam_name,
-			DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
-
-		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
-			"stream");
-
-
-		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
-		DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
-			(unsigned char *)pBuf,nWidth,nHeight,nSize);
-
-		DlgMain->DlgScreen.CarDetect[screenNo].Result();
-	}
-
-#endif
-
-
-}
-
-int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype, void* pdata,
-								int ilen) 
-{
-	CStreamClientSDK *StreamClientSDK = (CStreamClientSDK *)userdata;
-
-	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetHandleWindID(sessionhandle);
-	LONG lPort = StreamClientSDK->m_lPort[screenNo];
-	CWnd* pWnd=NULL;
-	switch  (datatype) 
-	{ 
-	case STREAM_HEAD:   // 码流头数据 
-
-		if (lPort < 0)
-		{
-			if (DB33_PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
-			{
-				DlgMain->DlgScreen.m_video.m_StreamClient.m_lPort[screenNo] = lPort;
-			}
-		}
-		//m_iPort = lPort; //第一次回调的是系统头，将获取的播放库port号赋值给全局port，下次回调数据时即使用此port号播放
-		if (ilen > 0)
-		{
-			if (!DB33_PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
-			{
-				break;
-			}
-
-			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
-			{
-				break;
-			}
-
-			if (!DB33_PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
-			{
-				break;
-			}
-			if(DlgSetSystem.m_display_preview)
-			{
-				pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
-				if (!pWnd)
-				{
-					return 0;
-				}
-				if (!DB33_PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
-				{
-					break;
-				}
-			}
-			else
-			{
-				if (!DB33_PlayM4_Play(lPort,NULL)) //播放开始
-				{
-					break;
-				}
-			}
-		}
-
-
-		break;
-	case STREAM_DATA:   // 码流数据 
-		if (ilen > 0 && lPort != -1)
-		{
-			if (!DB33_PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
-			{
-				break;
-			} 
-		}
-		break; 
-	case STREAM_PLAYBACK_FINISH:    // 回放/下载至结束 
-		break; 
-	default: 
-		break; 
-	} 
-	return 0;
-}
-*/
-
-void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWidth,long nHeight,long nStamp,long nType,long nReserved)
-{
+	
 	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetPortWndindex(nPort);
 	if(screenNo<0)
 		return;
@@ -169,8 +41,10 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
 	}
 
+
 	//在这做识别
 
+		//OracleIO.LOG_AddNewSystemLog("admin","c");
 	//车牌识别
 #if OPEN_CARDETECT_CODE 	
 
@@ -189,8 +63,13 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].cam_name,
 			DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
 
-		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
-			"stream");
+		if(DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetLength() >1)
+		{
+			strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
+				DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+		}
+		else
+			strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,"0.0.0.0");
 
 
 		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
@@ -208,22 +87,25 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype, void* pdata,
 								int ilen) 
 {
-/*
+	/*
 
 	FILE *outfile = fopen("stream.txt", "a+");
 	if(NULL!= outfile)
 	{
-		 fwrite(pdata, ilen, 1, outfile);
-		 fclose(outfile);
+	fwrite(pdata, ilen, 1, outfile);
+	fclose(outfile);
 	}
-	
+
 	*/
-	
+
 	CStreamClientSDK *StreamClientSDK = (CStreamClientSDK *)userdata;
 
 	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetHandleWindID(sessionhandle);
 	LONG lPort = StreamClientSDK->m_lPort[screenNo];
+
 	CWnd* pWnd=NULL;
+
+
 	switch  (datatype) 
 	{ 
 	case STREAM_HEAD:   // 码流头数据 
@@ -243,7 +125,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				DB33_PlayM4_FreePort(lPort);
 				break;
 			}
-			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080)) //打开流接口
+			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080*3)) //打开流接口
 			{
 				DB33_PlayM4_FreePort(lPort);
 				break;
@@ -256,6 +138,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				DB33_PlayM4_FreePort(lPort);
 				break;
 			}
+
 			if(DlgSetSystem.m_display_preview)
 			{
 				pWnd= DlgMain->DlgScreen.m_screenPannel.GetPage(screenNo);
@@ -283,22 +166,27 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 			}
 		}
 
-
 		break;
+	
 	case STREAM_DATA:   // 码流数据 
 		if (ilen > 0 && lPort != -1)
 		{
 			if (!DB33_PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
 			{
+				DB33_PlayM4_CloseStream(lPort);
+				DB33_PlayM4_FreePort(lPort);
 				break;
 			} 
+
 		}
 		break; 
+		
 	case STREAM_PLAYBACK_FINISH:    // 回放/下载至结束 =;
 		break; 
 	default: 
 		break; 
 	} 
+
 	return 0;
 
 }
@@ -376,6 +264,7 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 	m_RealHandle[screenNo]=StreamClient_CreateSession();
 	if(m_RealHandle[screenNo]>=0)
 	{
+		
 		i=StreamClient_SetMsgCallBack(m_RealHandle[screenNo],StreamClientSDKMsgFunc,name);
 		if(i)
 		{
@@ -384,8 +273,17 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 			m_RealHandle[screenNo]=-1;
 			return false;
 		}
+		
+		//解码
+		if(DecodeTag==DECODETAG_HAIKANG)
+		{
+			i=StreamClient_SetPsDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
+		}
+		else if(DecodeTag==DECODETAG_DAHUA)
+		{
+			i=StreamClient_SetDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
+		}
 
-		i=StreamClient_SetPsDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
 		if(i)
 		{
 			DlgMain->ShowCameraMessage(name,(char*)StreamClient_GetErrMsgByErrCode(i),FALSE);
@@ -426,31 +324,36 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 
 		return false;
 	}
-	//DlgMain->ShowCameraMessage(name,"连接成功",FALSE);
+	DlgMain->ShowCameraMessage(name,"连接成功",FALSE);
 	return true;
 }
 
 void CStreamClientSDK::StopPlay(int screenNo)
 {
+	
 	if(m_RealHandle[screenNo] >=0)
 	{
+		//关闭预览
+		StreamClient_Stop(m_RealHandle[screenNo]);
+		
+		//注销用户
+		StreamClient_DestroySession(m_RealHandle[screenNo]);
+		//停止播放
 		DB33_PlayM4_Stop(m_lPort[screenNo]);
 		DB33_PlayM4_CloseStream(m_lPort[screenNo]);
 
 		DB33_PlayM4_FreePort(m_lPort[screenNo]);
-		//关闭预览
-		StreamClient_Stop(m_RealHandle[screenNo]);
-		//注销用户
-		StreamClient_DestroySession(m_RealHandle[screenNo]);
+		
+#if OPEN_CARDETECT_CODE 	
+		//停止识别
+		if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
+			DlgMain->DlgScreen.CarDetect[screenNo].Stop();
+#endif
+
 	}
 	m_lPort[screenNo]=-1;
 	m_RealHandle[screenNo]=-1;
 
-#if OPEN_CARDETECT_CODE 	
-	//停止识别
-	if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
-		DlgMain->DlgScreen.CarDetect[screenNo].Stop();
-#endif
 
 }
 
@@ -492,7 +395,7 @@ int CStreamClientSDK::GetPortWndindex(long lport)
 }
 
 //根据播放句柄获取窗口ID
-int CStreamClientSDK::GetHandleWindID(int RealHandle)
+int CStreamClientSDK::GetHandleWindID(long RealHandle)
 {
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{

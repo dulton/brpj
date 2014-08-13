@@ -89,8 +89,8 @@ public:
 
 
 	int searchFlag;
-	int ListTotal;
-	int ListNow;
+	long ListTotal;
+	long ListNow;
 	void DisplayerList(void);
 
 	//用来存放SQL语句的函数

@@ -58,8 +58,8 @@ public:
 	list<struct HISTORY_REPORT_ST> list_history_report;
 
 	int searchFlag;
-	int ListTotal;
-	int ListNow;
+	long ListTotal;
+	long ListNow;
 	void DisplayerList(void);
 
 	BOOL OnInitDialog();

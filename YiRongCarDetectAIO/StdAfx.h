@@ -111,7 +111,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
-#define ALLTAB_CLIENT_MODE 1
+#define ALLTAB_CLIENT_MODE 0
 
 
 //汽车模式 1 电动车模式 0
@@ -122,7 +122,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 0
+#define OPEN_CARDETECT_CODE 1
 
 //海康 市局设备树
 #define IVMS_ORACLE_DEVICETREE 1
@@ -179,7 +179,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #endif
 
 //最多增加区域
-#define MAX_AREA 5120
+#define MAX_AREA 2048
 
 //最大显示多少个摄像头窗口
 #define MAX_DEVICE_NUM 16

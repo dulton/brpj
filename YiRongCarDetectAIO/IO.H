@@ -343,12 +343,12 @@ public:
 	/**************************设备表*******************************/
 	bool DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList);	//读取所有的区域
 	bool DEVICE_AddNewArea(CString AreaName);					//新增区域
-	bool DEVICE_DeleteArea(int areaID);							//删除区域
+	bool DEVICE_DeleteArea(long areaID);							//删除区域
 	bool DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,	\
 							CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
 	bool DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList);			//读某个区域所有的摄像机信息
-	bool DEVICE_DeleteCamera(int cameraID);											//删除摄像机
-	bool DEVICE_DeleteCameraWithAreaID(int AreaID);									//删除某个区域的所有摄像机
+	bool DEVICE_DeleteCamera(long cameraID);											//删除摄像机
+	bool DEVICE_DeleteCameraWithAreaID(long AreaID);									//删除某个区域的所有摄像机
 	bool DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,\
 								CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
 
@@ -363,7 +363,7 @@ public:
 	/**************************系统日志表*******************************/
 	bool LOG_AddNewSystemLog(char *userName,char *logStr);				//新增系统日志
 	unsigned long LOG_GetSystemLogNum(char *userName,char *startTime,char *endTime,int flag,char *SQLstr);
-	bool LOG_ReadSystemLog(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_REPORT_ST> &HistoryList);
+	bool LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_REPORT_ST> &HistoryList);
 	
 	/**************************汽车结果表、报警表*******************************/
 	bool CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetype,char *platecolor,char *direction,char *carcolor,
@@ -376,9 +376,9 @@ public:
 					char *direction,char *platecolor,char *platetype,char *carcolor,int flag,char *SQLstr);
 	unsigned long CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
 					char *direction,char *platecolor,char *platetype,char *carcolor,int flag,char *SQLstr);
-	bool CAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
-	bool CAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
-	bool CAR_AlarmResult_Execute(int nid,bool *isblack);
+	bool CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
+	bool CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
+	bool CAR_AlarmResult_Execute(long nid,bool *isblack);
 	int CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList);//客户端专用 仅查最新一条
 	int CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *HistoryList);
 
@@ -399,9 +399,9 @@ public:
 											char *direction,int flag,char *SQLstr);
 	unsigned long ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
 											char *direction,int flag,char *SQLstr);
-	bool ELECAR_MatchResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
-	bool ELECAR_AlarmResult_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
-	bool ELECAR_AlarmResult_Execute(int nid,bool *isblack);
+	bool ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
+	bool ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
+	bool ELECAR_AlarmResult_Execute(long nid,bool *isblack);
 	int ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList);
 	int ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_ST *HistoryList);
 
@@ -413,8 +413,8 @@ public:
 	bool CAR_BlackTable_DeleteWithNid(unsigned long int nid);
 	bool CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo);
 	unsigned long CAR_BlackTable_GetNum(void);
-	bool CAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> &BlackList);
-	bool CAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black);
+	bool CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList);
+	bool CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black);
 	bool CAR_BlackTable_DeleteAll(void);
 
 	/**************************电动车黑名单表*******************************/
@@ -422,8 +422,8 @@ public:
 	bool ELECAR_BlackTable_DeleteWithNid(unsigned long int nid);
 	bool ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo);
 	unsigned long ELECAR_BlackTable_GetNum(void);
-	bool ELECAR_BlackTable_Read(int startNum,int endNum,list<struct BLACK_DATA_ST> &BlackList);
-	bool ELECAR_BlackTable_ReadOne(int Num,struct BLACK_DATA_ST &black);
+	bool ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList);
+	bool ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black);
 	bool ELECAR_BlackTable_DeleteAll(void);
 
 	/**************************历史视频表*******************************/
@@ -431,7 +431,7 @@ public:
 							unsigned long int size,char *stime,char *etime,char *path);
 	bool VIDEO_DeleteVideo(unsigned long int nid);
 	unsigned long VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr);
-	bool VIDEO_Read(char *SQLstr,int flag,int startNum,int endNum,list<struct HISTORY_VIDEO_ST> &Videolist);
+	bool VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_VIDEO_ST> &Videolist);
 
 	/**************************定时录制表*******************************/
 	bool RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan);

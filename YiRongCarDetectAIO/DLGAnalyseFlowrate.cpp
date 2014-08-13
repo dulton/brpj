@@ -32,6 +32,15 @@ CDLGAnalyseFlowrate::CDLGAnalyseFlowrate(CWnd* pParent /*=NULL*/)
 	CTime nowtime=CTime::GetTickCount();
 	m_StartMon=nowtime;
 	m_StartHour=nowtime;
+
+	CTime cstime(
+		nowtime.GetYear(),
+		nowtime.GetMonth(),
+		nowtime.GetDay(),
+		0,	0,	0);
+
+	m_StartHour=cstime;
+
 	m_EndMon=nowtime;
 	m_EndHour=nowtime;
 	m_Day=nowtime;
@@ -250,7 +259,7 @@ void CDLGAnalyseFlowrate::OnButtonSearchSingle()
 	m_List.InitProgressMax(max);
 }
 
-unsigned long int CDLGAnalyseFlowrate::GetCount(unsigned long int camid,char *stime,char*etime)
+unsigned long int CDLGAnalyseFlowrate::GetCount(unsigned long int camid,char *stime,char *etime)
 {
 
 #if ALLTAB_DETECT_CAR_MODE

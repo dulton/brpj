@@ -405,7 +405,9 @@ bool CCarDetect::ErrorPlateName(char *name)
 		j==p[3] && 
 		j==p[4] )
 		return true;
-
+/*
+select  t.* from TB_ALARM_VEHICLE t where length(REGEXP_REPlACE(t.scarnumber,'[0-9a-z]',''))>=2
+*/
 	//字母超过1个。不是电动车
 	j=0;
 	for(int i=0;i<5;i++)
@@ -417,6 +419,9 @@ bool CCarDetect::ErrorPlateName(char *name)
 	if(j>1)
 		return true;
 	
+/*
+select * from TB_ALARM_VEHICLE t where not REGEXP_LIKE(t.scarnumber,'^.[0-9a-z][0-9a-z][0-9a-z].$')
+*/
 	//字母在中间3个。不是电动车
 	j=0;
 	for(int i=1;i<4;i++)

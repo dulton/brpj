@@ -53,9 +53,9 @@ public:
 	list<struct BLACK_DATA_ST> list_black;
 	struct BLACK_DATA_ST data;
 
-	int ListTotal;
-	int ListNow;
-	int ListChoose;
+	long ListTotal;
+	long ListNow;
+	long ListChoose;
 
 	void DisplayerList(void);
 	void reflush();

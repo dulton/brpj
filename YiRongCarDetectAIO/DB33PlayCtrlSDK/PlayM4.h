@@ -125,8 +125,6 @@
 #define VIDEO_H264          0x1 // 海康H.264
 #define VIDEO_MPEG4         0x3 // 标准MPEG4
 #define VIDEO_MJPEG			0x4
-#define VIDEO_H265          0x5 // 标准265
-#define VIDEO_SVAC          0x6  //svac
 #define VIDEO_AVC264        0x0100
 
 // 音频编码类型
@@ -425,12 +423,6 @@ typedef struct _PLAYM4_SESSION_INFO_     //交互信息结构
 #endif
 
 PLAYM4_API BOOL __stdcall NAME(PlayM4_OpenStreamAdvanced)(LONG nPort, int nProtocolType, PLAYM4_SESSION_INFO* pstSessionInfo, DWORD nBufPoolSize);
-
-
-//dwGroupIndex 暂约定取值0~3，第一版本取消同步只能同个closestream处理
-PLAYM4_API BOOL __stdcall NAME(PlayM4_SetSycGroup)(LONG nPort, DWORD dwGroupIndex);
-//暂不实现此函数，同个组设置的起始时间不一致，以最小的时间作为播放起点，同一组可只设一路
-PLAYM4_API BOOL __stdcall NAME(PlayM4_SetSycStartTime)(LONG nPort, PLAYM4_SYSTEM_TIME *pstSystemTime);
 
 
 //图像增强相关
