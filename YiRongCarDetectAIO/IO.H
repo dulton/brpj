@@ -192,7 +192,7 @@ struct HISTORY_DETECT_ST
 	char	plate[32];
 	//置信度
 	int reliability;
-	
+
 	//文件路径
 	char path[260];
 	//图像大小
@@ -336,7 +336,7 @@ public:
 	void VarSaveStr2(TCHAR *dst,_RecordsetPtr &p,TCHAR *name);	//保存成字符串
 	long long VarSaveNumber2(_RecordsetPtr &p,TCHAR *name);
 	double VarSaveDouble2(_RecordsetPtr &p,TCHAR *name);
-	void IO::filterstring(char *str);
+	void filterstring(char *str);
 
 	bool DisConnectionOracleDB(void);				//断开与oracle数据库的连接
 	int ConnectionOracleDBTXT(char* FileName);		//连接数据库
@@ -345,12 +345,12 @@ public:
 	bool DEVICE_AddNewArea(CString AreaName);					//新增区域
 	bool DEVICE_DeleteArea(long areaID);							//删除区域
 	bool DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,	\
-							CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
+		CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
 	bool DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList);			//读某个区域所有的摄像机信息
 	bool DEVICE_DeleteCamera(long cameraID);											//删除摄像机
 	bool DEVICE_DeleteCameraWithAreaID(long AreaID);									//删除某个区域的所有摄像机
 	bool DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,\
-								CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
+		CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息
@@ -364,18 +364,18 @@ public:
 	bool LOG_AddNewSystemLog(char *userName,char *logStr);				//新增系统日志
 	unsigned long LOG_GetSystemLogNum(char *userName,char *startTime,char *endTime,int flag,char *SQLstr);
 	bool LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_REPORT_ST> &HistoryList);
-	
+
 	/**************************汽车结果表、报警表*******************************/
 	bool CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetype,char *platecolor,char *direction,char *carcolor,
-								char *plate,int reliability,char *path,unsigned long int picsize,unsigned char *picdata);
+		char *plate,int reliability,char *path,unsigned long int picsize,unsigned char *picdata);
 	bool CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
-								char *plate,int reliability,char *path,unsigned long int picsize);
+		char *plate,int reliability,char *path,unsigned long int picsize);
 	bool CAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data);	//获取比对结果表图片数据
 	bool CAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data);	//获取报警表图片数据
 	unsigned long CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
-					char *direction,char *platecolor,char *platetype,char *carcolor,int flag,char *SQLstr);
+		char *direction,char *platecolor,char *platetype,char *carcolor,int flag,char *SQLstr);
 	unsigned long CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
-					char *direction,char *platecolor,char *platetype,char *carcolor,int flag,char *SQLstr);
+		char *direction,char *platecolor,char *platetype,char *carcolor,int flag,char *SQLstr);
 	bool CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool CAR_AlarmResult_Execute(long nid,bool *isblack);
@@ -387,18 +387,18 @@ public:
 
 	/**************************电动车结果表、报警表*******************************/
 	bool ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
-								   char *plate,int reliability,
-								   char *path,unsigned long int picsize,unsigned char *picdata);
+		char *plate,int reliability,
+		char *path,unsigned long int picsize,unsigned char *picdata);
 	bool ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,char *platecolor,char *direction,
-									char *plate,int reliability,
-								   char *path,unsigned long int picsize);
+		char *plate,int reliability,
+		char *path,unsigned long int picsize);
 
 	bool ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data);	//获取电动车比对结果表图片数据
 	bool ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data);	//获取报警表图片数据
 	unsigned long ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
-											char *direction,int flag,char *SQLstr);
+		char *direction,int flag,char *SQLstr);
 	unsigned long ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
-											char *direction,int flag,char *SQLstr);
+		char *direction,int flag,char *SQLstr);
 	bool ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList);
 	bool ELECAR_AlarmResult_Execute(long nid,bool *isblack);
@@ -428,7 +428,7 @@ public:
 
 	/**************************历史视频表*******************************/
 	bool VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
-							unsigned long int size,char *stime,char *etime,char *path);
+		unsigned long int size,char *stime,char *etime,char *path);
 	bool VIDEO_DeleteVideo(unsigned long int nid);
 	unsigned long VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr);
 	bool VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_VIDEO_ST> &Videolist);
@@ -485,14 +485,14 @@ public:
 	bool IVMS_DisConnectionOracleDB(void);				//断开与oracle数据库的连接
 	int IVMS_ConnectionOracleDBTXT(char* FileName);		//连接数据库
 
-int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit);
-int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo);
-int IO::IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver);
-int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver);
-int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regionid);
-int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *keyword);
+	int IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit);
+	int IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo);
+	int IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver);
+	int IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver);
+	int IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regionid);
+	int IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *keyword);
 
-int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connectflag);
+	int IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connectflag);
 #endif
 
 

@@ -34,6 +34,12 @@ extern CDLGLogin DlgLogin;
 #include "URLencode.h"
 #include "SignalDownload.h"
 
+
+//WAV声音
+#include "mmsystem.h"
+#pragma comment(lib,"winmm.lib") 
+
+
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
@@ -1425,7 +1431,7 @@ HBRUSH CYiRongCarDetectAIODlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
-
+	char fail[256];
 	CDialog::OnTimer(nIDEvent);
 	UpdateData(TRUE);
 
@@ -1485,7 +1491,26 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 						m_ListCar.SetItemText(nItem,8,	HistoryClientDATA.platetype);
 						m_ListCar.SetItemText(nItem,9,	HistoryClientDATA.carcolor);
 						if(HistoryClientDATA.nflag)
+						{	
 							m_ListCar.SetItemText(nItem,10,	"是");
+								if(DlgSetSystem.m_check_alarmpic)
+							{
+								sprintf(str,"%s\\yrcdtempResultListpic.jpg",DlgSetSystem.m_path_detect);
+
+								SignalDownload sd;
+								sd.InitData();
+								char url2[1024];
+								EncodeURI(HistoryClientDATA.path,url2,1024);
+								sd.HTTPDownload(url2,str,fail,10,0);
+								sd.DestroyData();
+								Sleep(100);
+								//保存后打开
+								ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+							}
+							//报警声音
+							if(DlgSetSystem.m_check_alarmwav)
+								PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
+						}
 						else
 							m_ListCar.SetItemText(nItem,10,	"否");
 
@@ -1551,7 +1576,27 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 						m_ListCar.SetItemText(nItem,7,	HistoryClientDATA.platecolor);
 
 						if(HistoryClientDATA.nflag)
+						{
 							m_ListCar.SetItemText(nItem,8,	"是");
+					
+							if(DlgSetSystem.m_check_alarmpic)
+							{
+								sprintf(str,"%s\\yrcdtempResultListpic.jpg",DlgSetSystem.m_path_detect);
+
+								SignalDownload sd;
+								sd.InitData();
+								char url2[1024];
+								EncodeURI(HistoryClientDATA.path,url2,1024);
+								sd.HTTPDownload(url2,str,fail,10,0);
+								sd.DestroyData();
+								Sleep(100);
+								//保存后打开
+								ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+							}
+							//报警声音
+							if(DlgSetSystem.m_check_alarmwav)
+								PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
+						}
 						else
 							m_ListCar.SetItemText(nItem,8,	"否");
 

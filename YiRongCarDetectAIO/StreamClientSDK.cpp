@@ -275,11 +275,11 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 		}
 		
 		//½âÂë
-		if(DecodeTag==DECODETAG_HAIKANG)
+		if(DecodeTag==DECODETAG_PS)
 		{
 			i=StreamClient_SetPsDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
 		}
-		else if(DecodeTag==DECODETAG_DAHUA)
+		else if(DecodeTag==DECODETAG_SRC)
 		{
 			i=StreamClient_SetDataCallBack(m_RealHandle[screenNo],StreamClientSDKDataFunc,this);
 		}
