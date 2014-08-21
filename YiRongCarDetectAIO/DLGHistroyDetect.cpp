@@ -94,20 +94,7 @@ END_MESSAGE_MAP()
 BOOL CDLGHistroyDetect::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	
-	//必须预定义后再弹窗口
-	switch(flag)
-	{
-	case HISTORY_DETECT_FLAG_CAR :
-		SetWindowText("历史识别查询");
-		break;
-	case HISTORY_DETECT_FLAG_ALARM :
-		SetWindowText("历史报警查询");
-		break;
-	default:
-		MessageBox("BOOL CDLGHistroyDetect::OnInitDialog error",MESSAGEBOX_TITLE);
-		return true;
-	}
+
 
 #if ALLTAB_DETECT_CAR_MODE
 	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
@@ -146,6 +133,33 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 	GetDlgItem(IDC_COMBO_PLATECOLOR)->ShowWindow(FALSE);
 	GetDlgItem(IDC_COMBO_CARCOLOR)->ShowWindow(FALSE);
 #endif
+
+	//必须预定义后再弹窗口
+	switch(flag)
+	{
+	case HISTORY_DETECT_FLAG_CAR :
+		SetWindowText("历史识别查询");
+		break;
+	case HISTORY_DETECT_FLAG_ALARM :
+		SetWindowText("历史报警查询");
+#if ALLTAB_DETECT_CAR_MODE
+
+	m_List.InsertColumn(13, _T("失主姓名"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(14, _T("品牌"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(15, _T("失主电话"), LVCFMT_LEFT, 100);
+#else
+
+	m_List.InsertColumn(11, _T("失主姓名"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(12, _T("品牌"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(13, _T("失主电话"), LVCFMT_LEFT, 100);
+
+#endif
+		break;
+	default:
+		MessageBox("BOOL CDLGHistroyDetect::OnInitDialog error",MESSAGEBOX_TITLE);
+		return true;
+	}
+
 
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
@@ -391,6 +405,8 @@ void CDLGHistroyDetect::DisplayerList(void)
 	int i=0;
 
 	list<struct HISTORY_DETECT_ST>::iterator beglist;
+	
+	struct BLACK_DATA_ST blackdata;
 
 	for(beglist=list_history_detect.begin();beglist!=list_history_detect.end();beglist++)
 	{
@@ -428,7 +444,16 @@ void CDLGHistroyDetect::DisplayerList(void)
 
 		sprintf(str,"%d",beglist->picsize);
 		m_List.SetItemText(nItem,12,str);
-	
+
+	if( HISTORY_DETECT_FLAG_ALARM ==flag)
+	{
+		if(OracleIO.CAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+		{
+				m_List.SetItemText(nItem,13,blackdata.name);
+				m_List.SetItemText(nItem,14,blackdata.brand);
+				m_List.SetItemText(nItem,15,blackdata.Phone);
+		}
+	}
 #else
 //电动车
 		m_List.SetItemText(nItem,7,beglist->platecolor);
@@ -439,6 +464,17 @@ void CDLGHistroyDetect::DisplayerList(void)
 
 		sprintf(str,"%d",beglist->picsize);
 		m_List.SetItemText(nItem,10,str);
+
+	
+	if( HISTORY_DETECT_FLAG_ALARM ==flag)
+	{
+		if(OracleIO.ELECAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+		{
+				m_List.SetItemText(nItem,11,blackdata.name);
+				m_List.SetItemText(nItem,12,blackdata.brand);
+				m_List.SetItemText(nItem,13,blackdata.Phone);
+		}
+	}
 #endif
 
 	}

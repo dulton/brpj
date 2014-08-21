@@ -176,9 +176,11 @@ void CDLGSetBlack::OnButtonBlackdelete()
 	{
 		///删除
 #if ALLTAB_DETECT_CAR_MODE
-		if(!OracleIO.CAR_BlackTable_DeleteWithNid(data.nid))
+		if(!OracleIO.CAR_BlackTable_DeleteWithNid(data.nid) && 
+			!OracleIO.CAR_Alarm_DeleteWithBlackNid(data.nid))
 #else
-		if(!OracleIO.ELECAR_BlackTable_DeleteWithNid(data.nid))
+		if(!OracleIO.ELECAR_BlackTable_DeleteWithNid(data.nid) &&
+			!OracleIO.ELECAR_Alarm_DeleteWithBlackNid(data.nid))
 #endif
 		{
 			MessageBox("数据库错误：无法删除",MESSAGEBOX_TITLE);
@@ -276,8 +278,12 @@ void CDLGSetBlack::OnButtonBlackClean()
 
 #if ALLTAB_DETECT_CAR_MODE
 		OracleIO.CAR_BlackTable_DeleteAll();
+		OracleIO.CAR_Alarm_DeleteAll();
+		
 #else
 		OracleIO.ELECAR_BlackTable_DeleteAll();
+		OracleIO.ELECAR_Alarm_DeleteAll();
+		
 #endif
 		//重新载入
 		reflush();

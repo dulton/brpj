@@ -1665,7 +1665,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_match_result_car");
+		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,rownum rn from tb_match_result_car");
 
 		CString tempSql = SQLstr;
 
@@ -1757,7 +1757,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -1795,7 +1795,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_alarm_car");
+		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID,rownum rn from tb_alarm_car");
 
 		CString tempSql = SQLstr;
 
@@ -1886,7 +1886,8 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.blackid = (long)m_pRecordsetPtr->GetCollect("BLACKID");
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -2650,7 +2651,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 {
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_match_result_vehicle");
+		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,rownum rn from tb_match_result_vehicle");
 
 		CString tempSql = SQLstr;
 
@@ -2728,6 +2729,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
 
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -2757,7 +2759,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 {
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,rownum rn from tb_alarm_vehicle");
+		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID,rownum rn from tb_alarm_vehicle");
 
 		CString tempSql = SQLstr;
 
@@ -2835,6 +2837,8 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.blackid = (long)m_pRecordsetPtr->GetCollect("BLACKID");
 
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -3184,6 +3188,23 @@ bool IO::CAR_BlackTable_DeleteWithNid(unsigned long int nid)
 		return false;
 	}  
 }
+bool IO::CAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format("delete from TB_ALARM_CAR where blackid=%d",blackid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_Alarm_DeleteWithBlackNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
 
 bool IO::CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 {
@@ -3336,6 +3357,8 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
+	
+		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
 		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 		var = m_pRecordsetPtr->GetCollect("scarnumber");
@@ -3382,6 +3405,70 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 	}  
 }
 
+
+bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
+{
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid,scarnumber,sbrand,slostname,sphone,smark from tb_car_black where nid=%d"),Nid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+
+		variant_t var;
+		variant_t temp; 
+		temp.ChangeType(VT_NULL);
+		CString str;
+	
+		memset(&black,0,sizeof(struct BLACK_DATA_ST));
+
+		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+		var = m_pRecordsetPtr->GetCollect("scarnumber");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.plate, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("sbrand");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.brand, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("slostname");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.name, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("sphone");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.Phone, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("smark");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.other, str.GetBuffer(0));
+		}
+
+		m_pRecordsetPtr->Close();
+
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_BlackTable_ReadOneWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
 bool IO::CAR_BlackTable_DeleteAll(void)
 {
 	try
@@ -3394,6 +3481,22 @@ bool IO::CAR_BlackTable_DeleteAll(void)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
+bool IO::CAR_Alarm_DeleteAll(void)
+{
+	try
+	{
+		CString strSql=_T("delete from TB_ALARM_CAR");
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::CAR_Alarm_DeleteAll error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		return false;
 	}  
@@ -3455,6 +3558,24 @@ bool IO::ELECAR_BlackTable_DeleteWithNid(unsigned long int nid)
 		return false;
 	}  
 }
+bool IO::ELECAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format("delete from TB_ALARM_VEHICLE  where BLACKID=%d",blackid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_Alarm_DeleteWithBlackNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
+
 
 bool IO::ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 {
@@ -3607,6 +3728,7 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
+		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
 		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
 		var = m_pRecordsetPtr->GetCollect("scarnumber");
@@ -3653,6 +3775,69 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 	}  
 }
 
+bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
+{
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid,scarnumber,sbrand,slostname,sphone,smark from tb_vehicle_black where nid=%d"),Nid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+
+		variant_t var;
+		variant_t temp; 
+		temp.ChangeType(VT_NULL);
+		CString str;
+		memset(&black,0,sizeof(struct BLACK_DATA_ST));
+
+		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+		var = m_pRecordsetPtr->GetCollect("scarnumber");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.plate, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("sbrand");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.brand, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("slostname");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.name, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("sphone");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.Phone, str.GetBuffer(0));
+		}
+		var = m_pRecordsetPtr->GetCollect("smark");
+		if(var.vt != NULL && var !=temp)
+		{
+			str = var.bstrVal;
+			strcpy(black.other, str.GetBuffer(0));
+		}
+
+		m_pRecordsetPtr->Close();
+
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_BlackTable_ReadOneWithNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
+
 bool IO::ELECAR_BlackTable_DeleteAll(void)
 {
 	try
@@ -3669,6 +3854,24 @@ bool IO::ELECAR_BlackTable_DeleteAll(void)
 		return false;
 	}  
 }
+//删除数据库黑名单 也要删这个
+bool IO::ELECAR_Alarm_DeleteAll(void)
+{
+	try
+	{
+		CString strSql=_T("delete from TB_ALARM_VEHICLE");
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::ELECAR_ALarm_DeleteAll error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
+
 
 bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
 						   unsigned long int size,char *stime,char *etime,char *path)

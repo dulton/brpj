@@ -201,6 +201,8 @@ struct HISTORY_DETECT_ST
 	int nflag;
 	//摄像头编号
 	unsigned long int ncamid; 
+	//黑名单编号
+	unsigned long int blackid; 
 };
 
 struct BLACK_DATA_ST
@@ -416,6 +418,9 @@ public:
 	bool CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList);
 	bool CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black);
 	bool CAR_BlackTable_DeleteAll(void);
+	bool IO::CAR_Alarm_DeleteAll(void);
+	bool IO::CAR_Alarm_DeleteWithBlackNid(unsigned long int blackid);
+	bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 
 	/**************************电动车黑名单表*******************************/
 	bool ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo);
@@ -425,6 +430,9 @@ public:
 	bool ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList);
 	bool ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black);
 	bool ELECAR_BlackTable_DeleteAll(void);
+	bool IO::ELECAR_Alarm_DeleteAll(void);
+	bool IO::ELECAR_Alarm_DeleteWithBlackNid(unsigned long int blackid);
+bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 
 	/**************************历史视频表*******************************/
 	bool VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
