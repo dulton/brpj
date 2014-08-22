@@ -19,6 +19,8 @@ static char THIS_FILE[] = __FILE__;
 CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGSetSystem::IDD, pParent)
 	, m_display_preview(FALSE)
+	, m_update_url(_T(""))
+	, m_check_update(FALSE)
 {
 	//{{AFX_DATA_INIT(CDLGSetSystem)
 	m_check_alarmpic = TRUE;
@@ -42,6 +44,8 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_ftp_path = _T("/");
 	m_tomcat_dir = _T("D:\\tomcatname\\webapps\\YRCapturePic");
 	m_tomcat_url = _T("http://10.142.50.126:8089/YRCapturePic");
+	m_update_url = _T("10.142.50.126:8089");
+	m_check_update=TRUE;
 	//}}AFX_DATA_INIT
 
 }
@@ -86,6 +90,8 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_TOMCAT_URL, m_tomcat_url);
 	//}}AFX_DATA_MAP
 	DDX_Check(pDX, IDC_DISPLAY_PREVIEW, m_display_preview);
+	DDX_Text(pDX, IDC_EDIT_UPDATEURL, m_update_url);
+	DDX_Check(pDX, IDC_CHECK_UPDATE, m_check_update);
 }
 
 
@@ -352,8 +358,9 @@ void CDLGSetSystem::readini(char *path)
 
 	char	tomcat_dir[ZOG_MAX_PATH_STR] = "";
 	char	tomcat_url[ZOG_MAX_PATH_STR] = ""; 
+	char	update_url[ZOG_MAX_PATH_STR] = ""; 
 	int check_displaypreview;
-
+	int check_update;
 	////////////////////////////////////
 	if(GetPrivateProfileStruct("Alarm", "CheckPic", &check_alarmpic, sizeof(int), path))
 		m_check_alarmpic=check_alarmpic;
@@ -406,6 +413,12 @@ void CDLGSetSystem::readini(char *path)
 	if(GetPrivateProfileString("TomCat", "Url", "", tomcat_url, ZOG_MAX_PATH_STR, path))
 		m_tomcat_url=tomcat_url;
 
+	if(GetPrivateProfileString("Update", "Url", "", update_url, ZOG_MAX_PATH_STR, path))
+		m_update_url=update_url;
+	if(GetPrivateProfileStruct("Update", "CheckAuto", &check_update, sizeof(int), path))
+		m_check_update=check_update;
+	
+	
 	if(GetPrivateProfileStruct("View", "CheckDisplayPreview", &check_displaypreview, sizeof(int), path))
 		m_display_preview=check_displaypreview;
 
@@ -452,6 +465,8 @@ void CDLGSetSystem::writeini(char *path)
 
 	WritePrivateProfileString("TomCat", "Dir",  m_tomcat_dir.GetBuffer(0), path);
 	WritePrivateProfileString("TomCat", "Url",  m_tomcat_url.GetBuffer(0), path);
+	WritePrivateProfileString("Update", "Url",  m_update_url.GetBuffer(0), path);
+	WritePrivateProfileStruct("Update", "CheckAuto", &m_check_update, sizeof(int), path);
 
 	WritePrivateProfileStruct("View", "CheckDisplayPreview", &m_display_preview, sizeof(int), path);
 	

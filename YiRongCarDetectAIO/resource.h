@@ -194,6 +194,7 @@
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
 #define IDC_BUTTON_FIND                 1001
+#define IDC_BUTTON_UPDATE               1001
 #define IDC_LIST_CAR                    1002
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_BUTTON2                     1004
@@ -244,7 +245,6 @@
 #define IDC_BUTTON_SPEED                1044
 #define IDC_COMBO_REGION                1044
 #define IDC_BUTTON6                     1045
-#define IDC_COMBO7                      1045
 #define IDC_BUTTON8                     1047
 #define IDC_BUTTON9                     1048
 #define IDC_BUTTON10                    1049
@@ -489,6 +489,8 @@
 #define IDC_STATIC_RTP                  1397
 #define IDC_STATIC_RTSP                 1398
 #define IDC_EDIT_FIND                   1399
+#define IDC_EDIT_UPDATEURL              1400
+#define IDC_CHECK_UPDATE                1401
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -527,14 +529,15 @@
 #define ID_MENUITEM_VIDEODETECT         32818
 #define ID__32819                       32819
 #define ID_MENUITEM_ADDIVMSDEVICE       32820
+#define ID_Menu                         32821
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        353
-#define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1400
+#define _APS_NEXT_COMMAND_VALUE         32822
+#define _APS_NEXT_CONTROL_VALUE         1402
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

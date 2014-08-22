@@ -80,6 +80,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	BOOL m_display_preview;
+	CString m_update_url;
+	BOOL m_check_update;
 };
 
 //{{AFX_INSERT_LOCATION}}

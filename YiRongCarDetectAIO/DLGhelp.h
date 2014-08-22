@@ -41,6 +41,8 @@ protected:
 	
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedButtonUpdate();
 };
 
 //{{AFX_INSERT_LOCATION}}

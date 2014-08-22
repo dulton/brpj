@@ -1074,6 +1074,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DLGhelp.h"
+				>
+			</File>
+			<File
 				RelativePath="DLGHistoryReport.h"
 				>
 			</File>

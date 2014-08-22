@@ -5,11 +5,7 @@
 #include "YiRongCarDetectAIO.h"
 #include "YiRongCarDetectAIODlg.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+
 
 #include "DLGLogin.h"
 CDLGLogin DlgLogin;
@@ -23,6 +19,17 @@ IO OracleIO;
 ////////////////lynn/////////////////
 
 #include "DLGWarnning.h"
+
+////////////////////////////////////////
+#include "URLencode.h"
+#include "SignalDownload.h"
+
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 
 //当前路径
@@ -69,6 +76,60 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 	//ZOGNA//UP
 	//读系统配置表
 	DlgSetSystem.Read2Dlg();
+
+//判断是否需要升级 仅客户端
+#if ALLTAB_CLIENT_MODE 
+
+	if(DlgSetSystem.m_check_update)
+	{
+		char url[1024];
+		char url2[1024];
+		char str[1024];
+		char fail[1024];
+		sprintf(str,"%s\\yrversion.txt",CurrentDir);
+		int cur_version=0;
+		int new_version=0;
+		FILE *fp=_tfopen(str,_T("r"));
+		if(fp)
+		{
+			_ftscanf(fp,_T("%d"),&cur_version);
+			fclose(fp);
+
+			SignalDownload sd;
+			sd.InitData();
+
+			sprintf(url,"http://%s/yrupdate/topnew.txt",DlgSetSystem.m_update_url);
+
+			EncodeURI(url,url2,1024);
+
+			sprintf(str,"%s\\temp.txt",DlgSetSystem.m_path_detect);
+
+			if(sd.HTTPDownload(url2,str,fail,10,0))
+			{
+				fp=_tfopen(str,_T("r"));
+				if(fp)
+				{
+					_ftscanf(fp,_T("%d"),&new_version);
+					fclose(fp);
+
+					if(cur_version!=0 && new_version!=0 && new_version>cur_version)
+					{
+						ShellExecute(NULL,NULL,"YrCarDetectAIOUpdate.exe",DlgSetSystem.m_update_url,NULL,SW_NORMAL);
+						return FALSE;
+					}
+				}
+			}
+			else
+			{
+				CDLGWarnning dlgw;
+				dlgw.m_wintxt="连接服务器";					//窗口标题
+				dlgw.m_warntxt="无法连接更新服务器";	//窗口内容
+				dlgw.DoModal();
+			}
+			sd.DestroyData();
+		}
+	}
+#endif
 
 	// Standard initialization
 	// If you are not using these features and wish to reduce the size
@@ -317,3 +378,4 @@ void ZogDeCode(char *src,char *dst)
 	}
 	dst[i]='\0';
 }
+
