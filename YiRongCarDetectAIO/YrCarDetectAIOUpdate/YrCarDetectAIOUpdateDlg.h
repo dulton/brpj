@@ -4,6 +4,17 @@
 #pragma once
 
 
+#include "SignalDownload.h"
+#include "URLencode.h"
+
+struct UPDATE_OP_S
+{
+	char flag;
+	char srcurl[260];
+	char dstpath[260];
+};
+#define MAX_UPDATE_FILE 1024
+
 // CYrCarDetectAIOUpdateDlg dialog
 class CYrCarDetectAIOUpdateDlg : public CDialog
 {
@@ -14,8 +25,26 @@ public:
 // Dialog Data
 	enum { IDD = IDD_YRCARDETECTAIOUPDATE_DIALOG };
 
+	bool ReadVersionFile(TCHAR* FileName);
+	bool CheckVersion();
+	bool ReadUpdateList();
+
+	char CurrentDir[MAX_PATH];
+
+	SignalDownload sd;
+	char updatedir[MAX_PATH];
+	//操作结构体
+	struct UPDATE_OP_S updateList[MAX_UPDATE_FILE];
+	int  updateListTotal;
+
+	bool stopflag;
+	bool realstop;
+//线程句柄
+	HANDLE pthread;
+
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+
 
 
 // Implementation
@@ -30,4 +59,7 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	long m_version;
+	CString m_ip;
+
 };

@@ -60,6 +60,20 @@ BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 
 	CYrCarDetectAIOUpdateDlg dlg;
 	m_pMainWnd = &dlg;
+//////////////////////////////
+	
+	LPWSTR *szArglist = NULL;  
+    int nArgs = 0;  
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);  
+    if( nArgs > 1)  
+    {  
+		dlg.m_ip =szArglist[1];
+	}
+    //取得参数后，释放CommandLineToArgvW申请的空间  
+    LocalFree(szArglist);  
+//////////////////////////////
+
+
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{

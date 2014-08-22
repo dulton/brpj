@@ -5,6 +5,7 @@
 #define IDD_YRCARDETECTAIOUPDATE_DIALOG 102
 #define IDR_MAINFRAME                   128
 #define IDC_EDIT1                       1000
+#define IDC_EDIT_IP                     1000
 #define IDC_STATIC_VERSION              1001
 
 // Next default values for new objects

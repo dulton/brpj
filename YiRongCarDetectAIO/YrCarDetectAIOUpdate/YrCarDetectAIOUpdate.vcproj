@@ -211,6 +211,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\URLencode.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\YrCarDetectAIOUpdate.cpp"
 				>
 			</File>
@@ -242,6 +246,10 @@
 			</File>
 			<File
 				RelativePath=".\typedefine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\URLencode.h"
 				>
 			</File>
 			<File
