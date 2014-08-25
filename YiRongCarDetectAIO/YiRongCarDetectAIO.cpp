@@ -143,7 +143,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 #endif
 
 	////////////////lynn/////////////////
-	int OracleError = OracleIO.ConnectionOracleDBTXT("DataBaseConfig.txt");
+	int OracleError = OracleIO.ConnectionOracleDBTXT("YRDataBaseConfig.db");
 	if(OracleError == ReadFile_FAIL)
 	{
 		CDLGWarnning dlgw;
@@ -214,7 +214,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 #endif
 
 #if IVMS_ORACLE_DEVICETREE
-	OracleError = OracleIO.IVMS_ConnectionOracleDBTXT("IVMSDataBaseConfig.txt");
+	OracleError = OracleIO.IVMS_ConnectionOracleDBTXT("IVMSDataBaseConfig.db");
 	if(OracleError == ReadFile_FAIL)
 	{
 		CDLGWarnning dlgw;

@@ -92,7 +92,12 @@ bool IO::ReadFile(TCHAR* FileName)
 		_stscanf(temp,_T("Port:%s"),Port);
 
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
+#if 1
+		_stscanf(temp,_T("User:%s"),tempchar);
+		DeCode(tempchar,User);
+#else
 		_stscanf(temp,_T("User:%s"),User);
+#endif
 
 		_fgetts(temp,RCT_MAX_STR_SIZE,fp);
 
