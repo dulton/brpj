@@ -28,6 +28,10 @@ public:
 	bool ReadVersionFile(TCHAR* FileName);
 	bool CheckVersion();
 	bool ReadUpdateList();
+	void filterstr(char *str);
+bool CheckError(char *filepath,char *filename);
+bool DownloadUpdateList();
+bool CopyUpdateList();
 
 	char CurrentDir[MAX_PATH];
 
@@ -36,6 +40,8 @@ public:
 	//操作结构体
 	struct UPDATE_OP_S updateList[MAX_UPDATE_FILE];
 	int  updateListTotal;
+
+
 
 	bool stopflag;
 	bool realstop;

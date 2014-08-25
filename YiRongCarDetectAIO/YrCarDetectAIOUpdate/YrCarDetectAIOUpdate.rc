@@ -89,6 +89,7 @@ BEGIN
     LTEXT           "升级服务器IP",IDC_STATIC,7,32,49,8
     LTEXT           "当前版本:",IDC_STATIC,201,33,37,8
     LTEXT           "1",IDC_STATIC_VERSION,242,34,55,8
+    LTEXT           "准备更新...",IDC_STATIC_INFO,7,7,290,8
 END
 
 
