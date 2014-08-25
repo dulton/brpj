@@ -90,7 +90,7 @@ BOOL CDataBaseConfigDlg::OnInitDialog()
 	TCHAR password[RCT_MAX_STR_SIZE]="";
 	TCHAR name[RCT_MAX_STR_SIZE]="";
 
-	if(ReadFile("DataBaseConfig.txt",ipaddr,port,user,password,name))
+	if(ReadFile("YRDataBaseConfig.db",ipaddr,port,user,password,name))
 	{
 		m_ipaddr = ipaddr;
 		m_name = name;
@@ -214,7 +214,7 @@ void CDataBaseConfigDlg::OnOK()
 	}
 
 	//–¥»Î
-	WriteFile("DataBaseConfig.txt",	\
+	WriteFile("YRDataBaseConfig.db",	\
 		m_ipaddr.GetBuffer(0),m_port.GetBuffer(0),m_user.GetBuffer(0),m_psw.GetBuffer(0),m_name.GetBuffer(0));
 
 	CDialog::OnOK();
