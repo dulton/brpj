@@ -1,5 +1,9 @@
 #ifndef _TYPEDEFINE_H_
 #define _TYPEDEFINE_H_
+
+#include "stdafx.h"
+
+
 #include <string>
 using namespace std;
 
@@ -33,9 +37,15 @@ typedef int                 BOOL;
 //#include <tinyxml.h>
 //#include <tinystr.h>
 
-
 //#pragma comment(lib,"./jsoncpp-src-0.5.0/build/vs71/debug/lib_json/json_vc71_libmtd.lib")
+
+#if  X64_UPDATE
+#pragma comment(lib,"./curl-7.32.0/vs/vc8/lib/x64/Debug/vc8libcurl.lib")
+#else
 #pragma comment(lib,"./curl-7.32.0/vs/vc8/lib/Debug/vc8libcurl.lib")
+#endif
+
+
 //#pragma comment(lib,"./tinyxmlSTLvc6-UTF8/Debug/tinyxmlSTLvc6.lib")
 
 

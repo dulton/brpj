@@ -19,6 +19,11 @@ enum UPDATE_FLAG
 
 };
 
+#if X64_UPDATE
+#define UPDATEFILE "yrupdateX64"
+#else
+#define UPDATEFILE "yrupdate"
+#endif
 /*
 TOMCAT服务器要建立
 \yrupdate 文件夹
@@ -85,7 +90,7 @@ BOOL CYrCarDetectAIOUpdateDlg::OnInitDialog()
 	//////////////////////////////////////////////////////////////
 	// TODO: Add extra initialization here
 	GetCurrentDirectory(MAX_PATH, CurrentDir);
-	sprintf(updatedir,"%s\\yrupdate",CurrentDir);
+	sprintf(updatedir,"%s\\%s",CurrentDir,UPDATEFILE);
 
 	sd.InitData();
 	stopflag=true;
@@ -259,7 +264,7 @@ bool CYrCarDetectAIOUpdateDlg::CheckVersion()
 		m_version=0;
 	}
 
-	sprintf(url,"http://%s/yrupdate/topnew.txt",m_ip);
+	sprintf(url,"http://%s/%s/topnew.txt",m_ip,UPDATEFILE);
 
 	EncodeURI(url,url2,1024);
 
@@ -358,7 +363,7 @@ bool CYrCarDetectAIOUpdateDlg::ReadUpdateList()
 	CreateDirectory(updatedir, NULL);
 
 	//跳到版本号文件夹
-	sprintf(url,"http://%s/yrupdate/%d/updatelist.txt",m_ip,m_version);
+	sprintf(url,"http://%s/%s/%d/updatelist.txt",m_ip,UPDATEFILE,m_version);
 
 	sprintf(tempstr,"%s\\updatelist.txt",updatedir);
 
@@ -440,7 +445,7 @@ bool CYrCarDetectAIOUpdateDlg::DownloadUpdateList()
 			CreateDirectory(tempstr, NULL);
 			break;
 		case UF_CREAT_FILE:
-			sprintf(url,"http://%s/yrupdate/%d/%s",m_ip,m_version,updateList[i].srcurl);
+			sprintf(url,"http://%s/%s/%d/%s",m_ip,UPDATEFILE,m_version,updateList[i].srcurl);
 			sprintf(tempstr,"%s\\%s",updatedir,updateList[i].dstpath);
 
 			EncodeURI(url,url2,1024);

@@ -35,8 +35,8 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 
-
-
+// 64λ�汾
+#define X64_UPDATE 1
 
 
 
