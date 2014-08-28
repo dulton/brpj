@@ -36,7 +36,7 @@
 
 
 // 64λ�汾
-#define X64_UPDATE 1
+#define X64_UPDATE 0
 
 
 

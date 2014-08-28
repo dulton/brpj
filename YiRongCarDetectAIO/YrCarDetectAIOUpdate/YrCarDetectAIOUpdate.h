@@ -18,7 +18,7 @@ class CYrCarDetectAIOUpdateApp : public CWinApp
 {
 public:
 	CYrCarDetectAIOUpdateApp();
-
+void GetCommandLineAndToArgv(int &argc,CStringArray &argv);
 // Overrides
 	public:
 	virtual BOOL InitInstance();

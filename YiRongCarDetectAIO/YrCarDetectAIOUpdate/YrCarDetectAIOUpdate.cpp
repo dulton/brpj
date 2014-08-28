@@ -32,6 +32,37 @@ CYrCarDetectAIOUpdateApp theApp;
 
 
 // CYrCarDetectAIOUpdateApp initialization
+//命令行
+void CYrCarDetectAIOUpdateApp::GetCommandLineAndToArgv(int &argc,CStringArray &argv)
+{
+	argc=0;    argv.RemoveAll();    //初始化
+	CString commandLine=::GetCommandLine();
+	CString argument;
+	int pos,strLen;
+	pos=commandLine.ReverseFind(' ');
+	while(pos!=-1)
+	{
+		strLen=commandLine.GetLength();
+		argument=commandLine.Right(strLen-pos-1);
+		if(!argument.IsEmpty())
+		{
+			argc++;
+			argv.InsertAt(0,argument);
+		}
+		commandLine=commandLine.Left(pos);
+		pos=commandLine.ReverseFind(' ');
+	}
+
+	pos=commandLine.Find('\"');    //过滤掉" ",因为如果ShellExecute等函数调用时路径会掉" "
+	while(pos!=-1)
+	{
+		commandLine.Delete(pos);
+		pos=commandLine.Find('\"');
+	}
+	argc++;
+	argv.InsertAt(0,commandLine);
+}
+
 
 BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 {
@@ -61,14 +92,37 @@ BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 	CYrCarDetectAIOUpdateDlg dlg;
 	m_pMainWnd = &dlg;
 //////////////////////////////
-	
+		
+	int argc;
+	CStringArray argv; 
+
 	LPWSTR *szArglist = NULL;  
-    int nArgs = 0;  
-    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);  
-    if( nArgs > 1)  
-    {  
-		dlg.m_ip =szArglist[1];
+
+	GetCommandLineAndToArgv(argc,argv);
+	if( argc >1)  
+	{  
+		char tempstr[260];
+		strcpy(tempstr,argv[1].GetBuffer(0));
+
+		if(strlen(tempstr)>5)
+		{
+			//自拷贝模式
+			if(tempstr[0] == 'c' &&
+				tempstr[1] == 'o' &&
+				tempstr[2] == 'p' &&
+				tempstr[3] == 'y' )
+			{
+				dlg.copyMyselfFlag =true;
+				dlg.m_ip =&(tempstr[4]);
+			}
+			else
+				dlg.m_ip =argv[1];
+		}
+		else
+			dlg.m_ip =argv[1];
+		
 	}
+
     //取得参数后，释放CommandLineToArgvW申请的空间  
     LocalFree(szArglist);  
 //////////////////////////////

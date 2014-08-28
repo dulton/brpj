@@ -32,6 +32,7 @@ public:
 bool CheckError(char *filepath,char *filename);
 bool DownloadUpdateList();
 bool CopyUpdateList();
+bool copyMyselfFlag;
 
 	char CurrentDir[MAX_PATH];
 

@@ -58,6 +58,7 @@ CYrCarDetectAIOUpdateDlg::CYrCarDetectAIOUpdateDlg(CWnd* pParent /*=NULL*/)
 , m_version(0)
 , m_ip(_T("35.24.252.109:8089"))
 {
+	copyMyselfFlag=false;
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -104,6 +105,12 @@ BOOL CYrCarDetectAIOUpdateDlg::OnInitDialog()
 		MessageBox("无法读取到本地版本文件");
 		m_version=0;
 	}
+
+	if(copyMyselfFlag)
+	{
+		OnBnClickedOk();
+	}
+
 
 	UpdateData(false);
 
@@ -409,8 +416,20 @@ bool CYrCarDetectAIOUpdateDlg::ReadUpdateList()
 			// *号过滤成 空格
 			filterstr(updateList[i].srcurl);
 			filterstr(updateList[i].dstpath);
+			//启动COPY程序
+			if(false ==copyMyselfFlag &&
+				0==strcmp(updateList[i].dstpath,"YrCarDetectAIOUpdate.exe"))
+			{
+				sprintf(url,"%s\\YrCarDetectAIOUpdate.exe",CurrentDir);
+				sprintf(url2,"%s\\YrCarDetectAIOUpdate_old.exe",CurrentDir);
+				CopyFile(url,url2,FALSE);
+				sprintf(tempstr,"copy%s",m_ip);
+				ShellExecute(this->m_hWnd, NULL,url2,tempstr, CurrentDir, SW_NORMAL);
+				 exit(0);
+			}
 
 		}
+		
 		/* 如以下
 		5				//共几行
 		1 ODAC ODAC		//新建文件夹

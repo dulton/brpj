@@ -124,11 +124,13 @@ BOOL CDLGhelp::OnInitDialog()
 	if(OPEN_STREAM_CLIENT_SDK)
 		modeflag+="支持流媒体 ";
 
-
-
 	CString str;
 	str.Format("%s\n构建时间:%s",modeflag.GetBuffer(0),__DATE__);
 	GetDlgItem(IDC_STATIC_TIME)->SetWindowText(str);
+
+#if (!ALLTAB_CLIENT_MODE)
+	GetDlgItem(IDC_BUTTON_UPDATE)->EnableWindow(FALSE);
+#endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
