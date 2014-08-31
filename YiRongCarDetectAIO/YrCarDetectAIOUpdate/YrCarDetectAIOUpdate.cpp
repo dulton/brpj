@@ -32,6 +32,7 @@ CYrCarDetectAIOUpdateApp theApp;
 
 
 // CYrCarDetectAIOUpdateApp initialization
+/*
 //ÃüÁîÐÐ
 void CYrCarDetectAIOUpdateApp::GetCommandLineAndToArgv(int &argc,CStringArray &argv)
 {
@@ -62,7 +63,7 @@ void CYrCarDetectAIOUpdateApp::GetCommandLineAndToArgv(int &argc,CStringArray &a
 	argc++;
 	argv.InsertAt(0,commandLine);
 }
-
+*/
 
 BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 {
@@ -93,16 +94,16 @@ BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 	m_pMainWnd = &dlg;
 //////////////////////////////
 		
-	int argc;
-	CStringArray argv; 
-
+	
 	LPWSTR *szArglist = NULL;  
-
-	GetCommandLineAndToArgv(argc,argv);
-	if( argc >1)  
+    int nArgs = 0;  
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);  
+    if( nArgs > 1)  
 	{  
+		dlg.m_ip =szArglist[1];
+
 		char tempstr[260];
-		strcpy(tempstr,argv[1].GetBuffer(0));
+		strcpy(tempstr,dlg.m_ip.GetBuffer(0));
 
 		if(strlen(tempstr)>5)
 		{
@@ -111,15 +112,8 @@ BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 				tempstr[1] == 'o' &&
 				tempstr[2] == 'p' &&
 				tempstr[3] == 'y' )
-			{
-				dlg.copyMyselfFlag =true;
-				dlg.m_ip =&(tempstr[4]);
-			}
-			else
-				dlg.m_ip =argv[1];
+				dlg.m_ip=&(tempstr[4]);
 		}
-		else
-			dlg.m_ip =argv[1];
 		
 	}
 
