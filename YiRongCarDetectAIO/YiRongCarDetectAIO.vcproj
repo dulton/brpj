@@ -511,6 +511,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DLGpictureView.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DLGptz.cpp"
 				>
 				<FileConfiguration
@@ -855,6 +859,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Picture.cpp"
+				>
+			</File>
+			<File
 				RelativePath="PlayWnd.cpp"
 				>
 				<FileConfiguration
@@ -896,6 +904,10 @@
 			</File>
 			<File
 				RelativePath=".\SignalDownload.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SplitterControl.cpp"
 				>
 			</File>
 			<File
@@ -1106,6 +1118,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DLGpictureView.h"
+				>
+			</File>
+			<File
 				RelativePath="DLGptz.h"
 				>
 			</File>
@@ -1178,6 +1194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Picture.h"
+				>
+			</File>
+			<File
 				RelativePath="PlayWnd.h"
 				>
 			</File>
@@ -1191,6 +1211,10 @@
 			</File>
 			<File
 				RelativePath=".\SignalDownload.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SplitterControl.h"
 				>
 			</File>
 			<File

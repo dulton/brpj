@@ -11,6 +11,9 @@ extern CDLGSetSystem DlgSetSystem;
 #include "URLencode.h"
 #include "SignalDownload.h"
 
+#include "DLGpictureView.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -99,7 +102,7 @@ BOOL CDLGHistroyDetect::OnInitDialog()
 #if ALLTAB_DETECT_CAR_MODE
 	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
 	m_List.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 180);
 	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
 	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
 	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
@@ -596,7 +599,28 @@ void CDLGHistroyDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 		if(0==strcmp(str,"null"))
 			DisplayNetPic(pNMIA->iItem);
 		else
-			ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+		{
+			//ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+			char str2[ZOG_MAX_PATH_STR];
+
+			CDLGpictureView dlgPicView;
+			//摄像头名称
+			m_List.GetItemText(pNMIA->iItem,2,str2,ZOG_MAX_PATH_STR);
+
+			dlgPicView.Titlestr=str2;
+
+			char *p=strrchr(str,'\\');
+			if(p!=NULL)
+				p++;
+			else
+				return ;
+
+			dlgPicView.Titlestr+=p;
+
+			dlgPicView.srcfile=str;
+			dlgPicView.DoModal();
+		}
 	}
 #endif
 	*pResult = 0;
@@ -712,7 +736,26 @@ void CDLGHistroyDetect::DisplayTomcatPic(int iItem)
 
 	sd.DestroyData();
 	//保存后打开
-	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+	//ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+	char str2[ZOG_MAX_PATH_STR];
+
+	CDLGpictureView dlgPicView;
+	//摄像头名称
+	m_List.GetItemText(iItem,2,str2,ZOG_MAX_PATH_STR);
+
+	dlgPicView.Titlestr=str2;
+
+	char *p=strrchr(url,'/');
+	if(p!=NULL)
+		p++;
+	else
+		return ;
+
+	dlgPicView.Titlestr+=p;
+
+	dlgPicView.srcfile=str;
+	dlgPicView.DoModal();
 
 }
 

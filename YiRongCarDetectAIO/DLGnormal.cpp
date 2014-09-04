@@ -762,31 +762,34 @@ bool CDLGnormal::OpenRecord(int screenNo)
 		CString pathstr = "";
 		CTime nowtime=CTime::GetTickCount();
 		CString sip = DlgMain->DlgScreen.m_videoInfo[screenNo].ip;
+		long camid= DlgMain->DlgScreen.m_videoInfo[screenNo].camID;
 		if(DlgMain->DlgScreen.m_videoInfo[screenNo].venderID == VENDER_TYPE_DAHUA)
 		{
-			pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.dav"),
+			pathstr.Format(_T("%s\\%s %d %04d-%02d-%02d %02d-%02d-%02d %d.dav"),
 				DlgSetSystem.m_path_record.GetBuffer(0),
 				sip.GetBuffer(0),
+				camid,
 				nowtime.GetYear(),
 				nowtime.GetMonth(),
 				nowtime.GetDay(),
 				nowtime.GetHour(),
 				nowtime.GetMinute(),
 				nowtime.GetSecond(),
-				GetTickCount());
+				GetTickCount()%50000);
 		}
 		else
 		{
-			pathstr.Format(_T("%s\\%s %04d-%02d-%02d %02d-%02d-%02d %d.mp4"),
+			pathstr.Format(_T("%s\\%s %d %04d-%02d-%02d %02d-%02d-%02d %d.mp4"),
 				DlgSetSystem.m_path_record.GetBuffer(0),
 				sip.GetBuffer(0),
+				camid,
 				nowtime.GetYear(),
 				nowtime.GetMonth(),
 				nowtime.GetDay(),
 				nowtime.GetHour(),
 				nowtime.GetMinute(),
 				nowtime.GetSecond(),
-				GetTickCount());
+				GetTickCount()%50000);
 		}
 
 		int iRet = DlgMain->DlgScreen.StartRecord(screenNo,pathstr.GetBuffer(0));

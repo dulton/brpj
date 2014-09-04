@@ -398,13 +398,13 @@ void CDLGscreen::StopRecord(int screenNo)
 	m_videoInfo[screenNo].isRecord = false;
 
 	FILE *fp;
-	unsigned long int size=0;
+	unsigned long long size=0;
 
 	fp= fopen(m_videoInfo[screenNo].recordPath.GetBuffer(0),"rb");
 	if(fp)
 	{
 		fseek(fp,0,SEEK_END);
-		size = ftell(fp);
+		size = _ftelli64(fp);
 		fclose(fp);
 	}
 

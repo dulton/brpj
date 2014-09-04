@@ -19,7 +19,7 @@
 ////////////////lynn/////////////////
 #include "IO.h"
 ////////////////lynn/////////////////
-
+#include "SplitterControl.h"
 /////////////////////////////////////////////////////////////////////////////
 // CYiRongCarDetectAIODlg dialog
 
@@ -94,6 +94,13 @@ public:
 	afx_msg void OnMenuitemHistoryAlarm();
 	afx_msg void OnMenuitemSetBlack();
 	afx_msg void OnMenuitemHelp();
+
+	//·Ö¸îÌõ
+	CSplitterControl    m_wndSplitter;
+	void initSplitter();
+	afx_msg void OnMaxMinInfo(NMHDR* pNMHDR, LRESULT* pResult);
+
+
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CYiRongCarDetectAIODlg)
 	protected:

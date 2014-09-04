@@ -190,6 +190,7 @@
 #define IDB_LOGO_ELECAR                 349
 #define IDD_HELP                        350
 #define IDD_ADD_IVMS_DEVICE             351
+#define IDD_PICVIEW                     353
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
@@ -199,6 +200,7 @@
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_BUTTON2                     1004
 #define IDC_BUTTON_START                1004
+#define IDC_BUTTON_DOWNLOAD             1004
 #define IDC_BUTTON_STOP                 1005
 #define IDC_BUTTON_PAUSE                1005
 #define IDC_BUTTON_CLOSE_PREVIEW_ALL    1006
@@ -491,6 +493,9 @@
 #define IDC_EDIT_FIND                   1399
 #define IDC_EDIT_UPDATEURL              1400
 #define IDC_CHECK_UPDATE                1401
+#define IDC_SPLITTER                    1402
+#define IDC_TXT                         1404
+#define IDC_PIC                         1405
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -535,9 +540,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        353
+#define _APS_NEXT_RESOURCE_VALUE        354
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1402
+#define _APS_NEXT_CONTROL_VALUE         1406
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

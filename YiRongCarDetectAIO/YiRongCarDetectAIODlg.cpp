@@ -47,6 +47,10 @@ extern CDLGSetSystem DlgSetSystem;
 extern IO OracleIO;
 ////////////////lynn/////////////////
 
+
+#include "DLGpictureView.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -127,6 +131,7 @@ void CYiRongCarDetectAIODlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_PTZ, m_b_ptz);
 	DDX_Control(pDX, IDC_BUTTON_NORMAL, m_b_normal);
 	DDX_Control(pDX, IDC_LIST_CAR, m_ListCar);
+
 	//}}AFX_DATA_MAP
 }
 
@@ -181,6 +186,8 @@ BEGIN_MESSAGE_MAP(CYiRongCarDetectAIODlg, CDialog)
 	ON_COMMAND(ID_MENUITEM_SET_BLACK, OnMenuitemSetBlack)
 	ON_WM_INITMENUPOPUP() //为了菜单勾选事件增加的
 	ON_COMMAND(ID_MENUITEM_VIDEODETECT, OnMenuitemVideodetect)
+	ON_NOTIFY(SPN_MAXMINPOS, IDC_SPLITTER, OnMaxMinInfo)
+	ON_WM_GETMINMAXINFO()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -231,6 +238,9 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	DlgSetRecord.InitList();
 
 	////////////////////////////
+	//分隔条
+	initSplitter();
+
 	CString str;
 	str.Format("%s",MESSAGEBOX_TITLE);
 	DlgMain->SetWindowText(str);
@@ -253,7 +263,6 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(3,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(5,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-	GetMenu()->GetSubMenu(2)->EnableMenuItem(6,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(12,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 
@@ -287,11 +296,13 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	//CMenu* pMenu = this->GetMenu(); 
 	//if(IsMenu(pMenu->m_hMenu)) 
 	//{
-	//SetMenuInfo(pMenu->m_hMenu,	&MenuInfo); 
+	//	SetMenuInfo(pMenu->m_hMenu,	&MenuInfo); 
 	//}
 
 	// TODO: Add extra initialization here
 
+	//初始即最大化
+	ShowWindow(SW_MAXIMIZE);   
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -556,6 +567,25 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	//必须 样式=重叠，边框=调整大小
 	m_ListCar.MoveWindow(list_Rect);
 
+	//分屏
+	CRect screen_Rect;
+	screen_Rect.top = m_clientRect.top/* + 5*/;
+	screen_Rect.bottom = list_Rect.top -distance/* - 10*/;
+	screen_Rect.left = tab_Rect.right +distance/* + 10*/;
+	screen_Rect.right = list_Rect.right;
+	//必须 样式=重叠，边框=调整大小
+	DlgScreen.MoveWindow(screen_Rect);
+
+	//分隔条
+	CRect rcSplit;
+
+	rcSplit.top = screen_Rect.bottom;
+	rcSplit.bottom = list_Rect.top;
+	rcSplit.left = list_Rect.left;
+	rcSplit.right =  list_Rect.right;
+	//GetDlgItem(IDC_SPLITTER)->MoveWindow(rcSplit);
+    m_wndSplitter.MoveWindow(rcSplit);
+
 	//快捷按钮
 	CRect shortcut_Rect;
 	shortcut_Rect.top = m_clientRect.top/* + 5*/;
@@ -565,14 +595,7 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	//必须 样式=重叠，边框=调整大小
 	DlgShortCut.MoveWindow(shortcut_Rect);
 
-	//分屏
-	CRect screen_Rect;
-	screen_Rect.top = m_clientRect.top/* + 5*/;
-	screen_Rect.bottom = list_Rect.top -distance/* - 10*/;
-	screen_Rect.left = tab_Rect.right +distance/* + 10*/;
-	screen_Rect.right = list_Rect.right;
-	//必须 样式=重叠，边框=调整大小
-	DlgScreen.MoveWindow(screen_Rect);
+
 
 }
 
@@ -1210,7 +1233,26 @@ void CYiRongCarDetectAIODlg::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResu
 	m_ListCar.GetItemText(pNMIA->iItem,9,str,ZOG_MAX_PATH_STR);
 #endif
 
-	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+	//ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+	char str2[ZOG_MAX_PATH_STR];
+
+	CDLGpictureView dlgPicView;
+	//摄像头名称
+	m_ListCar.GetItemText(pNMIA->iItem,2,str2,ZOG_MAX_PATH_STR);
+
+	dlgPicView.Titlestr=str2;
+
+	char *p=strrchr(str,'\\');
+	if(p!=NULL)
+		p++;
+	else
+		return ;
+
+	dlgPicView.Titlestr+=p;
+
+	dlgPicView.srcfile=str;
+	dlgPicView.DoModal();
 
 #endif
 
@@ -1271,6 +1313,7 @@ void CYiRongCarDetectAIODlg::DisplayNetPic(int iItem)
 			Sleep(100);
 			//保存后打开
 			ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
 		}
 	}
 
@@ -1300,6 +1343,7 @@ void CYiRongCarDetectAIODlg::DisplayTomcatPic(int iItem)
 	SignalDownload sd;
 	sd.InitData();
 	EncodeURI(url,url2,1024);
+
 	if(false == sd.HTTPDownload(url2,str,fail,10,0))
 	{
 		sd.DestroyData();
@@ -1309,7 +1353,25 @@ void CYiRongCarDetectAIODlg::DisplayTomcatPic(int iItem)
 	sd.DestroyData();
 	Sleep(100);
 	//保存后打开
-	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+	//ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+	CDLGpictureView dlgPicView;
+	//摄像头名称
+	m_ListCar.GetItemText(iItem,2,url2,ZOG_MAX_PATH_STR);
+
+	dlgPicView.Titlestr=url2;
+
+	char *p=strrchr(url,'/');
+	if(p!=NULL)
+		p++;
+	else
+		return ;
+
+	dlgPicView.Titlestr+=p;
+
+	dlgPicView.srcfile=str;
+	dlgPicView.DoModal();
+
 
 }
 
@@ -1443,7 +1505,7 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 		//只有正在预览的才推送
 		for(int j=0;j<MAX_DEVICE_NUM;j++)
 		{
-			if(DlgScreen.m_videoInfo[j].isplay)
+			if(DlgScreen.m_videoInfo[j].isplay && DlgScreen.m_videoInfo[j].camID >=0)
 			{
 
 #if ALLTAB_DETECT_CAR_MODE
@@ -1535,7 +1597,7 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 				}
 #else
 				res=OracleIO.ELECAR_MatchResult_ReadforlistOne(DlgScreen.m_videoInfo[j].camID ,&HistoryClientDATA);
-				//	if(OracleIO.ELECAR_MatchResult_ReadforlistAll(&HistoryClientDATA))
+				//res=OracleIO.ELECAR_MatchResult_ReadforlistAll(&HistoryClientDATA);
 				if(1==res)
 				{
 					if(oldnid[j] !=HistoryClientDATA.nid)
@@ -1590,7 +1652,8 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 								sd.HTTPDownload(url2,str,fail,10,0);
 								sd.DestroyData();
 								Sleep(100);
-								//保存后打开
+			
+								//保存后打开 //报警不用窗口来开
 								ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
 							}
 							//报警声音
@@ -1637,3 +1700,45 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 #endif
 }
 
+void CYiRongCarDetectAIODlg::initSplitter(void)
+{
+	CRect rc;
+	CWnd* pWnd;
+
+	pWnd = GetDlgItem(IDC_SPLITTER);
+	pWnd->GetWindowRect(rc);
+	ScreenToClient(rc);
+	BOOL bRet = m_wndSplitter.Create(WS_CHILD | WS_VISIBLE, rc, this, IDC_SPLITTER, SPS_HORIZONTAL, RGB(0, 0, 255));
+	if (FALSE == bRet)
+	{
+		AfxMessageBox("m_wndSplitter create failed");
+	}
+
+	m_wndSplitter.RegisterLinkedWindow(SPLS_LINKED_UP,   &(DlgScreen));
+	m_wndSplitter.RegisterLinkedWindow(SPLS_LINKED_DOWN,  GetDlgItem(IDC_LIST_CAR));
+
+	//  relayout the splotter to make them good look
+	m_wndSplitter.Relayout();
+
+}
+
+void CYiRongCarDetectAIODlg::OnMaxMinInfo(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	//  Get current pos of the child controls
+	CRect rcScreen;
+	CRect rcList;
+
+	DlgScreen.GetWindowRect(rcScreen);
+	m_ListCar.GetWindowRect(rcList);
+
+	this->ScreenToClient(rcScreen);
+	this->ScreenToClient(rcList);
+
+	//  return the pos limit
+	SPC_NM_MAXMINPOS* pNewMaxMinPos = (SPC_NM_MAXMINPOS*)pNMHDR;
+	if (IDC_SPLITTER == pNMHDR->idFrom)
+	{
+		pNewMaxMinPos->lMin = rcScreen.top + 300;
+		pNewMaxMinPos->lMax = rcList.bottom - 155;
+	}
+}

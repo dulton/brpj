@@ -566,6 +566,17 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		filterstring(tempstr);
 		Rtspurl=tempstr;
 
+		strcpy(tempstr,sip.GetBuffer(0));
+		filterstring(tempstr);
+		sip=tempstr;
+
+		strcpy(tempstr,user.GetBuffer(0));
+		filterstring(tempstr);
+		user=tempstr;
+
+		strcpy(tempstr,password.GetBuffer(0));
+		filterstring(tempstr);
+		password=tempstr;
 
 		long nid = a;
 		strSql.Format(_T("update tb_device set scameraname='%s',\
@@ -675,6 +686,8 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 	{
 		CString strSql;
 		filterstring(UserInfo.user);
+		filterstring(UserInfo.psw);
+
 		strSql.Format(_T("update tb_user set suser='%s',spwd='%s',ndeviceallot=%d,\
 						 nphoto=%d,nvideo=%d,nview=%d,\
 						 nalarm=%d,nyuntai=%d,nparam=%d,\
@@ -989,7 +1002,7 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select to_char(dcreatetime),smark,susername,rownum rn from tb_log");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreatetime desc) r,to_char(dcreatetime),smark,susername from tb_log");
 
 		CString tempSql = SQLstr;
 
@@ -997,11 +1010,11 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<
 
 		if(0 != flag)
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 		else
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 
 		strSql = strSql + tempSql + numSql;
@@ -1670,7 +1683,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,rownum rn from tb_match_result_car");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA from tb_match_result_car");
 
 		CString tempSql = SQLstr;
 
@@ -1678,11 +1691,11 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 
 		if(0 != flag)
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 		else
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 
 		strSql = strSql + tempSql + numSql;
@@ -1800,7 +1813,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID,rownum rn from tb_alarm_car");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID from tb_alarm_car");
 
 		CString tempSql = SQLstr;
 
@@ -1808,11 +1821,11 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 
 		if(0 != flag)
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 		else
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 
 		strSql = strSql + tempSql + numSql;
@@ -2656,7 +2669,8 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 {
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,rownum rn from tb_match_result_vehicle");
+		//排序后分页
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA from tb_match_result_vehicle");
 
 		CString tempSql = SQLstr;
 
@@ -2664,11 +2678,11 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 
 		if(0 != flag)
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 		else
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 
 		strSql = strSql + tempSql + numSql;
@@ -2764,7 +2778,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 {
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID,rownum rn from tb_alarm_vehicle");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID from tb_alarm_vehicle");
 
 		CString tempSql = SQLstr;
 
@@ -2772,11 +2786,11 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 
 		if(0 != flag)
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 		else
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 
 		strSql = strSql + tempSql + numSql;
@@ -3271,7 +3285,7 @@ bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select * from (select nid,scarnumber,sbrand,slostname,sphone,smark,rownum rn from tb_car_black) where rn>=%d and rn<=%d"),startNum,endNum);
+		strSql.Format(_T("select * from (select row_number() over(order by nid ) r,nid,scarnumber,sbrand,slostname,sphone,smark from tb_car_black) where r >=%d and r <=%d"),startNum,endNum);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -3351,7 +3365,7 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select * from (select nid,scarnumber,sbrand,slostname,sphone,smark,rownum rn from tb_car_black) where rn=%d"),Num);
+		strSql.Format(_T("select * from (select row_number() over(order by nid ) r,nid,scarnumber,sbrand,slostname,sphone,smark from tb_car_black) where r=%d"),Num);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -3642,7 +3656,7 @@ bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select * from (select nid,scarnumber,sbrand,slostname,sphone,smark,rownum rn from tb_vehicle_black) where rn>=%d and rn<=%d"),startNum,endNum);
+		strSql.Format(_T("select * from (select row_number() over(order by nid ) r,nid,scarnumber,sbrand,slostname,sphone,smark from tb_vehicle_black) where r>=%d and r<=%d"),startNum,endNum);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -3722,7 +3736,7 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select * from (select nid,scarnumber,sbrand,slostname,sphone,smark,rownum rn from tb_vehicle_black) where rn=%d"),Num);
+		strSql.Format(_T("select * from (select row_number() over(order by nid ) r,nid,scarnumber,sbrand,slostname,sphone,smark from tb_vehicle_black) where r=%d"),Num);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -3879,7 +3893,7 @@ bool IO::ELECAR_Alarm_DeleteAll(void)
 
 
 bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
-						   unsigned long int size,char *stime,char *etime,char *path)
+						   unsigned long long size,char *stime,char *etime,char *path)
 {
 	try
 	{
@@ -3900,7 +3914,7 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 		filterstring(path);
 
 		strSql.Format(_T("insert into TB_VIDEO(nid,scameraname,sip,svenderid,sformat,sfilesize,dstarttime,dendtime,spath) \
-						 values(%d,'%s','%s',%d,'%s',%d, \
+						 values(%d,'%s','%s',%d,'%s',%I64u, \
 						 to_date('%s','yyyy-mm-dd hh24:mi:ss'), \
 						 to_date('%s','yyyy-mm-dd hh24:mi:ss'), '%s')"), \
 						 id,	\
@@ -4046,7 +4060,7 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 {
 	try
 	{
-		CString	strSql = _T("select * from (select nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime),to_char(dendtime),spath,rownum rn from tb_video");
+		CString	strSql = _T("select * from (select row_number() over(order by nid desc) r,nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime),to_char(dendtime),spath from tb_video");
 
 		CString tempSql = SQLstr;
 
@@ -4054,11 +4068,11 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 
 		if(0 != flag)
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 		else
 		{
-			numSql.Format(_T(") where rn >= %d and rn <= %d"),startNum,endNum);
+			numSql.Format(_T(") where r >= %d and r <= %d"),startNum,endNum);
 		}
 
 		strSql = strSql + tempSql + numSql;
@@ -4176,6 +4190,10 @@ bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 
 		long id = (long)m_pRecordsetPtr->GetCollect("nid");
 
+		filterstring(rPlan.area);
+		filterstring(rPlan.name);
+		filterstring(rPlan.ip);
+
 		strSql.Format(_T("insert into TB_RECORD_PLAN(nid,ncamera,scameraarea,scameraname,sip,dailyflag,dateflag,weekflag, \
 						 enableflag,startweek,endweek,starttime,endtime) \
 						 values(%d,%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d, \
@@ -4254,6 +4272,10 @@ bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
 	try
 	{
 		CString strSql;
+		filterstring(rPlan.area);
+		filterstring(rPlan.name);
+		filterstring(rPlan.ip);
+
 		strSql.Format(_T("update tb_record_plan set ncamera=%d,scameraarea='%s',scameraname='%s',sip='%s',\
 						 dailyflag=%d,dateflag=%d,weekflag=%d,enableflag=%d,startweek=%d,endweek=%d,\
 						 starttime=to_date('%s','yyyy-mm-dd hh24:mi:ss'),\
@@ -4613,6 +4635,7 @@ bool IO::YRVM_writeElectricCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Im
 
 		CString strSql;
 
+		filterstring(IpAddr);
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
@@ -4793,6 +4816,7 @@ bool IO::YRVM_writeCarTempPhotoToOracleDB(char *IpAddr,unsigned char *Image,long
 
 		CString strSql;
 
+		filterstring(IpAddr);
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), IpAddr);	 //获取当前连接监控摄像头IP所对应的摄像头编号
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
@@ -5021,6 +5045,7 @@ bool IO::YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSiz
 
 		unsigned long int id	= (long)m_pRecordsetPtr->GetCollect("nid");
 
+		filterstring(sip);
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), sip);	    //获取当前连接监控摄像头IP所对应的摄像头编号
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 

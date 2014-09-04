@@ -21,6 +21,7 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 extern CDLGLogin DlgLogin;
 
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -140,6 +141,7 @@ BOOL CDLGhelp::OnInitDialog()
 void CDLGhelp::OnOK() 
 {
 	// TODO: Add extra validation here
+
 
 	CDialog::OnOK();
 }

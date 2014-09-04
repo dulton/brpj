@@ -26,6 +26,9 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
+#include "DLGpictureView.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -895,7 +898,20 @@ void CDLGVideoDetect::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	m_list.GetItemText(pNMIA->iItem,7,str,260);
 #endif
 
-	ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+	//ShellExecute(this->m_hWnd,NULL,str,NULL,NULL,SW_NORMAL);
+
+	CDLGpictureView dlgPicView;
+
+	char *p=strrchr(str,'\\');
+	if(p!=NULL)
+		p++;
+	else
+		return ;
+
+	dlgPicView.Titlestr=p;
+
+	dlgPicView.srcfile=str;
+	dlgPicView.DoModal();
 
 	*pResult = 0;
 }

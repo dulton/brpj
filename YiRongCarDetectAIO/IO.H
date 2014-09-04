@@ -55,7 +55,7 @@ struct HISTORY_VIDEO_ST
 	char ip[32];	//IP地址
 	int venderID;	//厂家
 	char format[8];	//后缀MP4 AVI 格式
-	unsigned long int size;	//文件大小
+	unsigned long long size;	//文件大小
 	char path[260];
 
 	//时间
@@ -436,7 +436,7 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 
 	/**************************历史视频表*******************************/
 	bool VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
-		unsigned long int size,char *stime,char *etime,char *path);
+		unsigned long long size,char *stime,char *etime,char *path);
 	bool VIDEO_DeleteVideo(unsigned long int nid);
 	unsigned long VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr);
 	bool VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_VIDEO_ST> &Videolist);
