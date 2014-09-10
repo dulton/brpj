@@ -484,10 +484,16 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	//切换栏宽度=LOGO图片的宽度
 	int tab_width=220;
 	//LOGO图片的高度
-	int button_top=130;
+	//int button_top=130;
+	//int button_width=192;
+	//tab高度
+	//int tab_top=163;
+
+	//LOGO图片的高度
+	int button_top=0;
 	int button_width=192;
 	//tab高度
-	int tab_top=163;
+	int tab_top=33;
 
 	//列表的高度
 	int list_height=150;

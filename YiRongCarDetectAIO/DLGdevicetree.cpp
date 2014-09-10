@@ -69,6 +69,13 @@ BOOL CDLGdevicetree::OnInitDialog()
 
 	OnMenuitemUpdate();
 
+	//树的图标
+	imagelist.Create(16, 16, ILC_COLOR8|ILC_MASK, 0, 4);    
+	imagelist.Add(AfxGetApp()->LoadIcon(IDI_TREE_AREA));        // ico图标
+	imagelist.Add(AfxGetApp()->LoadIcon(IDI_TREE_CAM));
+	m_DeviceTree.SetImageList(&imagelist, TVSIL_NORMAL);  // 建立 imagelist 与 tree的映射关系
+
+
 	//放在最后
 	AutoSize();
 
@@ -197,7 +204,7 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 		//m_DeviceTree.InsertItem(DlgAddDevice.m_CamName,Item);
 		if(DlgAddDevice.AddAreaFlag)
 		{
-			m_DeviceTree.InsertItem(DlgAddDevice.m_AddArea,TVI_ROOT);
+			m_DeviceTree.InsertItem(DlgAddDevice.m_AddArea,0,0,TVI_ROOT);
 			OracleIO.DEVICE_AddNewArea(DlgAddDevice.m_AddArea);
 			DlgAddDevice.AddAreaFlag = false;
 		}
@@ -247,7 +254,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 		}
 		strcpy(DlgAddDevice.AreaList[i].name, OrgName[i].name);
 		DlgAddDevice.AreaList[i].nid = OrgName[i].nid;
-		hItem = m_DeviceTree.InsertItem(OrgName[i].name,TVI_ROOT);		//在根结点上添加区域
+		hItem = m_DeviceTree.InsertItem(OrgName[i].name,0,0,TVI_ROOT);		//在根结点上添加区域
 		CameraList.clear();
 		OracleIO.DEVICE_ReadCameraInfo(OrgName[i].name,CameraList);
 		for(int j=0;j<CameraList.size();j++)
@@ -266,7 +273,7 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].RTP= CameraList[j].RTP;
 			iplist[iptotal].DecodeTag= CameraList[j].DecodeTag;
 
-			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,hItem);		//添加设备节点
+			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,1,1,hItem);		//添加设备节点
 			iplist[iptotal].item = childItem;
 			iptotal++;
 		}

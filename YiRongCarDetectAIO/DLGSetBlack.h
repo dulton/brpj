@@ -11,8 +11,9 @@
 using namespace::std;
 
 #include "IO.h"
+#include "afxwin.h"
 
-#define SET_BLACK_PAGE_MAX_NUM 40
+#define SET_BLACK_PAGE_MAX_NUM 35
 /*
 //命名太长会出错
 struct BLACK_DATA_ST
@@ -46,6 +47,7 @@ public:
 	CString	m_Other;
 	int		m_page;
 	//}}AFX_DATA
+	CRect printf_Rect;
 
 	BOOL OnInitDialog();
 	void OnOK();
@@ -94,6 +96,21 @@ protected:
 	afx_msg void OnButtonBlackOuput();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+	CBitmapButton m_first_button;
+	CBitmapButton m_pre_button;
+	CBitmapButton m_next_button;
+	CBitmapButton m_last_button;
+	CBitmapButton m_jump_button;
+	CBitmapButton m_b_add;
+	CBitmapButton m_b_edit;
+	CBitmapButton m_b_delete;
+	CBitmapButton m_b_input;
+	CBitmapButton m_b_output;
+	CBitmapButton m_b_clear;
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+
 };
 
 //{{AFX_INSERT_LOCATION}}

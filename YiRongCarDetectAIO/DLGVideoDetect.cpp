@@ -457,8 +457,6 @@ int VideoPlay(char * filePath,CDLGVideoDetect *pDlg)
 		// Free the packet that was allocated by av_read_frame
 		av_free_packet(&packet);
 			
-
-	
 		//Ìø×ª
 		if(pDlg->sliderSeekflag)
 		{

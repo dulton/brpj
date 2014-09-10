@@ -49,7 +49,7 @@
 
 //#define		VIDEO_BACK_COLOR	RGB(111,104,160)
 
-#define		VIDEO_BACK_COLOR	RGB(85,161,231)//16窗口背景色
+#define		VIDEO_BACK_COLOR	RGB(0,0,0)//16窗口背景色
 
 /////////////////////////////////////////////////////////////////////////////
 // CPlayWnd dialog

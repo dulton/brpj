@@ -53,6 +53,12 @@ void CDLGHistoryReport::DoDataExchange(CDataExchange* pDX)
 	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER_ENDHOUR, m_EndHour);
 	DDX_Check(pDX, IDC_CHECK_TIME, m_CheckTime);
 	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDC_BUTTON_SEARCH, m_search);
+	DDX_Control(pDX, IDC_BUTTON_FIRST, m_first_button);
+	DDX_Control(pDX, IDC_BUTTON_PREVIOUS, m_pre_button);
+	DDX_Control(pDX, IDC_BUTTON_NEXT, m_next_button);
+	DDX_Control(pDX, IDC_BUTTON_LAST, m_last_button);
+	DDX_Control(pDX, IDC_BUTTON_JUMP, m_jump_button);
 }
 
 
@@ -66,6 +72,8 @@ BEGIN_MESSAGE_MAP(CDLGHistoryReport, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_JUMP, OnButtonJump)
 	ON_BN_CLICKED(IDC_CHECK_TIME, OnCheckTime)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,6 +91,29 @@ BOOL CDLGHistoryReport::OnInitDialog()
 
 	OnCheckTime();
 
+
+	GetDlgItem(IDC_STATIC_INFO)->GetWindowRect(printf_Rect);
+	ScreenToClient(printf_Rect);
+
+	m_search.LoadBitmaps(IDB_FIND_BUTTON,IDB_FIND_BUTTON_MOVE,NULL,NULL);
+	m_search.SizeToContent();		//自适应图片大小
+
+	m_first_button.LoadBitmaps(IDB_FIRST_BUTTON,IDB_FIRST_BUTTON_MOVE,NULL,NULL);
+	m_first_button.SizeToContent();		//自适应图片大小
+
+	m_pre_button.LoadBitmaps(IDB_PRE_BUTTON,IDB_PRE_BUTTON_MOVE,NULL,NULL);
+	m_pre_button.SizeToContent();		//自适应图片大小
+
+	m_next_button.LoadBitmaps(IDB_NEXT_BUTTON,IDB_NEXT_BUTTON_MOVE,NULL,NULL);
+	m_next_button.SizeToContent();		//自适应图片大小
+
+	m_last_button.LoadBitmaps(IDB_LAST_BUTTON,IDB_LAST_BUTTON_MOVE,NULL,NULL);
+	m_last_button.SizeToContent();		//自适应图片大小
+
+	m_jump_button.LoadBitmaps(IDB_JUMP_BUTTON,IDB_JUMP_BUTTON_MOVE,NULL,NULL);
+	m_jump_button.SizeToContent();		//自适应图片大小
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -96,10 +127,13 @@ void CDLGHistoryReport::DisplayerList(void)
 {
 	list_history_report.clear();
 	m_List.DeleteAllItems();
-	GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
 
 	if(0==ListTotal)
+	{
+		GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
+		InvalidateRect(printf_Rect, TRUE);
 		return ;
+	}
 
 	unsigned long int si,ei;
 
@@ -152,6 +186,7 @@ void CDLGHistoryReport::DisplayerList(void)
 			ListNow/HISTORY_REPORT_PAGE_MAX_NUM+1,ListTotal/HISTORY_REPORT_PAGE_MAX_NUM);
 	}
 	GetDlgItem(IDC_STATIC_INFO)->SetWindowText(str);
+	InvalidateRect(printf_Rect, TRUE);
 }
 
 void CDLGHistoryReport::OnButtonSearch() 
@@ -314,4 +349,45 @@ void CDLGHistoryReport::OnCheckTime()
 		GetDlgItem(IDC_DATETIMEPICKER_ENDMON)->EnableWindow(FALSE);
 		GetDlgItem(IDC_DATETIMEPICKER_ENDHOUR)->EnableWindow(FALSE);
 	}
+}
+
+void CDLGHistoryReport::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGHistoryReport::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

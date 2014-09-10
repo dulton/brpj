@@ -1263,6 +1263,18 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath=".\res\add_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\add_button_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\add_button_move.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\alarm.bmp"
 				>
 			</File>
@@ -1304,6 +1316,86 @@
 			</File>
 			<File
 				RelativePath="res\cleanalarm_push.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\clear_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\clear_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\del_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\del_button_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\del_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\edit_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\edit_button_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\edit_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\find_back.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\find_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\find_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\first_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\first_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\icon1.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\input_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\input_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\jump_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\jump_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\last_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\last_button_move.bmp"
 				>
 			</File>
 			<File
@@ -1388,6 +1480,14 @@
 			</File>
 			<File
 				RelativePath="res\modify_background.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\next_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\next_button_move.bmp"
 				>
 			</File>
 			<File
@@ -1588,6 +1688,22 @@
 			</File>
 			<File
 				RelativePath="res\ok_out.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\output_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\output_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\pre_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\pre_button_move.bmp"
 				>
 			</File>
 			<File
@@ -1895,6 +2011,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\tree_area.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tree_cam.ico"
+				>
+			</File>
+			<File
 				RelativePath="res\treeback.bmp"
 				>
 			</File>
@@ -1908,6 +2032,10 @@
 			</File>
 			<File
 				RelativePath=".\res\YiRongCarDetectAIO3.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\¸´¼þ YiRongCarDetectAIO.ico"
 				>
 			</File>
 		</Filter>

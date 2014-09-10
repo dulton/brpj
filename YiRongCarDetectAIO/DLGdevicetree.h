@@ -29,6 +29,8 @@ public:
 	CDLGAddIVMSdevice DlgAddIVMSDevice;
 #endif
 
+	CImageList  imagelist;
+
 	//}}AFX_DATA
 	IPLIST iplist[MAX_AREA];
 	int iptotal;

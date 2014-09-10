@@ -64,6 +64,7 @@ public:
 	CTime	m_EndHour;
 	BOOL	m_CheckTime;
 	//}}AFX_DATA
+	CRect printf_Rect;
 
 
 	list<struct HISTORY_VIDEO_ST> list_history_video;
@@ -107,6 +108,15 @@ protected:
 	afx_msg void OnCheckTime();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+	CBitmapButton m_search;
+	CBitmapButton m_first_button;
+	CBitmapButton m_pre_button;
+	CBitmapButton m_next_button;
+	CBitmapButton m_last_button;
+	CBitmapButton m_jump_button;
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
 };
 
 //{{AFX_INSERT_LOCATION}}

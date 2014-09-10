@@ -191,6 +191,37 @@
 #define IDD_HELP                        350
 #define IDD_ADD_IVMS_DEVICE             351
 #define IDD_PICVIEW                     353
+#define IDB_PRE_BUTTON                  354
+#define IDB_FIND_BACK                   355
+#define IDB_FIND_BUTTON                 356
+#define IDB_FIRST_BUTTON                357
+#define IDB_JUMP_BUTTON                 358
+#define IDB_LAST_BUTTON                 359
+#define IDB_NEXT_BUTTON                 360
+#define IDB_FIND_BUTTON_MOVE            371
+#define IDB_PRE_BUTTON_MOVE             372
+#define IDB_JUMP_BUTTON_MOVE            373
+#define IDB_FIRST_BUTTON_MOVE           374
+#define IDB_NEXT_BUTTON_MOVE            375
+#define IDB_BITMAP6                     376
+#define IDB_LAST_BUTTON_MOVE            376
+#define IDI_TREE_AREA                   382
+#define IDI_TREE_CAM                    384
+#define IDB_EDIT_BUTTON                 385
+#define IDB_OUTPUT_BUTTON               386
+#define IDB_OUTPUT_BUTTON_MOVE          387
+#define IDB_INPUT_BUTTON                388
+#define IDB_INPUT_BUTTON_MOVE           389
+#define IDB_CLEAR_BUTTON                390
+#define IDB_CLEAR_BUTTON_MOVE           391
+#define IDB_DEL_BUTTON                  392
+#define IDB_DEL_BUTTON_MOVE             393
+#define IDB_ADD_BUTTON                  394
+#define IDB_ADD_BUTTON_MOVE             395
+#define IDB_EDIT_BUTTON_MOVE            396
+#define IDB_ADD_BUTTON_DIS              397
+#define IDB_EDIT_BUTTON_DIS             398
+#define IDB_DEL_BUTTON_DIS              399
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
@@ -494,7 +525,6 @@
 #define IDC_EDIT_UPDATEURL              1400
 #define IDC_CHECK_UPDATE                1401
 #define IDC_SPLITTER                    1402
-#define IDC_TXT                         1404
 #define IDC_PIC                         1405
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
@@ -540,7 +570,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        354
+#define _APS_NEXT_RESOURCE_VALUE        400
 #define _APS_NEXT_COMMAND_VALUE         32822
 #define _APS_NEXT_CONTROL_VALUE         1406
 #define _APS_NEXT_SYMED_VALUE           101

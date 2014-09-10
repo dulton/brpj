@@ -53,6 +53,18 @@ void CDLGSetBlack::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_Other, 1024);
 	DDX_Text(pDX, IDC_EDIT_PAGE, m_page);
 	//}}AFX_DATA_MAP
+
+	DDX_Control(pDX, IDC_BUTTON_FIRST, m_first_button);
+	DDX_Control(pDX, IDC_BUTTON_PREVIOUS, m_pre_button);
+	DDX_Control(pDX, IDC_BUTTON_NEXT, m_next_button);
+	DDX_Control(pDX, IDC_BUTTON_LAST, m_last_button);
+	DDX_Control(pDX, IDC_BUTTON_JUMP, m_jump_button);
+	DDX_Control(pDX, IDC_BUTTON_BLACK_ADD, m_b_add);
+	DDX_Control(pDX, IDC_BUTTON_BLACK_MODIFY, m_b_edit);
+	DDX_Control(pDX, IDC_BUTTON_BLACK_DELETE, m_b_delete);
+	DDX_Control(pDX, IDC_BUTTON_BLACK_INPUT, m_b_input);
+	DDX_Control(pDX, IDC_BUTTON_BLACK_OUPUT, m_b_output);
+	DDX_Control(pDX, IDC_BUTTON_BLACK_CLEAN, m_b_clear);
 }
 
 
@@ -71,6 +83,8 @@ BEGIN_MESSAGE_MAP(CDLGSetBlack, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BLACK_CLEAN, OnButtonBlackClean)
 	ON_NOTIFY(NM_CLICK, IDC_LIST, OnClickList)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,6 +105,44 @@ BOOL CDLGSetBlack::OnInitDialog()
 
 	//重新载入
 	reflush();
+
+	GetDlgItem(IDC_STATIC_INFO)->GetWindowRect(printf_Rect);
+	ScreenToClient(printf_Rect);
+
+	m_first_button.LoadBitmaps(IDB_FIRST_BUTTON,IDB_FIRST_BUTTON_MOVE,NULL,NULL);
+	m_first_button.SizeToContent();		//自适应图片大小
+
+	m_pre_button.LoadBitmaps(IDB_PRE_BUTTON,IDB_PRE_BUTTON_MOVE,NULL,NULL);
+	m_pre_button.SizeToContent();		//自适应图片大小
+
+	m_next_button.LoadBitmaps(IDB_NEXT_BUTTON,IDB_NEXT_BUTTON_MOVE,NULL,NULL);
+	m_next_button.SizeToContent();		//自适应图片大小
+
+	m_last_button.LoadBitmaps(IDB_LAST_BUTTON,IDB_LAST_BUTTON_MOVE,NULL,NULL);
+	m_last_button.SizeToContent();		//自适应图片大小
+
+	m_jump_button.LoadBitmaps(IDB_JUMP_BUTTON,IDB_JUMP_BUTTON_MOVE,NULL,NULL);
+	m_jump_button.SizeToContent();		//自适应图片大小
+
+///////////////////////////////////
+	m_b_add.LoadBitmaps(IDB_ADD_BUTTON,IDB_ADD_BUTTON_MOVE,NULL,IDB_ADD_BUTTON_DIS);
+	m_b_add.SizeToContent();		//自适应图片大小
+
+	m_b_edit.LoadBitmaps(IDB_EDIT_BUTTON,IDB_EDIT_BUTTON_MOVE,NULL,IDB_EDIT_BUTTON_DIS);
+	m_b_edit.SizeToContent();		//自适应图片大小
+
+	m_b_delete.LoadBitmaps(IDB_DEL_BUTTON,IDB_DEL_BUTTON_MOVE,NULL,IDB_DEL_BUTTON_DIS);
+	m_b_delete.SizeToContent();		//自适应图片大小
+
+	m_b_input.LoadBitmaps(IDB_INPUT_BUTTON,IDB_INPUT_BUTTON_MOVE,NULL,NULL);
+	m_b_input.SizeToContent();		//自适应图片大
+
+	m_b_output.LoadBitmaps(IDB_OUTPUT_BUTTON,IDB_OUTPUT_BUTTON_MOVE,NULL,NULL);
+	m_b_output.SizeToContent();		//自适应图片大小
+
+	m_b_clear.LoadBitmaps(IDB_CLEAR_BUTTON,IDB_CLEAR_BUTTON_MOVE,NULL,NULL);
+	m_b_clear.SizeToContent();		//自适应图片大小
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -428,12 +480,17 @@ void CDLGSetBlack::DisplayerList(void)
 {
 	list_black.clear();
 	m_List.DeleteAllItems();
-	GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
+
 	ListChoose=-1;
 	Clear();
 
 	if(0==ListTotal)
+	{
+		GetDlgItem(IDC_STATIC_INFO)->SetWindowText("共0条 1/1页");
+		InvalidateRect(printf_Rect, TRUE);
 		return ;
+	}
+
 
 	unsigned long int si,ei;
 
@@ -485,6 +542,7 @@ void CDLGSetBlack::DisplayerList(void)
 			ListNow/SET_BLACK_PAGE_MAX_NUM+1,ListTotal/SET_BLACK_PAGE_MAX_NUM);
 	}
 	GetDlgItem(IDC_STATIC_INFO)->SetWindowText(str);
+	InvalidateRect(printf_Rect, TRUE);
 
 	if(-1!=ListChoose)
 	{
@@ -524,4 +582,45 @@ void CDLGSetBlack::M2Struct(void)
 	strcpy(data.Phone,m_Phone.GetBuffer(0));
 	strcpy(data.plate,m_Plate.GetBuffer(0));
 	strcpy(data.other,m_Other.GetBuffer(0));
+}
+
+void CDLGSetBlack::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGSetBlack::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

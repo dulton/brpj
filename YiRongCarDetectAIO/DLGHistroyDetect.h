@@ -12,6 +12,7 @@
 using namespace::std;
 
 #include "IO.h"
+#include "afxwin.h"
 
 #define HISTORY_DETECT_FLAG_CAR 1
 #define HISTORY_DETECT_FLAG_ALARM 2
@@ -83,6 +84,8 @@ public:
 	int		m_carcolor;
 	//}}AFX_DATA
 
+	CRect printf_Rect;
+
 	int flag;
 
 	list<struct HISTORY_DETECT_ST> list_history_detect;
@@ -124,6 +127,15 @@ protected:
 	afx_msg void OnCheckTime();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnPaint();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	CBitmapButton m_search;
+	CBitmapButton m_first_button;
+	CBitmapButton m_pre_button;
+	CBitmapButton m_next_button;
+	CBitmapButton m_last_button;
+	CBitmapButton m_jump_button;
 };
 
 //{{AFX_INSERT_LOCATION}}
