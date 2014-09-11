@@ -4517,7 +4517,150 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 		return false;
 	}  
 }
+//插入任务
+bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay)
+{
+	try
+	{
+		while(IOwriteLock)
+		{
+			Sleep(10);
+		}
 
+		IOwriteLock=true;
+
+		CString strSql = _T("select seq_mission.nextval as nid from dual");	    //获取电动车图像数据nid
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
+
+		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+
+		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_mission", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+		if(SUCCEEDED(hr))
+		{
+			m_pRecordsetPtr->AddNew();
+			m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+			m_pRecordsetPtr->PutCollect("ncamera", _variant_t((long)camid));
+			m_pRecordsetPtr->PutCollect("userid", _variant_t(userid));
+			m_pRecordsetPtr->PutCollect("isplay", _variant_t((long)isplay));
+
+			m_pRecordsetPtr->Update();
+			m_pRecordsetPtr->Close();
+
+			IOwriteLock=false;
+			return true;
+		}
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Mission_ADD error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
+//读取并修改
+bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isplay)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		filterstring(myip);
+		CString	strSql;
+		strSql.Format(_T("select * from(select * from tb_mission where DETECTIP='%s'and FLAG=1 order by nid ) where rownum = 1"),myip);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			long long nid = m_pRecordsetPtr->GetCollect("nid");
+
+			(*isplay) = (long)m_pRecordsetPtr->GetCollect("isplay");
+			(*camid) = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+
+			strSql.Format(_T("update tb_mission set FLAG=2 where nid=%I64u"),nid );
+
+			_variant_t RecordAffected;
+			m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		}
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Mission_READ error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
+}
+
+//修改设备的播放状态
+bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,unsigned long int isplay)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		filterstring(myip);
+		CString	strSql;
+	
+		if(isplay)
+		{
+			//开始播放
+			strSql.Format(_T("update tb_device set DETECTIP='%s',isplay=1 where ncamera=%I64u"),myip,camid );
+		}
+		else
+		{
+			//停止播放
+			strSql.Format(_T("update tb_device set DETECTIP='',isplay=0 where ncamera=%I64u"),camid );
+		}
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Mission_READ error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+	IOwriteLock=false;
+}
 /*************************************************************************
 //以下与平台连接
 ************************************************************************/

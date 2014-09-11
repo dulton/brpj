@@ -8,6 +8,7 @@
 //
 
 #include "CarDetect.h"
+#include "afxwin.h"
 #if 0
 
 //每个车牌最多多少个字符
@@ -102,6 +103,11 @@ protected:
 	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_ok;
+	CBitmapButton m_b_cancel;
 };
 
 //{{AFX_INSERT_LOCATION}}

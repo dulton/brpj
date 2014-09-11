@@ -286,12 +286,12 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	////改变菜单栏颜色
 	//CBrush* NewBrush; 
 	//NewBrush = new CBrush;
-	//NewBrush->CreateSolidBrush(RGB(183,200,211)); 	//改变菜单栏颜色
+	//NewBrush->CreateSolidBrush(RGB(0,0,211)); 	//改变菜单栏颜色
 	//MENUINFO MenuInfo = {0};
 	//MenuInfo.cbSize = sizeof(MenuInfo); 
 	//MenuInfo.hbrBack = *NewBrush; 
 	//// 用刷子改成您想要的背景颜色
-	//MenuInfo.fMask = MIM_BACKGROUND; 
+	//MenuInfo.fMask = MIM_BACKGROUND|MIM_APPLYTOSUBMENUS ; 
 	//MenuInfo.dwStyle = MNS_AUTODISMISS;
 	//CMenu* pMenu = this->GetMenu(); 
 	//if(IsMenu(pMenu->m_hMenu)) 

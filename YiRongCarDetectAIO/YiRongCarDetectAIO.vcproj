@@ -1291,6 +1291,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\cancel_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\cancel_button_move.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\cancel_in.bmp"
 				>
 			</File>
@@ -1336,6 +1344,18 @@
 			</File>
 			<File
 				RelativePath=".\res\del_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\download_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\download_button_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\download_button_move.bmp"
 				>
 			</File>
 			<File
@@ -1683,6 +1703,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ok_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ok_button_move.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\ok_in.bmp"
 				>
 			</File>
@@ -1696,6 +1724,18 @@
 			</File>
 			<File
 				RelativePath=".\res\output_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\play_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\play_button_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\play_button_move.bmp"
 				>
 			</File>
 			<File
@@ -2020,6 +2060,14 @@
 			</File>
 			<File
 				RelativePath="res\treeback.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\view_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\view_button_move.bmp"
 				>
 			</File>
 			<File

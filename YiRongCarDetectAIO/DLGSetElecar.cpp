@@ -49,12 +49,16 @@ void CDLGSetElecar::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_MIN_WIDTH, m_MinWidth);
 	DDV_MinMaxInt(pDX, m_MinWidth, 60, 200);
 	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDOK, m_b_ok);
+	DDX_Control(pDX, IDCANCEL, m_b_cancel);
 }
 
 
 BEGIN_MESSAGE_MAP(CDLGSetElecar, CDialog)
 	//{{AFX_MSG_MAP(CDLGSetElecar)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -68,7 +72,13 @@ BOOL CDLGSetElecar::OnInitDialog()
 	((CButton*)GetDlgItem(IDC_CHECK_OUTPUT_RECT))->SetCheck(CarSet.RedRect);
 	((CButton*)GetDlgItem(IDC_CHECK_DESKEW))->SetCheck(CarSet.Deskew);
 	((CButton*)GetDlgItem(IDC_CHECK_CAR_COLOR))->SetCheck(CarSet.CarColor);
-	
+
+	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
+	m_b_ok.SizeToContent();		//自适应图片大小
+
+	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
+	m_b_cancel.SizeToContent();		//自适应图片大小
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -108,4 +118,45 @@ void CDLGSetElecar::ReadOldConfig(struct CarSetStruct OldCarSet)
 	{
 		CarSet.Mask[i] = OldCarSet.Mask[i];
 	}
+}
+
+void CDLGSetElecar::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGSetElecar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

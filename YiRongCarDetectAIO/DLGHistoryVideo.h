@@ -11,6 +11,7 @@
 // CDLGHistoryVideo dialog
 #include <vector>
 #include <list>
+#include "afxwin.h"
 using namespace::std;
 
 #define HISTORY_VIDEO_PAGE_MAX_NUM 40
@@ -114,6 +115,9 @@ protected:
 	CBitmapButton m_next_button;
 	CBitmapButton m_last_button;
 	CBitmapButton m_jump_button;
+
+	CBitmapButton m_b_delete;
+	CBitmapButton m_b_play;
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnPaint();

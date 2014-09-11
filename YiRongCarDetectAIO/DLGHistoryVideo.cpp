@@ -70,6 +70,8 @@ void CDLGHistoryVideo::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_NEXT, m_next_button);
 	DDX_Control(pDX, IDC_BUTTON_LAST, m_last_button);
 	DDX_Control(pDX, IDC_BUTTON_JUMP, m_jump_button);
+	DDX_Control(pDX, IDC_BUTTON_DELETE, m_b_delete);
+	DDX_Control(pDX, IDC_BUTTON_PLAY, m_b_play);
 }
 
 
@@ -134,6 +136,15 @@ BOOL CDLGHistoryVideo::OnInitDialog()
 
 	m_jump_button.LoadBitmaps(IDB_JUMP_BUTTON,IDB_JUMP_BUTTON_MOVE,NULL,NULL);
 	m_jump_button.SizeToContent();		//自适应图片大小
+
+
+	m_b_play.LoadBitmaps(IDB_PLAY_BUTTON,IDB_PLAY_BUTTON_MOVE,NULL,IDB_PLAY_BUTTON_DIS);
+	m_b_play.SizeToContent();		//自适应图片大小
+
+	m_b_delete.LoadBitmaps(IDB_DEL_BUTTON,IDB_DEL_BUTTON_MOVE,NULL,IDB_DEL_BUTTON_DIS);
+	m_b_delete.SizeToContent();		//自适应图片大小
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

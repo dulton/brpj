@@ -23,6 +23,7 @@ void CDLGpictureView::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PIC, m_pic);
+	DDX_Control(pDX, IDC_BUTTON_DOWNLOAD, m_b_download);
 }
 
 
@@ -32,6 +33,7 @@ BEGIN_MESSAGE_MAP(CDLGpictureView, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_DOWNLOAD, &CDLGpictureView::OnBnClickedButtonDownload)
 
 	ON_WM_PAINT()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 BOOL CDLGpictureView::OnInitDialog()
@@ -46,6 +48,11 @@ BOOL CDLGpictureView::OnInitDialog()
 
 	//加载图片
 	bim=pic.LoadPicture(srcfile.GetBuffer());
+
+
+	m_b_download.LoadBitmaps(IDB_DEL_BUTTON,IDB_DEL_BUTTON_MOVE,NULL,IDB_DEL_BUTTON_DIS);
+	m_b_download.SizeToContent();		//自适应图片大小
+
 
 	return TRUE;
 }
@@ -121,6 +128,23 @@ void CDLGpictureView::reSize(void)
 void CDLGpictureView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
 	// TODO: Add your message handler code here
 	//放在ONINIT中无效
 
@@ -135,6 +159,9 @@ void CDLGpictureView::OnPaint()
 		pic.DrawPicture(*pDC,0,0,rect.Width(),rect.Height());
 		m_pic.ReleaseDC(pDC);
 	}
+
+
+	CDialog::OnPaint();
 }
 
 
@@ -224,3 +251,20 @@ void CDLGpictureView::DrawFileImage(CStatic *m_picBox, char *filename)
 	}
 }
 
+
+//静态文本控件 透明
+HBRUSH CDLGpictureView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
+}

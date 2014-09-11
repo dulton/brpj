@@ -222,6 +222,19 @@
 #define IDB_ADD_BUTTON_DIS              397
 #define IDB_EDIT_BUTTON_DIS             398
 #define IDB_DEL_BUTTON_DIS              399
+#define IDB_OK_BUTTON                   400
+#define IDB_VIEW_BUTTON_MOVE            401
+#define IDB_VIEW_BUTTON                 402
+#define IDB_CANCEL_BUTTON               403
+#define IDB_CANCEL_BUTTON_MOVE          404
+#define IDB_OK_BUTTON_MOVE              405
+#define IDB_PLAY_BUTTON                 406
+#define IDB_BITMAP9                     407
+#define IDB_DOWNLOAD_BUTTON_DIS         407
+#define IDB_DOWNLOAD_BUTTON             408
+#define IDB_DOWNLOAD_BUTTON_MOVE        409
+#define IDB_PLAY_BUTTON_DIS             410
+#define IDB_PLAY_BUTTON_MOVE            411
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
@@ -570,7 +583,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        400
+#define _APS_NEXT_RESOURCE_VALUE        412
 #define _APS_NEXT_COMMAND_VALUE         32822
 #define _APS_NEXT_CONTROL_VALUE         1406
 #define _APS_NEXT_SYMED_VALUE           101

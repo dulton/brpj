@@ -40,4 +40,6 @@ public:
 	afx_msg void OnBnClickedButtonDownload();
 	CStatic m_pic;
 	afx_msg void OnPaint();
+	CBitmapButton m_b_download;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

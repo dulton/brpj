@@ -451,6 +451,12 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 	bool RECORD_PlanTable_SetRecordState(unsigned long int nid,int enable);
 	bool RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char *camname,char *ip);
 
+
+	/**************************服务+客户端*******************************/
+	bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay);
+	bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isplay);
+	bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,unsigned long int isplay);
+
 	/*********************与平台连接的IO****************************/
 #if YRVM_PINGTAI_MODE
 
