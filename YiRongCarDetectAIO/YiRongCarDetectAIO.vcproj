@@ -1275,6 +1275,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\addarea_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\addarea_button_move.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\alarm.bmp"
 				>
 			</File>
@@ -1347,6 +1355,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\disable_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\disable_button_move.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\download_button.bmp"
 				>
 			</File>
@@ -1368,6 +1384,14 @@
 			</File>
 			<File
 				RelativePath=".\res\edit_button_move.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\enable_button.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\enable_button_move.bmp"
 				>
 			</File>
 			<File
@@ -2031,7 +2055,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\tab_noraml_disA.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tab_noraml_disB.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\tab_normal.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tab_normal_disA.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tab_normal_disB.bmp"
 				>
 			</File>
 			<File
@@ -2043,11 +2083,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\tab_ptz_disA.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tab_ptz_disB.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\tab_tree.bmp"
 				>
 			</File>
 			<File
 				RelativePath="res\tab_tree_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tab_tree_disA.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\tab_tree_disB.bmp"
 				>
 			</File>
 			<File

@@ -77,6 +77,7 @@ public:
 	int		m_startweek;
 	CString	m_camip;
 	//}}AFX_DATA
+	CRect printf_Rect;
 
 	BOOL OnInitDialog();
 	//ÆÁ±Î²Ù×÷
@@ -135,6 +136,15 @@ protected:
 	afx_msg void OnCheckEveryday();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_add;
+	CBitmapButton m_b_edit;
+	CBitmapButton m_b_delete;
+	CBitmapButton m_b_clear;
+	CBitmapButton m_b_enable;
+	CBitmapButton m_b_disable;
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -1,3 +1,4 @@
+#include "afxwin.h"
 #if !defined(AFX_DLGSETSYSTEM_H__53ABD703_817F_4073_B3FA_34144C551BEA__INCLUDED_)
 #define AFX_DLGSETSYSTEM_H__53ABD703_817F_4073_B3FA_34144C551BEA__INCLUDED_
 
@@ -82,6 +83,18 @@ public:
 	BOOL m_display_preview;
 	CString m_update_url;
 	BOOL m_check_update;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_ok;
+	CBitmapButton m_b_cancel;
+	CBitmapButton m_b_alarmwav;
+	CBitmapButton m_b_detectdir;
+	CBitmapButton m_b_recorddir;
+	CBitmapButton m_b_cambmpdir;
+	CBitmapButton m_b_haikangpath;
+	CBitmapButton m_b_dahuapath;
+	CBitmapButton m_b_yaanpath;
+	CBitmapButton m_b_tomcatdir;
 };
 
 //{{AFX_INSERT_LOCATION}}

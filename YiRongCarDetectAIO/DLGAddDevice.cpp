@@ -59,6 +59,9 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_RTSPURL, m_CamRtspurl);
 	DDX_Control(pDX, IDC_COMBO_RTP, m_CamRTP);
 	DDX_Control(pDX, IDC_COMBO_DECODETAG, m_CamDecodetag);
+	DDX_Control(pDX, IDOK, m_b_ok);
+	DDX_Control(pDX, IDCANCEL, m_b_cancel);
+	DDX_Control(pDX, IDC_BUTTON_ADDAREA, m_b_addarea);
 }
 
 
@@ -67,6 +70,8 @@ BEGIN_MESSAGE_MAP(CDLGAddDevice, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_ADDAREA, OnButtonAddarea)
 	//}}AFX_MSG_MAP
 	ON_CBN_CLOSEUP(IDC_COMBO_CAMVENDER, &CDLGAddDevice::OnCbnCloseupComboCamvender)
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -97,10 +102,16 @@ BOOL CDLGAddDevice::OnInitDialog()
 	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_DECODETAG);
 	comboctrl->SetCurSel(DecodeTagComboCur);
 
-
-	this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("");
-
 	OnCbnCloseupComboCamvender();
+
+	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
+	m_b_ok.SizeToContent();		//自适应图片大小
+
+	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
+	m_b_cancel.SizeToContent();		//自适应图片大小
+
+	m_b_addarea.LoadBitmaps(IDB_ADDAREA_BUTTON,IDB_ADDAREA_BUTTON_MOVE,NULL,NULL);
+	m_b_addarea.SizeToContent();		//自适应图片大小
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -214,8 +225,9 @@ void CDLGAddDevice::OnButtonAddarea()
 			this->GetDlgItem(IDC_COMBO_RTP)->EnableWindow(0);
 			this->GetDlgItem(IDC_EDIT_RTSPURL)->EnableWindow(0);
 			this->GetDlgItem(IDC_COMBO_DECODETAG)->EnableWindow(0);
-			this->GetDlgItem(IDC_STATIC_ADDAREA_NOTE)->SetWindowText("请按确定，系统将为您新增一个区域");
+		
 			AddAreaFlag = true;
+			OnOK();
 		}
 	}
 }
@@ -248,4 +260,45 @@ void CDLGAddDevice::OnCbnCloseupComboCamvender()
 		GetDlgItem(IDC_EDIT_CAM_CHANNEL)->EnableWindow(1);
 	}
 
+}
+
+void CDLGAddDevice::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGAddDevice::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

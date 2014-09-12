@@ -11,6 +11,7 @@
 #include "IO.h"
 #include <vector>
 #include <list>
+#include "afxwin.h"
 using namespace::std;
 
 // CDLGAddIVMSdevice dialog
@@ -63,6 +64,11 @@ public:
 	afx_msg void OnCbnCloseupComboUnit();
 	afx_msg void OnCbnCloseupComboRegion();
 	afx_msg void OnCbnCloseupComboCam();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_find;
+	CBitmapButton m_b_ok;
+	CBitmapButton m_b_cancel;
 };
 
 #endif

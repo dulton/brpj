@@ -1,3 +1,4 @@
+#include "afxwin.h"
 #if !defined(AFX_DLGOPENCLOSE_H__E4384DBD_823E_448D_8A19_D35D20778BB5__INCLUDED_)
 #define AFX_DLGOPENCLOSE_H__E4384DBD_823E_448D_8A19_D35D20778BB5__INCLUDED_
 
@@ -85,6 +86,11 @@ protected:
 	afx_msg void OnCloseupComboWinno();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_enable;
+	CBitmapButton m_b_disable;
 };
 
 //{{AFX_INSERT_LOCATION}}

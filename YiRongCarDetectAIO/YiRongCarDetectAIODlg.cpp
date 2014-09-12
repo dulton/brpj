@@ -254,8 +254,6 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 		GetMenu()->GetSubMenu(1)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 		GetMenu()->GetSubMenu(1)->EnableMenuItem(1,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 		GetMenu()->GetSubMenu(1)->EnableMenuItem(2,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-		GetMenu()->GetSubMenu(3)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-
 	}
 
 #if ALLTAB_CLIENT_MODE
@@ -266,7 +264,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(12,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 
-
+	GetMenu()->GetSubMenu(3)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 
@@ -283,21 +281,21 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	//#define WINVER 0x0501 
 	//#endif
 
-	////改变菜单栏颜色
-	//CBrush* NewBrush; 
-	//NewBrush = new CBrush;
-	//NewBrush->CreateSolidBrush(RGB(0,0,211)); 	//改变菜单栏颜色
-	//MENUINFO MenuInfo = {0};
-	//MenuInfo.cbSize = sizeof(MenuInfo); 
-	//MenuInfo.hbrBack = *NewBrush; 
-	//// 用刷子改成您想要的背景颜色
-	//MenuInfo.fMask = MIM_BACKGROUND|MIM_APPLYTOSUBMENUS ; 
-	//MenuInfo.dwStyle = MNS_AUTODISMISS;
-	//CMenu* pMenu = this->GetMenu(); 
-	//if(IsMenu(pMenu->m_hMenu)) 
-	//{
-	//	SetMenuInfo(pMenu->m_hMenu,	&MenuInfo); 
-	//}
+	//改变菜单栏颜色
+	CBrush* NewBrush; 
+	NewBrush = new CBrush;
+	NewBrush->CreateSolidBrush(RGB(216,216,216)); 	//改变菜单栏颜色
+	MENUINFO MenuInfo = {0};
+	MenuInfo.cbSize = sizeof(MenuInfo); 
+	MenuInfo.hbrBack = *NewBrush; 
+	// 用刷子改成您想要的背景颜色
+	MenuInfo.fMask = MIM_BACKGROUND|MIM_APPLYTOSUBMENUS ; 
+	MenuInfo.dwStyle = MNS_AUTODISMISS;
+	CMenu* pMenu = this->GetMenu(); 
+	if(IsMenu(pMenu->m_hMenu)) 
+	{
+		SetMenuInfo(pMenu->m_hMenu,	&MenuInfo); 
+	}
 
 	// TODO: Add extra initialization here
 
@@ -493,7 +491,7 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	int button_top=0;
 	int button_width=192;
 	//tab高度
-	int tab_top=33;
+	int tab_top=26;
 
 	//列表的高度
 	int list_height=150;
@@ -528,7 +526,7 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	//底部减去日志条
 	//	m_clientRect.bottom -=printf_height+distance;
 	m_clientRect.bottom -=printf_height;
-
+/*
 	//TAB按钮
 	CRect button1_Rect;
 	button1_Rect.top = m_clientRect.top+distance+button_top;
@@ -549,6 +547,28 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	button3_Rect.bottom = m_clientRect.top+tab_top;
 	button3_Rect.left = 	button2_Rect.right;
 	button3_Rect.right = m_clientRect.left+button_width+distance;
+	GetDlgItem(IDC_BUTTON_PTZ)->MoveWindow(button3_Rect);
+*/
+	//TAB按钮
+	CRect button1_Rect;
+	button1_Rect.top = m_clientRect.top+button_top;
+	button1_Rect.bottom = m_clientRect.top+tab_top;
+	button1_Rect.left = m_clientRect.left+distance;
+	button1_Rect.right = button1_Rect.left +76;
+	GetDlgItem(IDC_BUTTON_TREE)->MoveWindow(button1_Rect);
+
+	CRect button2_Rect;
+	button2_Rect.top = m_clientRect.top+button_top;
+	button2_Rect.bottom = m_clientRect.top+tab_top;
+	button2_Rect.left = 	button1_Rect.right;
+	button2_Rect.right =	button2_Rect.left+69;
+	GetDlgItem(IDC_BUTTON_NORMAL)->MoveWindow(button2_Rect);
+
+	CRect button3_Rect;
+	button3_Rect.top = m_clientRect.top+button_top;
+	button3_Rect.bottom = m_clientRect.top+tab_top;
+	button3_Rect.left = 	button2_Rect.right;
+	button3_Rect.right =button3_Rect.left+76;
 	GetDlgItem(IDC_BUTTON_PTZ)->MoveWindow(button3_Rect);
 
 	//切换栏
@@ -692,10 +712,13 @@ void CYiRongCarDetectAIODlg::OnButtonTree()
 	DlgPtz.ShowWindow(SW_HIDE);
 
 	m_b_tree.LoadBitmaps(IDB_TAB_TREE,NULL,NULL,NULL);
+	m_b_tree.SizeToContent();		//自适应图片大小
 	m_b_tree.Invalidate();
-	m_b_ptz.LoadBitmaps(IDB_TAB_PTZ_CLOSE,NULL,NULL,NULL);
+	m_b_ptz.LoadBitmaps(IDB_TAB_PTZ_DISA,NULL,NULL,NULL);
+	m_b_ptz.SizeToContent();		//自适应图片大小
 	m_b_ptz.Invalidate();
-	m_b_normal.LoadBitmaps(IDB_TAB_NORMAL_CLOSE,NULL,NULL,NULL);
+	m_b_normal.LoadBitmaps(IDB_TAB_NORMAL_DISA,NULL,NULL,NULL);
+	m_b_normal.SizeToContent();		//自适应图片大小
 	m_b_normal.Invalidate();
 }
 
@@ -709,11 +732,14 @@ void CYiRongCarDetectAIODlg::OnButtonNormal()
 
 	DlgPtz.ShowWindow(SW_HIDE);
 
-	m_b_tree.LoadBitmaps(IDB_TAB_TREE_CLOSE,NULL,NULL,NULL);
+	m_b_tree.LoadBitmaps(IDB_TAB_TREE_DISA,NULL,NULL,NULL);
+		m_b_tree.SizeToContent();		//自适应图片大小
 	m_b_tree.Invalidate();
-	m_b_ptz.LoadBitmaps(IDB_TAB_PTZ_CLOSE,NULL,NULL,NULL);
+	m_b_ptz.LoadBitmaps(IDB_TAB_PTZ_DISB,NULL,NULL,NULL);
+		m_b_ptz.SizeToContent();		//自适应图片大小
 	m_b_ptz.Invalidate();
 	m_b_normal.LoadBitmaps(IDB_TAB_NORMAL,NULL,NULL,NULL);
+		m_b_normal.SizeToContent();		//自适应图片大小
 	m_b_normal.Invalidate();
 }
 
@@ -725,11 +751,14 @@ void CYiRongCarDetectAIODlg::OnButtonPtz()
 	DlgNormal.ShowWindow(SW_HIDE);
 	DlgPtz.ShowWindow(SW_SHOW);
 
-	m_b_tree.LoadBitmaps(IDB_TAB_TREE_CLOSE,NULL,NULL,NULL);
+	m_b_tree.LoadBitmaps(IDB_TAB_TREE_DISB,NULL,NULL,NULL);
+			m_b_tree.SizeToContent();		//自适应图片大小
 	m_b_tree.Invalidate();
 	m_b_ptz.LoadBitmaps(IDB_TAB_PTZ,NULL,NULL,NULL);
+			m_b_ptz.SizeToContent();		//自适应图片大小
 	m_b_ptz.Invalidate();
-	m_b_normal.LoadBitmaps(IDB_TAB_NORMAL_CLOSE,NULL,NULL,NULL);
+	m_b_normal.LoadBitmaps(IDB_TAB_NORMAL_DISB,NULL,NULL,NULL);
+			m_b_normal.SizeToContent();		//自适应图片大小
 	m_b_normal.Invalidate();
 }
 /*
@@ -1169,7 +1198,7 @@ void CYiRongCarDetectAIODlg::OnMenuitemHelp()
 //////////////////////////////////////////////////////////////////////////
 void CYiRongCarDetectAIODlg::ListMainInit(void)
 {
-	m_ListCar.SetBkColor(RGB(232,248,254));
+	m_ListCar.SetBkColor(RGB(248,248,248));
 #if ALLTAB_DETECT_CAR_MODE
 
 	m_ListCar.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 40);
@@ -1413,7 +1442,7 @@ void CYiRongCarDetectAIODlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
 			//电动车
 			m_ListCar.GetItemText(nItem,8,str,260);
 #endif
-			lplvcd->clrTextBk=RGB(232,248,254);
+			lplvcd->clrTextBk=RGB(248,248,248);
 			if(NULL!=strstr(str,"是"))
 			{
 				clrNewBkColor=RGB(255,0,0);//红底白字

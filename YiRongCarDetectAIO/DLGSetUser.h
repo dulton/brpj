@@ -132,6 +132,12 @@ protected:
 	afx_msg void OnCheckAdmin();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_add;
+	CBitmapButton m_b_edit;
+	CBitmapButton m_b_delete;
 };
 
 //{{AFX_INSERT_LOCATION}}

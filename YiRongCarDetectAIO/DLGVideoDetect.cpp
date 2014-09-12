@@ -186,7 +186,7 @@ void ZOGDramBMP(char *path,unsigned char *buffer, int w, int h)
 
 //////////////////////////////////////////////
 void SaveFrame(CDLGVideoDetect *pDlg,AVFrame *pFrame, int width, int height, 
-			   int totalsec,int iFrame) 
+			   long long totalsec,long long iFrame) 
 {
 	//获取时间。此句不可以提前
 	long int ticktime=GetTickCount();

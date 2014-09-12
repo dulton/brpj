@@ -71,6 +71,13 @@ void CDLGSetRecord::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATIC_CAMIP, m_camip);
 	DDV_MaxChars(pDX, m_camip, 32);
 	//}}AFX_DATA_MAP
+
+	DDX_Control(pDX, IDC_BUTTON_ENABLE, m_b_enable);
+	DDX_Control(pDX, IDC_BUTTON_DISABLE, m_b_disable);
+	DDX_Control(pDX, IDC_BUTTON_ADD, m_b_add);
+	DDX_Control(pDX, IDC_BUTTON_MODIFY, m_b_edit);
+	DDX_Control(pDX, IDC_BUTTON_DELETE, m_b_delete);
+	DDX_Control(pDX, IDC_BUTTON_DELETEALL, m_b_clear);
 }
 
 
@@ -91,6 +98,8 @@ BEGIN_MESSAGE_MAP(CDLGSetRecord, CDialog)
 	ON_BN_CLICKED(IDC_CHECK_WEEK, OnCheckWeek)
 	ON_BN_CLICKED(IDC_CHECK_EVERYDAY, OnCheckEveryday)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -134,6 +143,29 @@ BOOL CDLGSetRecord::OnInitDialog()
 
 	DisplayerList();
 
+	GetDlgItem(IDC_STATIC_CAMIP)->GetWindowRect(printf_Rect);
+	ScreenToClient(printf_Rect);
+
+
+	///////////////////////////////////
+
+	m_b_enable.LoadBitmaps(IDB_ENABLE_BUTTON,IDB_ENABLE_BUTTON_MOVE,NULL,NULL);
+	m_b_enable.SizeToContent();		//自适应图片大小
+
+	m_b_disable.LoadBitmaps(IDB_DISABLE_BUTTON,IDB_DISABLE_BUTTON_MOVE,NULL,NULL);
+	m_b_disable.SizeToContent();		//自适应图片大小
+
+	m_b_add.LoadBitmaps(IDB_ADD_BUTTON,IDB_ADD_BUTTON_MOVE,NULL,IDB_ADD_BUTTON_DIS);
+	m_b_add.SizeToContent();		//自适应图片大小
+
+	m_b_edit.LoadBitmaps(IDB_EDIT_BUTTON,IDB_EDIT_BUTTON_MOVE,NULL,IDB_EDIT_BUTTON_DIS);
+	m_b_edit.SizeToContent();		//自适应图片大小
+
+	m_b_delete.LoadBitmaps(IDB_DEL_BUTTON,IDB_DEL_BUTTON_MOVE,NULL,IDB_DEL_BUTTON_DIS);
+	m_b_delete.SizeToContent();		//自适应图片大小
+
+	m_b_clear.LoadBitmaps(IDB_CLEAR_BUTTON,IDB_CLEAR_BUTTON_MOVE,NULL,NULL);
+	m_b_clear.SizeToContent();		//自适应图片大小
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -366,6 +398,8 @@ void CDLGSetRecord::Struct2M(void)
 			m_cam.AddString(DlgMain->DlgDeviceTree.iplist[i].name ); 
 	}
 	UpdateData(FALSE);
+	InvalidateRect(printf_Rect, TRUE);
+
 	//找摄像头
 	for(i=0;i<m_cam.GetCount();i++)
 	{
@@ -760,6 +794,7 @@ void CDLGSetRecord::OnCloseupComboArea()
 			m_cam.AddString(DlgMain->DlgDeviceTree.iplist[i].name ); 
 	}
 	UpdateData(FALSE);
+	InvalidateRect(printf_Rect, TRUE);
 }
 
 void CDLGSetRecord::OnCloseupComboCam() 
@@ -794,6 +829,7 @@ void CDLGSetRecord::OnCloseupComboCam()
 	}
 	
 	UpdateData(FALSE);
+	InvalidateRect(printf_Rect, TRUE);
 }
 
 
@@ -973,4 +1009,45 @@ bool CDLGSetRecord::NeedRecord(unsigned long int camid)
 
 	rwLock=false;
 	return false;
+}
+
+void CDLGSetRecord::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGSetRecord::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

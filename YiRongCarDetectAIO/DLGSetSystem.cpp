@@ -92,6 +92,16 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_DISPLAY_PREVIEW, m_display_preview);
 	DDX_Text(pDX, IDC_EDIT_UPDATEURL, m_update_url);
 	DDX_Check(pDX, IDC_CHECK_UPDATE, m_check_update);
+	DDX_Control(pDX, IDOK, m_b_ok);
+	DDX_Control(pDX, IDCANCEL, m_b_cancel);
+	DDX_Control(pDX, IDC_BUTTON_ALARM_WAV, m_b_alarmwav);
+	DDX_Control(pDX, IDC_BUTTON_DETECT_DIR, m_b_detectdir);
+	DDX_Control(pDX, IDC_BUTTON_RECORD_DIR, m_b_recorddir);
+	DDX_Control(pDX, IDC_BUTTON_CAPBMP_DIR, m_b_cambmpdir);
+	DDX_Control(pDX, IDC_BUTTON_HAIKANG_PATH, m_b_haikangpath);
+	DDX_Control(pDX, IDC_BUTTON_DAHUA_PATH, m_b_dahuapath);
+	DDX_Control(pDX, IDC_BUTTON_YAAN_PATH, m_b_yaanpath);
+	DDX_Control(pDX, IDC_BUTTON_TOMCAT_DIR, m_b_tomcatdir);
 }
 
 
@@ -106,6 +116,8 @@ BEGIN_MESSAGE_MAP(CDLGSetSystem, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_YAAN_PATH, OnButtonYaanPath)
 	ON_BN_CLICKED(IDC_BUTTON_TOMCAT_DIR, OnButtonTomcatDir)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -156,7 +168,35 @@ BOOL CDLGSetSystem::OnInitDialog()
 
 #endif
 
+	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
+	m_b_ok.SizeToContent();		//自适应图片大小
 
+	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
+	m_b_cancel.SizeToContent();		//自适应图片大小
+
+	m_b_alarmwav.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_alarmwav.SizeToContent();		//自适应图片大小
+
+	m_b_detectdir.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_detectdir.SizeToContent();		//自适应图片大小
+
+	m_b_recorddir.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_recorddir.SizeToContent();		//自适应图片大小
+
+	m_b_cambmpdir.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_cambmpdir.SizeToContent();		//自适应图片大小
+
+	m_b_haikangpath.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_haikangpath.SizeToContent();		//自适应图片大小
+
+	m_b_dahuapath.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_dahuapath.SizeToContent();		//自适应图片大小
+
+	m_b_yaanpath.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_yaanpath.SizeToContent();		//自适应图片大小
+
+	m_b_tomcatdir.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
+	m_b_tomcatdir.SizeToContent();		//自适应图片大小
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -532,4 +572,47 @@ void CDLGSetSystem::OnButtonTomcatDir()
 		m_tomcat_dir=FullPath;
 		UpdateData(FALSE);
 	}
+}
+
+
+
+void CDLGSetSystem::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGSetSystem::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

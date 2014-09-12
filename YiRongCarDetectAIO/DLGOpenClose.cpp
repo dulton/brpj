@@ -39,6 +39,8 @@ void CDLGOpenClose::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK, m_check);
 	DDX_CBIndex(pDX, IDC_COMBO_WINNO, m_winno);
 	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDC_BUTTON_OPEN, m_b_enable);
+	DDX_Control(pDX, IDC_BUTTON_CLOSE, m_b_disable);
 }
 
 
@@ -51,6 +53,8 @@ BEGIN_MESSAGE_MAP(CDLGOpenClose, CDialog)
 	ON_NOTIFY(NM_CLICK, IDC_LIST, OnClickList)
 	ON_CBN_CLOSEUP(IDC_COMBO_WINNO, OnCloseupComboWinno)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -94,6 +98,13 @@ BOOL CDLGOpenClose::OnInitDialog()
 		MessageBox("BOOL CDLGOpenClose::OnInitDialog error",MESSAGEBOX_TITLE);
 		return true;
 	}
+
+	m_b_enable.LoadBitmaps(IDB_ENABLE_BUTTON,IDB_ENABLE_BUTTON_MOVE,NULL,NULL);
+	m_b_enable.SizeToContent();		//自适应图片大小
+
+	m_b_disable.LoadBitmaps(IDB_DISABLE_BUTTON,IDB_DISABLE_BUTTON_MOVE,NULL,NULL);
+	m_b_disable.SizeToContent();		//自适应图片大小
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -695,4 +706,46 @@ void CDLGOpenClose::CheckOneListAlarm(int iItem)
 void CDLGOpenClose::CheckOneListRecord(int iItem)
 {
 
+}
+
+
+void CDLGOpenClose::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGOpenClose::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

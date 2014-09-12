@@ -89,14 +89,15 @@ void CDLGdevicetree::AutoSize()
 	//	GetParent()->GetClientRect(&rc);
 	//	((CTabCtrl*)GetParent())->AdjustRect(FALSE, &rc);
 	//	MoveWindow(rc);
-
+/*
 	//Ê÷
 	CRect tree_Rect;
 	tree_Rect.top = rc.top+5;
 	tree_Rect.bottom = rc.bottom -5;
 	tree_Rect.left = rc.left+5;
 	tree_Rect.right = rc.right-5;
-	m_DeviceTree.MoveWindow(tree_Rect);
+*/
+	m_DeviceTree.MoveWindow(rc);
 
 	Invalidate();
 }

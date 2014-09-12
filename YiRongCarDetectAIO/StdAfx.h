@@ -137,6 +137,10 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 //TOMCAT 模式
 #define OPEN_TOMCAT_MODE 1
 
+
+//服务+客户端 模式
+#define OPEN_CS_MODE 0
+
 //////////////////////////////////////////////////////
 
 //结果输出到YRVM平台 电动车写入机动车表 =1  电动车写入电动车表=0 
@@ -168,13 +172,13 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #if OPEN_CARDETECT_CODE
 	#if ALLTAB_DETECT_CAR_MODE
 		//弹出框题目
-		#define MESSAGEBOX_TITLE "机动车车牌识别分析应用软件 2.0版"
+		#define MESSAGEBOX_TITLE "福建亿榕机动车车牌识别分析应用软件 2.0版"
 	#else
 		//弹出框题目
-		#define MESSAGEBOX_TITLE "电动车车牌识别分析应用软件 2.0版"
+		#define MESSAGEBOX_TITLE "福建亿榕电动车车牌识别分析应用软件 2.0版"
 	#endif
 #else
-	#define MESSAGEBOX_TITLE "车牌识别分析应用软件 2.0版"
+	#define MESSAGEBOX_TITLE "福建亿榕车牌识别分析应用软件 2.0版"
 #endif
 
 //最多增加区域

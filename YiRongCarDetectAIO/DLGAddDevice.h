@@ -67,6 +67,11 @@ protected:
 public:
 	afx_msg void OnCbnCloseupComboCamvender();
 
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnPaint();
+	CBitmapButton m_b_ok;
+	CBitmapButton m_b_cancel;
+	CBitmapButton m_b_addarea;
 };
 
 //{{AFX_INSERT_LOCATION}}

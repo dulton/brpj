@@ -42,6 +42,9 @@ void CDLGAddIVMSdevice::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_UNIT, m_unit);
 	DDX_Control(pDX, IDC_COMBO_REGION, m_region);
 	DDX_Control(pDX, IDC_COMBO_CAM, m_cam);
+	DDX_Control(pDX, IDOK, m_b_ok);
+	DDX_Control(pDX, IDCANCEL, m_b_cancel);
+	DDX_Control(pDX, IDC_BUTTON_FIND, m_b_find);
 }
 
 
@@ -53,6 +56,8 @@ BEGIN_MESSAGE_MAP(CDLGAddIVMSdevice, CDialog)
 	ON_CBN_CLOSEUP(IDC_COMBO_UNIT, &CDLGAddIVMSdevice::OnCbnCloseupComboUnit)
 	ON_CBN_CLOSEUP(IDC_COMBO_REGION, &CDLGAddIVMSdevice::OnCbnCloseupComboRegion)
 	ON_CBN_CLOSEUP(IDC_COMBO_CAM, &CDLGAddIVMSdevice::OnCbnCloseupComboCam)
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -121,6 +126,17 @@ BOOL CDLGAddIVMSdevice::OnInitDialog()
 	InitALL();
 
 	Rtspurl="";
+
+
+
+	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
+	m_b_ok.SizeToContent();		//自适应图片大小
+
+	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
+	m_b_cancel.SizeToContent();		//自适应图片大小
+	m_b_find.LoadBitmaps(IDB_FIND_BUTTON,IDB_FIND_BUTTON_MOVE,NULL,NULL);
+	m_b_find.SizeToContent();		//自适应图片大小
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -459,3 +475,45 @@ void CDLGAddIVMSdevice::OnCbnCloseupComboCam()
 }
 
 #endif
+
+
+void CDLGAddIVMSdevice::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGAddIVMSdevice::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
+}

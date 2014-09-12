@@ -79,6 +79,9 @@ void CDLGSetUser::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_ALL, m_all);
 	DDX_Check(pDX, IDC_CHECK_ADMIN, m_admin);
 	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDC_BUTTON_USER_ADD, m_b_add);
+	DDX_Control(pDX, IDC_BUTTON_USER_MODIFY, m_b_edit);
+	DDX_Control(pDX, IDC_BUTTON_USER_DELETE, m_b_delete);
 }
 
 
@@ -92,6 +95,8 @@ BEGIN_MESSAGE_MAP(CDLGSetUser, CDialog)
 	ON_EN_CHANGE(IDC_EDIT_USER, OnChangeEditUser)
 	ON_BN_CLICKED(IDC_CHECK_ADMIN, OnCheckAdmin)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -117,6 +122,15 @@ BOOL CDLGSetUser::OnInitDialog()
 		GetDlgItem(IDC_BUTTON_USER_MODIFY)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_USER_DELETE)->EnableWindow(FALSE);
 	}
+
+	m_b_add.LoadBitmaps(IDB_ADD_BUTTON,IDB_ADD_BUTTON_MOVE,NULL,IDB_ADD_BUTTON_DIS);
+	m_b_add.SizeToContent();		//自适应图片大小
+
+	m_b_edit.LoadBitmaps(IDB_EDIT_BUTTON,IDB_EDIT_BUTTON_MOVE,NULL,IDB_EDIT_BUTTON_DIS);
+	m_b_edit.SizeToContent();		//自适应图片大小
+
+	m_b_delete.LoadBitmaps(IDB_DEL_BUTTON,IDB_DEL_BUTTON_MOVE,NULL,IDB_DEL_BUTTON_DIS);
+	m_b_delete.SizeToContent();		//自适应图片大小
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -437,4 +451,46 @@ void CDLGSetUser::OnCheckAdmin()
 		UpdateData(FALSE);
 		OnCheckAll();
 	}
+}
+
+
+void CDLGSetUser::OnPaint()
+{
+
+	CPaintDC dc(this); // device context for painting
+	//贴背景图	
+	CRect    rect;     
+	GetClientRect(&rect);     
+
+	//从资源中载入位图     
+	CBitmap    bitmap;     
+	bitmap.LoadBitmap(IDB_FIND_BACK);    
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	CDC    memdc;     
+	memdc.CreateCompatibleDC(&dc);     
+	memdc.SelectObject(bitmap); 
+	dc.SetStretchBltMode(COLORONCOLOR);
+	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
+	memdc.DeleteDC();
+
+	CDialog::OnPaint();
+
+}
+//静态文本控件 透明
+HBRUSH CDLGSetUser::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }
