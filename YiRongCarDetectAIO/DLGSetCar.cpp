@@ -29,6 +29,8 @@ CDLGSetCar::CDLGSetCar(CWnd* pParent /*=NULL*/)
 	m_MinWidth = 60;
 	m_MaxWidth = 200;
 	//}}AFX_DATA_INIT
+
+	m_BgBrush.CreateSolidBrush(RGB(216,216,216));         // 背景的颜色
 }
 
 
@@ -88,6 +90,7 @@ BOOL CDLGSetCar::OnInitDialog()
 
 	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
 	m_b_cancel.SizeToContent();		//自适应图片大小
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -178,6 +181,65 @@ void CDLGSetCar::OnPaint()
 HBRUSH CDLGSetCar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {
 	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	//组透明
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_SET)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_SHEN)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_SHENSET)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_OTHER)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_WIDTH)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_AREA)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_DETECTSET)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	
 	if(nCtlColor==CTLCOLOR_STATIC)
 	{
 		pDC->SetBkMode(TRANSPARENT); // 设置透明背景

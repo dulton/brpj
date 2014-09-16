@@ -496,7 +496,7 @@ void CYiRongCarDetectAIODlg::UpdatePannelPosition()
 	//列表的高度
 	int list_height=150;
 	//快捷按钮的宽度
-	int shortcut_width=66;
+	int shortcut_width=60;
 	//打印日志条
 	int printf_height=16;
 

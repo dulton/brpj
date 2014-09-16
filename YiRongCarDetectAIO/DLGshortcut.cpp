@@ -289,9 +289,9 @@ void CDLGshortcut::CarBMP()
 {
 	//…Ë÷√∞¥≈•
 	if(true==CarEnable)
-		m_Car.LoadBitmaps(IDB_CAR_OPEN,IDB_CAR_MOVE,NULL,NULL);
+		m_Car.LoadBitmaps(IDB_CAR_OPEN,IDB_CAR_MOVE,NULL,IDB_CAR_DISABLE);
 	else
-		m_Car.LoadBitmaps(IDB_CAR_CLOSE,IDB_CAR_MOVE,NULL,NULL);
+		m_Car.LoadBitmaps(IDB_CAR_CLOSE,IDB_CAR_MOVE,NULL,IDB_CAR_DISABLE);
 	m_Car.Invalidate();
 }
 
@@ -306,9 +306,9 @@ void CDLGshortcut::AlarmBMP()
 {
 	//…Ë÷√∞¥≈•Õº∆¨
 	if(true==AlarmEnable)
-		m_alarm.LoadBitmaps(IDB_ALARM_OPEN,IDB_ALARM_MOVE,NULL,NULL);
+		m_alarm.LoadBitmaps(IDB_ALARM_OPEN,IDB_ALARM_MOVE,NULL,IDB_ALARM_DISABLE);
 	else
-		m_alarm.LoadBitmaps(IDB_ALARM_CLOSE,IDB_ALARM_MOVE,NULL,NULL);
+		m_alarm.LoadBitmaps(IDB_ALARM_CLOSE,IDB_ALARM_MOVE,NULL,IDB_ALARM_DISABLE);
 
 	m_alarm.Invalidate();
 }
@@ -333,9 +333,9 @@ void CDLGshortcut::RecordBMP()
 {
 	//…Ë÷√∞¥≈•Õº∆¨
 	if(true==RecordEnable)
-		m_record.LoadBitmaps(IDB_RECORD_OPEN,IDB_RECORD_MOVE,NULL,NULL);
+		m_record.LoadBitmaps(IDB_RECORD_OPEN,IDB_RECORD_MOVE,NULL,IDB_RECORD_DISABLE);
 	else
-		m_record.LoadBitmaps(IDB_RECORD_CLOSE,IDB_RECORD_MOVE,NULL,NULL);
+		m_record.LoadBitmaps(IDB_RECORD_CLOSE,IDB_RECORD_MOVE,NULL,IDB_RECORD_DISABLE);
 	m_record.Invalidate();
 }
 

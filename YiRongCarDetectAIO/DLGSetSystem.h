@@ -42,6 +42,7 @@ public:
 	CString	m_tomcat_url;
 	//}}AFX_DATA
 	TCHAR SystemIniPath[ZOG_MAX_PATH_STR];
+  CBrush m_BgBrush;           // ±³¾°É«»­Ë¢
 
 	BOOL OnInitDialog();
 

@@ -1291,6 +1291,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\alarm_disable.bmp"
+				>
+			</File>
+			<File
 				RelativePath="res\alarm_push.bmp"
 				>
 			</File>
@@ -1516,6 +1520,10 @@
 			</File>
 			<File
 				RelativePath="res\mode_car_dis.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\mode_car_disable.bmp"
 				>
 			</File>
 			<File
@@ -2020,6 +2028,10 @@
 			</File>
 			<File
 				RelativePath="res\record_dis.BMP"
+				>
+			</File>
+			<File
+				RelativePath=".\res\record_disable.BMP"
 				>
 			</File>
 			<File

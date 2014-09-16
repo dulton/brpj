@@ -27,6 +27,8 @@ CDLGSetElecar::CDLGSetElecar(CWnd* pParent /*=NULL*/)
 	m_MaxWidth = 60;
 	m_MinWidth = 200;
 	//}}AFX_DATA_INIT
+
+	m_BgBrush.CreateSolidBrush(RGB(216,216,216));         // 背景的颜色
 }
 
 
@@ -78,6 +80,7 @@ BOOL CDLGSetElecar::OnInitDialog()
 
 	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
 	m_b_cancel.SizeToContent();		//自适应图片大小
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -148,6 +151,30 @@ void CDLGSetElecar::OnPaint()
 HBRUSH CDLGSetElecar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {
 	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_OTHER)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_WIDTH)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_AREA)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
 	if(nCtlColor==CTLCOLOR_STATIC)
 	{
 		pDC->SetBkMode(TRANSPARENT); // 设置透明背景

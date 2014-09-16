@@ -84,7 +84,7 @@ public:
 	int		m_MinWidth;
 	int		m_MaxWidth;
 	//}}AFX_DATA
-
+  CBrush m_BgBrush;           // ±³¾°É«»­Ë¢
 
 // Overrides
 	// ClassWizard generated virtual function overrides

@@ -246,8 +246,11 @@
 #define IDB_TAB_TREE_DISB               420
 #define IDB_TAB_NORMAL_DISB             421
 #define IDB_TAB_TREE_DISA               422
-#define IDB_BITMAP8                     423
 #define IDB_TAB_PTZ_DISB                423
+#define IDB_RECORD_DISABLE              424
+#define IDB_CAR_DISABLE                 425
+#define IDB_BITMAP1                     426
+#define IDB_ALARM_DISABLE               426
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
@@ -552,6 +555,16 @@
 #define IDC_CHECK_UPDATE                1401
 #define IDC_SPLITTER                    1402
 #define IDC_PIC                         1405
+#define IDC_STATIC_ALARM                1406
+#define IDC_STATIC_CAP                  1407
+#define IDC_STATIC_PLAY                 1408
+#define IDC_STATIC_SET                  1409
+#define IDC_STATIC_SHEN                 1410
+#define IDC_STATIC_SHENSET              1411
+#define IDC_STATIC_DETECTSET            1412
+#define IDC_STATIC_OTHER                1413
+#define IDC_STATIC_WIDTH                1414
+#define IDC_STATIC_AREA                 1415
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -596,9 +609,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        424
+#define _APS_NEXT_RESOURCE_VALUE        427
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1406
+#define _APS_NEXT_CONTROL_VALUE         1416
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

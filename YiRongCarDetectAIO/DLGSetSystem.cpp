@@ -48,6 +48,7 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_check_update=TRUE;
 	//}}AFX_DATA_INIT
 
+	m_BgBrush.CreateSolidBrush(RGB(216,216,216));         // 背景的颜色
 }
 
 
@@ -198,6 +199,10 @@ BOOL CDLGSetSystem::OnInitDialog()
 	m_b_tomcatdir.LoadBitmaps(IDB_VIEW_BUTTON,IDB_VIEW_BUTTON_MOVE,NULL,NULL);
 	m_b_tomcatdir.SizeToContent();		//自适应图片大小
 
+
+
+	
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -212,6 +217,10 @@ void CDLGSetSystem::OnButtonAlarmWav()
 		//文件路径
 		m_path_alarmwav=dlg.GetPathName();
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_ALARM_WAV)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -235,6 +244,10 @@ void CDLGSetSystem::OnButtonDetectDir()
 	{
 		m_path_detect=FullPath;
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_DETECT_DIR)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -257,6 +270,10 @@ void CDLGSetSystem::OnButtonRecordDir()
 	{
 		m_path_record=FullPath;
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_RECORD_DIR)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -279,6 +296,10 @@ void CDLGSetSystem::OnButtonCapbmpDir()
 	{
 		m_path_capbmp=FullPath;
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_CAPBMP_DIR)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -522,6 +543,10 @@ void CDLGSetSystem::OnButtonHaikangPath()
 	{
 		m_path_haikang=dlg.GetPathName();
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_HAIKANG_PATH)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -535,6 +560,10 @@ void CDLGSetSystem::OnButtonDahuaPath()
 	{
 		m_path_dahua=dlg.GetPathName();
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_DAHUA_PATH)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -548,6 +577,10 @@ void CDLGSetSystem::OnButtonYaanPath()
 	{
 		m_path_yaan=dlg.GetPathName();
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_YAAN_PATH)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -571,6 +604,10 @@ void CDLGSetSystem::OnButtonTomcatDir()
 	{
 		m_tomcat_dir=FullPath;
 		UpdateData(FALSE);
+		CRect t_Rect;
+		GetDlgItem(IDC_EDIT_TOMCAT_DIR)->GetWindowRect(t_Rect);
+		ScreenToClient(t_Rect);
+		InvalidateRect(t_Rect,TRUE);
 	}
 }
 
@@ -604,6 +641,39 @@ void CDLGSetSystem::OnPaint()
 HBRUSH CDLGSetSystem::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {
 	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	//组透明
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_ALARM)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_CAP)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_FTP)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_PLAY)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
 	if(nCtlColor==CTLCOLOR_STATIC)
 	{
 		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
@@ -614,5 +684,6 @@ HBRUSH CDLGSetSystem::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		// TODO: Return a different brush if the default is not desired
 	}
 
+	
 	return hbr;
 }
