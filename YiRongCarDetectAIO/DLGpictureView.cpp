@@ -23,7 +23,7 @@ void CDLGpictureView::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PIC, m_pic);
-	DDX_Control(pDX, IDC_BUTTON_DOWNLOAD, m_b_download);
+	DDX_Control(pDX, IDC_BUTTON_DOWNLOAD_BMP, m_b_download);
 }
 
 
@@ -34,24 +34,24 @@ BEGIN_MESSAGE_MAP(CDLGpictureView, CDialog)
 
 	ON_WM_PAINT()
 	ON_WM_CTLCOLOR()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BOOL CDLGpictureView::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	//初始即最大化
-	ShowWindow(SW_MAXIMIZE);   
-	reSize();
-
 	SetWindowText(Titlestr);
+
+	m_b_download.LoadBitmaps(IDB_DOWNLOAD_BUTTON,IDB_DOWNLOAD_BUTTON_MOVE,NULL,IDB_DOWNLOAD_BUTTON_DIS);
+	m_b_download.SizeToContent();		//自适应图片大小
 
 	//加载图片
 	bim=pic.LoadPicture(srcfile.GetBuffer());
 
 
-	m_b_download.LoadBitmaps(IDB_DEL_BUTTON,IDB_DEL_BUTTON_MOVE,NULL,IDB_DEL_BUTTON_DIS);
-	m_b_download.SizeToContent();		//自适应图片大小
+	//初始即最大化 //放最后
+	ShowWindow(SW_MAXIMIZE);   
 
 
 	return TRUE;
@@ -73,56 +73,14 @@ void CDLGpictureView::OnBnClickedOk()
 }
 void CDLGpictureView::OnBnClickedButtonDownload()
 {
-	// TODO: Add your control notification handler code here
-	//保存目录
-	BROWSEINFO   bi;                           //创建BROWSEINFO结构体
-	TCHAR   Buffer[512]= " ";
-	TCHAR   FullPath[512]= " ";
-	bi.hwndOwner   =   GetSafeHwnd();               //窗口句柄
-	bi.pidlRoot   =   NULL;
-	bi.pszDisplayName   =   Buffer;            //返回选择的目录名的缓冲区
-	bi.lpszTitle   =   "Selection ";           //弹出的窗口的文字提示
-	bi.ulFlags   =   BIF_RETURNONLYFSDIRS   ;  //只返回目录。其他标志看MSDN
-	bi.lpfn   =   NULL;               //回调函数，有时很有用
-	bi.lParam   =   0;
-	bi.iImage   =   0;
-	ITEMIDLIST*   pidl   =   ::SHBrowseForFolder(&bi);   //显示弹出窗口，ITEMIDLIST很重要
-	if(::SHGetPathFromIDList(pidl,FullPath)) //在ITEMIDLIST中得到目录名的整个路径
+	//保存文件
+	char szFilter[]="Jpeg Files (*.jpg)|*.jpg|*.*|*.*||";
+	CFileDialog dlg(FALSE,".jpg",Titlestr.GetBuffer(0),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,
+		szFilter);
+	if(dlg.DoModal()==IDOK)
 	{
-		sprintf(Buffer,"%s\\%s.jpg",FullPath,Titlestr.GetBuffer());
-		CopyFile(srcfile,Buffer,FALSE);
+		CopyFile(srcfile,dlg.GetPathName().GetBuffer(0),FALSE);
 	}
-}
-
-void CDLGpictureView::reSize(void)
-{
-	CRect		m_clientRect;		//程序界面区域位置
-	GetClientRect(&m_clientRect);
-
-	//打印日志条
-	int download_height=20;
-	int distance=5;
-	int  txt_width=60;
-
-	//图片
-	CRect pic_Rect;
-	pic_Rect.top=m_clientRect.top;
-	pic_Rect.bottom=m_clientRect.bottom-download_height-distance*2;
-
-	pic_Rect.left = m_clientRect.left;
-	pic_Rect.right = m_clientRect.right;
-	GetDlgItem(IDC_PIC)->MoveWindow(pic_Rect);
-
-	//DOWNLOAD
-	CRect download_Rect;
-	download_Rect.top=pic_Rect.bottom+distance;
-	download_Rect.bottom=m_clientRect.bottom-distance;
-
-	download_Rect.left = m_clientRect.right-txt_width-distance;
-	download_Rect.right = m_clientRect.right-distance;
-	GetDlgItem(IDC_BUTTON_DOWNLOAD)->MoveWindow(download_Rect);
-
-	Invalidate();
 }
 
 void CDLGpictureView::OnPaint()
@@ -267,4 +225,37 @@ HBRUSH CDLGpictureView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	}
 
 	return hbr;
+}
+void CDLGpictureView::OnSize(UINT nType, int cx, int cy)
+{
+	CDialog::OnSize(nType, cx, cy);
+
+	// TODO: Add your message handler code here
+	CRect		m_clientRect;		//程序界面区域位置
+	GetClientRect(&m_clientRect);
+
+	//打印日志条
+	int download_height=24;
+	int distance=5;
+	int  txt_width=80;
+
+	//图片
+	CRect pic_Rect;
+	pic_Rect.top=m_clientRect.top;
+	pic_Rect.bottom=m_clientRect.bottom-download_height-distance*2;
+
+	pic_Rect.left = m_clientRect.left;
+	pic_Rect.right = m_clientRect.right;
+	GetDlgItem(IDC_PIC)->MoveWindow(pic_Rect);
+
+	//DOWNLOAD
+	CRect download_Rect;
+	download_Rect.top=pic_Rect.bottom+distance;
+	download_Rect.bottom=m_clientRect.bottom-distance;
+
+	download_Rect.left = m_clientRect.right-txt_width-distance;
+	download_Rect.right = m_clientRect.right-distance;
+	GetDlgItem(IDC_BUTTON_DOWNLOAD_BMP)->MoveWindow(download_Rect);
+
+	Invalidate();
 }

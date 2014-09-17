@@ -249,7 +249,6 @@
 #define IDB_TAB_PTZ_DISB                423
 #define IDB_RECORD_DISABLE              424
 #define IDB_CAR_DISABLE                 425
-#define IDB_BITMAP1                     426
 #define IDB_ALARM_DISABLE               426
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
@@ -261,6 +260,7 @@
 #define IDC_BUTTON2                     1004
 #define IDC_BUTTON_START                1004
 #define IDC_BUTTON_DOWNLOAD             1004
+#define IDC_BUTTON_DOWNLOAD_BMP         1004
 #define IDC_BUTTON_STOP                 1005
 #define IDC_BUTTON_PAUSE                1005
 #define IDC_BUTTON_CLOSE_PREVIEW_ALL    1006

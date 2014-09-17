@@ -5,7 +5,7 @@
 #include "YiRongCarDetectAIO.h"
 #include "YiRongCarDetectAIODlg.h"
 #include "DLGhelp.h"
-
+#include "DLGpictureView.h"
 
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
@@ -141,9 +141,17 @@ BOOL CDLGhelp::OnInitDialog()
 void CDLGhelp::OnOK() 
 {
 	// TODO: Add extra validation here
+#if 0
+	CDLGpictureView dlgPicView;
+	dlgPicView.Titlestr+="aa";
 
+	dlgPicView.srcfile="C:\\36273.jpg";
+	dlgPicView.DoModal();
+#else
 
 	CDialog::OnOK();
+#endif
+
 }
 
 void CDLGhelp::OnCancel() 

@@ -15,7 +15,9 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_PICVIEW };
-	
+
+	CBitmapButton m_b_download;
+
 	CString Titlestr;
 	CString srcfile;
 	
@@ -26,7 +28,7 @@ public:
 	void DrawFileImage(CStatic *m_picBox, char *filename);
 
 	BOOL OnInitDialog();
-	void reSize();
+
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -40,6 +42,6 @@ public:
 	afx_msg void OnBnClickedButtonDownload();
 	CStatic m_pic;
 	afx_msg void OnPaint();
-	CBitmapButton m_b_download;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
