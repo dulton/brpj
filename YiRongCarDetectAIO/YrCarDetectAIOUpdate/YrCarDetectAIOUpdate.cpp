@@ -107,12 +107,16 @@ BOOL CYrCarDetectAIOUpdateApp::InitInstance()
 
 		if(strlen(tempstr)>5)
 		{
+			
 			//×Ô¿½±´Ä£Ê½
 			if(tempstr[0] == 'c' &&
 				tempstr[1] == 'o' &&
 				tempstr[2] == 'p' &&
 				tempstr[3] == 'y' )
+			{
 				dlg.m_ip=&(tempstr[4]);
+				dlg.copyMyselfFlag=true;
+			}
 		}
 		
 	}

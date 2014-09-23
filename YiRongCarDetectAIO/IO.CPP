@@ -230,7 +230,7 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 {
 	try
 	{
-		CString	 strsql = _T("select sorgname,nid from T_ZD_ORG");
+		CString	 strsql = _T("select sorgname,nid from t_zd_org");
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -287,7 +287,7 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
-		HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from T_ZD_ORG t", \
+		HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from t_zd_org t", \
 			m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
 
 		if(SUCCEEDED(hr))
@@ -317,7 +317,7 @@ bool IO::DEVICE_DeleteArea(long areaID)
 	try
 	{
 		CString strSql;
-		strSql.Format("delete from T_ZD_ORG where nid=%d",areaID);
+		strSql.Format("delete from t_zd_org where nid=%d",areaID);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		return true;
 	}
@@ -342,7 +342,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 		filterstring(tempstr);
 		AreaName=tempstr;
 
-		strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
+		strSql.Format("select nid from t_zd_org where sorgname='%s'",AreaName);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -397,7 +397,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 	{
 		CString strSql;
 		filterstring(AreaName);
-		strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
+		strSql.Format("select nid from t_zd_org where sorgname='%s'",AreaName);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -550,7 +550,7 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		filterstring(tempstr);
 		AreaName=tempstr;
 
-		strSql.Format("select nid from T_ZD_ORG where sorgname='%s'",AreaName);
+		strSql.Format("select nid from t_zd_org where sorgname='%s'",AreaName);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
@@ -1683,7 +1683,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA from tb_match_result_car");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera from tb_match_result_car");
 
 		CString tempSql = SQLstr;
 
@@ -1775,7 +1775,7 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -1813,7 +1813,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 	IOwriteLock=true;
 	try
 	{
-		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID from tb_alarm_car");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera,blackid from tb_alarm_car");
 
 		CString tempSql = SQLstr;
 
@@ -1904,8 +1904,8 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
-			result.blackid = (long)m_pRecordsetPtr->GetCollect("BLACKID");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+			result.blackid = (long)m_pRecordsetPtr->GetCollect("blackid");
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -2011,7 +2011,7 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
 
 			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
@@ -2049,7 +2049,7 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 			nowtime.GetYear(),
 			nowtime.GetMonth(),
 			nowtime.GetDay());
-		strSql.Format(_T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  where a.ncamera=%d  and a.dcreate> to_date('%s','yyyymmddhh24miss')  order by a.nid desc)  where  rownum=1"),
+		strSql.Format(_T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(a.dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera,nflag  from tb_match_result_car a  where a.ncamera=%d  and a.dcreate> to_date('%s','yyyymmddhh24miss')  )  where  r=1"),
 			camid,timestr);
 
 
@@ -2130,7 +2130,7 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
 
 			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
@@ -2670,7 +2670,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 	try
 	{
 		//排序后分页
-		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA from tb_match_result_vehicle");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera from tb_match_result_vehicle");
 
 		CString tempSql = SQLstr;
 
@@ -2748,7 +2748,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -2778,7 +2778,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 {
 	try
 	{
-		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,NCAMERA,BLACKID from tb_alarm_vehicle");
+		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera,blackid from tb_alarm_vehicle");
 
 		CString tempSql = SQLstr;
 
@@ -2856,8 +2856,8 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 				strcpy(result.path, str.GetBuffer(0));
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
-			result.blackid = (long)m_pRecordsetPtr->GetCollect("BLACKID");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+			result.blackid = (long)m_pRecordsetPtr->GetCollect("blackid");
 
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -2951,7 +2951,7 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
 			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
 
@@ -2991,7 +2991,7 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 			nowtime.GetMonth(),
 			nowtime.GetDay());
 
-		strSql.Format( _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  where a.ncamera=%d and a.dcreate> to_date('%s','yyyymmddhh24miss')  order by a.nid desc)  where  rownum=1"),
+		strSql.Format( _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(a.dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera,nflag  from tb_match_result_vehicle a  where a.ncamera=%d  and a.dcreate> to_date('%s','yyyymmddhh24miss')  )  where  r=1"),
 			camid,timestr);
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
@@ -3057,7 +3057,7 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 			}
 			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
 			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
 
@@ -3212,7 +3212,7 @@ bool IO::CAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 	try
 	{
 		CString strSql;
-		strSql.Format("delete from TB_ALARM_CAR where blackid=%d",blackid);
+		strSql.Format("delete from tb_alarm_car where blackid=%d",blackid);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		return true;
 	}
@@ -3508,7 +3508,7 @@ bool IO::CAR_Alarm_DeleteAll(void)
 {
 	try
 	{
-		CString strSql=_T("delete from TB_ALARM_CAR");
+		CString strSql=_T("delete from tb_alarm_car");
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		return true;
 	}
@@ -3582,7 +3582,7 @@ bool IO::ELECAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 	try
 	{
 		CString strSql;
-		strSql.Format("delete from TB_ALARM_VEHICLE  where BLACKID=%d",blackid);
+		strSql.Format("delete from tb_alarm_vehicle  where blackid=%d",blackid);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		return true;
 	}
@@ -3878,7 +3878,7 @@ bool IO::ELECAR_Alarm_DeleteAll(void)
 {
 	try
 	{
-		CString strSql=_T("delete from TB_ALARM_VEHICLE");
+		CString strSql=_T("delete from tb_alarm_vehicle");
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		return true;
 	}
@@ -4579,7 +4579,7 @@ bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isp
 	{
 		filterstring(myip);
 		CString	strSql;
-		strSql.Format(_T("select * from(select * from tb_mission where DETECTIP='%s'and FLAG=1 order by nid ) where rownum = 1"),myip);
+		strSql.Format(_T("select * from(select row_number() over(order by nid desc) r,nid,userid,detectip,isplay,ncamera,flag,indate from tb_mission where detectip='%s'and flag=1 ) where r = 1"),myip);
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -4598,9 +4598,9 @@ bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isp
 			long long nid = m_pRecordsetPtr->GetCollect("nid");
 
 			(*isplay) = (long)m_pRecordsetPtr->GetCollect("isplay");
-			(*camid) = (long)m_pRecordsetPtr->GetCollect("NCAMERA");
+			(*camid) = (long)m_pRecordsetPtr->GetCollect("ncamera");
 
-			strSql.Format(_T("update tb_mission set FLAG=2 where nid=%I64u"),nid );
+			strSql.Format(_T("update tb_mission set flag=2 where nid=%I64u"),nid );
 
 			_variant_t RecordAffected;
 			m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -4638,12 +4638,12 @@ bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,unsigned long in
 		if(isplay)
 		{
 			//开始播放
-			strSql.Format(_T("update tb_device set DETECTIP='%s',isplay=1 where ncamera=%I64u"),myip,camid );
+			strSql.Format(_T("update tb_device set detectip='%s',isplay=1 where ncamera=%I64u"),myip,camid );
 		}
 		else
 		{
 			//停止播放
-			strSql.Format(_T("update tb_device set DETECTIP='',isplay=0 where ncamera=%I64u"),camid );
+			strSql.Format(_T("update tb_device set detectip='',isplay=0 where ncamera=%I64u"),camid );
 		}
 
 		_variant_t RecordAffected;

@@ -56,7 +56,7 @@ TOMCAT服务器要建立
 CYrCarDetectAIOUpdateDlg::CYrCarDetectAIOUpdateDlg(CWnd* pParent /*=NULL*/)
 : CDialog(CYrCarDetectAIOUpdateDlg::IDD, pParent)
 , m_version(0)
-, m_ip(_T("35.24.252.109:8089"))
+, m_ip(_T("35.24.13.37:8089"))
 {
 	copyMyselfFlag=false;
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
