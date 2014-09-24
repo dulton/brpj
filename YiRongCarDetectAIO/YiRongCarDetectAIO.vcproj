@@ -51,7 +51,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="ffmpeginclude;&quot;.\curl-7.32.0\include&quot;"
+				AdditionalIncludeDirectories="ffmpeginclude;&quot;.\curl-7.32.0\include&quot;;&quot;tinyxmlSTLvc6-UTF8&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;TUNE;BUILDING_LIBCURL;HTTP_ONLY"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -149,7 +149,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="ffmpeginclude;&quot;.\curl-7.32.0\include&quot;"
+				AdditionalIncludeDirectories="ffmpeginclude;&quot;.\curl-7.32.0\include&quot;;&quot;tinyxmlSTLvc6-UTF8&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;TUNE;BUILDING_LIBCURL;HTTP_ONLY"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -223,6 +223,10 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\base64_codec.cpp"
+				>
+			</File>
+			<File
 				RelativePath="BSWndContainer.cpp"
 				>
 				<FileConfiguration
@@ -261,6 +265,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\CService.cpp"
+				>
 			</File>
 			<File
 				RelativePath="DahuaSDK.cpp"
@@ -945,6 +953,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Web90server.cpp"
+				>
+			</File>
+			<File
 				RelativePath="xmlrw.cpp"
 				>
 				<FileConfiguration
@@ -1054,11 +1066,19 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\base64_codec.h"
+				>
+			</File>
+			<File
 				RelativePath="BSWndContainer.h"
 				>
 			</File>
 			<File
 				RelativePath="CarDetect.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CService.h"
 				>
 			</File>
 			<File
@@ -1235,6 +1255,10 @@
 			</File>
 			<File
 				RelativePath=".\VideoCarDetect.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Web90server.h"
 				>
 			</File>
 			<File

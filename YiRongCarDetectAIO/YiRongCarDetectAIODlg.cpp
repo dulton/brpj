@@ -50,6 +50,8 @@ extern IO OracleIO;
 
 #include "DLGpictureView.h"
 
+#include "Web90server.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -301,6 +303,16 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	//初始即最大化
 	ShowWindow(SW_MAXIMIZE);   
+
+	char failstr[256];
+
+//	SendSoap_InitSystem("http://35.24.13.26:5300/services/ThirdBayonetService","35.24.13.26","admin","fzga12345",failstr);
+
+	SendSoap_insertCrossingInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
+							"b87fde57-5eda-4e7b-901a-3708864d012c",
+							"11111","路口 6登陆识别","101","102",
+							failstr);
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

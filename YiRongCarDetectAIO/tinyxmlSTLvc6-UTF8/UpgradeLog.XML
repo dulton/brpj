@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="tinyxmlSTLvc6">
+</Property><Property Name="Solution File" Value="D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\tinyxmlSTLvc6.sln">
+</Property><Property Name="Date" Value="2014年5月21日 星期三">
+</Property><Property Name="Time" Value="14:54">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="tinyxmlSTLvc6.sln" Description="File successfully backed up as D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\tinyxmlSTLvc6.sln.old">
+</Event><Event ErrorLevel="0" Project="tinyxmlSTLvc6" Source="tinyxmlSTLvc6.vcproj" Description="Converting project file 'D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\tinyxmlSTLvc6.vcproj'.">
+</Event><Event ErrorLevel="1" Project="tinyxmlSTLvc6" Source="tinyxmlSTLvc6.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="tinyxmlSTLvc6" Source="tinyxmlSTLvc6.vcproj" Description="MSB8012: $(TargetPath) ('D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\.\Release\tinyxmlSTLvc6.lib') does not match the Librarian's OutputFile property value '.\Release\tinyxmlSTLvc6.lib' ('D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\Release\tinyxmlSTLvc6.lib') in project configuration 'Release|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Lib.OutputFile).">
+</Event><Event ErrorLevel="1" Project="tinyxmlSTLvc6" Source="tinyxmlSTLvc6.vcproj" Description="MSB8012: $(TargetPath) ('D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\.\Debug\tinyxmlSTLvc6.lib') does not match the Librarian's OutputFile property value '.\Debug\tinyxmlSTLvc6.lib' ('D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\Debug\tinyxmlSTLvc6.lib') in project configuration 'Debug|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Lib.OutputFile).">
+</Event><Event ErrorLevel="0" Project="tinyxmlSTLvc6" Source="tinyxmlSTLvc6.vcproj" Description="Done converting to new project file 'D:\GGG\libPushSoap\tinyxmlSTLvc6-UTF8\tinyxmlSTLvc6.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="tinyxmlSTLvc6" Source="tinyxmlSTLvc6.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="tinyxmlSTLvc6.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="tinyxmlSTLvc6.sln" Description="Converted">
+</Event></UpgradeLog>
