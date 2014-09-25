@@ -36,8 +36,13 @@ typedef int                 BOOL;
 
 //#pragma comment(lib,"./jsoncpp-src-0.5.0/build/vs71/debug/lib_json/json_vc71_libmtd.lib")
 #pragma comment(lib,"./curl-7.32.0/vs/vc8/lib/Debug/vc8libcurl.lib")
+#ifdef _DEBUG
 #pragma comment(lib,"./tinyxmlSTLvc6-UTF8/Debug/tinyxmlSTLvc6.lib")
+#endif
 
+#ifdef NDEBUG
+#pragma comment(lib,"./tinyxmlSTLvc6-UTF8/Release/tinyxmlSTLvc6.lib")
+#endif
 
 #define	WIN_PLATFORM
 #include <windows.h>

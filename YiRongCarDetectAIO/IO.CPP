@@ -5780,3 +5780,45 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 
 
 #endif
+
+#if IVMS_KAKOU_SOAP && IVMS_ORACLE_DEVICETREE
+//获取机构编号
+int IO::IVMS_ReadControlunitForSOAP(char *index_code)
+{
+
+	TCHAR	 strsql[5120];
+	try
+	{
+		_stprintf(strsql,
+			_T("select index_code from CONTROL_UNIT where control_unit_id=1"));
+
+		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(IVMS_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			IVMS_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!IVMS_pRecordsetPtr->adoEOF)
+		{
+			VarSaveStr2(index_code,IVMS_pRecordsetPtr,_T("index_code"));
+			IVMS_pRecordsetPtr->MoveNext();
+		}
+
+		IVMS_pRecordsetPtr->Close();
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::IVMS_ReadControlunitForSOAP error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return false;
+	}  
+	return true;
+
+}
+#endif

@@ -49,19 +49,30 @@ bool CreateXMLDataUTF8(TiXmlElement *prow,string attr,const char *valuedata,char
 bool CreateXMLData(TiXmlElement *prow,string attr,const char *valuedata,bool cdataflag);
 
 bool CreateXmlLite(char *name,struct NAME_VALUE_S mapdata[],int maplen,
-				   char *strText,unsigned long int len)   ;
+				   char *strText,unsigned long int len)  ;
 
-bool CreateXmlLite_initSystem(char *ip,char *username,char *psw,
-							  char *strText,unsigned long int len);
+bool CreateXmlLite_Cross(char *name,struct NAME_VALUE_S mapdata[],int maplen,
+						   char *subname, char *sub2name,struct NAME_VALUE_S subdata[],int sublen,
+						   char *strText,unsigned long int len)   ;
+
+bool CreateXmlLite_Vehicle(char *name,bool isPicUrl,struct NAME_VALUE_S mapdata[],int maplen,
+						   char *strText,unsigned long int len)  ;
+
 
 
 bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 						char *failstr);
 
 bool SendSoap_insertCrossingInfo(char *wsdlUrl,
-								 char *id,char *crossindex,char *crossname,char *longi, char *lati,
-								 char *failstr);
+								 char *id,char *index_code,
+								 char *crossindex,char *crossname,char *longi, char *lati,
+								char *failstr);
 
+bool SendSoap_insertVehicleInfo(char *wsdlUrl,
+								char *id,char *crossindex,char *passTime,char *plateInfo,bool isPicUrl,
+								char *picPlateurl,unsigned char *picPlatedata,long picPlatelen,
+								char *picVehicleurl,unsigned char *picVehicledata,long picVehiclelen,
+								char *failstr);
 
 bool SendPidPushSoap(char *wsdlUrl,char *targetNamespace,char *methodname,
 					 char *valuename,const char *valuedata,

@@ -509,6 +509,9 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 	int IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connectflag);
 #endif
 
+#if IVMS_KAKOU_SOAP && IVMS_ORACLE_DEVICETREE
+	int IVMS_ReadControlunitForSOAP(char *index_code);
+#endif
 
 };
 

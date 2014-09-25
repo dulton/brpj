@@ -306,13 +306,33 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	char failstr[256];
 
-//	SendSoap_InitSystem("http://35.24.13.26:5300/services/ThirdBayonetService","35.24.13.26","admin","fzga12345",failstr);
+	if(0)
+	SendSoap_InitSystem("http://35.24.13.26:5300/services/ThirdBayonetService","35.24.13.26","admin","fzga12345",failstr);
 
+	if(1)
+	{
+		char index_code[64];
+
+		OracleIO.IVMS_ReadControlunitForSOAP(index_code);
 	SendSoap_insertCrossingInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
-							"b87fde57-5eda-4e7b-901a-3708864d012c",
-							"11111","路口 6登陆识别","101","102",
+							"031898cf-f39e-40b7-9ec4-b7d24129fd72",
+							index_code,
+							"11114","路口 6登陆识别","101","102",
 							failstr);
+	}
 
+	if(0)
+	{
+
+	unsigned char tempdata[32]="aa";
+	SendSoap_insertVehicleInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
+		"031898cf-f39e-40b7-9ec4-b7d24129fd72",
+		"11111",
+		"2014-09-02 05:06:07","22345",true,
+		"http://10.64.52.15/1.jpg",tempdata,2,
+		"http://10.64.52.15/2.jpg",tempdata,2,
+		failstr);
+	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

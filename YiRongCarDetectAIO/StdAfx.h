@@ -126,6 +126,10 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 //海康 市局设备树
 #define IVMS_ORACLE_DEVICETREE 1
 
+//海康 卡口系统 需要启动设备树
+#define IVMS_KAKOU_SOAP 1
+
+
 //弹出框登录 1 不弹出窗登录0 //预留 请务必为1
 //免登陆已经不用这个了 
 //改为	DlgLogin.SilentMode

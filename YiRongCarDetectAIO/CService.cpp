@@ -154,7 +154,8 @@ int Service::PostSoap( char *wsdlUrl,char *SoapActionStr,char *xmlbuffer,
 	headers = curl_slist_append(headers, SoapActionStr);
 */
 	//headers = curl_slist_append(headers, "Content-Type: application/soap+xml;charset=UTF-8;action=\"urn:initSystem\"");
-	headers = curl_slist_append(headers, SoapActionStr);
+	//headers = curl_slist_append(headers, SoapActionStr);
+//headers = curl_slist_append(headers, "Content-Type: text/xml;charset=UTF-8");
 
 	CURL *curl = curl_easy_init();
 	if ( curl ) 
@@ -167,7 +168,8 @@ int Service::PostSoap( char *wsdlUrl,char *SoapActionStr,char *xmlbuffer,
 		char errorBuffer[CURL_ERROR_SIZE]={0};
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
 
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	//	curl_easy_setopt(curl, CURLOPT_HEADER, 1);
+	//	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, xmlbuffer);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(xmlbuffer));
 		curl_easy_setopt(curl, CURLOPT_POST, 1);
@@ -185,7 +187,6 @@ int Service::PostSoap( char *wsdlUrl,char *SoapActionStr,char *xmlbuffer,
 		if(CSERVER_DEBUG)
 			curl_easy_setopt(curl, CURLOPT_VERBOSE , 1);
 
-		curl_easy_setopt(curl, CURLOPT_HEADER, 1);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		//curl_easy_setopt(curl, CURLOPT_PROXY, "10.142.50.140:808");
 
@@ -196,7 +197,7 @@ int Service::PostSoap( char *wsdlUrl,char *SoapActionStr,char *xmlbuffer,
 
 		// clean up
 		curl_easy_cleanup(curl);
-		curl_slist_free_all(headers);
+	//	curl_slist_free_all(headers);
 
 		if ( curl_code != CURLE_OK ) 
 		{
