@@ -130,7 +130,7 @@ bool ReadGetNodePointerByName(TiXmlElement* pRootEle,string strNodeName,TiXmlEle
 //原始节点pRootEle
 //找到的节点FindNode
 */
-bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string strNodeName,char *strText,unsigned long int len)
+bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string strNodeName,char *strText,unsigned long int len,bool utfflag)
 {
 	ReadGetNodePointerByName(pRootEle,strNodeName,FindNode);
 	if (NULL!=FindNode)
@@ -140,7 +140,12 @@ bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string str
 		if (NULL==psz)
 			strText[0] =0;
 		else	//转码
-			UTF82CHAR(psz,strText,len);
+		{
+			if(utfflag)
+				UTF82CHAR(psz,strText,len);
+			else
+				strcpy(strText,psz);
+		}
 		return true;
 	}
 	else
@@ -149,6 +154,7 @@ bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string str
 		return false;
 	}
 }
+
 
 bool CreateXMLDataUTF8(TiXmlElement *prow,string attr,const char *valuedata,char *strText,unsigned long int len,bool cdataflag)
 {
@@ -458,8 +464,38 @@ bool CreateXmlLite_Vehicle(char *name,bool isPicUrl,struct NAME_VALUE_S mapdata[
 
 	return true;  
 }   
+//报文解析
+bool XMLgetReturnData(const char *utf8xmlin,char*utf8xmlout)
+{
+	//放在栈里 内存不会泄露
+	TiXmlDocument myDocument;
+	myDocument.Parse(utf8xmlin);
+
+	TiXmlElement *pRootEle = myDocument.RootElement();
+	if (NULL==pRootEle)
+	{
+		printf("XMLgetReturnData XML出错\n");
+		return false;
+	}
+
+	TiXmlElement *pNodeRow = NULL;
+	TiXmlElement *pNodeData = NULL;
+
+	for(pNodeRow = pRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
+	{
+		pNodeData = NULL;
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"bms1:return",utf8xmlout,XMLRW_MAX_STR,false))
+		{
+			//printf("bms1:return=%s\n",returnstr);
+			break ;
+		}
+	}
+	return true;
+}
+
 
 bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
+						 char *sessionIdstr,
 					  char *failstr)
 {
 	Service CService;
@@ -524,9 +560,10 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		CService.DestroyData();
 		return false;
 	}
-
+	
 	if(WEB_KAKOU_DEBUG)
 		printf("\nSendInitSystemSoap resp_buffer=%s\n",CService.m_resp_buffer.c_str());
+
 /*
 	if(NULL!=strstr(CService.m_resp_buffer.c_str(),"<ns:return>"))
 	{
@@ -535,7 +572,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		return false;
 	}
 	*/
-
+/*
 	//出来默认UTF-8了
 	char* charstr=(char *)calloc(CService.m_resp_buffer.length()*2+4,sizeof(char));
 
@@ -551,51 +588,59 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		CService.DestroyData();
 		return false;
 	}
-#if 0	
+
 	char* utf8=(char *)calloc(strlen(presp)*2+4,sizeof(char));
 	
 	CHAR2UTF8(presp,utf8,strlen(presp)*2);
+*/
+	char returnstr[XMLRW_MAX_STR]="";
+
+	if(false == XMLgetReturnData(CService.m_resp_buffer.c_str(),returnstr))
+		return false;
+	// 可以清空了
+	CService.DestroyData();
 
 	//放在栈里 内存不会泄露
-	TiXmlDocument myDocument;
-	myDocument.Parse(utf8);
+	TiXmlDocument returnDocument;
+	returnDocument.Parse(returnstr);
 
-	free(utf8);
-	free(charstr);
 
-	TiXmlElement *pRootEle = myDocument.RootElement();
-	if (NULL==pRootEle)
+	TiXmlElement *preturnRootEle = returnDocument.RootElement();
+	if (NULL==preturnRootEle)
 	{
-		strcpy(failstr,"SendPidPushSoap XML出错");
-		printf("SendPidPushSoap XML出错\n");
-		CService.DestroyData();
+		strcpy(failstr,"SendInitSystemSoap XML出错");
+		printf("SendInitSystemSoap XML出错\n");
 		return false;
 	}
 
-	char temp[XMLRW_MAX_STR]="";
+	char codestr[32]="";
+	char messagestr[1024]="";
 
 	TiXmlElement *pNodeRow = NULL;
 	TiXmlElement *pNodeData = NULL;
 
-	for(pNodeRow = pRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
+	for(pNodeRow = preturnRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
 	{
 		pNodeData = NULL;
-		if(ReadQueryNodeText(pNodeRow,pNodeData,"ns:return",temp,XMLRW_MAX_STR))
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"code",codestr,XMLRW_MAX_STR,true))
 		{
-			printf("ns:return=%s\n",temp);
+			printf("code=%s\n",codestr);
+		}
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"message",messagestr,XMLRW_MAX_STR,true))
+		{
+			printf("message=%s\n",messagestr);
+		}
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"sessionId",sessionIdstr,XMLRW_MAX_STR,true))
+		{
+			printf("sessionId=%s\n",sessionIdstr);
 		}
 	}
 
-	if(0!=strcmp(temp,"0000"))
+	if (0!=atol(codestr))
 	{
-		sprintf(failstr,"返回出错:%s",temp);
-		printf("%s\n",failstr);
-		CService.DestroyData();
+		sprintf(failstr,"SendInitSystemSoap XML出错 %s",messagestr);
 		return false;
 	}
-#endif
-
-	CService.DestroyData();
 
 	return true;
 

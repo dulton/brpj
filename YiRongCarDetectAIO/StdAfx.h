@@ -111,7 +111,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
-#define ALLTAB_CLIENT_MODE 1
+#define ALLTAB_CLIENT_MODE 0
 
 //汽车模式 1 电动车模式 0
 //切换电动车和汽车。

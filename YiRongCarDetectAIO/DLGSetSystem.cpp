@@ -21,6 +21,10 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	, m_display_preview(FALSE)
 	, m_update_url(_T(""))
 	, m_check_update(FALSE)
+	, m_kakou_url(_T(""))
+	, m_kakou_ip(_T(""))
+	, m_kakou_user(_T(""))
+	, m_kakou_psw(_T(""))
 {
 	//{{AFX_DATA_INIT(CDLGSetSystem)
 	m_check_alarmpic = TRUE;
@@ -46,6 +50,10 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_tomcat_url = _T("http://10.142.50.126:8089/YRCapturePic");
 	m_update_url = _T("10.142.50.126:8089");
 	m_check_update=TRUE;
+	m_kakou_url="http://35.24.13.26:5300/services/ThirdBayonetService";
+	m_kakou_ip="35.24.13.26";
+	m_kakou_user="admin";
+	m_kakou_psw="fzga12345";
 	//}}AFX_DATA_INIT
 
 	m_BgBrush.CreateSolidBrush(RGB(216,216,216));         // 背景的颜色
@@ -103,6 +111,10 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_DAHUA_PATH, m_b_dahuapath);
 	DDX_Control(pDX, IDC_BUTTON_YAAN_PATH, m_b_yaanpath);
 	DDX_Control(pDX, IDC_BUTTON_TOMCAT_DIR, m_b_tomcatdir);
+	DDX_Text(pDX, IDC_EDIT_KAKOU_URL, m_kakou_url);
+	DDX_Text(pDX, IDC_EDIT_KAKOU_IP, m_kakou_ip);
+	DDX_Text(pDX, IDC_EDIT_KAKOU_USER, m_kakou_user);
+	DDX_Text(pDX, IDC_EDIT_KAKOU_PSW, m_kakou_psw);
 }
 
 
@@ -167,6 +179,21 @@ BOOL CDLGSetSystem::OnInitDialog()
 	GetDlgItem(IDC_EDIT_TOMCAT_URL)->ShowWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_TOMCAT_DIR)->ShowWindow(TRUE);
 
+#endif
+
+#if (IVMS_KAKOU_SOAP && !ALLTAB_CLIENT_MODE)
+	
+	GetDlgItem(IDC_STATIC_KAKOU)->ShowWindow(TRUE);
+
+	GetDlgItem(IDC_STATIC_KAKOU_URL)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_KAKOU_IP)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_KAKOU_USER)->ShowWindow(TRUE);
+	GetDlgItem(IDC_STATIC_KAKOU_PSW)->ShowWindow(TRUE);
+
+	GetDlgItem(IDC_EDIT_KAKOU_URL)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_KAKOU_IP)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_KAKOU_USER)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_KAKOU_PSW)->ShowWindow(TRUE);
 #endif
 
 	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
@@ -420,6 +447,14 @@ void CDLGSetSystem::readini(char *path)
 	char	tomcat_dir[ZOG_MAX_PATH_STR] = "";
 	char	tomcat_url[ZOG_MAX_PATH_STR] = ""; 
 	char	update_url[ZOG_MAX_PATH_STR] = ""; 
+
+	char	kakou_url[ZOG_MAX_PATH_STR] = "";
+	char	kakou_ip[ZOG_MAX_PATH_STR] = ""; 
+	char	kakou_user[ZOG_MAX_PATH_STR] = ""; 
+	char	kakou_psw[ZOG_MAX_PATH_STR] = ""; 
+	char	kakou_psw_ext[ZOG_MAX_PATH_STR] = ""; 
+	
+
 	int check_displaypreview;
 	int check_update;
 	////////////////////////////////////
@@ -479,9 +514,24 @@ void CDLGSetSystem::readini(char *path)
 	if(GetPrivateProfileStruct("Update", "CheckAuto", &check_update, sizeof(int), path))
 		m_check_update=check_update;
 	
-	
 	if(GetPrivateProfileStruct("View", "CheckDisplayPreview", &check_displaypreview, sizeof(int), path))
 		m_display_preview=check_displaypreview;
+
+
+	if(GetPrivateProfileString("KaKou", "Url", "", kakou_url, ZOG_MAX_PATH_STR, path))
+		m_kakou_url=kakou_url;
+	if(GetPrivateProfileString("KaKou", "ip", "", kakou_ip, ZOG_MAX_PATH_STR, path))
+		m_kakou_ip=kakou_ip;
+	if(GetPrivateProfileString("KaKou", "user", "", kakou_user, ZOG_MAX_PATH_STR, path))
+		m_kakou_user=kakou_user;
+	if(GetPrivateProfileString("KaKou", "password", "", kakou_psw_ext, (ZOG_MAX_NAME_STR+1)*5, path))
+	{
+		if(0!=strlen(kakou_psw_ext))
+		{
+			ZogDeCode(kakou_psw_ext,kakou_psw);
+			m_kakou_psw=kakou_psw;
+		}
+	}
 
 	CreateDirectory(m_path_capbmp, NULL);
 	CreateDirectory(m_path_detect, NULL);
@@ -530,7 +580,14 @@ void CDLGSetSystem::writeini(char *path)
 	WritePrivateProfileStruct("Update", "CheckAuto", &m_check_update, sizeof(int), path);
 
 	WritePrivateProfileStruct("View", "CheckDisplayPreview", &m_display_preview, sizeof(int), path);
-	
+
+	WritePrivateProfileString("KaKou", "Url",  m_kakou_url.GetBuffer(0), path);
+	WritePrivateProfileString("KaKou", "ip",  m_kakou_ip.GetBuffer(0), path);
+	WritePrivateProfileString("KaKou", "user",  m_kakou_user.GetBuffer(0), path);
+
+	char	kakou_psw_ext[(ZOG_MAX_NAME_STR+1)*5]="";
+	ZogEnCode(m_kakou_psw.GetBuffer(0),kakou_psw_ext);
+	WritePrivateProfileString("KaKou", "password",  kakou_psw_ext, path);
 }
 
 void CDLGSetSystem::OnButtonHaikangPath() 
@@ -674,6 +731,15 @@ HBRUSH CDLGSetSystem::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		// 返回背景色的画刷
 		return m_BgBrush;
 	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_KAKOU)
+	{
+		// 背景色透明
+		pDC->SetBkMode(TRANSPARENT);
+
+		// 返回背景色的画刷
+		return m_BgBrush;
+	}
+
 	if(nCtlColor==CTLCOLOR_STATIC)
 	{
 		pDC->SetBkMode(TRANSPARENT); // 设置透明背景

@@ -392,11 +392,15 @@
 #define IDC_EDIT_FTP_PSW                1138
 #define IDC_EDIT_FTP_PATH               1139
 #define IDC_EDIT_TOMCAT_URL             1140
+#define IDC_EDIT_KAKOU_URL              1141
 #define IDC_EDIT_TOMCAT_DIR             1142
 #define IDC_BUTTON_DETECT_DIR3          1143
 #define IDC_BUTTON_TOMCAT_DIR           1143
+#define IDC_EDIT_KAKOU_IP               1144
+#define IDC_EDIT_KAKOU_USER             1145
 #define IDC_EDIT_HAIKANG_PATH           1146
 #define IDC_BUTTON_HAIKANG_PATH         1147
+#define IDC_EDIT_KAKOU_PSW              1148
 #define IDC_EDIT_DAHUA_PATH             1149
 #define IDC_BUTTON_DAHUA_PATH           1150
 #define IDC_EDIT_YAAN_PATH              1153
@@ -546,10 +550,14 @@
 #define IDC_STATIC_TOMCAT_URL           1392
 #define IDC_DISPLAY_PREVIEW             1393
 #define IDC_EDIT_RTSPURL                1394
+#define IDC_STATIC_KAKOU_URL            1394
 #define IDC_STATIC_CHANNEL              1395
 #define IDC_STATIC_PORT                 1396
+#define IDC_STATIC_KAKOU_IP             1396
 #define IDC_STATIC_RTP                  1397
+#define IDC_STATIC_KAKOU_USER           1397
 #define IDC_STATIC_RTSP                 1398
+#define IDC_STATIC_KAKOU_PSW            1398
 #define IDC_EDIT_FIND                   1399
 #define IDC_EDIT_UPDATEURL              1400
 #define IDC_CHECK_UPDATE                1401
@@ -565,6 +573,7 @@
 #define IDC_STATIC_OTHER                1413
 #define IDC_STATIC_WIDTH                1414
 #define IDC_STATIC_AREA                 1415
+#define IDC_STATIC_KAKOU                1416
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -611,7 +620,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        427
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1416
+#define _APS_NEXT_CONTROL_VALUE         1417
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

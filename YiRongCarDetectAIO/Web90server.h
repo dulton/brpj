@@ -41,7 +41,7 @@ void CHAR2UTF8(const char *str,char *utf8,unsigned long int len);
 void UTF82CHAR(const char *utf8,char *str,unsigned long int len);
 
 bool ReadGetNodePointerByName(TiXmlElement* pRootEle,string strNodeName,TiXmlElement* &Node);
-bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string strNodeName,char *strText,unsigned long int len);
+bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string strNodeName,char *strText,unsigned long int len,bool utfflag);
 
 
 
@@ -59,9 +59,11 @@ bool CreateXmlLite_Vehicle(char *name,bool isPicUrl,struct NAME_VALUE_S mapdata[
 						   char *strText,unsigned long int len)  ;
 
 
+bool XMLgetReturnData(char *utf8xmlin,char*utf8xmlout);
 
 bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
-						char *failstr);
+						 char *sessionIdstr,
+					  char *failstr);
 
 bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 								 char *id,char *index_code,

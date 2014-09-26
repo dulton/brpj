@@ -305,19 +305,19 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	ShowWindow(SW_MAXIMIZE);   
 
 	char failstr[256];
+	char sessionIdstr[128];
+	if(1)
+	SendSoap_InitSystem("http://35.24.13.26:5300/services/ThirdBayonetService","35.24.13.26","admin","fzga12345",sessionIdstr,failstr);
 
 	if(0)
-	SendSoap_InitSystem("http://35.24.13.26:5300/services/ThirdBayonetService","35.24.13.26","admin","fzga12345",failstr);
-
-	if(1)
 	{
 		char index_code[64];
 
 		OracleIO.IVMS_ReadControlunitForSOAP(index_code);
 	SendSoap_insertCrossingInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
-							"031898cf-f39e-40b7-9ec4-b7d24129fd72",
+							sessionIdstr,
 							index_code,
-							"11114","路口 6登陆识别","101","102",
+							"11114","路口 6电动车","101","102",
 							failstr);
 	}
 
@@ -326,11 +326,11 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	unsigned char tempdata[32]="aa";
 	SendSoap_insertVehicleInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
-		"031898cf-f39e-40b7-9ec4-b7d24129fd72",
-		"11111",
-		"2014-09-02 05:06:07","22345",true,
-		"http://10.64.52.15/1.jpg",tempdata,2,
-		"http://10.64.52.15/2.jpg",tempdata,2,
+		sessionIdstr,
+		"11114",
+		"2014-09-22 15:06:07","22345",true,
+		"",tempdata,2,
+		"http://35.24.13.36:8089/picture/2014-09-22/244/2014-09-22-15-20-59 244 35.33.140.12 E0163 92 从上到下 187566 .jpg",tempdata,2,
 		failstr);
 	}
 

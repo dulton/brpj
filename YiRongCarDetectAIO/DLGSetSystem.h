@@ -96,6 +96,10 @@ public:
 	CBitmapButton m_b_dahuapath;
 	CBitmapButton m_b_yaanpath;
 	CBitmapButton m_b_tomcatdir;
+	CString m_kakou_url;
+	CString m_kakou_ip;
+	CString m_kakou_user;
+	CString m_kakou_psw;
 };
 
 //{{AFX_INSERT_LOCATION}}
