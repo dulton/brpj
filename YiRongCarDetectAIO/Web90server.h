@@ -68,6 +68,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 								 char *id,char *index_code,
 								 char *crossindex,char *crossname,char *longi, char *lati,
+								 char *crossIdstr,
 								char *failstr);
 
 bool SendSoap_insertVehicleInfo(char *wsdlUrl,

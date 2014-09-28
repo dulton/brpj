@@ -303,21 +303,28 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	//初始即最大化
 	ShowWindow(SW_MAXIMIZE);   
-
-	char failstr[256];
-	char sessionIdstr[128];
-	if(1)
-	SendSoap_InitSystem("http://35.24.13.26:5300/services/ThirdBayonetService","35.24.13.26","admin","fzga12345",sessionIdstr,failstr);
-
+/*
+	char failstr[256]="";
+	char sessionIdstr[128]="c3bf3b4f-84d5-4866-ba3e-6035ccfa9015";
 	if(0)
 	{
-		char index_code[64];
+		SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
+			DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
+			sessionIdstr,failstr);
+	}
+
+	if(1)
+	{
+		char index_code[64]="";
 
 		OracleIO.IVMS_ReadControlunitForSOAP(index_code);
-	SendSoap_insertCrossingInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
+
+	char crossIdstr[128]="";
+	SendSoap_insertCrossingInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 							sessionIdstr,
 							index_code,
 							"11114","路口 6电动车","101","102",
+							crossIdstr,
 							failstr);
 	}
 
@@ -325,7 +332,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	{
 
 	unsigned char tempdata[32]="aa";
-	SendSoap_insertVehicleInfo("http://35.24.13.26:5300/services/ThirdBayonetService",
+	SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 		sessionIdstr,
 		"11114",
 		"2014-09-22 15:06:07","22345",true,
@@ -333,7 +340,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 		"http://35.24.13.36:8089/picture/2014-09-22/244/2014-09-22-15-20-59 244 35.33.140.12 E0163 92 从上到下 187566 .jpg",tempdata,2,
 		failstr);
 	}
-
+*/
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

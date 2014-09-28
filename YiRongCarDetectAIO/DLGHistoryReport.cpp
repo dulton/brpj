@@ -30,6 +30,15 @@ CDLGHistoryReport::CDLGHistoryReport(CWnd* pParent /*=NULL*/)
 	CTime nowtime=CTime::GetTickCount();
 	m_StartMon=nowtime;
 	m_StartHour=nowtime;
+
+	CTime cstime(
+		nowtime.GetYear(),
+		nowtime.GetMonth(),
+		nowtime.GetDay(),
+		0,	0,	0);
+
+	m_StartHour=cstime;
+
 	m_EndMon=nowtime;
 	m_EndHour=nowtime;
 	

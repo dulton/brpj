@@ -266,13 +266,21 @@ void CDLGAddIVMSdevice::OnBnClickedOk()
 		sprintf(tempstr,"%s:%d:MAIN:",CamData.IndexCode,CamData.channel);
 
 		Rtspurl+=tempstr;
-
+/*
 		if(1==CamData.RTP)
 		{
 			sprintf(tempstr,"UDP&streamform=gb28181");
 		}
 		else
 			sprintf(tempstr,"TCP&streamform=gb28181");
+*/
+
+		if(1==CamData.RTP)
+		{
+			sprintf(tempstr,"UDP");
+		}
+		else
+			sprintf(tempstr,"TCP");
 
 		Rtspurl+=tempstr;
 	}	

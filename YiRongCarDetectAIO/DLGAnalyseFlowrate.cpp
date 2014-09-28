@@ -84,12 +84,12 @@ BOOL CDLGAnalyseFlowrate::OnInitDialog()
 	m_List.InitProgressColor(RGB(0,0,128),RGB(255,255,255));
 
 	m_List.InsertColumn(0,"序号",LVCFMT_LEFT,60);
-	m_List.InsertColumn(1,"摄像头名称",LVCFMT_LEFT,130);
+	m_List.InsertColumn(1,"摄像头名称",LVCFMT_LEFT,200);
 	m_List.InsertColumn(2,"摄像头IP",LVCFMT_LEFT,110);
 	m_List.InsertColumn(3,"起始时间",LVCFMT_LEFT,130);
 	m_List.InsertColumn(4,"结束时间",LVCFMT_LEFT,130);
 	m_List.InsertColumn(5,"统计数量",LVCFMT_LEFT,60);
-	m_List.InsertColumn(6,"直方图",LVCFMT_LEFT,230);
+	m_List.InsertColumn(6,"直方图",LVCFMT_LEFT,160);
 
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 

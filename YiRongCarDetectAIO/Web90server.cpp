@@ -132,8 +132,8 @@ bool ReadGetNodePointerByName(TiXmlElement* pRootEle,string strNodeName,TiXmlEle
 */
 bool ReadQueryNodeText(TiXmlElement *pRootEle,TiXmlElement* &FindNode,string strNodeName,char *strText,unsigned long int len,bool utfflag)
 {
-	ReadGetNodePointerByName(pRootEle,strNodeName,FindNode);
-	if (NULL!=FindNode)
+	bool res=ReadGetNodePointerByName(pRootEle,strNodeName,FindNode);
+	if (NULL!=FindNode && true==res)
 	{
 		const char* psz = FindNode->GetText(); 
 
@@ -500,8 +500,6 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 {
 	Service CService;
 
-	CService.InitData();
-
 	long xmlstrlen=5120;
 
 	char xmlstr[5120];
@@ -551,6 +549,8 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		return false;
 	}
 
+	CService.InitData();
+
 	int nRes = CService.PostSoap(wsdlUrl,soapactionstr,xmlstr,failstr);
 
 	if(0!=nRes)
@@ -596,7 +596,11 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 	char returnstr[XMLRW_MAX_STR]="";
 
 	if(false == XMLgetReturnData(CService.m_resp_buffer.c_str(),returnstr))
+	{
+		strcat(failstr," SendInitSystemSoap XMLgetReturnDataT出错");
+		CService.DestroyData();
 		return false;
+	}
 	// 可以清空了
 	CService.DestroyData();
 
@@ -608,8 +612,8 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 	TiXmlElement *preturnRootEle = returnDocument.RootElement();
 	if (NULL==preturnRootEle)
 	{
-		strcpy(failstr,"SendInitSystemSoap XML出错");
-		printf("SendInitSystemSoap XML出错\n");
+		strcpy(failstr,"SendInitSystemSoap XMLreturn出错");
+		printf("SendInitSystemSoap XMLreturn出错\n");
 		return false;
 	}
 
@@ -638,7 +642,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 
 	if (0!=atol(codestr))
 	{
-		sprintf(failstr,"SendInitSystemSoap XML出错 %s",messagestr);
+		sprintf(failstr,"SendInitSystemSoap XMLmessage出错 %s",messagestr);
 		return false;
 	}
 
@@ -652,11 +656,11 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 								 char *id,char *index_code,
 								 char *crossindex,char *crossname,char *longi, char *lati,
+								 char *crossIdstr,
 								char *failstr)
 {
 	Service CService;
 
-	CService.InitData();
 
 	long xmlstrlen=5120;
 
@@ -713,6 +717,7 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 		return false;
 	}
 
+	CService.InitData();
 
 	int nRes = CService.PostSoap(wsdlUrl,soapactionstr,xmlstr,failstr);
 
@@ -735,66 +740,58 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 	}
 	*/
 
-	//出来默认UTF-8了
-	char* charstr=(char *)calloc(CService.m_resp_buffer.length()*2+4,sizeof(char));
+	char returnstr[XMLRW_MAX_STR]="";
 
-	UTF82CHAR(CService.m_resp_buffer.c_str(),charstr,CService.m_resp_buffer.length()*2);
-
-	//防止报文错误 找左起第一个<符合传下去进行解析
-	const char *presp=strchr(charstr,'<');
-	if(NULL== presp)
+	if(false == XMLgetReturnData(CService.m_resp_buffer.c_str(),returnstr))
 	{
-		strcpy(failstr,"SendSoap_insertCrossingInfo XML出错 找不到<");
-		printf("SendSoap_insertCrossingInfo XML出错 找不到<\n");
-		free(charstr);
+		strcat(failstr," SendSoap_insertCrossingInfo XMLgetReturnDataT出错");
 		CService.DestroyData();
 		return false;
 	}
-#if 0	
-	char* utf8=(char *)calloc(strlen(presp)*2+4,sizeof(char));
-	
-	CHAR2UTF8(presp,utf8,strlen(presp)*2);
+	// 可以清空了
+	CService.DestroyData();
 
 	//放在栈里 内存不会泄露
-	TiXmlDocument myDocument;
-	myDocument.Parse(utf8);
+	TiXmlDocument returnDocument;
+	returnDocument.Parse(returnstr);
 
-	free(utf8);
-	free(charstr);
-
-	TiXmlElement *pRootEle = myDocument.RootElement();
-	if (NULL==pRootEle)
+	TiXmlElement *preturnRootEle = returnDocument.RootElement();
+	if (NULL==preturnRootEle)
 	{
-		strcpy(failstr,"SendPidPushSoap XML出错");
-		printf("SendPidPushSoap XML出错\n");
-		CService.DestroyData();
+		strcpy(failstr,"SendSoap_insertCrossingInfo XMLreturn出错");
+		printf("SendSoap_insertCrossingInfo XMLreturn出错\n");
 		return false;
 	}
 
-	char temp[XMLRW_MAX_STR]="";
+	char codestr[32]="";
+	char messagestr[1024]="";
 
 	TiXmlElement *pNodeRow = NULL;
 	TiXmlElement *pNodeData = NULL;
 
-	for(pNodeRow = pRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
+	for(pNodeRow = preturnRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
 	{
 		pNodeData = NULL;
-		if(ReadQueryNodeText(pNodeRow,pNodeData,"ns:return",temp,XMLRW_MAX_STR))
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"code",codestr,XMLRW_MAX_STR,true))
 		{
-			printf("ns:return=%s\n",temp);
+			printf("code=%s\n",codestr);
+		}
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"message",messagestr,XMLRW_MAX_STR,true))
+		{
+			printf("message=%s\n",messagestr);
+		}
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"crossId",crossIdstr,XMLRW_MAX_STR,true))
+		{
+			printf("crossId=%s\n",crossIdstr);
 		}
 	}
 
-	if(0!=strcmp(temp,"0000"))
+	if (0!=atol(codestr))
 	{
-		sprintf(failstr,"返回出错:%s",temp);
-		printf("%s\n",failstr);
-		CService.DestroyData();
+		sprintf(failstr,"SendSoap_insertCrossingInfo XMLmessage出错 %s",messagestr);
 		return false;
 	}
-#endif
 
-	CService.DestroyData();
 
 	return true;
 
@@ -810,8 +807,6 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 								char *failstr)
 {
 	Service CService;
-
-	CService.InitData();
 
 	long xmlstrlen=512000;
 	//这里的值特别大
@@ -928,6 +923,7 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 		return false;
 	}
 
+	CService.InitData();
 
 	int nRes = CService.PostSoap(wsdlUrl,soapactionstr,xmlstr,failstr);
 
@@ -936,7 +932,30 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 		strcat(failstr," SendSoap_insertVehicleInfo POST出错");
 		printf("SendSoap_insertVehicleInfo POST出错\n");
 		CService.DestroyData();
+		
+		if(xmlstr)
+		{
+			free(xmlstr);
+			xmlstr=NULL;
+		}
+		if(xmllitestr)
+		{
+			free(xmllitestr);
+			xmllitestr=NULL;
+		}
+
 		return false;
+	}
+	//释放
+	if(xmlstr)
+	{
+		free(xmlstr);
+		xmlstr=NULL;
+	}
+	if(xmllitestr)
+	{
+		free(xmllitestr);
+		xmllitestr=NULL;
 	}
 
 	if(WEB_KAKOU_DEBUG)
@@ -950,77 +969,55 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 	}
 	*/
 
-	//出来默认UTF-8了
-	char* charstr=(char *)calloc(CService.m_resp_buffer.length()*2+4,sizeof(char));
+	char returnstr[XMLRW_MAX_STR]="";
 
-	UTF82CHAR(CService.m_resp_buffer.c_str(),charstr,CService.m_resp_buffer.length()*2);
-
-	//防止报文错误 找左起第一个<符合传下去进行解析
-	const char *presp=strchr(charstr,'<');
-	if(NULL== presp)
-	{
-		strcpy(failstr,"SendSoap_insertVehicleInfo XML出错 找不到<");
-		printf("SendSoap_insertVehicleInfo XML出错 找不到<\n");
-		free(charstr);
+	if(false == XMLgetReturnData(CService.m_resp_buffer.c_str(),returnstr))
+		{
+		strcat(failstr," SendSoap_insertVehicleInfo XMLgetReturnDataT出错");
 		CService.DestroyData();
 		return false;
 	}
-#if 0	
-	char* utf8=(char *)calloc(strlen(presp)*2+4,sizeof(char));
-	
-	CHAR2UTF8(presp,utf8,strlen(presp)*2);
+	// 可以清空了
+	CService.DestroyData();
 
 	//放在栈里 内存不会泄露
-	TiXmlDocument myDocument;
-	myDocument.Parse(utf8);
+	TiXmlDocument returnDocument;
+	returnDocument.Parse(returnstr);
 
-	free(utf8);
-	free(charstr);
 
-	TiXmlElement *pRootEle = myDocument.RootElement();
-	if (NULL==pRootEle)
+	TiXmlElement *preturnRootEle = returnDocument.RootElement();
+	if (NULL==preturnRootEle)
 	{
-		strcpy(failstr,"SendPidPushSoap XML出错");
-		printf("SendPidPushSoap XML出错\n");
-		CService.DestroyData();
+		strcpy(failstr,"SendSoap_insertVehicleInfo XMLreturn出错");
+		printf("SendSoap_insertVehicleInfo XMLreturn出错\n");
 		return false;
 	}
 
-	char temp[XMLRW_MAX_STR]="";
+	char codestr[32]="";
+	char messagestr[1024]="";
 
 	TiXmlElement *pNodeRow = NULL;
 	TiXmlElement *pNodeData = NULL;
 
-	for(pNodeRow = pRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
+	for(pNodeRow = preturnRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
 	{
 		pNodeData = NULL;
-		if(ReadQueryNodeText(pNodeRow,pNodeData,"ns:return",temp,XMLRW_MAX_STR))
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"code",codestr,XMLRW_MAX_STR,true))
 		{
-			printf("ns:return=%s\n",temp);
+			printf("code=%s\n",codestr);
+		}
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"message",messagestr,XMLRW_MAX_STR,true))
+		{
+			printf("message=%s\n",messagestr);
 		}
 	}
 
-	if(0!=strcmp(temp,"0000"))
+	if (0!=atol(codestr))
 	{
-		sprintf(failstr,"返回出错:%s",temp);
-		printf("%s\n",failstr);
-		CService.DestroyData();
+		sprintf(failstr,"SendSoap_insertVehicleInfo XML出错 %s",messagestr);
 		return false;
 	}
-#endif
 
-	CService.DestroyData();
-
-	if(xmlstr)
-	{
-		free(xmlstr);
-		xmlstr=NULL;
-	}
-	if(xmllitestr)
-	{
-		free(xmllitestr);
-		xmllitestr=NULL;
-	}
 
 	return true;
 
