@@ -78,8 +78,8 @@ LRESULT CPlayWnd::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
-			pContainer->SetActivePage(this);
 			{
+				pContainer->SetActivePage(this);
 				DlgMain->DlgScreen.SetCurWindId(m_nWndID);
 				DlgMain->DlgNormal.UpdateNormalWnd();
 			}

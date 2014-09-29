@@ -113,6 +113,16 @@ typedef struct
 	CString Rtspurl;
 	long RTP;
 	long DecodeTag;
+	
+	TCHAR longitude[32]; //经度
+	TCHAR latitude[32];	//纬度
+
+	//卡口
+	TCHAR crossIndex[64];	//卡口编号
+	long crossID;	//卡口ID
+
+	long userID;	//USER表NID
+	long userLV;	//USER表LEVEL
 }IPLIST;
 
 
@@ -161,6 +171,7 @@ struct SET_USER_DATA_ST
 	int	detect;
 	//识别设置
 	int	detectset;
+	int level;
 };
 
 //命名太长会出错
@@ -263,7 +274,10 @@ struct CAMERA_INFO_ST
 	long STREAM_SVR_ID;
 	long DecodeTag;
 
+	TCHAR longitude[32]; //经度
+	TCHAR latitude[32];	//纬度
 };
+
 //摄像头信息
 struct CAMERA_INFO_LITE_ST
 {
@@ -346,13 +360,19 @@ public:
 	bool DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList);	//读取所有的区域
 	bool DEVICE_AddNewArea(CString AreaName);					//新增区域
 	bool DEVICE_DeleteArea(long areaID);							//删除区域
-	bool DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,	\
-		CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
+	bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,
+							 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
+							 CString longitude,CString latitude,	
+							 CString crossIndex,long crossID,
+							 long userID,long userLV);
 	bool DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList);			//读某个区域所有的摄像机信息
 	bool DEVICE_DeleteCamera(long cameraID);											//删除摄像机
 	bool DEVICE_DeleteCameraWithAreaID(long AreaID);									//删除某个区域的所有摄像机
-	bool DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,\
-		CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag);
+	bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,
+								 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
+								  CString longitude,CString latitude,
+								  CString crossIndex,long crossID,
+								 long userID,long userLV);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息

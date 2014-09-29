@@ -301,6 +301,7 @@
 #define IDC_COMBO1                      1042
 #define IDC_COMBO_RTP                   1042
 #define IDC_COMBO_ROOT                  1042
+#define IDC_COMBO_LV                    1042
 #define IDC_COMBO_STREAM                1043
 #define IDC_COMBO_UNIT                  1043
 #define IDC_BUTTON5                     1044
@@ -411,7 +412,10 @@
 #define IDC_EDIT_CAM_USER               1212
 #define IDC_EDIT_CAM_PSW                1213
 #define IDC_EDIT_CAM_CHANNEL            1214
+#define IDC_EDIT_LONGI                  1215
 #define IDC_EDIT_AREA                   1216
+#define IDC_EDIT_CAM_CHANNEL2           1216
+#define IDC_EDIT_LATI                   1216
 #define IDC_EDIT_ADDAREA                1217
 #define IDC_COMBO_CAMAREA               1218
 #define IDC_BUTTON_ADDAREA              1219
@@ -559,7 +563,9 @@
 #define IDC_STATIC_RTSP                 1398
 #define IDC_STATIC_KAKOU_PSW            1398
 #define IDC_EDIT_FIND                   1399
+#define IDC_STATIC_LONGI                1399
 #define IDC_EDIT_UPDATEURL              1400
+#define IDC_STATIC_LATI                 1400
 #define IDC_CHECK_UPDATE                1401
 #define IDC_SPLITTER                    1402
 #define IDC_PIC                         1405
@@ -613,13 +619,15 @@
 #define ID__32819                       32819
 #define ID_MENUITEM_ADDIVMSDEVICE       32820
 #define ID_Menu                         32821
+#define ID__32822                       32822
+#define ID_MENUITEM_FLUSHTREE           32823
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        427
-#define _APS_NEXT_COMMAND_VALUE         32822
+#define _APS_NEXT_RESOURCE_VALUE        428
+#define _APS_NEXT_COMMAND_VALUE         32824
 #define _APS_NEXT_CONTROL_VALUE         1417
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

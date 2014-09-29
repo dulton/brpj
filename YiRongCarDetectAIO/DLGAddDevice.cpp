@@ -19,6 +19,8 @@ static char THIS_FILE[] = __FILE__;
 CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGAddDevice::IDD, pParent)
 	, m_CamRtspurl(_T(""))
+	, m_longitude(_T(""))
+	, m_latitude(_T(""))
 {
 	//{{AFX_DATA_INIT(CDLGAddDevice)
 	m_CamIpAddr = _T("");
@@ -62,6 +64,8 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDOK, m_b_ok);
 	DDX_Control(pDX, IDCANCEL, m_b_cancel);
 	DDX_Control(pDX, IDC_BUTTON_ADDAREA, m_b_addarea);
+	DDX_Text(pDX, IDC_EDIT_LONGI, m_longitude);
+	DDX_Text(pDX, IDC_EDIT_LATI, m_latitude);
 }
 
 

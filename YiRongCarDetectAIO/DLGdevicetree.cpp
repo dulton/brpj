@@ -57,6 +57,7 @@ BEGIN_MESSAGE_MAP(CDLGdevicetree, CDialog)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_DEVICE, OnDblclkTreeDevice)
 	//}}AFX_MSG_MAP
 	ON_COMMAND(ID_MENUITEM_ADDIVMSDEVICE, &CDLGdevicetree::OnMenuitemAddivmsdevice)
+	ON_COMMAND(ID_MENUITEM_FLUSHTREE, &CDLGdevicetree::OnMenuitemFlushtree)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -216,6 +217,10 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				MessageBox("请在添加设备 中 添加区域",MESSAGEBOX_TITLE);
 				return ;
 			}
+
+		TCHAR crossIndex[64]="";	//卡口编号
+		long crossID=0;	//卡口ID
+
 			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,\
 				DlgAddDevice.m_CamName,\
 				DlgAddDevice.m_CamIpAddr,\
@@ -226,7 +231,13 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				DlgAddDevice.VenderComboCur,
 				DlgAddDevice.m_CamRtspurl,
 				DlgAddDevice.RTPComboCur,
-				DlgAddDevice.DecodeTagComboCur);
+				DlgAddDevice.DecodeTagComboCur,
+				DlgAddDevice.m_longitude,
+				DlgAddDevice.m_latitude,
+				crossIndex,
+				crossID,
+				DlgLogin.CurrentUser.nid,
+				DlgLogin.CurrentUser.level);
 		}
 		OnMenuitemUpdate();
 	}
@@ -273,6 +284,13 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].Rtspurl= CameraList[j].Rtspurl;
 			iplist[iptotal].RTP= CameraList[j].RTP;
 			iplist[iptotal].DecodeTag= CameraList[j].DecodeTag;
+			strcpy(iplist[iptotal].longitude, CameraList[j].longitude);
+			strcpy(iplist[iptotal].latitude,CameraList[j].latitude);
+
+			strcpy(iplist[iptotal].crossIndex, CameraList[j].crossIndex);
+			iplist[iptotal].crossID= CameraList[j].crossID;
+			iplist[iptotal].userID= CameraList[j].userID;
+			iplist[iptotal].userLV= CameraList[j].userLV;
 
 			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,1,1,hItem);		//添加设备节点
 			iplist[iptotal].item = childItem;
@@ -332,6 +350,8 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.m_CamRtspurl= iplist[i].Rtspurl;
 				DlgAddDevice.RTPComboCur= iplist[i].RTP;
 				DlgAddDevice.DecodeTagComboCur= iplist[i].DecodeTag;
+				DlgAddDevice.m_longitude= iplist[i].longitude;
+				DlgAddDevice.m_latitude= iplist[i].latitude;
 
 				if(DlgAddDevice.DoModal() == IDOK)
 				{
@@ -353,7 +373,13 @@ void CDLGdevicetree::OnMenuitemEdit()
 						DlgAddDevice.VenderComboCur,
 						DlgAddDevice.m_CamRtspurl,
 						DlgAddDevice.RTPComboCur,
-						DlgAddDevice.DecodeTagComboCur);
+						DlgAddDevice.DecodeTagComboCur,
+						DlgAddDevice.m_longitude,
+						DlgAddDevice.m_latitude,
+						 iplist[i].crossIndex,
+						  iplist[i].crossID,
+						  iplist[i].userID,
+						  iplist[i].userLV);
 
 					OnMenuitemUpdate();
 
@@ -496,6 +522,22 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 			}
 
 			int screenNo = DlgMain->DlgScreen.GetCurWindId();
+			if( DlgMain->DlgScreen.GetCurWindPlayState(screenNo))
+			{
+				//自动选择 未在播放的 跳转
+				for(int i=0;i<MAX_AREA;i++)
+				{
+					if(false==DlgMain->DlgScreen.GetCurWindPlayState(i))
+					{
+						screenNo=i;
+						//跳转 选择框
+						DlgMain->DlgScreen.m_screenPannel.SetActivePage(&(DlgMain->DlgScreen.m_screenPannel.m_wndVideo[i]), TRUE);
+						DlgMain->DlgScreen.SetCurWindId(i);
+						DlgMain->DlgNormal.UpdateNormalWnd();
+						break;
+					}
+				}
+			}
 
 			DlgMain->DlgScreen.StartPlay(
 				iplist[ItemCount].camID,
@@ -551,9 +593,11 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 		MessageBox("请在添加设备 中 添加区域",MESSAGEBOX_TITLE);
 		return ;
 	}
-
 	if(DlgAddIVMSDevice.DoModal() == IDOK)
 	{
+		
+		TCHAR crossIndex[64]="";	//卡口编号
+		long crossID=0;	//卡口ID
 		OracleIO.DEVICE_AddNewCamera(DlgAddDevice.AreaList[count].name,\
 			DlgAddIVMSDevice.CamData.name,  
 			DlgAddIVMSDevice.CamData.ip,  
@@ -564,7 +608,13 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 			DlgAddIVMSDevice.CamData.venderID,
 			DlgAddIVMSDevice.Rtspurl,
 			DlgAddIVMSDevice.CamData.RTP,
-			DlgAddIVMSDevice.CamData.DecodeTag);
+			DlgAddIVMSDevice.CamData.DecodeTag,
+			DlgAddIVMSDevice.CamData.longitude,
+			DlgAddIVMSDevice.CamData.latitude,
+					crossIndex,
+				crossID,
+				DlgLogin.CurrentUser.nid,
+				DlgLogin.CurrentUser.level);
 
 		OnMenuitemUpdate();
 	}
@@ -572,4 +622,10 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 	MessageBox("该版本 未接入平台",MESSAGEBOX_TITLE);
 
 #endif
+}
+
+void CDLGdevicetree::OnMenuitemFlushtree()
+{
+	// TODO: Add your command handler code here
+	OnMenuitemUpdate();
 }

@@ -69,6 +69,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnMenuitemAddivmsdevice();
+	afx_msg void OnMenuitemFlushtree();
 };
 
 //{{AFX_INSERT_LOCATION}}

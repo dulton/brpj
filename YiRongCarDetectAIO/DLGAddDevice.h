@@ -72,6 +72,8 @@ public:
 	CBitmapButton m_b_ok;
 	CBitmapButton m_b_cancel;
 	CBitmapButton m_b_addarea;
+	CString m_longitude;
+	CString m_latitude;
 };
 
 //{{AFX_INSERT_LOCATION}}

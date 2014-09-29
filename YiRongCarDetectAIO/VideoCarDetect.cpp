@@ -392,6 +392,17 @@ bool CVideoCarDetect::ErrorPlateName(char *name)
 		j==p[4] )
 		return true;
 
+	// 4个1就退出
+	j=0;
+	for(int i=0;i<5;i++)
+	{
+		if( p[i]== '1')
+			j++;
+	}
+
+	if(j>3)
+		return true;
+
 	//字母超过1个。不是电动车
 	j=0;
 	for(int i=0;i<5;i++)

@@ -405,6 +405,18 @@ bool CCarDetect::ErrorPlateName(char *name)
 		j==p[3] && 
 		j==p[4] )
 		return true;
+
+	// 4¸ö1¾ÍÍË³ö
+	j=0;
+	for(int i=0;i<5;i++)
+	{
+		if( p[i]== '1')
+			j++;
+	}
+
+	if(j>3)
+		return true;
+
 /*
 select  t.* from TB_ALARM_VEHICLE t where length(REGEXP_REPlACE(t.scarnumber,'[0-9a-z]',''))>=2
 */

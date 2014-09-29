@@ -332,7 +332,10 @@ bool IO::DEVICE_DeleteArea(long areaID)
 
 
 bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int port,int channel,
-							 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag)
+							 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
+							 CString longitude,CString latitude,	
+							 CString crossIndex,long crossID,
+							 long userID,long userLV)
 {
 	try
 	{
@@ -375,6 +378,13 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 			m_pRecordsetPtr->PutCollect("rtpmode", _variant_t((long)RTP));
 			m_pRecordsetPtr->PutCollect("decodetag", _variant_t((long)DecodeTag));
 
+			m_pRecordsetPtr->PutCollect("longitude", _variant_t(longitude));
+			m_pRecordsetPtr->PutCollect("latitude", _variant_t(latitude));
+
+			m_pRecordsetPtr->PutCollect("crossindex", _variant_t(crossIndex));
+			m_pRecordsetPtr->PutCollect("crossid", _variant_t((long)crossID));
+			m_pRecordsetPtr->PutCollect("userid", _variant_t((long)userID));
+			m_pRecordsetPtr->PutCollect("userlv", _variant_t((long)userLV));
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
@@ -433,6 +443,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			variant_t RTP = m_pRecordsetPtr->GetCollect("rtpmode");//20140718
 			variant_t decodetag = m_pRecordsetPtr->GetCollect("decodetag");//20140718
 
+
 			IPLIST CameraInfo;
 			CameraInfo.area = AreaName;
 			CameraInfo.camID = ncamera;
@@ -440,6 +451,13 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			CameraInfo.channel = channel;//20140718
 			CameraInfo.RTP = RTP;
 			CameraInfo.DecodeTag = decodetag;
+
+			VarSaveStr2(CameraInfo.longitude,m_pRecordsetPtr,"longitude");
+			VarSaveStr2(CameraInfo.latitude,m_pRecordsetPtr,"latitude");
+			VarSaveStr2(CameraInfo.crossIndex,m_pRecordsetPtr,"crossindex");
+			CameraInfo.crossID = VarSaveNumber2(m_pRecordsetPtr,"crossid");	
+			CameraInfo.userID = VarSaveNumber2(m_pRecordsetPtr,"userid");
+			CameraInfo.userLV = VarSaveNumber2(m_pRecordsetPtr,"userlv");
 
 			if(sip.vt != NULL && sip !=temp)
 			{
@@ -477,6 +495,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			}
 			else
 				CameraInfo.Rtspurl="";
+
 
 			//strcpy(CameraInfo.area, AreaName);
 			CameraList.push_back(CameraInfo);
@@ -539,7 +558,10 @@ bool IO::DEVICE_DeleteCameraWithAreaID(long AreaID)
 }
 
 bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,
-								 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag)
+								 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
+								  CString longitude,CString latitude,
+								  CString crossIndex,long crossID,
+								 long userID,long userLV)
 {
 	try
 	{
@@ -578,11 +600,31 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		filterstring(tempstr);
 		password=tempstr;
 
+		strcpy(tempstr,longitude.GetBuffer(0));
+		filterstring(tempstr);
+		longitude=tempstr;
+
+		strcpy(tempstr,latitude.GetBuffer(0));
+		filterstring(tempstr);
+		latitude=tempstr;
+
+		strcpy(tempstr,crossIndex.GetBuffer(0));
+		filterstring(tempstr);
+		crossIndex=tempstr;
+
 		long nid = a;
 		strSql.Format(_T("update tb_device set scameraname='%s',\
 						 sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
-						 nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d,decodetag=%d where ncamera=%d"), 
-						 CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,DecodeTag,CamID);
+						 nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d,decodetag=%d,\
+						 longitude='%s',latitude='%s',\
+						crossindex='%s',crossid=%d,\
+						  userID=%d,userLV=%d	\
+						 where ncamera=%d"), 
+						 CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,DecodeTag,
+						 longitude,latitude,
+						 crossIndex, crossID,
+						  userID, userLV,
+						 CamID);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -646,6 +688,7 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 			m_pRecordsetPtr->PutCollect("nlogquery", _variant_t((long)(UserInfo.historyreport)));			//系统日志查询
 			m_pRecordsetPtr->PutCollect("nmanager", _variant_t((long)(UserInfo.admin)));					//系统管理员
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));								//nid
+			m_pRecordsetPtr->PutCollect("nlevel", _variant_t(UserInfo.level));								//nid
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
@@ -693,13 +736,13 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 						 nalarm=%d,nyuntai=%d,nparam=%d,\
 						 nvideoset=%d,ncarnumber=%d,nblack=%d,\
 						 nvideoquery=%d,nalarmquery=%d,ndistinguishquery=%d,\
-						 nlogquery=%d,nmanager=%d where nid=%d"),\
+						 nlogquery=%d,nmanager=%d,nlevel=%d where nid=%d"),\
 						 UserInfo.user, UserInfo.psw, UserInfo.device,\
 						 UserInfo.capbmp, UserInfo.record, UserInfo.preview,\
 						 UserInfo.detect, UserInfo.ptz, UserInfo.systemset,\
 						 UserInfo.recordset, UserInfo.detectset, UserInfo.blackset,\
 						 UserInfo.historyvideo, UserInfo.historyalarm, UserInfo.historydetect,\
-						 UserInfo.historyreport, UserInfo.admin, UserInfo.nid);
+						 UserInfo.historyreport, UserInfo.admin,UserInfo.level, UserInfo.nid);
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
@@ -765,6 +808,7 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		UserInfo->historyreport = (int)(long)(m_pRecordsetPtr->GetCollect("nlogquery"));
 		UserInfo->admin = (int)(long)(m_pRecordsetPtr->GetCollect("nmanager"));
 		UserInfo->nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
+		UserInfo->level = VarSaveNumber2(m_pRecordsetPtr,"nlevel");
 
 		m_pRecordsetPtr->Close();
 
@@ -823,6 +867,7 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		UserInfo->historyreport = (int)(long)(m_pRecordsetPtr->GetCollect("nlogquery"));
 		UserInfo->admin = (int)(long)(m_pRecordsetPtr->GetCollect("nmanager"));
 		UserInfo->nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
+		UserInfo->level = VarSaveNumber2(m_pRecordsetPtr,"nlevel");
 
 		m_pRecordsetPtr->Close();
 
@@ -5648,6 +5693,8 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 		}
 
 		char tempstr[64];
+		double longitude;
+		double latitude;
 		if(!IVMS_pRecordsetPtr->adoEOF)
 		{
 			//填充数据
@@ -5668,7 +5715,13 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 			Caminfo->STREAM_TYPE = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_TYPE");
 			Caminfo->STREAM_SVR_ID = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_SVR_ID");	
 			VarSaveStr2(tempstr,IVMS_pRecordsetPtr,_T("DECODE_TAG"));
+				
+			longitude=VarSaveDouble2(IVMS_pRecordsetPtr,"longitude");
+			latitude=VarSaveDouble2(IVMS_pRecordsetPtr,"latitude");
 			
+			sprintf(Caminfo->longitude,"%f",longitude);
+			sprintf(Caminfo->latitude,"%f",latitude);
+
 			if(connectflag)
 			{
 				//流媒体

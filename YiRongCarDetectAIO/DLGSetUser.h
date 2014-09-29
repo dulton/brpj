@@ -138,6 +138,7 @@ public:
 	CBitmapButton m_b_add;
 	CBitmapButton m_b_edit;
 	CBitmapButton m_b_delete;
+	int m_level;
 };
 
 //{{AFX_INSERT_LOCATION}}
