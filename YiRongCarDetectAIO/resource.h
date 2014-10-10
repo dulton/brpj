@@ -304,6 +304,8 @@
 #define IDC_COMBO_LV                    1042
 #define IDC_COMBO_STREAM                1043
 #define IDC_COMBO_UNIT                  1043
+#define IDC_COMBO_LV2                   1043
+#define IDC_COMBO_LEVEL                 1043
 #define IDC_BUTTON5                     1044
 #define IDC_BUTTON_SPEED                1044
 #define IDC_COMBO_REGION                1044

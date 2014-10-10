@@ -142,6 +142,17 @@ void IO::VarSaveStr2(TCHAR *dst,_RecordsetPtr &p,TCHAR *name)
 	else
 		_tcscpy(dst,"");
 }
+//STRING
+void IO::VarSaveString2(CString &dst,_RecordsetPtr &p,TCHAR *name)
+{
+	variant_t temp; 
+	variant_t src = p->GetCollect(name);
+	if(src.vt != VT_NULL && src !=temp)
+		dst=(char*)(_bstr_t)src.bstrVal;
+	else
+		dst="";
+}
+
 
 long long IO::VarSaveNumber2(_RecordsetPtr &p,TCHAR *name)
 {
@@ -248,14 +259,9 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 			temp.ChangeType(VT_NULL);
 			struct DEVICE_AREA_ST DeviceArea = {0};
 
-			var = m_pRecordsetPtr->GetCollect("sorgname");
-			if(var.vt != NULL && var !=temp)
-			{
-				CString str = var.bstrVal;
-				strcpy(DeviceArea.name, str.GetBuffer(0));
-			}
+			VarSaveStr2(DeviceArea.name,m_pRecordsetPtr,"sorgname");
+			DeviceArea.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
-			DeviceArea.nid = (int)(long)m_pRecordsetPtr->GetCollect("nid");
 			DeviceAreaList.push_back(DeviceArea);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -284,7 +290,7 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 	{
 		CString strSql = _T("select seq_zd_org.nextval as nid from dual");			//获取机构nid
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
+		unsigned long nid = m_pRecordsetPtr->GetCollect("nid");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from t_zd_org t", \
@@ -351,11 +357,11 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 		{
 			return false;
 		}
-		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
+		unsigned long nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		strSql = _T("select seq_ncamera.nextval as ncamera from dual");	    //获取ncamera
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		long ncamera	= m_pRecordsetPtr->GetCollect("ncamera");
+		unsigned long ncamera	= VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_device", \
@@ -413,7 +419,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		{
 			return false;
 		}
-		variant_t nid = m_pRecordsetPtr->GetCollect("nid");
+		variant_t nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 		long a = nid;
 		strSql.Format("select * from tb_device where nid=%d",a);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
@@ -430,27 +436,26 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			variant_t temp; 
 			temp.ChangeType(VT_NULL);
 
-			variant_t CamName = m_pRecordsetPtr->GetCollect("scameraname");
-			variant_t sip = m_pRecordsetPtr->GetCollect("sipserver");
-			variant_t port = m_pRecordsetPtr->GetCollect("sport");
-			variant_t user = m_pRecordsetPtr->GetCollect("suser");
-			variant_t password = m_pRecordsetPtr->GetCollect("spwd");
-			variant_t ncamera = m_pRecordsetPtr->GetCollect("ncamera");
-			variant_t venderID = m_pRecordsetPtr->GetCollect("svenderid");
-			variant_t channel = m_pRecordsetPtr->GetCollect("channel");//20140718
-
-			variant_t rtspurl = m_pRecordsetPtr->GetCollect("rtspurl");//20140718
-			variant_t RTP = m_pRecordsetPtr->GetCollect("rtpmode");//20140718
-			variant_t decodetag = m_pRecordsetPtr->GetCollect("decodetag");//20140718
-
-
 			IPLIST CameraInfo;
+
+			VarSaveString2(CameraInfo.ip,m_pRecordsetPtr,_T("sipserver"));
+			VarSaveString2(	CameraInfo.name,m_pRecordsetPtr,_T("scameraname"));
+
+			CameraInfo.port =	VarSaveNumber2(m_pRecordsetPtr,"sport");
+
+			VarSaveString2(CameraInfo.user,m_pRecordsetPtr,_T("suser"));
+			VarSaveString2(	CameraInfo.psw,m_pRecordsetPtr,_T("spwd"));
+
 			CameraInfo.area = AreaName;
-			CameraInfo.camID = ncamera;
-			CameraInfo.venderID = venderID;
-			CameraInfo.channel = channel;//20140718
-			CameraInfo.RTP = RTP;
-			CameraInfo.DecodeTag = decodetag;
+
+			CameraInfo.camID = VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			CameraInfo.venderID = VarSaveNumber2(m_pRecordsetPtr,"svenderid");
+			CameraInfo.channel = VarSaveNumber2(m_pRecordsetPtr,"channel");
+
+			VarSaveString2(CameraInfo.Rtspurl,m_pRecordsetPtr,_T("rtspurl"));
+
+			CameraInfo.RTP = VarSaveNumber2(m_pRecordsetPtr,"rtpmode");
+			CameraInfo.DecodeTag = VarSaveNumber2(m_pRecordsetPtr,"decodetag");
 
 			VarSaveStr2(CameraInfo.longitude,m_pRecordsetPtr,"longitude");
 			VarSaveStr2(CameraInfo.latitude,m_pRecordsetPtr,"latitude");
@@ -458,44 +463,6 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 			CameraInfo.crossID = VarSaveNumber2(m_pRecordsetPtr,"crossid");	
 			CameraInfo.userID = VarSaveNumber2(m_pRecordsetPtr,"userid");
 			CameraInfo.userLV = VarSaveNumber2(m_pRecordsetPtr,"userlv");
-
-			if(sip.vt != NULL && sip !=temp)
-			{
-				CameraInfo.ip = sip.bstrVal;
-			}
-			else
-				CameraInfo.ip="";
-
-			if(CamName.vt != NULL && CamName !=temp)
-			{
-				CameraInfo.name = CamName.bstrVal;
-			}
-			else
-				CameraInfo.name="";
-
-			CameraInfo.port = port;
-
-			if(password.vt != NULL && password !=temp)
-			{
-				CameraInfo.psw = password.bstrVal;
-			}
-			else
-				CameraInfo.psw="";
-
-			if(user.vt != NULL && user !=temp)
-			{
-				CameraInfo.user = user.bstrVal;
-			}
-			else
-				CameraInfo.user="";
-
-			if(rtspurl.vt != NULL && rtspurl !=temp)
-			{
-				CameraInfo.Rtspurl = rtspurl.bstrVal;
-			}
-			else
-				CameraInfo.Rtspurl="";
-
 
 			//strcpy(CameraInfo.area, AreaName);
 			CameraList.push_back(CameraInfo);
@@ -780,34 +747,27 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		CString str;
 		temp.ChangeType(VT_NULL);
 
-		var = m_pRecordsetPtr->GetCollect("suser");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(UserInfo->user, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("spwd");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(UserInfo->psw, str.GetBuffer(0));
-		}
-		UserInfo->device = (int)(long)(m_pRecordsetPtr->GetCollect("ndeviceallot"));
-		UserInfo->capbmp = (int)(long)(m_pRecordsetPtr->GetCollect("nphoto"));
-		UserInfo->record = (int)(long)(m_pRecordsetPtr->GetCollect("nvideo"));
-		UserInfo->preview = (int)(long)(m_pRecordsetPtr->GetCollect("nview"));
-		UserInfo->detect = (int)(long)(m_pRecordsetPtr->GetCollect("nalarm"));
-		UserInfo->ptz = (int)(long)(m_pRecordsetPtr->GetCollect("nyuntai"));
-		UserInfo->systemset = (int)(long)(m_pRecordsetPtr->GetCollect("nparam"));
-		UserInfo->recordset = (int)(long)(m_pRecordsetPtr->GetCollect("nvideoset"));
-		UserInfo->detectset = (int)(long)(m_pRecordsetPtr->GetCollect("ncarnumber"));
-		UserInfo->blackset = (int)(long)(m_pRecordsetPtr->GetCollect("nblack"));
-		UserInfo->historyvideo = (int)(long)(m_pRecordsetPtr->GetCollect("nvideoquery"));
-		UserInfo->historyalarm = (int)(long)(m_pRecordsetPtr->GetCollect("nalarmquery"));
-		UserInfo->historydetect = (int)(long)(m_pRecordsetPtr->GetCollect("ndistinguishquery"));
-		UserInfo->historyreport = (int)(long)(m_pRecordsetPtr->GetCollect("nlogquery"));
-		UserInfo->admin = (int)(long)(m_pRecordsetPtr->GetCollect("nmanager"));
-		UserInfo->nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
+	
+		VarSaveStr2(UserInfo->user,m_pRecordsetPtr,_T("suser"));
+		VarSaveStr2(UserInfo->psw,m_pRecordsetPtr,_T("spwd"));
+
+		UserInfo->device =  VarSaveNumber2(m_pRecordsetPtr,"ndeviceallot");
+		UserInfo->capbmp =  VarSaveNumber2(m_pRecordsetPtr,"nphoto");
+		UserInfo->record =  VarSaveNumber2(m_pRecordsetPtr,"nvideo");
+		UserInfo->preview =  VarSaveNumber2(m_pRecordsetPtr,"nview");
+		UserInfo->detect =  VarSaveNumber2(m_pRecordsetPtr,"nalarm");
+		UserInfo->ptz =  VarSaveNumber2(m_pRecordsetPtr,"nyuntai");
+		UserInfo->systemset =  VarSaveNumber2(m_pRecordsetPtr,"nparam");
+		UserInfo->recordset =  VarSaveNumber2(m_pRecordsetPtr,"nvideoset");
+		UserInfo->detectset =  VarSaveNumber2(m_pRecordsetPtr,"ncarnumber");
+		UserInfo->blackset =  VarSaveNumber2(m_pRecordsetPtr,"nblack");
+		UserInfo->historyvideo =  VarSaveNumber2(m_pRecordsetPtr,"nvideoquery");
+		UserInfo->historyalarm =  VarSaveNumber2(m_pRecordsetPtr,"nalarmquery");
+		UserInfo->historydetect =  VarSaveNumber2(m_pRecordsetPtr,"ndistinguishquery");
+		UserInfo->historyreport =  VarSaveNumber2(m_pRecordsetPtr,"nlogquery");
+		UserInfo->admin =  VarSaveNumber2(m_pRecordsetPtr,"nmanager");
+		UserInfo->nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
 		UserInfo->level = VarSaveNumber2(m_pRecordsetPtr,"nlevel");
 
 		m_pRecordsetPtr->Close();
@@ -839,34 +799,25 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		CString str;
 		temp.ChangeType(VT_NULL);
 
-		var = m_pRecordsetPtr->GetCollect("suser");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(UserInfo->user, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("spwd");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(UserInfo->psw, str.GetBuffer(0));
-		}
-		UserInfo->device = (int)(long)(m_pRecordsetPtr->GetCollect("ndeviceallot"));
-		UserInfo->capbmp = (int)(long)(m_pRecordsetPtr->GetCollect("nphoto"));
-		UserInfo->record = (int)(long)(m_pRecordsetPtr->GetCollect("nvideo"));
-		UserInfo->preview = (int)(long)(m_pRecordsetPtr->GetCollect("nview"));
-		UserInfo->detect = (int)(long)(m_pRecordsetPtr->GetCollect("nalarm"));
-		UserInfo->ptz = (int)(long)(m_pRecordsetPtr->GetCollect("nyuntai"));
-		UserInfo->systemset = (int)(long)(m_pRecordsetPtr->GetCollect("nparam"));
-		UserInfo->recordset = (int)(long)(m_pRecordsetPtr->GetCollect("nvideoset"));
-		UserInfo->detectset = (int)(long)(m_pRecordsetPtr->GetCollect("ncarnumber"));
-		UserInfo->blackset = (int)(long)(m_pRecordsetPtr->GetCollect("nblack"));
-		UserInfo->historyvideo = (int)(long)(m_pRecordsetPtr->GetCollect("nvideoquery"));
-		UserInfo->historyalarm = (int)(long)(m_pRecordsetPtr->GetCollect("nalarmquery"));
-		UserInfo->historydetect = (int)(long)(m_pRecordsetPtr->GetCollect("ndistinguishquery"));
-		UserInfo->historyreport = (int)(long)(m_pRecordsetPtr->GetCollect("nlogquery"));
-		UserInfo->admin = (int)(long)(m_pRecordsetPtr->GetCollect("nmanager"));
-		UserInfo->nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
+		VarSaveStr2(UserInfo->user,m_pRecordsetPtr,_T("suser"));
+		VarSaveStr2(UserInfo->psw,m_pRecordsetPtr,_T("spwd"));
+
+		UserInfo->device =  VarSaveNumber2(m_pRecordsetPtr,"ndeviceallot");
+		UserInfo->capbmp =  VarSaveNumber2(m_pRecordsetPtr,"nphoto");
+		UserInfo->record =  VarSaveNumber2(m_pRecordsetPtr,"nvideo");
+		UserInfo->preview =  VarSaveNumber2(m_pRecordsetPtr,"nview");
+		UserInfo->detect =  VarSaveNumber2(m_pRecordsetPtr,"nalarm");
+		UserInfo->ptz =  VarSaveNumber2(m_pRecordsetPtr,"nyuntai");
+		UserInfo->systemset =  VarSaveNumber2(m_pRecordsetPtr,"nparam");
+		UserInfo->recordset =  VarSaveNumber2(m_pRecordsetPtr,"nvideoset");
+		UserInfo->detectset =  VarSaveNumber2(m_pRecordsetPtr,"ncarnumber");
+		UserInfo->blackset =  VarSaveNumber2(m_pRecordsetPtr,"nblack");
+		UserInfo->historyvideo =  VarSaveNumber2(m_pRecordsetPtr,"nvideoquery");
+		UserInfo->historyalarm =  VarSaveNumber2(m_pRecordsetPtr,"nalarmquery");
+		UserInfo->historydetect =  VarSaveNumber2(m_pRecordsetPtr,"ndistinguishquery");
+		UserInfo->historyreport =  VarSaveNumber2(m_pRecordsetPtr,"nlogquery");
+		UserInfo->admin =  VarSaveNumber2(m_pRecordsetPtr,"nmanager");
+		UserInfo->nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 		UserInfo->level = VarSaveNumber2(m_pRecordsetPtr,"nlevel");
 
 		m_pRecordsetPtr->Close();
@@ -902,14 +853,10 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 			variant_t var;
 			variant_t temp; 
 			temp.ChangeType(VT_NULL);
+		
+			VarSaveStr2(UserInfo.user,m_pRecordsetPtr,_T("suser"));
 
-			var = m_pRecordsetPtr->GetCollect("suser");
-			if(var.vt != NULL && var !=temp)
-			{
-				CString str = var.bstrVal;
-				strcpy(UserInfo.user, str.GetBuffer(0));
-			}
-			UserInfo.nid = (int)(long)(m_pRecordsetPtr->GetCollect("nid"));
+			UserInfo.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 			UserInfoList.push_back(UserInfo);
 			m_pRecordsetPtr->MoveNext();
@@ -1022,7 +969,7 @@ unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTi
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 		IOwriteLock=false;
 		return num;
 	}
@@ -1084,22 +1031,14 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<
 			CString str;
 			struct HISTORY_REPORT_ST report = {0};
 
-			var = m_pRecordsetPtr->GetCollect("smark");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(report.str, str.GetBuffer(0));
-			}
+			VarSaveStr2(report.str,m_pRecordsetPtr,_T("smark"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dcreatetime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&report.year,&report.mon,&report.day,
 				&report.hour,&report.min,&report.sec);
-			var = m_pRecordsetPtr->GetCollect("susername");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(report.user, str.GetBuffer(0));
-			}
+
+			VarSaveStr2(report.user,m_pRecordsetPtr,_T("susername"));
 
 			HistoryList.push_back(report);
 			m_pRecordsetPtr->MoveNext();
@@ -1143,7 +1082,7 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
 
@@ -1539,7 +1478,7 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =  VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		IOwriteLock=false;
 
@@ -1696,7 +1635,7 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num = VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		IOwriteLock=false;
 
@@ -1765,62 +1704,29 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("stype");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platetype, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolor");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.carcolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+
+			VarSaveStr2(result.platetype,m_pRecordsetPtr,_T("stype"));
+
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+			VarSaveStr2(result.carcolor,m_pRecordsetPtr,_T("scolor"));
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -1828,7 +1734,6 @@ bool IO::CAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 		if(HistoryList.size() > 0)
 		{
 			IOwriteLock=false;
-
 			return true;
 		}
 		IOwriteLock=false;
@@ -1894,63 +1799,33 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+	
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("stype");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platetype, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolor");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.carcolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
-			result.blackid = (long)m_pRecordsetPtr->GetCollect("blackid");
+	
+			VarSaveStr2(result.platetype,m_pRecordsetPtr,_T("stype"));
+
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.carcolor,m_pRecordsetPtr,_T("scolor"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			result.blackid =  VarSaveNumber2(m_pRecordsetPtr,"blackid");
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
 		}
@@ -1999,65 +1874,34 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("stype");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platetype, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolor");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.carcolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
 
-			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+			VarSaveStr2(result.platetype,m_pRecordsetPtr,_T("stype"));
 
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.carcolor,m_pRecordsetPtr,_T("scolor"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+		
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+
+			result.nflag =  VarSaveNumber2(m_pRecordsetPtr,"nflag");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
 
@@ -2118,64 +1962,34 @@ int IO::CAR_MatchResult_ReadforListOne(long int camid,struct HISTORY_DETECT_ST *
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("stype");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platetype, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolor");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.carcolor, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
 
-			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+			VarSaveStr2(result.platetype,m_pRecordsetPtr,_T("stype"));
+
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.carcolor,m_pRecordsetPtr,_T("scolor"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+
+			result.nflag =  VarSaveNumber2(m_pRecordsetPtr,"nflag");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
@@ -2258,7 +2072,7 @@ unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startT
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long int num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long int num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;
 	}
@@ -2288,7 +2102,7 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *plate
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
 
@@ -2379,7 +2193,7 @@ bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,ch
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		strSql.Format(_T("select sipserver,scameraname from tb_device where ncamera=%d"),CAMID);
 
@@ -2601,7 +2415,7 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;
 	}
@@ -2697,7 +2511,7 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;
 	}
@@ -2750,50 +2564,28 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+		
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -2858,51 +2650,29 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
-			result.blackid = (long)m_pRecordsetPtr->GetCollect("blackid");
+
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			result.blackid =  VarSaveNumber2(m_pRecordsetPtr,"blackid");
 
 			HistoryList.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -2952,51 +2722,29 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+			result.nflag =  VarSaveNumber2(m_pRecordsetPtr,"nflag");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
 
@@ -3058,51 +2806,29 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 			CString str;
 			struct HISTORY_DETECT_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
+
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(a.dcreate)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-			var = m_pRecordsetPtr->GetCollect("sdirection");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.direction, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.plate, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scolour");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.platecolor, str.GetBuffer(0));
-			}
-			result.reliability = (long)m_pRecordsetPtr->GetCollect("ndegree");
-			var = m_pRecordsetPtr->GetCollect("sfile");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
-			result.picsize = (long)m_pRecordsetPtr->GetCollect("nsize");
-			result.nflag = (long)m_pRecordsetPtr->GetCollect("nflag");
-			result.ncamid = (long)m_pRecordsetPtr->GetCollect("ncamera");
+
+			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
+
+			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
+
+			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
+			
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
+
+			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
+			result.nflag =  VarSaveNumber2(m_pRecordsetPtr,"nflag");
+			result.ncamid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 			memcpy(HistoryList,&result,sizeof(struct HISTORY_DETECT_ST));
 
@@ -3183,7 +2909,7 @@ unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *sta
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long int num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long int num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;
 	}
@@ -3213,7 +2939,7 @@ bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 		if(SUCCEEDED(hr))
 		{
 			m_pRecordsetPtr->AddNew();
-			m_pRecordsetPtr->PutCollect("nid", _variant_t(id));
+			m_pRecordsetPtr->PutCollect("nid", _variant_t((long)id));
 			m_pRecordsetPtr->PutCollect("scarnumber", _variant_t(BlackInfo.plate));
 			m_pRecordsetPtr->PutCollect("sbrand", _variant_t(BlackInfo.brand));
 			m_pRecordsetPtr->PutCollect("slostname", _variant_t(BlackInfo.name));
@@ -3312,7 +3038,7 @@ unsigned long IO::CAR_BlackTable_GetNum(void)
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;	
 	}
@@ -3349,37 +3075,17 @@ bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST
 			CString str;
 			struct BLACK_DATA_ST black = {0};
 
-			black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.plate, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sbrand");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.brand, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("slostname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sphone");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.Phone, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("smark");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.other, str.GetBuffer(0));
-			}
+			black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		
+			VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
+	
+				VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
+
+				VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+
+				VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+				VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 			BlackList.push_back(black);
 			m_pRecordsetPtr->MoveNext();
@@ -3424,37 +3130,16 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 	
 		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
-		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-		var = m_pRecordsetPtr->GetCollect("scarnumber");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.plate, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sbrand");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.brand, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("slostname");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.name, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sphone");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.Phone, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("smark");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.other, str.GetBuffer(0));
-		}
+		black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+		VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
+
+		VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+
+		VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 		m_pRecordsetPtr->Close();
 
@@ -3489,37 +3174,16 @@ bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 	
 		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
-		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-		var = m_pRecordsetPtr->GetCollect("scarnumber");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.plate, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sbrand");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.brand, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("slostname");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.name, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sphone");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.Phone, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("smark");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.other, str.GetBuffer(0));
-		}
+		black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+		VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
+
+		VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+
+		VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 		m_pRecordsetPtr->Close();
 
@@ -3683,7 +3347,7 @@ unsigned long IO::ELECAR_BlackTable_GetNum(void)
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;	
 	}
@@ -3720,37 +3384,16 @@ bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA
 			CString str;
 			struct BLACK_DATA_ST black = {0};
 
-			black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			var = m_pRecordsetPtr->GetCollect("scarnumber");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.plate, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sbrand");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.brand, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("slostname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sphone");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.Phone, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("smark");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(black.other, str.GetBuffer(0));
-			}
+			black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+			VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+			VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
+
+			VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+
+			VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+			VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 			BlackList.push_back(black);
 			m_pRecordsetPtr->MoveNext();
@@ -3794,37 +3437,16 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		CString str;
 		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
-		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-		var = m_pRecordsetPtr->GetCollect("scarnumber");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.plate, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sbrand");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.brand, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("slostname");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.name, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sphone");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.Phone, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("smark");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.other, str.GetBuffer(0));
-		}
+		black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
+
+		VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
+
+		VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+
+		VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 		m_pRecordsetPtr->Close();
 
@@ -3857,38 +3479,16 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 		CString str;
 		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
-		black.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-		var = m_pRecordsetPtr->GetCollect("scarnumber");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.plate, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sbrand");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.brand, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("slostname");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.name, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sphone");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.Phone, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("smark");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(black.other, str.GetBuffer(0));
-		}
+		black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
 
+		VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
+
+		VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+
+		VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 		m_pRecordsetPtr->Close();
 
 		return true;
@@ -3953,7 +3553,7 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 		filterstring(camName);
 		filterstring(camIp);
 		filterstring(path);
@@ -3990,7 +3590,7 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 
 	m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-	long id = (long)m_pRecordsetPtr->GetCollect("nid");
+	long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 	m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
@@ -4088,7 +3688,7 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		unsigned long num = (unsigned long)(long)m_pRecordsetPtr->GetCollect("count(1)");
+		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
 		return num;
 	}
@@ -4140,32 +3740,16 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 			CString str;
 			struct HISTORY_VIDEO_ST result = {0};
 
-			result.nid = (long)m_pRecordsetPtr->GetCollect("nid");
+			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.name, str.GetBuffer(0));
-			}
+			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
+			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
 
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.ip, str.GetBuffer(0));
-			}
+			result.venderID =  VarSaveNumber2(m_pRecordsetPtr,"svenderid");
 
-			result.venderID = (long)m_pRecordsetPtr->GetCollect("svenderid");
+			VarSaveStr2(result.format,m_pRecordsetPtr,_T("sformat"));
 
-			var = m_pRecordsetPtr->GetCollect("sformat");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.format, str.GetBuffer(0));
-			}
-
-			result.size = (long)m_pRecordsetPtr->GetCollect("sfilesize");
+			result.size =  VarSaveNumber2(m_pRecordsetPtr,"sfilesize");
 
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(dstarttime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
@@ -4177,12 +3761,7 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 				&result.EndYear,&result.EndMon,&result.EndDay,
 				&result.EndHour,&result.EndMin,&result.EndSec);
 
-			var = m_pRecordsetPtr->GetCollect("spath");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(result.path, str.GetBuffer(0));
-			}
+			VarSaveStr2(result.path,m_pRecordsetPtr,_T("spath"));
 
 			Videolist.push_back(result);
 			m_pRecordsetPtr->MoveNext();
@@ -4233,7 +3812,7 @@ bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		filterstring(rPlan.area);
 		filterstring(rPlan.name);
@@ -4367,32 +3946,19 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 		CString str;
 
 		rPlan->nid = nid;
-		rPlan->camid = (long)m_pRecordsetPtr->GetCollect("ncamera");
-		rPlan->everyday = (long)m_pRecordsetPtr->GetCollect("dailyflag");
-		rPlan->usedate = (long)m_pRecordsetPtr->GetCollect("dateflag");
-		rPlan->useweek = (long)m_pRecordsetPtr->GetCollect("weekflag");
-		rPlan->enable = (long)m_pRecordsetPtr->GetCollect("enableflag");
-		rPlan->StartWeek = (long)m_pRecordsetPtr->GetCollect("startweek");
-		rPlan->EndWeek = (long)m_pRecordsetPtr->GetCollect("endweek");
+		rPlan->camid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+		rPlan->everyday =  VarSaveNumber2(m_pRecordsetPtr,"dailyflag");
+		rPlan->usedate =  VarSaveNumber2(m_pRecordsetPtr,"dateflag");
+		rPlan->useweek =  VarSaveNumber2(m_pRecordsetPtr,"weekflag");
+		rPlan->enable =  VarSaveNumber2(m_pRecordsetPtr,"enableflag");
+		rPlan->StartWeek =  VarSaveNumber2(m_pRecordsetPtr,"startweek");
+		rPlan->EndWeek =  VarSaveNumber2(m_pRecordsetPtr,"endweek");
 
-		var = m_pRecordsetPtr->GetCollect("scameraarea");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(rPlan->area, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("scameraname");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(rPlan->name, str.GetBuffer(0));
-		}
-		var = m_pRecordsetPtr->GetCollect("sip");
-		if(var.vt != NULL && var !=temp)
-		{
-			str = var.bstrVal;
-			strcpy(rPlan->ip, str.GetBuffer(0));
-		}
+		VarSaveStr2(rPlan->area,m_pRecordsetPtr,_T("scameraarea"));
+
+		VarSaveStr2(rPlan->name,m_pRecordsetPtr,_T("scameraname"));
+
+		VarSaveStr2(rPlan->ip,m_pRecordsetPtr,_T("sip"));
 
 		variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(starttime)");
 		sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
@@ -4441,33 +4007,21 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 			CString str;
 			struct SET_RECORD_DATA_ST rPlan = {0};
 
-			rPlan.nid = (long)m_pRecordsetPtr->GetCollect("nid");
-			rPlan.camid = (long)m_pRecordsetPtr->GetCollect("ncamera");
-			rPlan.everyday = (long)m_pRecordsetPtr->GetCollect("dailyflag");
-			rPlan.usedate = (long)m_pRecordsetPtr->GetCollect("dateflag");
-			rPlan.useweek = (long)m_pRecordsetPtr->GetCollect("weekflag");
-			rPlan.enable = (long)m_pRecordsetPtr->GetCollect("enableflag");
-			rPlan.StartWeek = (long)m_pRecordsetPtr->GetCollect("startweek");
-			rPlan.EndWeek = (long)m_pRecordsetPtr->GetCollect("endweek");
+			rPlan.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+			rPlan.camid =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			rPlan.everyday =  VarSaveNumber2(m_pRecordsetPtr,"dailyflag");
+			rPlan.usedate =  VarSaveNumber2(m_pRecordsetPtr,"dateflag");
+			rPlan.useweek =  VarSaveNumber2(m_pRecordsetPtr,"weekflag");
+			rPlan.enable =  VarSaveNumber2(m_pRecordsetPtr,"enableflag");
+			rPlan.StartWeek =  VarSaveNumber2(m_pRecordsetPtr,"startweek");
+			rPlan.EndWeek =  VarSaveNumber2(m_pRecordsetPtr,"endweek");
 
-			var = m_pRecordsetPtr->GetCollect("scameraarea");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(rPlan.area, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("scameraname");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(rPlan.name, str.GetBuffer(0));
-			}
-			var = m_pRecordsetPtr->GetCollect("sip");
-			if(var.vt != NULL && var !=temp)
-			{
-				str = var.bstrVal;
-				strcpy(rPlan.ip, str.GetBuffer(0));
-			}
+
+			VarSaveStr2(rPlan.area,m_pRecordsetPtr,_T("scameraarea"));
+
+			VarSaveStr2(rPlan.name,m_pRecordsetPtr,_T("scameraname"));
+
+			VarSaveStr2(rPlan.ip,m_pRecordsetPtr,_T("sip"));
 
 			variant_t vargetTime = m_pRecordsetPtr->GetCollect("to_char(starttime)");
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
@@ -4578,7 +4132,7 @@ bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned l
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id = (long)m_pRecordsetPtr->GetCollect("nid");
+		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
@@ -4640,10 +4194,10 @@ bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isp
 
 		if(!m_pRecordsetPtr->adoEOF)
 		{
-			long long nid = m_pRecordsetPtr->GetCollect("nid");
+			long long nid =VarSaveNumber2(m_pRecordsetPtr,"nid");
 
-			(*isplay) = (long)m_pRecordsetPtr->GetCollect("isplay");
-			(*camid) = (long)m_pRecordsetPtr->GetCollect("ncamera");
+			(*isplay) =  VarSaveNumber2(m_pRecordsetPtr,"isplay");
+			(*camid) =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
 			strSql.Format(_T("update tb_mission set flag=2 where nid=%I64u"),nid );
 
@@ -4794,7 +4348,7 @@ unsigned long int IO::YRVM_getElectricCarOracleTempNid(void)
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
 
-		id = (long)m_pRecordsetPtr->GetCollect("nid");
+		id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		IOwriteLock=false;
 		return id;
@@ -4920,7 +4474,7 @@ bool IO::YRVM_writeElectricCarTempInfoToOracleDB(char *CarStr,char* Color,int Di
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
 
-		unsigned long int nvehicleid	= (long)m_pRecordsetPtr->GetCollect("nid");
+		unsigned long int nvehicleid	=  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
@@ -5231,14 +4785,14 @@ bool IO::YRVM_writeTempFaceDataToOracleDB(unsigned char *Image,long int ImageSiz
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 
-		unsigned long int id	= (long)m_pRecordsetPtr->GetCollect("nid");
+		unsigned long int id	=  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		filterstring(sip);
 		strSql.Format(_T("select objectid as ncameraid from tb_camera_info where sip = '%s'"), sip);	    //获取当前连接监控摄像头IP所对应的摄像头编号
 
 		m_pRecordsetPtr = YRVM_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);		 
 
-		unsigned long int cameraid = (long)m_pRecordsetPtr->GetCollect("ncameraid"); 
+		unsigned long int cameraid =  VarSaveNumber2(m_pRecordsetPtr,"ncameraid"); 
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 

@@ -350,6 +350,7 @@ public:
 	bool ReadFile(char* FileName);					//读数据库配置文件
 	void VarSaveStr(TCHAR *dst,variant_t src);		//保存成字符串
 	void VarSaveStr2(TCHAR *dst,_RecordsetPtr &p,TCHAR *name);	//保存成字符串
+	void IO::VarSaveString2(CString &dst,_RecordsetPtr &p,TCHAR *name);
 	long long VarSaveNumber2(_RecordsetPtr &p,TCHAR *name);
 	double VarSaveDouble2(_RecordsetPtr &p,TCHAR *name);
 	void filterstring(char *str);

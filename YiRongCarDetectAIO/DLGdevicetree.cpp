@@ -237,7 +237,7 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				crossIndex,
 				crossID,
 				DlgLogin.CurrentUser.nid,
-				DlgLogin.CurrentUser.level);
+				DlgAddDevice.m_level);
 		}
 		OnMenuitemUpdate();
 	}
@@ -271,6 +271,10 @@ void CDLGdevicetree::OnMenuitemUpdate()
 		OracleIO.DEVICE_ReadCameraInfo(OrgName[i].name,CameraList);
 		for(int j=0;j<CameraList.size();j++)
 		{
+			//等级查看
+			if( CameraList[j].userLV < 	DlgLogin.CurrentUser.level)
+				continue;
+
 			iplist[iptotal].area = CameraList[j].area;
 			iplist[iptotal].camID = CameraList[j].camID;
 			iplist[iptotal].ip = CameraList[j].ip;
@@ -352,6 +356,13 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.DecodeTagComboCur= iplist[i].DecodeTag;
 				DlgAddDevice.m_longitude= iplist[i].longitude;
 				DlgAddDevice.m_latitude= iplist[i].latitude;
+				DlgAddDevice.m_level= iplist[i].userLV;
+
+				if(DlgAddDevice.m_level<DlgLogin.CurrentUser.level)
+				{
+					MessageBox("不能修改高级别的设备",MESSAGEBOX_TITLE);
+					return;
+				}
 
 				if(DlgAddDevice.DoModal() == IDOK)
 				{
@@ -379,7 +390,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 						 iplist[i].crossIndex,
 						  iplist[i].crossID,
 						  iplist[i].userID,
-						  iplist[i].userLV);
+						  DlgAddDevice.m_level);
 
 					OnMenuitemUpdate();
 

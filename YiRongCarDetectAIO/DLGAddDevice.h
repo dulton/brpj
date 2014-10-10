@@ -74,6 +74,7 @@ public:
 	CBitmapButton m_b_addarea;
 	CString m_longitude;
 	CString m_latitude;
+	int m_level;
 };
 
 //{{AFX_INSERT_LOCATION}}

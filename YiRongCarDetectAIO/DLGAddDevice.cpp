@@ -6,6 +6,9 @@
 #include "DLGAddDevice.h"
 #include "YiRongCarDetectAIODlg.h"
 
+#include "DLGLogin.h"
+extern CDLGLogin DlgLogin;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -21,6 +24,7 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 	, m_CamRtspurl(_T(""))
 	, m_longitude(_T(""))
 	, m_latitude(_T(""))
+	, m_level(0)
 {
 	//{{AFX_DATA_INIT(CDLGAddDevice)
 	m_CamIpAddr = _T("");
@@ -66,6 +70,7 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ADDAREA, m_b_addarea);
 	DDX_Text(pDX, IDC_EDIT_LONGI, m_longitude);
 	DDX_Text(pDX, IDC_EDIT_LATI, m_latitude);
+	DDX_CBIndex(pDX, IDC_COMBO_LEVEL, m_level);
 }
 
 
@@ -83,6 +88,7 @@ END_MESSAGE_MAP()
 
 BOOL CDLGAddDevice::OnInitDialog() 
 {
+
 	CDialog::OnInitDialog();
 	
 	// TODO: Add extra initialization here
@@ -196,7 +202,11 @@ void CDLGAddDevice::OnOK()
 		}
 #endif
 
-
+		if(m_level<DlgLogin.CurrentUser.level)
+		{
+			MessageBox("只能往同级别或者低级别的单位调整",MESSAGEBOX_TITLE);
+			return;
+		}
 
 	}
 	CDialog::OnOK();
