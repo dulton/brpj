@@ -487,6 +487,57 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		return false;
 	}  
 }
+bool IO::DEVICE_JudgeCamera(long ncameraid)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	 int tempcount=0;
+	try
+	{
+		CString strSql;
+		
+		strSql.Format("select count(1) from tb_device where ncamera=%d",ncameraid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			tempcount = VarSaveNumber2(m_pRecordsetPtr,"count(1)");	
+
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+		
+		IOwriteLock=false;
+
+		if(tempcount >0)
+			return true;
+		else
+			return false;
+
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_JudgeCamera error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
+
 
 bool IO::DEVICE_DeleteCamera(long cameraID)
 {
@@ -656,6 +707,8 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 			m_pRecordsetPtr->PutCollect("nmanager", _variant_t((long)(UserInfo.admin)));					//系统管理员
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));								//nid
 			m_pRecordsetPtr->PutCollect("nlevel", _variant_t(UserInfo.level));								//nid
+			m_pRecordsetPtr->PutCollect("NDETECTLIMIT", _variant_t(UserInfo.detect_limit));								//nid
+			m_pRecordsetPtr->PutCollect("NCURRENTDETECT", _variant_t(0));		
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
@@ -703,13 +756,13 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 						 nalarm=%d,nyuntai=%d,nparam=%d,\
 						 nvideoset=%d,ncarnumber=%d,nblack=%d,\
 						 nvideoquery=%d,nalarmquery=%d,ndistinguishquery=%d,\
-						 nlogquery=%d,nmanager=%d,nlevel=%d where nid=%d"),\
+						 nlogquery=%d,nmanager=%d,nlevel=%d,NDETECTLIMIT=%d where nid=%d"),\
 						 UserInfo.user, UserInfo.psw, UserInfo.device,\
 						 UserInfo.capbmp, UserInfo.record, UserInfo.preview,\
 						 UserInfo.detect, UserInfo.ptz, UserInfo.systemset,\
 						 UserInfo.recordset, UserInfo.detectset, UserInfo.blackset,\
 						 UserInfo.historyvideo, UserInfo.historyalarm, UserInfo.historydetect,\
-						 UserInfo.historyreport, UserInfo.admin,UserInfo.level, UserInfo.nid);
+						 UserInfo.historyreport, UserInfo.admin,UserInfo.level,UserInfo.detect_limit, UserInfo.nid);
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
@@ -769,6 +822,8 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		UserInfo->nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		UserInfo->level = VarSaveNumber2(m_pRecordsetPtr,"nlevel");
+		UserInfo->detect_limit = VarSaveNumber2(m_pRecordsetPtr,"NDETECTLIMIT");
+
 
 		m_pRecordsetPtr->Close();
 
@@ -819,6 +874,7 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		UserInfo->admin =  VarSaveNumber2(m_pRecordsetPtr,"nmanager");
 		UserInfo->nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 		UserInfo->level = VarSaveNumber2(m_pRecordsetPtr,"nlevel");
+		UserInfo->detect_limit = VarSaveNumber2(m_pRecordsetPtr,"NDETECTLIMIT");
 
 		m_pRecordsetPtr->Close();
 
@@ -878,6 +934,87 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 		AfxMessageBox(in_errormessage);
 		return false;
 	}  
+}
+
+
+bool IO::USER_GetDetectLimit(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo)
+{	
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+	try
+	{
+		CString	strsql;
+		strsql.Format(_T("select ndetectlimit, ncurrentdetect from tb_user where nid=%d"),nid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		UserInfo->detect_limit = VarSaveNumber2(m_pRecordsetPtr,"ndetectlimit");
+		UserInfo->cur_detect_number = VarSaveNumber2(m_pRecordsetPtr,"ncurrentdetect");
+
+		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_GetDetectLimit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+	IOwriteLock=false;
+}
+
+bool IO::USER_SaveCurrentDetect(unsigned long int nid,long cur_detect_number)
+{	
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+	try
+	{
+		CString strSql;
+
+		strSql.Format(_T("update tb_user set ncurrentdetect=%d where nid=%d"),\
+					cur_detect_number,nid);
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+		{
+			IOwriteLock=true;
+			return	true;
+		}
+		else
+		{
+			IOwriteLock=true;
+			return false;
+		}
+		
+		IOwriteLock=true;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::USER_SaveCurrentDetect error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+	IOwriteLock=false;
 }
 
 

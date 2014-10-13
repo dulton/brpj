@@ -123,6 +123,7 @@ typedef struct
 
 	long userID;	//USER表NID
 	long userLV;	//USER表LEVEL
+
 }IPLIST;
 
 
@@ -172,6 +173,8 @@ struct SET_USER_DATA_ST
 	//识别设置
 	int	detectset;
 	int level;
+	long detect_limit;
+	long cur_detect_number;
 };
 
 //命名太长会出错
@@ -374,6 +377,8 @@ public:
 								  CString longitude,CString latitude,
 								  CString crossIndex,long crossID,
 								 long userID,long userLV);
+	//判断设备是否存在
+	bool IO::DEVICE_JudgeCamera(long ncameraid);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息
@@ -382,7 +387,10 @@ public:
 	bool USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo);
 	bool USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo);
 	bool USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfo);
-
+	//获取当前识别数量以及限制数量
+	bool IO::USER_GetDetectLimit(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo);
+	//更新当前识别的数量
+	bool IO::USER_SaveCurrentDetect(unsigned long int nid,long cur_detect_number);
 	/**************************系统日志表*******************************/
 	bool LOG_AddNewSystemLog(char *userName,char *logStr);				//新增系统日志
 	unsigned long LOG_GetSystemLogNum(char *userName,char *startTime,char *endTime,int flag,char *SQLstr);

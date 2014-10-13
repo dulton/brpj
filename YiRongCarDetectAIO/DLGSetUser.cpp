@@ -25,6 +25,7 @@ static char THIS_FILE[] = __FILE__;
 CDLGSetUser::CDLGSetUser(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGSetUser::IDD, pParent)
 	, m_level(0)
+	, m_detect_limit(0)
 {
 	//{{AFX_DATA_INIT(CDLGSetUser)
 	m_password_again = _T("");
@@ -84,6 +85,8 @@ void CDLGSetUser::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_USER_MODIFY, m_b_edit);
 	DDX_Control(pDX, IDC_BUTTON_USER_DELETE, m_b_delete);
 	DDX_CBIndex(pDX, IDC_COMBO_LV, m_level);
+	DDX_Text(pDX, IDC_EDIT_DETECT_LIMIT, m_detect_limit);
+	DDV_MinMaxLong(pDX, m_detect_limit, 0, 999);
 }
 
 
@@ -410,6 +413,7 @@ void CDLGSetUser::Struct2M(void)
 	m_detect = data.detect;
 	m_detectset = data.detectset;
 	m_level=data.level;
+	m_detect_limit=	data.detect_limit;
 }
 
 void CDLGSetUser::M2Struct(void)
@@ -433,6 +437,7 @@ void CDLGSetUser::M2Struct(void)
 	if(m_level<0)
 		m_level=0;
 	data.level=m_level;
+	data.detect_limit=	m_detect_limit;
 }
 
 void CDLGSetUser::OnChangeEditUser() 

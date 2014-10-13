@@ -1,0 +1,3 @@
+TB_SUER 增加
+NDETECTLIMIT  NUMBER    识别数量限制
+NCURRENTDETECT   NUMBER  默认0 当前识别的个数  

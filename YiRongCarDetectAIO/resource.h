@@ -304,7 +304,6 @@
 #define IDC_COMBO_LV                    1042
 #define IDC_COMBO_STREAM                1043
 #define IDC_COMBO_UNIT                  1043
-#define IDC_COMBO_LV2                   1043
 #define IDC_COMBO_LEVEL                 1043
 #define IDC_BUTTON5                     1044
 #define IDC_BUTTON_SPEED                1044
@@ -582,6 +581,8 @@
 #define IDC_STATIC_WIDTH                1414
 #define IDC_STATIC_AREA                 1415
 #define IDC_STATIC_KAKOU                1416
+#define IDC_EDIT1                       1417
+#define IDC_EDIT_DETECT_LIMIT           1417
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -630,7 +631,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        428
 #define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1417
+#define _APS_NEXT_CONTROL_VALUE         1418
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

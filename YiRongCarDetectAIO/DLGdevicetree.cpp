@@ -6,6 +6,7 @@
 #include "DLGdevicetree.h"
 #include "YiRongCarDetectAIODlg.h"
 
+#include "DLGWarnning.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -238,6 +239,8 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				crossID,
 				DlgLogin.CurrentUser.nid,
 				DlgAddDevice.m_level);
+
+			DlgMain->ShowCameraMessage(	DlgAddDevice.m_CamName.GetBuffer(0),"添加设备成功",0);
 		}
 		OnMenuitemUpdate();
 	}
@@ -329,7 +332,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 	}
 	else														//编辑设备
 	{
-		for(int i=0;i<1024;i++)
+		for(int i=0;i<MAX_AREA;i++)
 		{
 			if(iplist[i].item == m_selectItem)
 			{
@@ -357,6 +360,14 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.m_longitude= iplist[i].longitude;
 				DlgAddDevice.m_latitude= iplist[i].latitude;
 				DlgAddDevice.m_level= iplist[i].userLV;
+
+				//判断设备是否存在 如果不存在 强制更新
+				if(false==OracleIO.DEVICE_JudgeCamera(iplist[i].camID))
+				{
+					DlgMain->ShowCameraMessage(iplist[i].name.GetBuffer(0),"摄像头被其他用户删除，强制刷新设备树",0);
+					OnMenuitemUpdate();
+					return ;
+				}
 
 				if(DlgAddDevice.m_level<DlgLogin.CurrentUser.level)
 				{
@@ -392,6 +403,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 						  iplist[i].userID,
 						  DlgAddDevice.m_level);
 
+					DlgMain->ShowCameraMessage(	DlgAddDevice.m_CamName.GetBuffer(0),"编辑设备成功",0);
 					OnMenuitemUpdate();
 
 					//必须放到	OnMenuitemUpdate后面 否则IPLIST还未更新
@@ -458,18 +470,38 @@ void CDLGdevicetree::OnMenuitemDeleteDevice()
 
 	// TODO: Add your command handler code here
 	int i;
-	for(i=0;i<1024;i++)
+	for(i=0;i<MAX_AREA;i++)
 	{
 		if(iplist[i].item == m_selectItem)
 		{
 			break;
 		}
 	}
-	DlgMain->DlgScreen.DeleteDevice(iplist[i].ip);
-	OracleIO.DEVICE_DeleteCamera(iplist[i].camID);
-	OnMenuitemUpdate();
-	//删除定时录制计划
-	OracleIO.RECORD_PlanTable_DeleteWithCamID(iplist[i].camID);
+
+	if(i==MAX_AREA)
+	{
+		OnMenuitemUpdate();
+		return ;
+	}
+
+	CDLGWarnning dlgw;
+	dlgw.m_wintxt=iplist[i].name;
+	dlgw.m_warntxt="摄像头将被清空，不可恢复";
+	int nResponse=dlgw.DoModal();
+	if (nResponse == IDOK)
+	{
+		DlgMain->DlgScreen.DeleteDevice(iplist[i].ip);
+		OracleIO.DEVICE_DeleteCamera(iplist[i].camID);
+		//删除定时录制计划
+		OracleIO.RECORD_PlanTable_DeleteWithCamID(iplist[i].camID);
+
+		DlgMain->ShowCameraMessage(iplist[i].name.GetBuffer(0),"删除设备成功",0);
+
+		OnMenuitemUpdate();
+	}
+	else
+		return ;
+
 }
 
 void CDLGdevicetree::OnMenuitemDeletearea() 
@@ -483,20 +515,39 @@ void CDLGdevicetree::OnMenuitemDeletearea()
 	// TODO: Add your command handler code here
 	HTREEITEM Item;
 	int ItemCount=0;
+	int tempflag=0;
 	Item = m_DeviceTree.GetRootItem();
 	while(Item != NULL)
 	{
 		if(m_selectItem == Item)
 		{
-			m_DeviceTree.DeleteItem(m_selectItem);
-			OracleIO.DEVICE_DeleteCameraWithAreaID(DlgAddDevice.AreaList[ItemCount].nid);
-			OracleIO.DEVICE_DeleteArea(DlgAddDevice.AreaList[ItemCount].nid);
-			OnMenuitemUpdate();
+			tempflag=1;
 			break;
 		}
 		Item = m_DeviceTree.GetNextItem(Item,TVGN_NEXT);
 		ItemCount++;
 	}	
+
+	if(0==tempflag)
+	{
+		OnMenuitemUpdate();
+		return ;
+	}
+	CDLGWarnning dlgw;
+	dlgw.m_wintxt=DlgAddDevice.AreaList[ItemCount].name;
+	dlgw.m_warntxt="区域内的摄像头都将被清空，不可恢复";
+	int nResponse=dlgw.DoModal();
+	if (nResponse == IDOK)
+	{
+		m_DeviceTree.DeleteItem(m_selectItem);
+		OracleIO.DEVICE_DeleteCameraWithAreaID(DlgAddDevice.AreaList[ItemCount].nid);
+		OracleIO.DEVICE_DeleteArea(DlgAddDevice.AreaList[ItemCount].nid);
+
+		DlgMain->ShowCameraMessage(DlgAddDevice.AreaList[ItemCount].name,"删除区域成功",0);
+		OnMenuitemUpdate();
+	}
+	else
+		return ;
 }
 
 ////LYNN///////////
@@ -530,6 +581,13 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 					break;
 				}
 				ItemCount++;
+			}
+			//判断设备是否存在 如果不存在 强制更新
+			if(false==OracleIO.DEVICE_JudgeCamera(iplist[ItemCount].camID))
+			{
+				DlgMain->ShowCameraMessage(iplist[ItemCount].name.GetBuffer(0),"摄像头被其他用户删除，强制刷新设备树",0);
+				OnMenuitemUpdate();
+				return ;
 			}
 
 			int screenNo = DlgMain->DlgScreen.GetCurWindId();
@@ -627,6 +685,7 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 				DlgLogin.CurrentUser.nid,
 				DlgLogin.CurrentUser.level);
 
+		DlgMain->ShowCameraMessage(	DlgAddIVMSDevice.CamData.name,"添加设备成功",0);
 		OnMenuitemUpdate();
 	}
 #else
