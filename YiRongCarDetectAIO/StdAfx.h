@@ -142,7 +142,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 
 
 //服务+客户端 模式
-#define OPEN_CS_MODE 0
+#define OPEN_CS_MODE 1
 
 //////////////////////////////////////////////////////
 

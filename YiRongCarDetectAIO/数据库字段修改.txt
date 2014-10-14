@@ -1,3 +1,13 @@
 TB_SUER 增加
 NDETECTLIMIT  NUMBER    识别数量限制
 NCURRENTDETECT   NUMBER  默认0 当前识别的个数  
+
+建 TB_MISSION 表 和SEQ
+建 TB_DETECT_DEVICE表和SEQ
+
+TB_DEVICE 
+加
+
+DETECTIP VARCHAR2(32)
+ISPLAY NUMBER   默认0  识别服务器 是否识别  0 未识别 1识别 
+DETECTID 播放该摄像头的识别服务器ID

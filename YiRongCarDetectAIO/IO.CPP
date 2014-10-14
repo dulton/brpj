@@ -4256,15 +4256,15 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 //插入任务
 bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(10);
-		}
-
-		IOwriteLock=true;
-
 		CString strSql = _T("select seq_mission.nextval as nid from dual");	    //获取电动车图像数据nid
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
@@ -4300,10 +4300,11 @@ bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned l
 		IOwriteLock=false;
 		return false;
 	}  
+	IOwriteLock=false;
 }
 
-//读取并修改
-bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isplay)
+//读取任务并修改
+bool IO::Mission_READ(long DetectDeviceId,unsigned long int *camid,unsigned long int *isplay)
 {
 	while(IOwriteLock)
 	{
@@ -4313,9 +4314,9 @@ bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isp
 	IOwriteLock=true;
 	try
 	{
-		filterstring(myip);
 		CString	strSql;
-		strSql.Format(_T("select * from(select row_number() over(order by nid desc) r,nid,userid,detectip,isplay,ncamera,flag,indate from tb_mission where detectip='%s'and flag=1 ) where r = 1"),myip);
+		strSql.Format(_T("select * from(select row_number() over(order by nid desc) r,\
+						 nid,userid,isplay,ncamera,flag,indate from tb_mission where detectid=%d and flag=1 ) where r = 1"),DetectDeviceId);
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -4357,8 +4358,8 @@ bool IO::Mission_READ(char* myip,unsigned long int *camid,unsigned long int *isp
 	IOwriteLock=false;
 }
 
-//修改设备的播放状态
-bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,unsigned long int isplay)
+//修改设备的播放状态 以及设备占用状态
+bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,long DetectDeviceId,unsigned long int isplay)
 {
 	while(IOwriteLock)
 	{
@@ -4374,29 +4375,81 @@ bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,unsigned long in
 		if(isplay)
 		{
 			//开始播放
-			strSql.Format(_T("update tb_device set detectip='%s',isplay=1 where ncamera=%I64u"),myip,camid );
+			strSql.Format(_T("update tb_device set detectip='%s',isplay=1,detectid=%d where ncamera=%I64u"),myip,DetectDeviceId,camid );
 		}
 		else
 		{
 			//停止播放
-			strSql.Format(_T("update tb_device set detectip='',isplay=0 where ncamera=%I64u"),camid );
+			strSql.Format(_T("update tb_device set detectip='',isplay=0,detectid='' where ncamera=%I64u"),camid );
 		}
 
 		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+		if(isplay)
+		{
+			//开始播放
+			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=1 where NID=%I64u"),DetectDeviceId );
+		}
+		else
+		{
+			//停止播放
+			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=0 where NID=%I64u"),DetectDeviceId );
+		}
+
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+
 		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
-		in_errormessage.Format("IO::Mission_READ error：%s", e.ErrorMessage());
+		in_errormessage.Format("IO::Mission_DeviceFlag error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
 	IOwriteLock=false;
 }
+
+//更新心跳
+bool IO::DETECTDEVICE_heart(char* myip)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		filterstring(myip);
+		CString	strSql;
+
+		//开始播放
+		strSql.Format(_T("update TB_DETECT_DEVICE set lasttime=sysdate where sip='%s'"),myip);
+		
+		
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DETECTDEVICE_heart error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+	IOwriteLock=false;
+}
+
+
 /*************************************************************************
 //以下与平台连接
 ************************************************************************/
