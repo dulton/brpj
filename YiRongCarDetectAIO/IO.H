@@ -484,8 +484,8 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 	/**************************服务+客户端*******************************/
 #if OPEN_CS_MODE
 	bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay);
-	bool IO::Mission_READ(long DetectDeviceId,unsigned long int *camid,unsigned long int *isplay);
-	bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,long DetectDeviceId,unsigned long int isplay);
+	bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay);
+	bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* myip,long DetectDeviceId,unsigned long int isplay);
 	bool IO::DETECTDEVICE_heart(char* myip);
 
 #endif

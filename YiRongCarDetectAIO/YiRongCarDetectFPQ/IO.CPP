@@ -295,7 +295,7 @@ bool IO::DETECTDEVICE_HeartTest(long maxtime)
 }
 
 //判断设备是否正常并修改
-bool IO::DETECTDEVICE_ADD(char *ip,long channal)
+bool IO::DETECTDEVICE_ADD(char *ip,long channel)
 {
 	while(IOwriteLock)
 	{
@@ -317,7 +317,7 @@ bool IO::DETECTDEVICE_ADD(char *ip,long channal)
 			m_pRecordsetPtr->AddNew();
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
 			m_pRecordsetPtr->PutCollect("sip", _variant_t(ip));
-			m_pRecordsetPtr->PutCollect("channalnum", _variant_t(channal));
+			m_pRecordsetPtr->PutCollect("channelnum", _variant_t(channel));
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close();
@@ -338,28 +338,228 @@ bool IO::DETECTDEVICE_ADD(char *ip,long channal)
 	}  
 	IOwriteLock=false;
 }
-/*
+
 //分配服务器后修改任务
-bool IO::MISSION_Edit(char *ip,long channal)
+bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid)
 {
 
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		//分配
+		strSql.Format(_T("update TB_mission set detectid=%d,flag=1 where nid=%I64u"),DetectDeviceid,Missionid);
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::MISSION_Edit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
 }
 
 //读取任务
-bool IO::MISSION_Read(char *ip,long channal)
+bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select * from(select row_number() over(order by nid) r,\
+						 nid,userid,isplay,ncamera,to_char(indate) from tb_mission where flag=0 ) where r = 1"));
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			(*Missionid) =VarSaveNumber2(m_pRecordsetPtr,"nid");
+			(*isplay) =  VarSaveNumber2(m_pRecordsetPtr,"isplay");
+			(*camid) =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			(*userid) =  VarSaveNumber2(m_pRecordsetPtr,"userid");
+			VarSaveStr2(indate,m_pRecordsetPtr,"to_char(indate)");
+		}
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::MISSION_Read error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
+}
+/*
+//在表中找摄像头 进行停止
+bool IO::DEVICE_SearchForStop(list<DEVICE_LIST> &DeviceList)
 {
 
 }
 
-//发送强制停止任务
-bool IO::MISSION_AddStop(char *ip,long channal)
+//在表中找空余设备 进行开始
+bool IO::DEVICE_SearchForStart(list<DEVICE_LIST> &DeviceList)
 {
 
 }
-//联合读取设备树和服务器信息
-bool IO::DEVICE_ReadList(char *ip,long channal)
+*/
+//发送强制停止任务 已分配
+bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid)
 {
 
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+	try
+	{
+		long long nid =  AutoAddNid("mission","nid");
+
+		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
+
+		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_mission", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+
+		if(SUCCEEDED(hr))
+		{
+			m_pRecordsetPtr->AddNew();
+			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
+			m_pRecordsetPtr->PutCollect("userid", _variant_t(999999));
+			m_pRecordsetPtr->PutCollect("ncamera", _variant_t(camid));
+	
+			m_pRecordsetPtr->PutCollect("DETECTID", _variant_t(DetectDeviceid));
+			m_pRecordsetPtr->PutCollect("isplay", _variant_t(0));
+			m_pRecordsetPtr->PutCollect("flag", _variant_t(1));
+
+			m_pRecordsetPtr->Update();
+			m_pRecordsetPtr->Close();
+
+			IOwriteLock=false;
+			return true;
+		}
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::MISSION_AddStop error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+	IOwriteLock=false;
 }
+/*
+create or replace view devicelist_view as
+select a."NID",a."SIP",a."ISOCCUPY",a."CHANNELNUM",a."ISENABLE",a."MISSIONID",b.userid,b.isplay,to_char(b.indate) cindate,c.ncamera,c.scameraname,c.sipserver camip,c.rtspurl,c.isplay camisplay
+from tb_detect_device a
+left join tb_mission b
+on a.missionid = b.nid
+left join tb_device c
+on a.nid =c.DETECTID order by nid desc;
 
 */
+//视图查询
+//联合读取设备树和服务器信息
+bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select * from DEVICELIST_VIEW"));
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		DEVICE_LIST tempdata;
+	
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			memset(&tempdata,0,sizeof(DEVICE_LIST));
+	
+			tempdata.detect.id =VarSaveNumber2(m_pRecordsetPtr,"nid");
+			VarSaveStr2(tempdata.detect.ip ,m_pRecordsetPtr,"sip");
+			tempdata.detect.channel =VarSaveNumber2(m_pRecordsetPtr,"channelnum");
+			tempdata.detect.isoccupy =VarSaveNumber2(m_pRecordsetPtr,"isoccupy");
+			tempdata.detect.isenable =VarSaveNumber2(m_pRecordsetPtr,"isenable");
+
+			tempdata.mission.missionid=VarSaveNumber2(m_pRecordsetPtr,"missionid");
+			tempdata.mission.userid=VarSaveNumber2(m_pRecordsetPtr,"userid");
+			tempdata.mission.isplay=VarSaveNumber2(m_pRecordsetPtr,"isplay");
+			VarSaveStr2(tempdata.mission.time ,m_pRecordsetPtr,"cindate");
+
+			tempdata.camera.camid=VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			VarSaveStr2(tempdata.camera.name,m_pRecordsetPtr,"scameraname");
+			VarSaveStr2(tempdata.camera.ip,m_pRecordsetPtr,"camip");
+			VarSaveStr2(tempdata.camera.rtspurl,m_pRecordsetPtr,"rtspurl");
+			tempdata.camera.isplay=VarSaveNumber2(m_pRecordsetPtr,"camisplay");
+
+			DeviceList.push_back(tempdata);
+			m_pRecordsetPtr->MoveNext();
+		}
+
+		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_ReadList error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
+
+}

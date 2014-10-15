@@ -4253,6 +4253,9 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 		return false;
 	}  
 }
+
+///////////////////////////////////////////////////
+#if OPEN_CS_MODE
 //插入任务
 bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay)
 {
@@ -4269,7 +4272,7 @@ bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned l
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
-		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		long long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
@@ -4304,7 +4307,7 @@ bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned l
 }
 
 //读取任务并修改
-bool IO::Mission_READ(long DetectDeviceId,unsigned long int *camid,unsigned long int *isplay)
+bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay)
 {
 	while(IOwriteLock)
 	{
@@ -4315,8 +4318,8 @@ bool IO::Mission_READ(long DetectDeviceId,unsigned long int *camid,unsigned long
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select * from(select row_number() over(order by nid desc) r,\
-						 nid,userid,isplay,ncamera,flag,indate from tb_mission where detectid=%d and flag=1 ) where r = 1"),DetectDeviceId);
+		strSql.Format(_T("select * from(select row_number() over(order by nid) r,\
+						 nid,userid,isplay,ncamera,flag,to_char(indate) from tb_mission where detectid=%d and flag=1 ) where r = 1"),DetectDeviceId);
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -4332,12 +4335,12 @@ bool IO::Mission_READ(long DetectDeviceId,unsigned long int *camid,unsigned long
 
 		if(!m_pRecordsetPtr->adoEOF)
 		{
-			long long nid =VarSaveNumber2(m_pRecordsetPtr,"nid");
+			(*missionID)=VarSaveNumber2(m_pRecordsetPtr,"nid");
 
 			(*isplay) =  VarSaveNumber2(m_pRecordsetPtr,"isplay");
 			(*camid) =  VarSaveNumber2(m_pRecordsetPtr,"ncamera");
 
-			strSql.Format(_T("update tb_mission set flag=2 where nid=%I64u"),nid );
+			strSql.Format(_T("update tb_mission set flag=2 where nid=%I64u"),(*missionID) );
 
 			_variant_t RecordAffected;
 			m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
@@ -4359,7 +4362,7 @@ bool IO::Mission_READ(long DetectDeviceId,unsigned long int *camid,unsigned long
 }
 
 //修改设备的播放状态 以及设备占用状态
-bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,long DetectDeviceId,unsigned long int isplay)
+bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* myip,long DetectDeviceId,unsigned long int isplay)
 {
 	while(IOwriteLock)
 	{
@@ -4375,12 +4378,12 @@ bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,long DetectDevic
 		if(isplay)
 		{
 			//开始播放
-			strSql.Format(_T("update tb_device set detectip='%s',isplay=1,detectid=%d where ncamera=%I64u"),myip,DetectDeviceId,camid );
+			strSql.Format(_T("update tb_device set detectip='%s',isplay=1,detectid=%d where ncamera=%d"),myip,DetectDeviceId,camid );
 		}
 		else
 		{
 			//停止播放
-			strSql.Format(_T("update tb_device set detectip='',isplay=0,detectid='' where ncamera=%I64u"),camid );
+			strSql.Format(_T("update tb_device set detectip='',isplay=0,detectid='' where ncamera=%d"),camid );
 		}
 
 		_variant_t RecordAffected;
@@ -4389,12 +4392,12 @@ bool IO::Mission_DeviceFlag(unsigned long long camid,char* myip,long DetectDevic
 		if(isplay)
 		{
 			//开始播放
-			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=1 where NID=%I64u"),DetectDeviceId );
+			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=1,MISSIONID=%I64u where NID=%d"),missionID,DetectDeviceId );
 		}
 		else
 		{
 			//停止播放
-			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=0 where NID=%I64u"),DetectDeviceId );
+			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=0,MISSIONID=%I64u  where NID=%d"),missionID,DetectDeviceId );
 		}
 
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
@@ -4448,7 +4451,7 @@ bool IO::DETECTDEVICE_heart(char* myip)
 	}  
 	IOwriteLock=false;
 }
-
+#endif
 
 /*************************************************************************
 //以下与平台连接

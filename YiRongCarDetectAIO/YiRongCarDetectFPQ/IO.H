@@ -13,7 +13,42 @@
 #import "msado15.dll" no_namespace rename("EOF","adoEOF")       //引入ADO类型库
 using namespace::std;
 
+struct  S_DETECT
+{
+	long id;
+	char ip[32];
+	long isoccupy;
+	long channel;
+	long isenable;
 
+};
+
+struct  S_CAMERA
+{
+	long camid;
+	char name[128];
+	char ip[128];
+	char rtspurl[1024];
+	long isplay;
+
+};
+
+struct  S_MISSION
+{
+	long missionid;
+	long userid;
+	char time[32];
+	long isplay;
+};
+
+
+typedef struct S_DEVICE_LIST
+{
+	struct S_MISSION mission;
+	struct S_CAMERA camera;
+	struct S_DETECT detect;
+
+}DEVICE_LIST;
 
 
 //ConnectionOracleDB 数据库连接函数 返回值 定义
@@ -58,9 +93,16 @@ public:
 	int ConnectionOracleDBTXT(char* FileName);		//连接数据库
 	unsigned long long IO::AutoAddNid(TCHAR *TableName,TCHAR *NidName);
 
-bool IO::DETECTDEVICE_HeartTest(long maxtime);
-bool IO::DETECTDEVICE_ADD(char *ip,long channal);
+	bool IO::DETECTDEVICE_HeartTest(long maxtime);
+	bool IO::DETECTDEVICE_ADD(char *ip,long channel);
 
+
+	bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid);
+	bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate);
+	bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid);
+
+
+	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);
 
 };
 #endif

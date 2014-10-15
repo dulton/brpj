@@ -11,3 +11,5 @@ TB_DEVICE
 DETECTIP VARCHAR2(32)
 ISPLAY NUMBER   默认0  识别服务器 是否识别  0 未识别 1识别 
 DETECTID 播放该摄像头的识别服务器ID
+
+加视图

@@ -77,13 +77,26 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 	CYiRongCarDetectFPQDlg *pdlg = (CYiRongCarDetectFPQDlg*)lpParameter;
 	pdlg->ThreadFlag=TRUE;
 
+long long Missionid=0;
+
+unsigned long int camid=0;
+unsigned long int isplay=0;
+unsigned long int userid=0;
+char indate[32];
+
+
 	while(pdlg->ThreadFlag)
 	{
+
 		//ORACLE查询任务 分发
+		if(false == OracleIO.MISSION_Read(&Missionid,&camid,&isplay,&userid,indate))
+		{
+			pdlg->ThreadFlag=FALSE;
+			return 0;
+		}
+	
 
-		//ORACLE 查询心跳
-//   select (sysdate-lasttime)*24*3600 from TB_DETECT_DEVICE t  回复秒
-
+		
 
 		Sleep(1000);
 	}
@@ -131,9 +144,8 @@ BOOL CYiRongCarDetectFPQDlg::OnInitDialog()
 	int OracleError = OracleIO.ConnectionOracleDBTXT("YRDataBaseConfig.db");
 	if(OracleError == ReadFile_FAIL)
 	{
-	this->MessageBox("读数据库配置文件失败","连接数据库");
-
-
+		this->MessageBox("读数据库配置文件失败","连接数据库");
+	
 		return FALSE;
 	}
 	else if(OracleError == Instance_FAIL)

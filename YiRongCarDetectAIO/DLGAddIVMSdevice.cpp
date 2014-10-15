@@ -482,7 +482,6 @@ void CDLGAddIVMSdevice::OnCbnCloseupComboCam()
 	// TODO: Add your control notification handler code here
 }
 
-#endif
 
 
 void CDLGAddIVMSdevice::OnPaint()
@@ -525,3 +524,6 @@ HBRUSH CDLGAddIVMSdevice::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	return hbr;
 }
+
+
+#endif
