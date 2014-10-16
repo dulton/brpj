@@ -250,11 +250,13 @@
 #define IDB_RECORD_DISABLE              424
 #define IDB_CAR_DISABLE                 425
 #define IDB_ALARM_DISABLE               426
+#define IDD_DETECT_SERVER               428
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_FILE                 1001
 #define IDC_BUTTON_FIND                 1001
 #define IDC_BUTTON_UPDATE               1001
+#define IDC_BUTTON_FLUSH                1001
 #define IDC_LIST_CAR                    1002
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_BUTTON2                     1004
@@ -581,8 +583,10 @@
 #define IDC_STATIC_WIDTH                1414
 #define IDC_STATIC_AREA                 1415
 #define IDC_STATIC_KAKOU                1416
-#define IDC_EDIT1                       1417
 #define IDC_EDIT_DETECT_LIMIT           1417
+#define IDC_EDIT_MYIP                   1418
+#define IDC_STATIC_MYIP                 1419
+#define IDC_LIST1                       1420
 #define ID_MENUITEM_LOGIN_LOCK          32771
 #define ID_MENUITEM_LOGIN_IN            32772
 #define ID_MENUITEM_LOGIN_EXIT          32773
@@ -624,14 +628,16 @@
 #define ID_Menu                         32821
 #define ID__32822                       32822
 #define ID_MENUITEM_FLUSHTREE           32823
+#define ID_32824                        32824
+#define ID_MENUITEM_DETECT_SERVER       32825
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        428
-#define _APS_NEXT_COMMAND_VALUE         32824
-#define _APS_NEXT_CONTROL_VALUE         1418
+#define _APS_NEXT_RESOURCE_VALUE        429
+#define _APS_NEXT_COMMAND_VALUE         32826
+#define _APS_NEXT_CONTROL_VALUE         1421
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -93,13 +93,17 @@ public:
 	int ConnectionOracleDBTXT(char* FileName);		//连接数据库
 	unsigned long long IO::AutoAddNid(TCHAR *TableName,TCHAR *NidName);
 
-	bool IO::DETECTDEVICE_HeartTest(long maxtime);
-	bool IO::DETECTDEVICE_ADD(char *ip,long channel);
+	bool IO::DETECTSERVER_HeartTest(long maxtime);
+	bool IO::DETECTSERVER_ADD(char *ip,long channel);
 
+	bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid,int flag);
+	bool IO::DETECT_EditCamera(long DetectDeviceid,long camid);
 
-	bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid);
 	bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate);
 	bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid);
+
+	bool IO::DEVICE_SearchForStop(long *DetectDeviceID,long camid);
+	bool IO::DEVICE_SearchForStart(long *DetectDeviceID);
 
 
 	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);

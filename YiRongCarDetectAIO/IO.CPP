@@ -4383,7 +4383,7 @@ bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* my
 		else
 		{
 			//停止播放
-			strSql.Format(_T("update tb_device set detectip='',isplay=0,detectid='' where ncamera=%d"),camid );
+			strSql.Format(_T("update tb_device set detectip='',isplay=0,detectid=0 where ncamera=%d"),camid );
 		}
 
 		_variant_t RecordAffected;
@@ -4392,12 +4392,12 @@ bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* my
 		if(isplay)
 		{
 			//开始播放
-			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=1,MISSIONID=%I64u where NID=%d"),missionID,DetectDeviceId );
+			strSql.Format(_T("update TB_DETECT_SERVER set ISOCCUPY=1,MISSIONID=%I64u,NCAMERA=%d where NID=%d"),missionID,camid,DetectDeviceId );
 		}
 		else
 		{
 			//停止播放
-			strSql.Format(_T("update TB_DETECT_DEVICE set ISOCCUPY=0,MISSIONID=%I64u  where NID=%d"),missionID,DetectDeviceId );
+			strSql.Format(_T("update TB_DETECT_SERVER set ISOCCUPY=0,MISSIONID=%I64u,NCAMERA=0 where NID=%d"),missionID,DetectDeviceId );
 		}
 
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
@@ -4418,7 +4418,7 @@ bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* my
 }
 
 //更新心跳
-bool IO::DETECTDEVICE_heart(char* myip)
+bool IO::DETECTSERVER_heart(char* myip)
 {
 	while(IOwriteLock)
 	{
@@ -4432,7 +4432,7 @@ bool IO::DETECTDEVICE_heart(char* myip)
 		CString	strSql;
 
 		//开始播放
-		strSql.Format(_T("update TB_DETECT_DEVICE set lasttime=sysdate where sip='%s'"),myip);
+		strSql.Format(_T("update TB_DETECT_SERVER set lasttime=sysdate where sip='%s'"),myip);
 		
 		
 		_variant_t RecordAffected;
@@ -4444,13 +4444,86 @@ bool IO::DETECTDEVICE_heart(char* myip)
 	catch(_com_error e)
 	{
 		CString in_errormessage;
-		in_errormessage.Format("IO::DETECTDEVICE_heart error：%s", e.ErrorMessage());
+		in_errormessage.Format("IO::DETECTSERVER_heart error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
 	IOwriteLock=false;
 }
+
+
+
+//视图查询
+//联合读取设备树和服务器信息
+bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select * from DEVICELIST_VIEW"));
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		DEVICE_LIST tempdata;
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			memset(&tempdata,0,sizeof(DEVICE_LIST));
+
+			tempdata.detect.id =VarSaveNumber2(m_pRecordsetPtr,"nid");
+			VarSaveStr2(tempdata.detect.ip ,m_pRecordsetPtr,"sip");
+			tempdata.detect.channel =VarSaveNumber2(m_pRecordsetPtr,"channelnum");
+			tempdata.detect.isoccupy =VarSaveNumber2(m_pRecordsetPtr,"isoccupy");
+			tempdata.detect.isenable =VarSaveNumber2(m_pRecordsetPtr,"isenable");
+
+			tempdata.mission.missionid=VarSaveNumber2(m_pRecordsetPtr,"missionid");
+			tempdata.mission.userid=VarSaveNumber2(m_pRecordsetPtr,"userid");
+			tempdata.mission.isplay=VarSaveNumber2(m_pRecordsetPtr,"isplay");
+			VarSaveStr2(tempdata.mission.time ,m_pRecordsetPtr,"cindate");
+
+			tempdata.camera.camid=VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			VarSaveStr2(tempdata.camera.name,m_pRecordsetPtr,"scameraname");
+			VarSaveStr2(tempdata.camera.ip,m_pRecordsetPtr,"camip");
+			VarSaveStr2(tempdata.camera.rtspurl,m_pRecordsetPtr,"rtspurl");
+			tempdata.camera.isplay=VarSaveNumber2(m_pRecordsetPtr,"camisplay");
+
+			DeviceList.push_back(tempdata);
+			m_pRecordsetPtr->MoveNext();
+		}
+
+		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_ReadList error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
+
+}
+
 #endif
 
 /*************************************************************************

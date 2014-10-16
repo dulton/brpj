@@ -101,6 +101,12 @@ public:
 	afx_msg void OnMaxMinInfo(NMHDR* pNMHDR, LRESULT* pResult);
 
 
+
+	//心跳线程
+	HANDLE CS_Heartpthread;
+	//线程在用=false  线程未用=ture
+	bool CS_HeartThreadFlag;
+
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CYiRongCarDetectAIODlg)
 	protected:
@@ -161,6 +167,8 @@ protected:
 	afx_msg void OnMenuitemVideodetect();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnMenuitemDetectServer();
 };
 
 //{{AFX_INSERT_LOCATION}}

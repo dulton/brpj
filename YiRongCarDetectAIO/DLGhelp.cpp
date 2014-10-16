@@ -123,7 +123,11 @@ BOOL CDLGhelp::OnInitDialog()
 		modeflag+="支持海康 ";
 
 	if(OPEN_STREAM_CLIENT_SDK)
-		modeflag+="支持流媒体 ";
+		modeflag+="支持流媒体 \n";
+
+	if(OPEN_CS_MODE)
+		modeflag+="支持C/S远程控制 ";
+	
 
 	CString str;
 	str.Format("%s\n构建时间:%s",modeflag.GetBuffer(0),__DATE__);

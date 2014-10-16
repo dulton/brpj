@@ -1,9 +1,9 @@
 --------------------------------------------
 -- Export file for user USHOW2            --
--- Created by wyx on 2014-10-14, 17:31:46 --
+-- Created by wyx on 2014-10-16, 17:16:52 --
 --------------------------------------------
 
-spool ushow2_gongsi_1014.log
+spool ushow2_gongsi_1016.log
 
 prompt
 prompt Creating table TB_ALARM_CAR
@@ -294,33 +294,39 @@ alter table TB_CAR_BLACK
   add constraint CAR_BLACK_NID primary key (NID);
 
 prompt
-prompt Creating table TB_DETECT_DEVICE
+prompt Creating table TB_DETECT_SERVER
 prompt ===============================
 prompt
-create table TB_DETECT_DEVICE
+create table TB_DETECT_SERVER
 (
   nid        NUMBER not null,
   sip        VARCHAR2(32),
   isoccupy   NUMBER default 0,
   channelnum NUMBER,
   isenable   NUMBER default 0,
-  lasttime   DATE default sysdate
+  lasttime   DATE default sysdate,
+  missionid  NUMBER,
+  ncamera    NUMBER default 0
 )
 ;
-comment on table TB_DETECT_DEVICE
+comment on table TB_DETECT_SERVER
   is '分布式识别设备表';
-comment on column TB_DETECT_DEVICE.nid
+comment on column TB_DETECT_SERVER.nid
   is '识别服务器ID';
-comment on column TB_DETECT_DEVICE.sip
+comment on column TB_DETECT_SERVER.sip
   is '服务器IP';
-comment on column TB_DETECT_DEVICE.isoccupy
+comment on column TB_DETECT_SERVER.isoccupy
   is '占用状态 0未被占用 1占用';
-comment on column TB_DETECT_DEVICE.channelnum
+comment on column TB_DETECT_SERVER.channelnum
   is '第N路 窗口序号';
-comment on column TB_DETECT_DEVICE.isenable
+comment on column TB_DETECT_SERVER.isenable
   is '启用状态 0故障 1正常';
-comment on column TB_DETECT_DEVICE.lasttime
+comment on column TB_DETECT_SERVER.lasttime
   is '心跳 时间比对';
+comment on column TB_DETECT_SERVER.missionid
+  is '最后操作该服务器的任务ID';
+comment on column TB_DETECT_SERVER.ncamera
+  is '预先占用的摄像头ID。 防止多次触发';
 
 prompt
 prompt Creating table TB_DEVICE
@@ -356,7 +362,7 @@ comment on table TB_DEVICE
 comment on column TB_DEVICE.scameraname
   is '摄像头名称';
 comment on column TB_DEVICE.sipserver
-  is '服务端IP';
+  is '摄像头IP';
 comment on column TB_DEVICE.sport
   is '端口号';
 comment on column TB_DEVICE.suser
@@ -572,7 +578,7 @@ comment on column TB_MISSION.userid
 comment on column TB_MISSION.detectid
   is '识别服务器ID';
 comment on column TB_MISSION.isplay
-  is '对摄像头进行操作 1停止 2播放';
+  is '对摄像头进行操作 0停止 1播放';
 comment on column TB_MISSION.ncamera
   is '摄像头ID';
 comment on column TB_MISSION.flag
@@ -872,7 +878,7 @@ prompt
 create sequence SEQ_DETECT_DEVICE
 minvalue 1
 maxvalue 9999999999999999999999999999
-start with 100
+start with 140
 increment by 1
 cache 20;
 
@@ -883,7 +889,7 @@ prompt
 create sequence SEQ_LOG
 minvalue 1
 maxvalue 9999999999999999999999999999
-start with 90180
+start with 90240
 increment by 1
 cache 20;
 
@@ -894,7 +900,7 @@ prompt
 create sequence SEQ_MATCH_RESULT_CAR
 minvalue 1
 maxvalue 9999999999999999999999999999
-start with 14081
+start with 14201
 increment by 1
 cache 20;
 
@@ -905,7 +911,7 @@ prompt
 create sequence SEQ_MATCH_RESULT_VEHICLE
 minvalue 1
 maxvalue 9999999999999999999999999999
-start with 91547
+start with 91567
 increment by 1
 cache 20;
 
@@ -974,6 +980,18 @@ maxvalue 9999999999999999999999999999
 start with 201
 increment by 1
 cache 20;
+
+prompt
+prompt Creating view DEVICELIST_VIEW
+prompt =============================
+prompt
+create or replace view devicelist_view as
+select a."NID",a."SIP",a."ISOCCUPY",a."CHANNELNUM",a."ISENABLE",a."MISSIONID",b.userid,b.isplay,to_char(b.indate) cindate,c.ncamera,c.scameraname,c.sipserver camip,c.rtspurl,c.isplay camisplay
+                 from TB_DETECT_SERVER a
+                 left join tb_mission b
+                 on a.missionid = b.nid
+                 left join tb_device c
+                 on a.nid =c.DETECTID order by nid desc;
 
 prompt
 prompt Creating procedure PRO_AUTO_MATCH_CAR

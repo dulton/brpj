@@ -100,6 +100,7 @@ public:
 	CString m_kakou_ip;
 	CString m_kakou_user;
 	CString m_kakou_psw;
+	CString m_myip;
 };
 
 //{{AFX_INSERT_LOCATION}}

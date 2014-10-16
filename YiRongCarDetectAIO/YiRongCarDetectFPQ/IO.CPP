@@ -256,8 +256,8 @@ unsigned long long IO::AutoAddNid(TCHAR *TableName,TCHAR *NidName)
 }
 
 
-//判断设备是否正常并修改
-bool IO::DETECTDEVICE_HeartTest(long maxtime)
+//判断设备是否正常并修改  .不改其他。由服务端修复任务
+bool IO::DETECTSERVER_HeartTest(long maxtime)
 {
 	while(IOwriteLock)
 	{
@@ -269,13 +269,13 @@ bool IO::DETECTDEVICE_HeartTest(long maxtime)
 	{
 		CString	strSql;
 		//两值相减大于MAXTIME 故障
-		strSql.Format(_T("update TB_DETECT_DEVICE t set isenable=0 where (sysdate-lasttime)*24*3600>%d"),maxtime);
+		strSql.Format(_T("update TB_DETECT_SERVER t set isenable=0 where (sysdate-lasttime)*24*3600>%d"),maxtime);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
-	
+
 		//两值相减小于MAXTIME 正常
-		strSql.Format(_T("update TB_DETECT_DEVICE t set isenable=1 where (sysdate-lasttime)*24*3600<=%d"),maxtime);
+		strSql.Format(_T("update TB_DETECT_SERVER t set isenable=1 where (sysdate-lasttime)*24*3600<=%d"),maxtime);
 
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
@@ -285,7 +285,7 @@ bool IO::DETECTDEVICE_HeartTest(long maxtime)
 	catch(_com_error e)
 	{
 		CString in_errormessage;
-		in_errormessage.Format("IO::DETECTDEVICE_HeartTest error：%s", e.ErrorMessage());
+		in_errormessage.Format("IO::DETECTSERVER_HeartTest error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
@@ -295,7 +295,7 @@ bool IO::DETECTDEVICE_HeartTest(long maxtime)
 }
 
 //判断设备是否正常并修改
-bool IO::DETECTDEVICE_ADD(char *ip,long channel)
+bool IO::DETECTSERVER_ADD(char *ip,long channel)
 {
 	while(IOwriteLock)
 	{
@@ -310,7 +310,7 @@ bool IO::DETECTDEVICE_ADD(char *ip,long channel)
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 
-		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_detect_device", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
+		HRESULT hr = m_pRecordsetPtr->Open("select * from TB_DETECT_SERVER", m_pConnection.GetInterfacePtr(), adOpenDynamic, adLockOptimistic, adCmdText);
 
 		if(SUCCEEDED(hr))
 		{
@@ -331,7 +331,7 @@ bool IO::DETECTDEVICE_ADD(char *ip,long channel)
 	catch(_com_error e)
 	{
 		CString in_errormessage;
-		in_errormessage.Format("IO::DETECTDEVICE_ADD error：%s", e.ErrorMessage());
+		in_errormessage.Format("IO::DETECTSERVER_ADD error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
@@ -340,7 +340,7 @@ bool IO::DETECTDEVICE_ADD(char *ip,long channel)
 }
 
 //分配服务器后修改任务
-bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid)
+bool IO::MISSION_Edit(long long Missionid,long DETECTSERVERid,int flag)
 {
 
 	while(IOwriteLock)
@@ -353,7 +353,7 @@ bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid)
 	{
 		CString	strSql;
 		//分配
-		strSql.Format(_T("update TB_mission set detectid=%d,flag=1 where nid=%I64u"),DetectDeviceid,Missionid);
+		strSql.Format(_T("update TB_mission set detectid=%d,flag=%d where nid=%I64u"),DETECTSERVERid,Missionid,flag);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
@@ -365,6 +365,41 @@ bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::MISSION_Edit error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
+}
+
+
+//预先占用识别服务器
+bool IO::DETECT_EditCamera(long DETECTSERVERid,long camid)
+{
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		//分配
+		strSql.Format(_T("update TB_DETECT_SERVER set ncamera=%d where nid=%d"),camid,DETECTSERVERid);
+
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DETECT_EditCamera error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
@@ -422,21 +457,107 @@ bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned lon
 	}  
 	IOwriteLock=false;
 }
-/*
+
 //在表中找摄像头 进行停止
-bool IO::DEVICE_SearchForStop(list<DEVICE_LIST> &DeviceList)
+bool IO::DEVICE_SearchForStop(long *DETECTSERVERID,long camid)
 {
 
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select NID from TB_DETECT_SERVER where ncamera=%d"),camid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		(*DETECTSERVERID)=0;
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			(*DETECTSERVERID) =VarSaveNumber2(m_pRecordsetPtr,"NID");
+		}
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_SearchForStop error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
+
+
 }
+
 
 //在表中找空余设备 进行开始
-bool IO::DEVICE_SearchForStart(list<DEVICE_LIST> &DeviceList)
+bool IO::DEVICE_SearchForStart(long *DETECTSERVERID)
 {
 
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid from TB_DETECT_SERVER t where isenable=1 and isoccupy=0 and ncamera=0"));
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		(*DETECTSERVERID)=0;
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			(*DETECTSERVERID) =VarSaveNumber2(m_pRecordsetPtr,"nid");
+		}
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_SearchForStop error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
 }
-*/
+
 //发送强制停止任务 已分配
-bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid)
+bool IO::MISSION_AddStop(long DETECTSERVERid,unsigned long int camid)
 {
 
 	while(IOwriteLock)
@@ -460,8 +581,8 @@ bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid)
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));
 			m_pRecordsetPtr->PutCollect("userid", _variant_t(999999));
 			m_pRecordsetPtr->PutCollect("ncamera", _variant_t(camid));
-	
-			m_pRecordsetPtr->PutCollect("DETECTID", _variant_t(DetectDeviceid));
+
+			m_pRecordsetPtr->PutCollect("DETECTID", _variant_t(DETECTSERVERid));
 			m_pRecordsetPtr->PutCollect("isplay", _variant_t(0));
 			m_pRecordsetPtr->PutCollect("flag", _variant_t(1));
 
@@ -487,7 +608,7 @@ bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid)
 /*
 create or replace view devicelist_view as
 select a."NID",a."SIP",a."ISOCCUPY",a."CHANNELNUM",a."ISENABLE",a."MISSIONID",b.userid,b.isplay,to_char(b.indate) cindate,c.ncamera,c.scameraname,c.sipserver camip,c.rtspurl,c.isplay camisplay
-from tb_detect_device a
+from TB_DETECT_SERVER a
 left join tb_mission b
 on a.missionid = b.nid
 left join tb_device c
@@ -521,11 +642,11 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 		}
 
 		DEVICE_LIST tempdata;
-	
+
 		while(!m_pRecordsetPtr->adoEOF)
 		{
 			memset(&tempdata,0,sizeof(DEVICE_LIST));
-	
+
 			tempdata.detect.id =VarSaveNumber2(m_pRecordsetPtr,"nid");
 			VarSaveStr2(tempdata.detect.ip ,m_pRecordsetPtr,"sip");
 			tempdata.detect.channel =VarSaveNumber2(m_pRecordsetPtr,"channelnum");

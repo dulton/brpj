@@ -19,7 +19,7 @@ public:
 
 
 	long chooseDetectDeviceid;
-unsigned long int chooseCamid;
+	unsigned long int chooseCamid;
 
 // Dialog Data
 

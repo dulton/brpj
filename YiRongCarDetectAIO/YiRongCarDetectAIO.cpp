@@ -179,7 +179,7 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 
 	////////////////lynn/////////////////
 #if YRVM_PINGTAI_MODE
-	OracleError = OracleIO.YRVM_ConnectionOracleDBTXT("YRVMDataBaseConfig.txt");
+	OracleError = OracleIO.YRVM_ConnectionOracleDBTXT("YRVMDataBaseConfig.db");
 	if(OracleError == ReadFile_FAIL)
 	{
 		CDLGWarnning dlgw;
@@ -305,10 +305,11 @@ BOOL CYiRongCarDetectAIOApp::InitInstance()
 	DlgLogin.CurrentUser.detectset=1;
 #endif
 */
-
 	//Ö÷½çÃæ
 	CYiRongCarDetectAIODlg dlg;
 	m_pMainWnd = &dlg;
+
+
 	int nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{

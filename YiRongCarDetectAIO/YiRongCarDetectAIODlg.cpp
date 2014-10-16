@@ -21,6 +21,7 @@ extern CDLGLogin DlgLogin;
 #include "DLGAnalyseFlowrate.h"
 #include "DLGVideoDetect.h"
 #include "DLGhelp.h"
+#include "DLGdetectServer.h"
 ////////////////////////////////////////
 #if	ALLTAB_DETECT_CAR_MODE
 #include "DLGSetCar.h"
@@ -191,10 +192,32 @@ BEGIN_MESSAGE_MAP(CYiRongCarDetectAIODlg, CDialog)
 	ON_NOTIFY(SPN_MAXMINPOS, IDC_SPLITTER, OnMaxMinInfo)
 	ON_WM_GETMINMAXINFO()
 	//}}AFX_MSG_MAP
+	ON_COMMAND(ID_MENUITEM_DETECT_SERVER, &CYiRongCarDetectAIODlg::OnMenuitemDetectServer)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CYiRongCarDetectAIODlg message handlers
+
+#if OPEN_CS_MODE
+//线程
+DWORD WINAPI CS_Heart_ThreadPROC(LPVOID lpParameter)
+{
+	CYiRongCarDetectAIODlg *pdlg = (CYiRongCarDetectAIODlg*)lpParameter;
+	pdlg->CS_HeartThreadFlag=TRUE;
+	long  HEART_MAX_TIME =20;
+
+	long sleeptime=HEART_MAX_TIME/2*1000;
+
+	while(pdlg->CS_HeartThreadFlag)
+	{
+		OracleIO.DETECTSERVER_heart(DlgSetSystem.m_myip.GetBuffer(0));
+		Sleep(sleeptime);
+	}
+
+	pdlg->CS_HeartThreadFlag=FALSE;
+	return 0;
+}
+#endif
 
 BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 {
@@ -276,6 +299,11 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 #endif
 
+#if !OPEN_CS_MODE
+
+	GetMenu()->GetSubMenu(3)->EnableMenuItem(8,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
+#endif
 
 
 	//改菜单背景色要的定义 放到STDAFX.H
@@ -341,6 +369,22 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 		failstr);
 	}
 */
+
+#if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
+	CS_HeartThreadFlag=FALSE;
+	CS_Heartpthread=NULL;
+
+	CS_Heartpthread=CreateThread(NULL,0,CS_Heart_ThreadPROC,this,0,NULL);
+
+	if(NULL==CS_Heartpthread)
+	{
+		MessageBox("创建线程错误");
+	}
+	else
+		CS_HeartThreadFlag=TRUE;
+
+#endif
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -672,10 +716,7 @@ void CYiRongCarDetectAIODlg::OnOK()
 void CYiRongCarDetectAIODlg::OnCancel()
 {
 	// TODO: Add your control notification handler code here
-	if(m_DetectListTimer) 
-		KillTimer(m_DetectListTimer); 
-	m_DetectListTimer = 0;
-	m_DetectListTimerFlag=0;
+
 	/*
 	#if ALLTAB_LOGIN_WIN_MODE
 	//退出系统
@@ -695,6 +736,19 @@ void CYiRongCarDetectAIODlg::OnCancel()
 		if( IDCANCEL == DlgLogin.DoModal())
 			return ;
 	}
+///////////////////////////////////////
+	if(m_DetectListTimer) 
+		KillTimer(m_DetectListTimer); 
+	m_DetectListTimer = 0;
+	m_DetectListTimerFlag=0;
+
+#if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
+
+	CS_HeartThreadFlag=FALSE;
+	Sleep(100);
+	TerminateThread(CS_Heartpthread,0);
+#endif
+
 
 	///STOP PLAY
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
@@ -1233,6 +1287,15 @@ void CYiRongCarDetectAIODlg::OnMenuitemHelp()
 	CDLGhelp DlgHelp;
 	DlgHelp.DoModal();
 }
+
+void CYiRongCarDetectAIODlg::OnMenuitemDetectServer()
+{
+	// TODO: Add your command handler code here
+	CDLGdetectServer DlgDetectServer;
+	DlgDetectServer.DoModal();
+
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 void CYiRongCarDetectAIODlg::ListMainInit(void)

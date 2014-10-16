@@ -375,6 +375,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DLGdetectServer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DLGdevicetree.cpp"
 				>
 				<FileConfiguration
@@ -1103,6 +1107,10 @@
 			</File>
 			<File
 				RelativePath="DLGBlackInOut.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DLGdetectServer.h"
 				>
 			</File>
 			<File

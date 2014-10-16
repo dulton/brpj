@@ -1,54 +1,45 @@
-// DLGdetectDevice.cpp : implementation file
+// DLGdetectServer.cpp : implementation file
 //
 
 #include "stdafx.h"
-#include "YiRongCarDetectFPQ.h"
-#include "DLGdetectDevice.h"
+#include "YiRongCarDetectAIO.h"
+#include "DLGdetectServer.h"
+
 
 #include "IO.h"
 extern IO OracleIO;
-// CDLGdetectDevice dialog
 
-#define HEART_MAX_TIME 20
-
-#define HEARTTEST_TIMER 122
 #define DETECTLIST_TIMER 123
+// CDLGdetectServer dialog
 
+IMPLEMENT_DYNAMIC(CDLGdetectServer, CDialog)
 
-IMPLEMENT_DYNAMIC(CDLGdetectDevice, CDialog)
-
-CDLGdetectDevice::CDLGdetectDevice(CWnd* pParent /*=NULL*/)
-	: CDialog(CDLGdetectDevice::IDD, pParent)
-	, m_ip(_T(""))
-	, m_channel(0)
+CDLGdetectServer::CDLGdetectServer(CWnd* pParent /*=NULL*/)
+	: CDialog(CDLGdetectServer::IDD, pParent)
 {
 
 }
 
-CDLGdetectDevice::~CDLGdetectDevice()
+CDLGdetectServer::~CDLGdetectServer()
 {
 }
 
-void CDLGdetectDevice::DoDataExchange(CDataExchange* pDX)
+void CDLGdetectServer::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_IP, m_ip);
-	DDX_Text(pDX, IDC_EDIT_CHANNEL, m_channel);
-	DDX_Control(pDX, IDC_LIST, m_list);
+	DDX_Control(pDX, IDC_LIST1, m_list);
 }
 
 
-BEGIN_MESSAGE_MAP(CDLGdetectDevice, CDialog)
-	ON_BN_CLICKED(IDOK, &CDLGdetectDevice::OnBnClickedOk)
-	ON_BN_CLICKED(IDCANCEL, &CDLGdetectDevice::OnBnClickedCancel)
-	ON_BN_CLICKED(IDC_BUTTON_FLUSH, &CDLGdetectDevice::OnBnClickedButtonFlush)
-	ON_BN_CLICKED(IDC_BUTTON_STOP, &CDLGdetectDevice::OnBnClickedButtonStop)
+BEGIN_MESSAGE_MAP(CDLGdetectServer, CDialog)
+	ON_BN_CLICKED(IDOK, &CDLGdetectServer::OnBnClickedOk)
+	ON_BN_CLICKED(IDCANCEL, &CDLGdetectServer::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_BUTTON_FLUSH, &CDLGdetectServer::OnBnClickedButtonFlush)
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_BUTTON_ADD, &CDLGdetectDevice::OnBnClickedButtonAdd)
-	ON_NOTIFY(NM_CLICK, IDC_LIST, &CDLGdetectDevice::OnNMClickList)
 END_MESSAGE_MAP()
 
-BOOL CDLGdetectDevice::OnInitDialog()
+
+BOOL CDLGdetectServer::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -74,59 +65,28 @@ BOOL CDLGdetectDevice::OnInitDialog()
 	//初始化不能加数据库
 
 	m_DetectListTimer = SetTimer(DETECTLIST_TIMER,5000,NULL);
-	m_HeartTestTimer = SetTimer(HEARTTEST_TIMER,HEART_MAX_TIME*1000,NULL);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
+// CDLGdetectServer message handlers
 
-// CDLGdetectDevice message handlers
-
-void CDLGdetectDevice::OnBnClickedOk()
+void CDLGdetectServer::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
 	//OnOK();
+
+
 }
 
-void CDLGdetectDevice::OnBnClickedCancel()
+void CDLGdetectServer::OnBnClickedCancel()
 {
 	// TODO: Add your control notification handler code here
 	OnCancel();
 }
-void CDLGdetectDevice::AutoSize()
-{
-	CRect rc(0, 0, 0, 0);
-	GetClientRect(&rc);
-	//需要变化在这添加
-	//列表
-	CRect list_Rect;
-	list_Rect.top = rc.top;
-	list_Rect.bottom = rc.bottom-150;
-	list_Rect.left = rc.left ;
-	list_Rect.right = rc.right;
 
-	//必须 样式=重叠，边框=调整大小
-	m_list.MoveWindow(list_Rect);
-
-	Invalidate();
-}
-
-void CDLGdetectDevice::OnBnClickedButtonAdd()
+void CDLGdetectServer::OnBnClickedButtonFlush()
 {
 	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-
-	OracleIO.DETECTSERVER_ADD(m_ip.GetBuffer(0), m_channel);
-	OnBnClickedButtonFlush();
-}
-
-
-void CDLGdetectDevice::OnBnClickedButtonFlush()
-{
-	// TODO: Add your control notification handler code here
-
-	chooseDetectDeviceid=0;
-	chooseCamid=0;
-
 	list<DEVICE_LIST> DeviceList;
 
 	m_list.DeleteAllItems();
@@ -188,74 +148,17 @@ void CDLGdetectDevice::OnBnClickedButtonFlush()
 		else
 			m_list.SetItemText(nItem,13,"关闭识别");
 	}
-
 }
 
-void CDLGdetectDevice::OnBnClickedButtonStop()
-{
-	long tDetectDeviceid=chooseDetectDeviceid;
-	long tCamid=chooseCamid;
-	// TODO: Add your control notification handler code here
-	if(	tDetectDeviceid>0 && tCamid>0)
-	{
-		OracleIO.MISSION_AddStop(tDetectDeviceid,tCamid);
-		MessageBox("已发送停止");
-	}
-
-}
-
-void CDLGdetectDevice::OnTimer(UINT_PTR nIDEvent)
+void CDLGdetectServer::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 
 	CDialog::OnTimer(nIDEvent);
-	UpdateData(TRUE);
 
 
 	if(nIDEvent == DETECTLIST_TIMER)
 	{
 		OnBnClickedButtonFlush();
 	}
-	//心跳测试
-	if(nIDEvent == HEARTTEST_TIMER)
-	{
-		OracleIO.DETECTSERVER_HeartTest(HEART_MAX_TIME);
-	}
-}
-
-
-void CDLGdetectDevice::OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	// TODO: Add your control notification handler code here
-
-	NM_LISTVIEW* p=	(NM_LISTVIEW *)pNMHDR;
-
-	//选中的赋值
-	long ListChoose= p->iItem;
-	//没中
-	if(-1 == ListChoose)
-		return ;
-
-	long chooseDetectDeviceid;
-	unsigned long int chooseCamid;
-
-	//获取用户名
-	char str[260];
-	m_list.GetItemText(ListChoose,0,str,260);
-
-	if(strlen(str)>0)
-		sscanf(str,"%d",&chooseDetectDeviceid);
-	else
-		chooseDetectDeviceid=0;
-
-	m_list.GetItemText(ListChoose,5,str,260);
-
-	if(strlen(str)>0)
-		sscanf(str,"%d",&chooseCamid);
-	else
-		chooseCamid=0;
-
-
-	*pResult = 0;
-
 }

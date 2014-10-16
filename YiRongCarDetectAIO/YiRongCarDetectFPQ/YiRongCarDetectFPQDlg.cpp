@@ -20,13 +20,13 @@ class CAboutDlg : public CDialog
 public:
 	CAboutDlg();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
-// 实现
+	// 实现
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -50,7 +50,7 @@ END_MESSAGE_MAP()
 
 
 CYiRongCarDetectFPQDlg::CYiRongCarDetectFPQDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CYiRongCarDetectFPQDlg::IDD, pParent)
+: CDialog(CYiRongCarDetectFPQDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -77,16 +77,23 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 	CYiRongCarDetectFPQDlg *pdlg = (CYiRongCarDetectFPQDlg*)lpParameter;
 	pdlg->ThreadFlag=TRUE;
 
-long long Missionid=0;
+	long long Missionid=0;
 
-unsigned long int camid=0;
-unsigned long int isplay=0;
-unsigned long int userid=0;
-char indate[32];
+	unsigned long int camid=0;
+	unsigned long int isplay=0;
+	unsigned long int userid=0;
+	char indate[32];
 
+	long DetectDeviceID=0;
 
 	while(pdlg->ThreadFlag)
 	{
+		Missionid=0;
+		camid=0;
+		isplay=0;
+		userid=0;
+		DetectDeviceID=0;
+		indate[0]=0;
 
 		//ORACLE查询任务 分发
 		if(false == OracleIO.MISSION_Read(&Missionid,&camid,&isplay,&userid,indate))
@@ -94,13 +101,55 @@ char indate[32];
 			pdlg->ThreadFlag=FALSE;
 			return 0;
 		}
-	
 
-		
+		if(isplay)
+		{
+			//开始
+			OracleIO.DEVICE_SearchForStop(&DetectDeviceID,camid);
+
+			if(DetectDeviceID>0)
+			{
+				// 已经开始 失效任务
+				OracleIO.MISSION_Edit( Missionid,0,2);
+			}
+			else
+			{
+				OracleIO.DEVICE_SearchForStart(&DetectDeviceID);
+
+				if(DetectDeviceID>0)
+				{
+					//有效
+					//预占用识别服务器。
+					OracleIO.DETECT_EditCamera(DetectDeviceID,camid);
+					//修改任务
+					OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1);
+				}
+				else
+				{
+					//满了
+					OracleIO.MISSION_Edit( Missionid,0,2);
+				}
+			}
+		}
+		else
+		{
+			//停止
+			OracleIO.DEVICE_SearchForStop(&DetectDeviceID,camid);
+
+			if(DetectDeviceID>0)
+			{
+				//有效
+				OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1);
+			}
+			else
+			{
+				// 多次停止  失效任务
+				OracleIO.MISSION_Edit( Missionid,0,2);
+			}
+		}
 
 		Sleep(1000);
 	}
-
 
 	pdlg->ThreadFlag=FALSE;
 	return 0;
@@ -145,7 +194,7 @@ BOOL CYiRongCarDetectFPQDlg::OnInitDialog()
 	if(OracleError == ReadFile_FAIL)
 	{
 		this->MessageBox("读数据库配置文件失败","连接数据库");
-	
+
 		return FALSE;
 	}
 	else if(OracleError == Instance_FAIL)
@@ -243,7 +292,7 @@ void CYiRongCarDetectFPQDlg::OnBnClickedCancel()
 	Sleep(1000);
 	TerminateThread(pthread,0);
 
-	 OracleIO.DisConnectionOracleDB();
+	OracleIO.DisConnectionOracleDB();
 	OnCancel();
 }
 
@@ -270,15 +319,15 @@ void CYiRongCarDetectFPQDlg::UpdatePannelPosition()
 {
 	GetClientRect(&m_clientRect);
 	/*
-		int button_top=40;
+	int button_top=40;
 
-		CRect dlg_Rect;
-		dlg_Rect.top = m_clientRect.top+button_top;
-		dlg_Rect.bottom = m_clientRect.bottom;
-		dlg_Rect.left = 	m_clientRect.left;
-		dlg_Rect.right =	m_clientRect.right;
-*/
-		DlgDetectDevice.MoveWindow(m_clientRect);
+	CRect dlg_Rect;
+	dlg_Rect.top = m_clientRect.top+button_top;
+	dlg_Rect.bottom = m_clientRect.bottom;
+	dlg_Rect.left = 	m_clientRect.left;
+	dlg_Rect.right =	m_clientRect.right;
+	*/
+	DlgDetectDevice.MoveWindow(m_clientRect);
 
 
 }

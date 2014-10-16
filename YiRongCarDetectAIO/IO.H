@@ -320,6 +320,48 @@ struct STREAM_SERVER_ST
 #endif
 
 
+
+#if OPEN_CS_MODE
+
+struct  S_DETECT
+{
+	long id;
+	char ip[32];
+	long isoccupy;
+	long channel;
+	long isenable;
+
+};
+
+struct  S_CAMERA
+{
+	long camid;
+	char name[128];
+	char ip[128];
+	char rtspurl[1024];
+	long isplay;
+
+};
+
+struct  S_MISSION
+{
+	long missionid;
+	long userid;
+	char time[32];
+	long isplay;
+};
+
+
+typedef struct S_DEVICE_LIST
+{
+	struct S_MISSION mission;
+	struct S_CAMERA camera;
+	struct S_DETECT detect;
+
+}DEVICE_LIST;
+
+#endif
+
 //ConnectionOracleDB 数据库连接函数 返回值 定义
 #define ReadFile_FAIL -1	//配置文件打开失败
 #define Instance_FAIL -2	//数据库ADO初始化失败
@@ -486,7 +528,9 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 	bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay);
 	bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay);
 	bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* myip,long DetectDeviceId,unsigned long int isplay);
-	bool IO::DETECTDEVICE_heart(char* myip);
+	bool IO::DETECTSERVER_heart(char* myip);
+
+	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);
 
 #endif
 

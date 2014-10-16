@@ -25,6 +25,7 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	, m_kakou_ip(_T(""))
 	, m_kakou_user(_T(""))
 	, m_kakou_psw(_T(""))
+	, m_myip(_T(""))
 {
 	//{{AFX_DATA_INIT(CDLGSetSystem)
 	m_check_alarmpic = TRUE;
@@ -54,6 +55,7 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	m_kakou_ip="35.24.13.26";
 	m_kakou_user="admin";
 	m_kakou_psw="fzga12345";
+	m_myip="10.142.50.126";
 	//}}AFX_DATA_INIT
 
 	m_BgBrush.CreateSolidBrush(RGB(216,216,216));         // 背景的颜色
@@ -115,6 +117,7 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_KAKOU_IP, m_kakou_ip);
 	DDX_Text(pDX, IDC_EDIT_KAKOU_USER, m_kakou_user);
 	DDX_Text(pDX, IDC_EDIT_KAKOU_PSW, m_kakou_psw);
+	DDX_Text(pDX, IDC_EDIT_MYIP, m_myip);
 }
 
 
@@ -195,6 +198,13 @@ BOOL CDLGSetSystem::OnInitDialog()
 	GetDlgItem(IDC_EDIT_KAKOU_USER)->ShowWindow(TRUE);
 	GetDlgItem(IDC_EDIT_KAKOU_PSW)->ShowWindow(TRUE);
 #endif
+
+#if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
+
+	GetDlgItem(IDC_STATIC_MYIP)->ShowWindow(TRUE);
+	GetDlgItem(IDC_EDIT_MYIP)->ShowWindow(TRUE);
+#endif
+
 
 	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
 	m_b_ok.SizeToContent();		//自适应图片大小
@@ -453,7 +463,7 @@ void CDLGSetSystem::readini(char *path)
 	char	kakou_user[ZOG_MAX_PATH_STR] = ""; 
 	char	kakou_psw[ZOG_MAX_PATH_STR] = ""; 
 	char	kakou_psw_ext[ZOG_MAX_PATH_STR] = ""; 
-	
+	char	myip[ZOG_MAX_PATH_STR] = ""; 
 
 	int check_displaypreview;
 	int check_update;
@@ -533,6 +543,9 @@ void CDLGSetSystem::readini(char *path)
 		}
 	}
 
+	if(GetPrivateProfileString("CSMODE", "myip", "", myip, ZOG_MAX_PATH_STR, path))
+		m_myip=myip;
+	
 	CreateDirectory(m_path_capbmp, NULL);
 	CreateDirectory(m_path_detect, NULL);
 	CreateDirectory(m_path_record, NULL);
@@ -588,6 +601,9 @@ void CDLGSetSystem::writeini(char *path)
 	char	kakou_psw_ext[(ZOG_MAX_NAME_STR+1)*5]="";
 	ZogEnCode(m_kakou_psw.GetBuffer(0),kakou_psw_ext);
 	WritePrivateProfileString("KaKou", "password",  kakou_psw_ext, path);
+
+	WritePrivateProfileString("CSMODE", "myip",  m_myip.GetBuffer(0), path);
+
 }
 
 void CDLGSetSystem::OnButtonHaikangPath() 
