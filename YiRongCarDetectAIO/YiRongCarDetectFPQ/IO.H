@@ -37,6 +37,7 @@ struct  S_MISSION
 {
 	long missionid;
 	long userid;
+	char username[64];
 	char time[32];
 	long isplay;
 };
@@ -96,14 +97,14 @@ public:
 	bool IO::DETECTSERVER_HeartTest(long maxtime);
 	bool IO::DETECTSERVER_ADD(char *ip,long channel);
 
-	bool IO::MISSION_Edit(long long Missionid,long DetectDeviceid,int flag);
-	bool IO::DETECT_EditCamera(long DetectDeviceid,long camid);
+	bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag);
+bool IO::DETECT_EditCamera(long DetectServerID,long long missionid,long camid);
 
-	bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate);
-	bool IO::MISSION_AddStop(long DetectDeviceid,unsigned long int camid);
+	int IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate);
+	bool IO::MISSION_AddStop(long DetectServerID,unsigned long int camid);
 
-	bool IO::DEVICE_SearchForStop(long *DetectDeviceID,long camid);
-	bool IO::DEVICE_SearchForStart(long *DetectDeviceID);
+	bool IO::DEVICE_SearchForStop(long *DetectServerID,long camid);
+	bool IO::DEVICE_SearchForStart(long *DetectServerID);
 
 
 	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);

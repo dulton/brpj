@@ -174,7 +174,6 @@ struct SET_USER_DATA_ST
 	int	detectset;
 	int level;
 	long detect_limit;
-	long cur_detect_number;
 };
 
 //命名太长会出错
@@ -347,6 +346,7 @@ struct  S_MISSION
 {
 	long missionid;
 	long userid;
+	char username[64];
 	char time[32];
 	long isplay;
 };
@@ -421,6 +421,7 @@ public:
 								 long userID,long userLV);
 	//判断设备是否存在
 	bool IO::DEVICE_JudgeCamera(long ncameraid);
+bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息
@@ -429,10 +430,6 @@ public:
 	bool USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo);
 	bool USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo);
 	bool USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfo);
-	//获取当前识别数量以及限制数量
-	bool IO::USER_GetDetectLimit(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo);
-	//更新当前识别的数量
-	bool IO::USER_SaveCurrentDetect(unsigned long int nid,long cur_detect_number);
 	/**************************系统日志表*******************************/
 	bool LOG_AddNewSystemLog(char *userName,char *logStr);				//新增系统日志
 	unsigned long LOG_GetSystemLogNum(char *userName,char *startTime,char *endTime,int flag,char *SQLstr);
@@ -526,9 +523,11 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 	/**************************服务+客户端*******************************/
 #if OPEN_CS_MODE
 	bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned long int isplay);
-	bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay);
+	int IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay);
 	bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* myip,long DetectDeviceId,unsigned long int isplay);
 	bool IO::DETECTSERVER_heart(char* myip);
+	bool IO::DETECTFLAG_test(unsigned long int camid, long int *isplay);
+	long IO::DETECTSERVER_UserOpenNum(unsigned long int userid);
 
 	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);
 

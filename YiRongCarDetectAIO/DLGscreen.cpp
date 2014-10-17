@@ -15,6 +15,9 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 #include "DLGSetSystem.h"
 extern CDLGSetSystem DlgSetSystem;
 
+#include "DLGLogin.h"
+extern CDLGLogin DlgLogin;
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -222,6 +225,20 @@ void CDLGscreen::GetCurWindCamInfo(int nCuWinID,struct DEVICE_INFO &Info)
 void CDLGscreen::EnableDetect(int nCuWinID,bool bEnable)
 {
 	m_videoInfo[nCuWinID].enableDetect = bEnable;
+
+#if OPEN_CS_MODE &&	ALLTAB_CLIENT_MODE
+	//CS模式 开启关闭识别
+	if(true==bEnable)
+	{
+		if(OracleIO.DETECTSERVER_UserOpenNum(DlgLogin.CurrentUser.nid) < DlgLogin.CurrentUser.detect_limit)
+			OracleIO.Mission_ADD(m_videoInfo[nCuWinID].camID,DlgLogin.CurrentUser.nid,bEnable);
+		else
+			DlgMain->ShowRuntimeMessage("识别数量超出用户最大权限",1);
+	}
+	else
+		OracleIO.Mission_ADD(m_videoInfo[nCuWinID].camID,DlgLogin.CurrentUser.nid,bEnable);
+#endif
+
 }
 
 //开启/关闭报警
@@ -427,11 +444,11 @@ void CDLGscreen::Capture(char *filename)
 }
 
 //删除设备
-void CDLGscreen::DeleteDevice(CString sip)
+void CDLGscreen::DeleteDevice(long camID)
 {
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
-		if(m_videoInfo[i].ip == sip)
+		if(m_videoInfo[i].camID == camID)
 		{
 			StopPlay(i);
 			DlgMain->DlgNormal.UpdateNormalWnd();
@@ -445,6 +462,7 @@ void CDLGscreen::DeleteDevice(CString sip)
 			m_videoInfo[i].enableDetect = false;
 			m_videoInfo[i].enableAlarm = false;
 			m_videoInfo[i].playHandle = 0;
+
 		}
 	}
 }

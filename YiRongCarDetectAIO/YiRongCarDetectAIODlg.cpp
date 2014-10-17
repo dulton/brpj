@@ -30,6 +30,7 @@ extern CDLGLogin DlgLogin;
 #endif
 
 #define DETECTLIST_TIMER 123
+#define DETECTFLAG_TIMER 120
 
 ////////////////////////////////////////
 #include "URLencode.h"
@@ -122,6 +123,8 @@ CYiRongCarDetectAIODlg::CYiRongCarDetectAIODlg(CWnd* pParent /*=NULL*/)
 	DlgMain=this;
 	m_DetectListTimer=0;
 	m_DetectListTimerFlag=0;
+	m_DetectFlagTimer = 0;
+	m_DetectFlagTimerFlag=0;
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 		oldnid[i]=-1;
 }
@@ -277,7 +280,12 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	if(DlgLogin.SilentMode)
 	{
 		GetMenu()->GetSubMenu(1)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
+#if !OPEN_CS_MODE
+		//客户端可以重登陆
 		GetMenu()->GetSubMenu(1)->EnableMenuItem(1,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+#endif
+
 		GetMenu()->GetSubMenu(1)->EnableMenuItem(2,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	}
 
@@ -289,7 +297,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(12,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 
-	GetMenu()->GetSubMenu(3)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+//	GetMenu()->GetSubMenu(3)->EnableMenuItem(0,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 
@@ -299,9 +307,29 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 #endif
 
+
+#if OPEN_CS_MODE && !ALLTAB_CLIENT_MODE
+	//CS模式的服务端 需要屏蔽手动按钮
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(2,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(3,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(5,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(2)->EnableMenuItem(12,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(3)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	GetMenu()->GetSubMenu(3)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+#endif
+
 #if !OPEN_CS_MODE
 
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(8,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
+#endif
+
+#if OPEN_CS_MODE && ALLTAB_CLIENT_MODE
+
+	m_DetectFlagTimer = SetTimer(DETECTFLAG_TIMER,5000,NULL);
+	m_DetectFlagTimerFlag=1;
 
 #endif
 
@@ -741,6 +769,18 @@ void CYiRongCarDetectAIODlg::OnCancel()
 		KillTimer(m_DetectListTimer); 
 	m_DetectListTimer = 0;
 	m_DetectListTimerFlag=0;
+
+
+
+#if (OPEN_CS_MODE && ALLTAB_CLIENT_MODE)
+
+	if(m_DetectFlagTimer) 
+		KillTimer(m_DetectFlagTimer); 
+	m_DetectFlagTimer = 0;
+	m_DetectFlagTimerFlag=0;
+
+#endif
+
 
 #if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
 
@@ -1633,6 +1673,31 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 	char fail[256];
 	CDialog::OnTimer(nIDEvent);
 	UpdateData(TRUE);
+
+	//CS的客户端 检测是否识别
+#if OPEN_CS_MODE && ALLTAB_CLIENT_MODE
+
+	if(nIDEvent == DETECTFLAG_TIMER )
+	{
+		for(int j=0;j<MAX_DEVICE_NUM;j++)
+		{
+			if(DlgScreen.m_videoInfo[j].isplay && DlgScreen.m_videoInfo[j].camID >=0)
+			{
+				long isdetect;
+				isdetect=0;
+				OracleIO.DETECTFLAG_test(DlgScreen.m_videoInfo[j].camID,&isdetect);
+				//不同时刷新
+				if((long)(DlgScreen.m_videoInfo[j].enableDetect) != isdetect)
+				{
+					DlgScreen.m_videoInfo[j].enableDetect=isdetect;
+					DlgNormal.ChangeDetectFontPic(isdetect);
+				}
+			}
+		}
+	}
+
+#endif
+
 
 #if ALLTAB_CLIENT_MODE
 

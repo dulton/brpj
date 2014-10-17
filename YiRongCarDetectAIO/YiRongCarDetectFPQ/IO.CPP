@@ -249,7 +249,7 @@ unsigned long long IO::AutoAddNid(TCHAR *TableName,TCHAR *NidName)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::AutoAddNid error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+	//	AfxMessageBox(in_errormessage);
 
 		return 0;
 	}  
@@ -280,13 +280,13 @@ bool IO::DETECTSERVER_HeartTest(long maxtime)
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DETECTSERVER_HeartTest error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;
@@ -332,7 +332,7 @@ bool IO::DETECTSERVER_ADD(char *ip,long channel)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DETECTSERVER_ADD error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -340,7 +340,7 @@ bool IO::DETECTSERVER_ADD(char *ip,long channel)
 }
 
 //分配服务器后修改任务
-bool IO::MISSION_Edit(long long Missionid,long DETECTSERVERid,int flag)
+bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag)
 {
 
 	while(IOwriteLock)
@@ -353,19 +353,19 @@ bool IO::MISSION_Edit(long long Missionid,long DETECTSERVERid,int flag)
 	{
 		CString	strSql;
 		//分配
-		strSql.Format(_T("update TB_mission set detectid=%d,flag=%d where nid=%I64u"),DETECTSERVERid,Missionid,flag);
+		strSql.Format(_T("update TB_mission set detectid=%d,flag=%d where nid=%I64u"),DetectServerID,flag,Missionid);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::MISSION_Edit error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;
@@ -375,7 +375,7 @@ bool IO::MISSION_Edit(long long Missionid,long DETECTSERVERid,int flag)
 
 
 //预先占用识别服务器
-bool IO::DETECT_EditCamera(long DETECTSERVERid,long camid)
+bool IO::DETECT_EditCamera(long DetectServerID,long long missionid,long camid)
 {
 
 	while(IOwriteLock)
@@ -388,19 +388,19 @@ bool IO::DETECT_EditCamera(long DETECTSERVERid,long camid)
 	{
 		CString	strSql;
 		//分配
-		strSql.Format(_T("update TB_DETECT_SERVER set ncamera=%d where nid=%d"),camid,DETECTSERVERid);
+		strSql.Format(_T("update TB_DETECT_SERVER set ncamera=%d,missionid=%I64u where nid=%d"),camid,missionid,DetectServerID);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DETECT_EditCamera error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;
@@ -409,7 +409,7 @@ bool IO::DETECT_EditCamera(long DETECTSERVERid,long camid)
 }
 
 //读取任务
-bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate)
+int IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate)
 {
 	while(IOwriteLock)
 	{
@@ -427,7 +427,7 @@ bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned lon
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
-			return false;
+			return 0;
 		}
 		else
 		{
@@ -444,7 +444,7 @@ bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned lon
 		}
 
 		IOwriteLock=false;
-		return false;
+		return 1;
 	}
 	catch(_com_error e)
 	{
@@ -453,13 +453,13 @@ bool IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned lon
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
-		return false;
+		return -1;
 	}  
 	IOwriteLock=false;
 }
 
 //在表中找摄像头 进行停止
-bool IO::DEVICE_SearchForStop(long *DETECTSERVERID,long camid)
+bool IO::DEVICE_SearchForStop(long *DetectServerID,long camid)
 {
 
 
@@ -469,6 +469,8 @@ bool IO::DEVICE_SearchForStop(long *DETECTSERVERID,long camid)
 	}
 
 	IOwriteLock=true;
+
+	(*DetectServerID)=0;
 	try
 	{
 		CString	strSql;
@@ -485,20 +487,19 @@ bool IO::DEVICE_SearchForStop(long *DETECTSERVERID,long camid)
 			m_pRecordsetPtr->MoveFirst();
 		}
 
-		(*DETECTSERVERID)=0;
 		if(!m_pRecordsetPtr->adoEOF)
 		{
-			(*DETECTSERVERID) =VarSaveNumber2(m_pRecordsetPtr,"NID");
+			(*DetectServerID) =VarSaveNumber2(m_pRecordsetPtr,"NID");
 		}
 
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_SearchForStop error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;
@@ -510,7 +511,7 @@ bool IO::DEVICE_SearchForStop(long *DETECTSERVERID,long camid)
 
 
 //在表中找空余设备 进行开始
-bool IO::DEVICE_SearchForStart(long *DETECTSERVERID)
+bool IO::DEVICE_SearchForStart(long *DetectServerID)
 {
 
 	while(IOwriteLock)
@@ -519,6 +520,8 @@ bool IO::DEVICE_SearchForStart(long *DETECTSERVERID)
 	}
 
 	IOwriteLock=true;
+
+	(*DetectServerID)=0;
 	try
 	{
 		CString	strSql;
@@ -535,20 +538,19 @@ bool IO::DEVICE_SearchForStart(long *DETECTSERVERID)
 			m_pRecordsetPtr->MoveFirst();
 		}
 
-		(*DETECTSERVERID)=0;
 		if(!m_pRecordsetPtr->adoEOF)
 		{
-			(*DETECTSERVERID) =VarSaveNumber2(m_pRecordsetPtr,"nid");
+			(*DetectServerID) =VarSaveNumber2(m_pRecordsetPtr,"nid");
 		}
 
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_SearchForStop error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;
@@ -557,7 +559,7 @@ bool IO::DEVICE_SearchForStart(long *DETECTSERVERID)
 }
 
 //发送强制停止任务 已分配
-bool IO::MISSION_AddStop(long DETECTSERVERid,unsigned long int camid)
+bool IO::MISSION_AddStop(long DetectServerID,unsigned long int camid)
 {
 
 	while(IOwriteLock)
@@ -582,7 +584,7 @@ bool IO::MISSION_AddStop(long DETECTSERVERid,unsigned long int camid)
 			m_pRecordsetPtr->PutCollect("userid", _variant_t(999999));
 			m_pRecordsetPtr->PutCollect("ncamera", _variant_t(camid));
 
-			m_pRecordsetPtr->PutCollect("DETECTID", _variant_t(DETECTSERVERid));
+			m_pRecordsetPtr->PutCollect("DETECTID", _variant_t(DetectServerID));
 			m_pRecordsetPtr->PutCollect("isplay", _variant_t(0));
 			m_pRecordsetPtr->PutCollect("flag", _variant_t(1));
 
@@ -607,12 +609,15 @@ bool IO::MISSION_AddStop(long DETECTSERVERid,unsigned long int camid)
 }
 /*
 create or replace view devicelist_view as
-select a."NID",a."SIP",a."ISOCCUPY",a."CHANNELNUM",a."ISENABLE",a."MISSIONID",b.userid,b.isplay,to_char(b.indate) cindate,c.ncamera,c.scameraname,c.sipserver camip,c.rtspurl,c.isplay camisplay
+select a."NID",a."SIP",a."ISOCCUPY",a."CHANNELNUM",a."ISENABLE",a."MISSIONID",b.userid,b.isplay,to_char(b.indate) cindate,c.ncamera,c.scameraname,c.sipserver camip,c.rtspurl,c.isplay camisplay,d.suser
 from TB_DETECT_SERVER a
 left join tb_mission b
 on a.missionid = b.nid
 left join tb_device c
-on a.nid =c.DETECTID order by nid desc;
+on a.nid =c.DETECTID 
+left join tb_user d
+on d.nid = b.userid
+order by nid desc;
 
 */
 //视图查询
@@ -655,6 +660,7 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 
 			tempdata.mission.missionid=VarSaveNumber2(m_pRecordsetPtr,"missionid");
 			tempdata.mission.userid=VarSaveNumber2(m_pRecordsetPtr,"userid");
+			VarSaveStr2(tempdata.mission.username,m_pRecordsetPtr,"suser");
 			tempdata.mission.isplay=VarSaveNumber2(m_pRecordsetPtr,"isplay");
 			VarSaveStr2(tempdata.mission.time ,m_pRecordsetPtr,"cindate");
 
@@ -670,13 +676,13 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 
 		m_pRecordsetPtr->Close();
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_ReadList error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;

@@ -99,9 +99,15 @@ END_MESSAGE_MAP()
 BOOL CDLGnormal::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
+	//如果识别数量限制 也要屏蔽
+	if(DlgLogin.CurrentUser.detect_limit<1)
+	{
+		GetDlgItem(IDC_BUTTON_OPEN_DETECT)->EnableWindow(FALSE);
+	}
 #if ALLTAB_CLIENT_MODE
 
+	GetDlgItem(IDC_BUTTON_OPEN_DETECT_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CLOSE_DETECT_ALL)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_OPEN_RECORD)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_OPEN_RECORD_ALL)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_CLOSE_RECORD_ALL)->EnableWindow(FALSE);
@@ -109,6 +115,24 @@ BOOL CDLGnormal::OnInitDialog()
 	GetDlgItem(IDC_BUTTON_SET_BLACK)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_HISTORY_VIDEO)->EnableWindow(FALSE);
 #endif
+
+#if OPEN_CS_MODE && !ALLTAB_CLIENT_MODE
+	//CS模式的服务端 需要屏蔽手动按钮
+
+	GetDlgItem(IDC_BUTTON_OPEN_PREVIEW)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_OPEN_PREVIEW_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CLOSE_PREVIEW_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_OPEN_DETECT)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_OPEN_DETECT_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CLOSE_DETECT_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_OPEN_RECORD)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_OPEN_RECORD_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CLOSE_RECORD_ALL)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_SET_CAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_SET_BLACK)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_HISTORY_VIDEO)->EnableWindow(FALSE);
+#endif
+
 
 	switch(DlgMain->DlgShortCut.screenmode)
 	{
@@ -691,6 +715,8 @@ void CDLGnormal::StartPlay(int screenNo)
 		{
 			if(screenNo==DlgMain->DlgScreen.GetCurWindId())
 				ChangePreviewFontPic(true);
+
+
 		}
 	}
 }
@@ -709,6 +735,7 @@ void CDLGnormal::StopPlay(int screenNo)
 
 bool CDLGnormal::OpenDetect(int screenNo)
 {
+	//zogcsmode
 	bool isplay = DlgMain->DlgScreen.GetCurWindPlayState(screenNo);
 	if(isplay)				//正在播放
 	{

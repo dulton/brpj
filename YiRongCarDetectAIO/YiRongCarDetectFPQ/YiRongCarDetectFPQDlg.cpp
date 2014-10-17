@@ -96,7 +96,7 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 		indate[0]=0;
 
 		//ORACLE查询任务 分发
-		if(false == OracleIO.MISSION_Read(&Missionid,&camid,&isplay,&userid,indate))
+		if(OracleIO.MISSION_Read(&Missionid,&camid,&isplay,&userid,indate)<0)
 		{
 			pdlg->ThreadFlag=FALSE;
 			return 0;
@@ -120,7 +120,7 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 				{
 					//有效
 					//预占用识别服务器。
-					OracleIO.DETECT_EditCamera(DetectDeviceID,camid);
+					OracleIO.DETECT_EditCamera(DetectDeviceID,Missionid,camid);
 					//修改任务
 					OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1);
 				}
@@ -148,7 +148,7 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 			}
 		}
 
-		Sleep(1000);
+		Sleep(200);
 	}
 
 	pdlg->ThreadFlag=FALSE;

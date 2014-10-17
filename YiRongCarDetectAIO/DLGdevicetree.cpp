@@ -490,7 +490,13 @@ void CDLGdevicetree::OnMenuitemDeleteDevice()
 	int nResponse=dlgw.DoModal();
 	if (nResponse == IDOK)
 	{
-		DlgMain->DlgScreen.DeleteDevice(iplist[i].ip);
+		DlgMain->DlgScreen.DeleteDevice(iplist[i].camID);
+
+#if OPEN_CS_MODE	
+		OracleIO.Mission_ADD(iplist[i].camID,DlgLogin.CurrentUser.nid,0);
+		Sleep(1000);
+#endif
+
 		OracleIO.DEVICE_DeleteCamera(iplist[i].camID);
 		//删除定时录制计划
 		OracleIO.RECORD_PlanTable_DeleteWithCamID(iplist[i].camID);
@@ -539,7 +545,23 @@ void CDLGdevicetree::OnMenuitemDeletearea()
 	int nResponse=dlgw.DoModal();
 	if (nResponse == IDOK)
 	{
+		list<long> ncameraList;
+		ncameraList.clear();
+		OracleIO.DEVICE_GetCameraWithAreaID(DlgAddDevice.AreaList[ItemCount].nid,ncameraList);
+		if(ncameraList.size()>0)
+		{
+			list<long>::iterator beglist;
+			for(beglist=ncameraList.begin();beglist!=ncameraList.end();beglist++)
+			{		
+				DlgMain->DlgScreen.DeleteDevice((*beglist));
+#if OPEN_CS_MODE	
+				OracleIO.Mission_ADD((*beglist),DlgLogin.CurrentUser.nid,0);
+				Sleep(200);
+#endif
+			}
+		}
 		m_DeviceTree.DeleteItem(m_selectItem);
+
 		OracleIO.DEVICE_DeleteCameraWithAreaID(DlgAddDevice.AreaList[ItemCount].nid);
 		OracleIO.DEVICE_DeleteArea(DlgAddDevice.AreaList[ItemCount].nid);
 
@@ -558,7 +580,10 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 		MessageBox("无 预览 权限，请联系管理员",MESSAGEBOX_TITLE);
 		return ;
 	}
-
+#if OPEN_CS_MODE && !ALLTAB_CLIENT_MODE
+	//CS模式的服务端 需要屏蔽手动按钮
+	return ;
+#endif
 	// TODO: Add your control notification handler code here
 	CPoint point;
 

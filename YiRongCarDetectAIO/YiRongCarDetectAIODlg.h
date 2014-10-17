@@ -47,6 +47,10 @@ public:
 	void DisplayNetPic(int iItem);
 	void DisplayTomcatPic(int iItem);
 
+	//CS模式 检测识别标志
+	UINT m_DetectFlagTimer;
+	int m_DetectFlagTimerFlag;
+
 	//快捷按钮
 	CDLGshortcut DlgShortCut;
 	//分屏的屏幕

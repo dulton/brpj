@@ -66,8 +66,9 @@ BOOL CDLGdetectDevice::OnInitDialog()
 
 	m_list.InsertColumn(10, _T("任务ID") , LVCFMT_LEFT, 60);
 	m_list.InsertColumn(11, _T("下发用户" ), LVCFMT_LEFT, 60);
-	m_list.InsertColumn(12, _T("下发时间"), LVCFMT_LEFT, 140);
-	m_list.InsertColumn(13, _T("下发指令"), LVCFMT_LEFT, 60);
+	m_list.InsertColumn(12, _T("用户名" ), LVCFMT_LEFT, 60);
+	m_list.InsertColumn(13, _T("下发时间"), LVCFMT_LEFT, 130);
+	m_list.InsertColumn(14, _T("下发指令"), LVCFMT_LEFT, 60);
 
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
@@ -181,12 +182,14 @@ void CDLGdetectDevice::OnBnClickedButtonFlush()
 		sprintf(str,"%d",beglist->mission.userid);
 		m_list.SetItemText(nItem,11,str);
 
-		m_list.SetItemText(nItem,12,beglist->mission.time);
+		m_list.SetItemText(nItem,12,beglist->mission.username);
+
+		m_list.SetItemText(nItem,13,beglist->mission.time);
 
 		if(beglist->mission.isplay)
-			m_list.SetItemText(nItem,13,"开启识别");
+			m_list.SetItemText(nItem,14,"开启识别");
 		else
-			m_list.SetItemText(nItem,13,"关闭识别");
+			m_list.SetItemText(nItem,14,"关闭识别");
 	}
 
 }
@@ -239,7 +242,6 @@ void CDLGdetectDevice::OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult)
 	long chooseDetectDeviceid;
 	unsigned long int chooseCamid;
 
-	//获取用户名
 	char str[260];
 	m_list.GetItemText(ListChoose,0,str,260);
 

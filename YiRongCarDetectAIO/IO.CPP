@@ -556,6 +556,41 @@ bool IO::DEVICE_DeleteCamera(long cameraID)
 		return false;
 	}  
 }
+bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList)
+{
+	try
+	{
+		CString strSql;
+		strSql.Format("select ncamera from tb_device where nid=%d",AreaID);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		if(m_pRecordsetPtr->BOF)
+		{
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			long camid= VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+
+			ncameraList.push_back(camid);
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_GetCameraWithAreaID error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		return false;
+	}  
+}
 
 bool IO::DEVICE_DeleteCameraWithAreaID(long AreaID)
 {
@@ -708,7 +743,6 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 			m_pRecordsetPtr->PutCollect("nid", _variant_t(nid));								//nid
 			m_pRecordsetPtr->PutCollect("nlevel", _variant_t(UserInfo.level));								//nid
 			m_pRecordsetPtr->PutCollect("NDETECTLIMIT", _variant_t(UserInfo.detect_limit));								//nid
-			m_pRecordsetPtr->PutCollect("NCURRENTDETECT", _variant_t(0));		
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
@@ -934,87 +968,6 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 		AfxMessageBox(in_errormessage);
 		return false;
 	}  
-}
-
-
-bool IO::USER_GetDetectLimit(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo)
-{	
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-
-	IOwriteLock=true;
-
-	try
-	{
-		CString	strsql;
-		strsql.Format(_T("select ndetectlimit, ncurrentdetect from tb_user where nid=%d"),nid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
-		if(m_pRecordsetPtr->BOF)
-		{
-			IOwriteLock=false;
-			return false;
-		}
-		UserInfo->detect_limit = VarSaveNumber2(m_pRecordsetPtr,"ndetectlimit");
-		UserInfo->cur_detect_number = VarSaveNumber2(m_pRecordsetPtr,"ncurrentdetect");
-
-		m_pRecordsetPtr->Close();
-		IOwriteLock=false;
-		return true;
-	}
-	catch(_com_error e)
-	{
-		CString in_errormessage;
-		in_errormessage.Format("IO::USER_GetDetectLimit error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
-		IOwriteLock=false;
-		return false;
-	}  
-	IOwriteLock=false;
-}
-
-bool IO::USER_SaveCurrentDetect(unsigned long int nid,long cur_detect_number)
-{	
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-
-	IOwriteLock=true;
-
-	try
-	{
-		CString strSql;
-
-		strSql.Format(_T("update tb_user set ncurrentdetect=%d where nid=%d"),\
-					cur_detect_number,nid);
-
-		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
-		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
-		{
-			IOwriteLock=true;
-			return	true;
-		}
-		else
-		{
-			IOwriteLock=true;
-			return false;
-		}
-		
-		IOwriteLock=true;
-		return true;
-	}
-	catch(_com_error e)
-	{
-		CString in_errormessage;
-		in_errormessage.Format("IO::USER_SaveCurrentDetect error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
-		IOwriteLock=false;
-		return false;
-	}  
-	IOwriteLock=false;
 }
 
 
@@ -4307,7 +4260,7 @@ bool IO::Mission_ADD(unsigned long int camid,unsigned long int userid,unsigned l
 }
 
 //读取任务并修改
-bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay)
+int IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int *camid,unsigned long int *isplay)
 {
 	while(IOwriteLock)
 	{
@@ -4325,8 +4278,7 @@ bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int
 		if(m_pRecordsetPtr->BOF)
 		{
 			IOwriteLock=false;
-
-			return false;
+			return 0;
 		}
 		else
 		{
@@ -4347,7 +4299,7 @@ bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int
 		}
 
 		IOwriteLock=false;
-		return false;
+		return 1;
 	}
 	catch(_com_error e)
 	{
@@ -4356,10 +4308,103 @@ bool IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
+		return -1;
+	}  
+	IOwriteLock=false;
+}
+
+//判断该摄像头是否开启识别
+bool IO::DETECTFLAG_test(unsigned long int camid, long int *isplay)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	
+	(*isplay) =0;
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select camisplay from DEVICELIST_VIEW where ncamera=%d and isenable=1"),camid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			(*isplay) =  VarSaveNumber2(m_pRecordsetPtr,"camisplay");  
+		}
+
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DETECTFLAG_test error：%s", e.ErrorMessage());
+		//AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
 		return false;
 	}  
 	IOwriteLock=false;
 }
+
+//判断 用户现在开启多少识别。预占位也算
+long IO::DETECTSERVER_UserOpenNum(unsigned long int userid)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select count(1) from TB_DETECT_SERVER a left join tb_mission b on a.missionid=b.nid where a.missionid  is not null and b.userid=%d"),userid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return 0;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			long temp=  VarSaveNumber2(m_pRecordsetPtr,"count(1)");  
+			IOwriteLock=false;
+			return temp;
+		}
+
+		IOwriteLock=false;
+		return 0;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DETECTSERVER_UserOpenNum error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return 0;
+	}  
+	IOwriteLock=false;
+}
+
+
 
 //修改设备的播放状态 以及设备占用状态
 bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* myip,long DetectDeviceId,unsigned long int isplay)
@@ -4402,7 +4447,6 @@ bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* my
 
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
-
 		IOwriteLock=false;
 		return true;
 	}
@@ -4410,7 +4454,7 @@ bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* my
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::Mission_DeviceFlag error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -4434,7 +4478,6 @@ bool IO::DETECTSERVER_heart(char* myip)
 		//开始播放
 		strSql.Format(_T("update TB_DETECT_SERVER set lasttime=sysdate where sip='%s'"),myip);
 		
-		
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
@@ -4445,7 +4488,7 @@ bool IO::DETECTSERVER_heart(char* myip)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DETECTSERVER_heart error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 		return false;
 	}  
@@ -4494,6 +4537,7 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 
 			tempdata.mission.missionid=VarSaveNumber2(m_pRecordsetPtr,"missionid");
 			tempdata.mission.userid=VarSaveNumber2(m_pRecordsetPtr,"userid");
+			VarSaveStr2(tempdata.mission.username,m_pRecordsetPtr,"suser");
 			tempdata.mission.isplay=VarSaveNumber2(m_pRecordsetPtr,"isplay");
 			VarSaveStr2(tempdata.mission.time ,m_pRecordsetPtr,"cindate");
 
@@ -4509,13 +4553,13 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 
 		m_pRecordsetPtr->Close();
 		IOwriteLock=false;
-		return false;
+		return true;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_ReadList error：%s", e.ErrorMessage());
-		AfxMessageBox(in_errormessage);
+		//AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
 		return false;

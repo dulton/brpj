@@ -8,6 +8,9 @@
 //////////////////////
 #include "YiRongCarDetectAIODlg.h"
 extern CYiRongCarDetectAIODlg *DlgMain;
+#include "DLGLogin.h"
+extern CDLGLogin DlgLogin;
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -73,14 +76,36 @@ BOOL CDLGshortcut::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-#if ALLTAB_CLIENT_MODE
+	//非CS模式的客户端都要屏蔽
+#if !OPEN_CS_MODE && ALLTAB_CLIENT_MODE
 
 	GetDlgItem(IDC_BUTTON_CAR)->EnableWindow(FALSE);
+
+#endif
+
+	//如果识别数量限制 也要屏蔽
+	if(DlgLogin.CurrentUser.detect_limit<1)
+	{
+		GetDlgItem(IDC_BUTTON_CAR)->EnableWindow(FALSE);
+	}
+
+#if ALLTAB_CLIENT_MODE
+
 	GetDlgItem(IDC_BUTTON_ALARM)->EnableWindow(FALSE);
 	GetDlgItem(IDC_SET_CAR)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(FALSE);
 
 #endif
+
+#if OPEN_CS_MODE && !ALLTAB_CLIENT_MODE
+	//CS模式的服务端 需要屏蔽手动按钮
+	GetDlgItem(IDC_BUTTON_PREVIEW)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_CAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_ALARM)->EnableWindow(FALSE);
+	GetDlgItem(IDC_SET_CAR)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_RECORD)->EnableWindow(FALSE);
+#endif
+
 
 	//识别按钮图片
 	CarBMP();

@@ -111,7 +111,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
-#define ALLTAB_CLIENT_MODE 0
+#define ALLTAB_CLIENT_MODE 1
 //汽车模式 1 电动车模式 0
 //切换电动车和汽车。
 //A.记得换到IDD主窗口里换LOGO。 电动车用 IDB_LOGO_ELECAR 和汽车用 IDB_LOGO
@@ -141,7 +141,8 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define OPEN_TOMCAT_MODE 1
 
 
-//服务+客户端 模式
+//服务+客户端 模式 此时 服务器本身不能开识别。只能通过客户端远程控制
+//当OPEN_CS_MODE 为0  服务端本身可以识别，客户端只能传输数据，不能远程控制
 #define OPEN_CS_MODE 1
 
 //////////////////////////////////////////////////////

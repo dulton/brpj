@@ -119,7 +119,7 @@ public:
 	void CarDetectSet(void);
 
 	//É¾³ýÉè±¸
-	void DeleteDevice(CString sip);
+	void DeleteDevice(long camID);
 
 	void SwitchMultiWnd(int nSplit);
 	bool StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
