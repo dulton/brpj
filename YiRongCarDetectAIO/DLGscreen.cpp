@@ -60,6 +60,8 @@ CDLGscreen::CDLGscreen(CWnd* pParent /*=NULL*/)
 		CarSet[i].CarColor=1;
 	}
 	*/
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+		CSdeviceID[i]=0;
 }
 
 
@@ -327,10 +329,11 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 		m_videoInfo[screenNo].RTP = RTP;
 		m_videoInfo[screenNo].DecodeTag = DecodeTag;
 
+#if (!(OPEN_CS_MODE && !ALLTAB_CLIENT_MODE))
+//服务器不能更新图标
 		DlgMain->DlgNormal.UpdateNormalWnd();
+#endif
 	}
-	
-
 
 	return ret;
 
@@ -351,6 +354,7 @@ void CDLGscreen::StopPlay(int screenNo)
 	{
 		m_videoInfo[screenNo].isplay = false;
 		m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
+		DlgMain->ShowCameraMessage(m_videoInfo[screenNo].name.GetBuffer(0),"连接停止",FALSE);
 	}
 	
 #if OPEN_CARDETECT_CODE 

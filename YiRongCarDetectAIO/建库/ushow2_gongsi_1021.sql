@@ -1,9 +1,9 @@
 --------------------------------------------
 -- Export file for user USHOW2            --
--- Created by wyx on 2014-10-17, 16:32:06 --
+-- Created by wyx on 2014-10-21, 14:25:40 --
 --------------------------------------------
 
-spool ushow2_gongsi_1017.log
+spool ushow2_gongsi_1021.log
 
 prompt
 prompt Creating table TB_ALARM_CAR
@@ -566,7 +566,8 @@ create table TB_MISSION
   isplay   NUMBER,
   ncamera  NUMBER,
   flag     NUMBER default 0,
-  indate   DATE default sysdate
+  indate   DATE default sysdate,
+  message  VARCHAR2(256)
 )
 ;
 comment on table TB_MISSION
@@ -585,6 +586,8 @@ comment on column TB_MISSION.flag
   is '本数据读取标志 0未读取  1中转器已读取 2识别器已读取';
 comment on column TB_MISSION.indate
   is '入库时间';
+comment on column TB_MISSION.message
+  is '分配器提示的消息';
 alter table TB_MISSION
   add constraint MISSION_NID primary key (NID);
 
@@ -886,7 +889,7 @@ prompt
 create sequence SEQ_LOG
 minvalue 1
 maxvalue 9999999999999999999999999999
-start with 90300
+start with 90320
 increment by 1
 cache 20;
 

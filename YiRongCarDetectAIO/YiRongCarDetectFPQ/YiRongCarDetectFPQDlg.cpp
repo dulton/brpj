@@ -110,7 +110,7 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 			if(DetectDeviceID>0)
 			{
 				// 已经开始 失效任务
-				OracleIO.MISSION_Edit( Missionid,0,2);
+				OracleIO.MISSION_Edit( Missionid,0,2,"正在识别或者设备故障，跳过发送");
 			}
 			else
 			{
@@ -122,12 +122,12 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 					//预占用识别服务器。
 					OracleIO.DETECT_EditCamera(DetectDeviceID,Missionid,camid);
 					//修改任务
-					OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1);
+					OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1,"分配成功");
 				}
 				else
 				{
 					//满了
-					OracleIO.MISSION_Edit( Missionid,0,2);
+					OracleIO.MISSION_Edit( Missionid,0,2,"设备故障或者无设备可分配，跳过发送");
 				}
 			}
 		}
@@ -139,12 +139,12 @@ DWORD WINAPI ORACLE_ThreadPROC(LPVOID lpParameter)
 			if(DetectDeviceID>0)
 			{
 				//有效
-				OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1);
+				OracleIO.MISSION_Edit( Missionid,DetectDeviceID,1,"分配成功");
 			}
 			else
 			{
 				// 多次停止  失效任务
-				OracleIO.MISSION_Edit( Missionid,0,2);
+				OracleIO.MISSION_Edit( Missionid,0,2,"设备已经停止，跳过发送");
 			}
 		}
 

@@ -29,8 +29,11 @@ extern CDLGLogin DlgLogin;
 #include "DLGSetElecar.h"
 #endif
 
-#define DETECTLIST_TIMER 123
+//cs
 #define DETECTFLAG_TIMER 120
+#define DETECTRECE_TIMER 121
+
+#define DETECTLIST_TIMER 123
 
 ////////////////////////////////////////
 #include "URLencode.h"
@@ -125,6 +128,9 @@ CYiRongCarDetectAIODlg::CYiRongCarDetectAIODlg(CWnd* pParent /*=NULL*/)
 	m_DetectListTimerFlag=0;
 	m_DetectFlagTimer = 0;
 	m_DetectFlagTimerFlag=0;
+	m_ReceiveDetectTimer = 0;
+	m_ReceiveDetectTimerFlag=0;
+	
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 		oldnid[i]=-1;
 }
@@ -202,7 +208,7 @@ END_MESSAGE_MAP()
 // CYiRongCarDetectAIODlg message handlers
 
 #if OPEN_CS_MODE
-//线程
+//心跳线程
 DWORD WINAPI CS_Heart_ThreadPROC(LPVOID lpParameter)
 {
 	CYiRongCarDetectAIODlg *pdlg = (CYiRongCarDetectAIODlg*)lpParameter;
@@ -220,6 +226,136 @@ DWORD WINAPI CS_Heart_ThreadPROC(LPVOID lpParameter)
 	pdlg->CS_HeartThreadFlag=FALSE;
 	return 0;
 }
+
+//接收线程
+DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
+{
+
+	CYiRongCarDetectAIODlg *pdlg = (CYiRongCarDetectAIODlg*)lpParameter;
+	pdlg->CS_ReceiveThreadFlag=TRUE;
+
+	int j=0;
+	//启动恢复任务
+	for(j=0;j<MAX_DEVICE_NUM;j++)
+	{
+		if(pdlg->DlgScreen.CSdeviceID[j]>0)
+		{
+			IPLIST CameraInfo;
+			if(false == OracleIO.DEVICE_ReadCameraInfoFromDetectID(pdlg->DlgScreen.CSdeviceID[j],CameraInfo))
+				continue;
+
+			//启动命令
+			bool ret = pdlg->DlgScreen.StartPlay(
+				CameraInfo.camID,
+				CameraInfo.area.GetBuffer(0),
+				CameraInfo.name.GetBuffer(0),
+				CameraInfo.ip.GetBuffer(0),
+				CameraInfo.port,
+				CameraInfo.channel,
+				CameraInfo.user.GetBuffer(0),
+				CameraInfo.psw.GetBuffer(0),
+				j,
+				0,
+				CameraInfo.venderID,
+				CameraInfo.Rtspurl.GetBuffer(0),
+				CameraInfo.RTP,
+				CameraInfo.DecodeTag);
+
+			if(ret)
+			{
+				//成功
+				pdlg->DlgScreen.m_videoInfo[j].enableDetect = true;
+			}
+			else
+			{
+				//失败
+				pdlg->DlgScreen.StopPlay(j);
+				OracleIO.Mission_DeviceFlag(0,CameraInfo.camID,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],0);
+			}
+		}
+	}
+
+	long long missionID;
+	unsigned long int camid;
+	unsigned long int isplay;
+	long flag;
+
+	while(pdlg->CS_ReceiveThreadFlag)
+	{
+		for(j=0;j<MAX_DEVICE_NUM;j++)
+		{	
+			if(pdlg->DlgScreen.CSdeviceID[j]>0)
+			{
+				missionID=0;
+				camid=0;
+				isplay=0;
+				flag=OracleIO.Mission_READ(pdlg->DlgScreen.CSdeviceID[j],&missionID,&camid,&isplay);
+
+				if(-1==flag)
+					break;
+				else if(0==flag)
+					continue;
+				else
+				{
+					if(isplay)
+					{
+						IPLIST CameraInfo;
+
+						if(false==OracleIO.DEVICE_ReadCameraInfoFromCamID(camid,CameraInfo))
+							OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],0);
+						else
+						{
+							//启动命令
+							bool ret = pdlg->DlgScreen.StartPlay(
+								CameraInfo.camID,
+								CameraInfo.area.GetBuffer(0),
+								CameraInfo.name.GetBuffer(0),
+								CameraInfo.ip.GetBuffer(0),
+								CameraInfo.port,
+								CameraInfo.channel,
+								CameraInfo.user.GetBuffer(0),
+								CameraInfo.psw.GetBuffer(0),
+								j,
+								0,
+								CameraInfo.venderID,
+								CameraInfo.Rtspurl.GetBuffer(0),
+								CameraInfo.RTP,
+								CameraInfo.DecodeTag);
+
+							if(ret)
+							{
+								//成功
+								pdlg->DlgScreen.m_videoInfo[j].enableDetect = true;
+								OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],isplay);
+							}
+							else
+							{
+								//失败
+								pdlg->DlgScreen.StopPlay(j);
+								OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],0);
+							}
+						}
+					}
+					else
+					{	
+						//停止命令
+						if(pdlg->DlgScreen.m_videoInfo[j].isplay && pdlg->DlgScreen.m_videoInfo[j].camID >=0)
+						{	
+							pdlg->DlgScreen.StopPlay(j);
+						}
+
+						OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],isplay);
+					}
+				}
+			}
+		}
+		Sleep(100);
+	}
+
+	pdlg->CS_ReceiveThreadFlag=FALSE;
+	return 0;
+}
+
 #endif
 
 BOOL CYiRongCarDetectAIODlg::OnInitDialog()
@@ -316,6 +452,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(5,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(2)->EnableMenuItem(12,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(4,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	GetMenu()->GetSubMenu(3)->EnableMenuItem(7,MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 #endif
@@ -327,7 +464,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 #endif
 
 #if OPEN_CS_MODE && ALLTAB_CLIENT_MODE
-
+	//CS 客户端 检测是否已经处于识别状态
 	m_DetectFlagTimer = SetTimer(DETECTFLAG_TIMER,5000,NULL);
 	m_DetectFlagTimerFlag=1;
 
@@ -399,6 +536,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 */
 
 #if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
+	//开启心跳
 	CS_HeartThreadFlag=FALSE;
 	CS_Heartpthread=NULL;
 
@@ -410,8 +548,73 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 	}
 	else
 		CS_HeartThreadFlag=TRUE;
+	
+	//初始化读取服务器ID
+	for(int j=0;j<MAX_DEVICE_NUM;j++)
+	{	
+		DlgScreen.CSdeviceID[j]=OracleIO.DETECTSERVER_GetDeviceId(DlgSetSystem.m_myip.GetBuffer(0),j);
+	}
+
+
+	//开启接收
+	CS_ReceiveThreadFlag=FALSE;
+	CS_Receivepthread=NULL;
+
+	CS_Receivepthread=CreateThread(NULL,0,CS_Receive_ThreadPROC,this,0,NULL);
+
+	if(NULL==CS_Receivepthread)
+	{
+		MessageBox("创建线程错误");
+	}
+	else
+		CS_ReceiveThreadFlag=TRUE;
+/*
+	//启动恢复任务
+	for(int j=0;j<MAX_DEVICE_NUM;j++)
+	{
+		if(DlgScreen.CSdeviceID[j]>0)
+		{
+			IPLIST CameraInfo;
+			if(false == OracleIO.DEVICE_ReadCameraInfoFromDetectID(DlgScreen.CSdeviceID[j],CameraInfo))
+				continue;
+
+			//启动命令
+			bool ret = DlgScreen.StartPlay(
+				CameraInfo.camID,
+				CameraInfo.area.GetBuffer(0),
+				CameraInfo.name.GetBuffer(0),
+				CameraInfo.ip.GetBuffer(0),
+				CameraInfo.port,
+				CameraInfo.channel,
+				CameraInfo.user.GetBuffer(0),
+				CameraInfo.psw.GetBuffer(0),
+				j,
+				0,
+				CameraInfo.venderID,
+				CameraInfo.Rtspurl.GetBuffer(0),
+				CameraInfo.RTP,
+				CameraInfo.DecodeTag);
+
+			if(ret)
+			{
+				//成功
+				DlgScreen.m_videoInfo[j].enableDetect = true;
+			}
+			else
+			{
+				//失败
+				DlgScreen.StopPlay(j);
+				OracleIO.Mission_DeviceFlag(0,CameraInfo.camID,DlgSetSystem.m_myip.GetBuffer(0),DlgScreen.CSdeviceID[j],0);
+			}
+		}
+	}
+	//开启接收任务定时器
+	m_ReceiveDetectTimer = SetTimer(DETECTRECE_TIMER,1000,NULL);
+	m_ReceiveDetectTimerFlag=1;
+*/
 
 #endif
+
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -771,7 +974,7 @@ void CYiRongCarDetectAIODlg::OnCancel()
 	m_DetectListTimerFlag=0;
 
 
-
+//客户端
 #if (OPEN_CS_MODE && ALLTAB_CLIENT_MODE)
 
 	if(m_DetectFlagTimer) 
@@ -781,12 +984,23 @@ void CYiRongCarDetectAIODlg::OnCancel()
 
 #endif
 
-
+//服务端
 #if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
 
 	CS_HeartThreadFlag=FALSE;
 	Sleep(100);
 	TerminateThread(CS_Heartpthread,0);
+
+	CS_ReceiveThreadFlag=FALSE;
+	Sleep(100);
+	TerminateThread(CS_Receivepthread,0);
+
+/*
+	if(m_ReceiveDetectTimer) 
+		KillTimer(m_ReceiveDetectTimer); 
+	m_ReceiveDetectTimer = 0;
+	m_ReceiveDetectTimerFlag=0;
+*/
 #endif
 
 
@@ -1674,16 +1888,16 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 	CDialog::OnTimer(nIDEvent);
 	UpdateData(TRUE);
 
-	//CS的客户端 检测是否识别
+	//CS的客户端 检测是否已经处于识别状态
 #if OPEN_CS_MODE && ALLTAB_CLIENT_MODE
 
 	if(nIDEvent == DETECTFLAG_TIMER )
 	{
+		long isdetect;
 		for(int j=0;j<MAX_DEVICE_NUM;j++)
 		{
 			if(DlgScreen.m_videoInfo[j].isplay && DlgScreen.m_videoInfo[j].camID >=0)
 			{
-				long isdetect;
 				isdetect=0;
 				OracleIO.DETECTFLAG_test(DlgScreen.m_videoInfo[j].camID,&isdetect);
 				//不同时刷新
@@ -1698,6 +1912,89 @@ void CYiRongCarDetectAIODlg::OnTimer(UINT_PTR nIDEvent)
 
 #endif
 
+/*
+	//CS的服务端 
+#if OPEN_CS_MODE && !ALLTAB_CLIENT_MODE
+
+	if(nIDEvent == DETECTRECE_TIMER )
+	{
+		long long missionID;
+		unsigned long int camid;
+		unsigned long int isplay;
+		long flag;
+
+		for(int j=0;j<MAX_DEVICE_NUM;j++)
+		{
+			if(DlgScreen.CSdeviceID[j]>0)
+			{
+				missionID=0;
+				camid=0;
+				isplay=0;
+				flag=OracleIO.Mission_READ(DlgScreen.CSdeviceID[j],&missionID,&camid,&isplay);
+
+				if(-1==flag)
+					break;
+				else if(0==flag)
+					continue;
+				else
+				{
+					if(isplay)
+					{
+						IPLIST CameraInfo;
+
+						if(false==OracleIO.DEVICE_ReadCameraInfoFromCamID(camid,CameraInfo))
+							OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),DlgScreen.CSdeviceID[j],0);
+						else
+						{
+							//启动命令
+							bool ret = DlgScreen.StartPlay(
+								CameraInfo.camID,
+								CameraInfo.area.GetBuffer(0),
+								CameraInfo.name.GetBuffer(0),
+								CameraInfo.ip.GetBuffer(0),
+								CameraInfo.port,
+								CameraInfo.channel,
+								CameraInfo.user.GetBuffer(0),
+								CameraInfo.psw.GetBuffer(0),
+								j,
+								0,
+								CameraInfo.venderID,
+								CameraInfo.Rtspurl.GetBuffer(0),
+								CameraInfo.RTP,
+								CameraInfo.DecodeTag);
+
+							if(ret)
+							{
+								//成功
+								DlgScreen.m_videoInfo[j].enableDetect = true;
+								OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),DlgScreen.CSdeviceID[j],isplay);
+							}
+							else
+							{
+								//失败
+								DlgScreen.StopPlay(j);
+								OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),DlgScreen.CSdeviceID[j],0);
+							}
+						}
+					}
+					else
+					{	
+						//停止命令
+						if(DlgScreen.m_videoInfo[j].isplay && DlgScreen.m_videoInfo[j].camID >=0)
+						{	
+							DlgScreen.StopPlay(j);
+						}
+
+						OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),DlgScreen.CSdeviceID[j],isplay);
+					}
+				}
+			}
+		}
+	}
+
+
+#endif
+*/
 
 #if ALLTAB_CLIENT_MODE
 

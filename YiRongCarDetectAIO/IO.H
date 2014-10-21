@@ -422,6 +422,8 @@ public:
 	//判断设备是否存在
 	bool IO::DEVICE_JudgeCamera(long ncameraid);
 bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList);
+bool IO::DEVICE_ReadCameraInfoFromCamID(long ncamera,IPLIST &CameraInfo);
+bool IO::DEVICE_ReadCameraInfoFromDetectID(long DetectID,IPLIST &CameraInfo);
 
 	/**************************用户表*******************************/
 	bool USER_AddNewUser(struct SET_USER_DATA_ST UserInfo);				//新增用户信息
@@ -528,6 +530,8 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 	bool IO::DETECTSERVER_heart(char* myip);
 	bool IO::DETECTFLAG_test(unsigned long int camid, long int *isplay);
 	long IO::DETECTSERVER_UserOpenNum(unsigned long int userid);
+
+	long IO::DETECTSERVER_GetDeviceId(char *myip,long int channelnum);
 
 	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);
 

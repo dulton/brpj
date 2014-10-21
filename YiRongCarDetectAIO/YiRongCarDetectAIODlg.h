@@ -50,6 +50,9 @@ public:
 	//CS模式 检测识别标志
 	UINT m_DetectFlagTimer;
 	int m_DetectFlagTimerFlag;
+	//CS模式 接收线程
+	UINT m_ReceiveDetectTimer;
+	int m_ReceiveDetectTimerFlag;
 
 	//快捷按钮
 	CDLGshortcut DlgShortCut;
@@ -110,6 +113,12 @@ public:
 	HANDLE CS_Heartpthread;
 	//线程在用=false  线程未用=ture
 	bool CS_HeartThreadFlag;
+
+	//接收线程
+	HANDLE CS_Receivepthread;
+	//线程在用=false  线程未用=ture
+	bool CS_ReceiveThreadFlag;
+
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CYiRongCarDetectAIODlg)

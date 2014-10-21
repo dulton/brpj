@@ -340,7 +340,7 @@ bool IO::DETECTSERVER_ADD(char *ip,long channel)
 }
 
 //分配服务器后修改任务
-bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag)
+bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag,char* message)
 {
 
 	while(IOwriteLock)
@@ -352,8 +352,9 @@ bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag)
 	try
 	{
 		CString	strSql;
+		filterstring(message);
 		//分配
-		strSql.Format(_T("update TB_mission set detectid=%d,flag=%d where nid=%I64u"),DetectServerID,flag,Missionid);
+		strSql.Format(_T("update TB_mission set detectid=%d,flag=%d,message='%s' where nid=%I64u"),DetectServerID,flag,message,Missionid);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);

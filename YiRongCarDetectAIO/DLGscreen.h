@@ -73,6 +73,8 @@ public:
 	CScreenPannel m_screenPannel;
 
 	struct DEVICE_INFO m_videoInfo[MAX_DEVICE_NUM];
+	long CSdeviceID[MAX_DEVICE_NUM];
+
 	//³µÅÆÊ¶±ð
 //	struct CarSetStruct CarSet[MAX_DEVICE_NUM];
 

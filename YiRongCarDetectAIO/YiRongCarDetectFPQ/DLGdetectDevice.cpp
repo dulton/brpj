@@ -22,7 +22,8 @@ CDLGdetectDevice::CDLGdetectDevice(CWnd* pParent /*=NULL*/)
 	, m_ip(_T(""))
 	, m_channel(0)
 {
-
+	chooseDetectDeviceid=0;
+	chooseCamid=0;
 }
 
 CDLGdetectDevice::~CDLGdetectDevice()
@@ -191,11 +192,12 @@ void CDLGdetectDevice::OnBnClickedButtonFlush()
 		else
 			m_list.SetItemText(nItem,14,"¹Ø±ÕÊ¶±ð");
 	}
-
+	UpdateData(FALSE);
 }
 
 void CDLGdetectDevice::OnBnClickedButtonStop()
 {
+	UpdateData(TRUE);
 	long tDetectDeviceid=chooseDetectDeviceid;
 	long tCamid=chooseCamid;
 	// TODO: Add your control notification handler code here
@@ -239,9 +241,6 @@ void CDLGdetectDevice::OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult)
 	if(-1 == ListChoose)
 		return ;
 
-	long chooseDetectDeviceid;
-	unsigned long int chooseCamid;
-
 	char str[260];
 	m_list.GetItemText(ListChoose,0,str,260);
 
@@ -257,7 +256,7 @@ void CDLGdetectDevice::OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult)
 	else
 		chooseCamid=0;
 
-
+	UpdateData(FALSE);
 	*pResult = 0;
 
 }

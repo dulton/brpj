@@ -715,8 +715,6 @@ void CDLGnormal::StartPlay(int screenNo)
 		{
 			if(screenNo==DlgMain->DlgScreen.GetCurWindId())
 				ChangePreviewFontPic(true);
-
-
 		}
 	}
 }

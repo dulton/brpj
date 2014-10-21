@@ -97,7 +97,7 @@ public:
 	bool IO::DETECTSERVER_HeartTest(long maxtime);
 	bool IO::DETECTSERVER_ADD(char *ip,long channel);
 
-	bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag);
+bool IO::MISSION_Edit(long long Missionid,long DetectServerID,int flag,char* message);
 bool IO::DETECT_EditCamera(long DetectServerID,long long missionid,long camid);
 
 	int IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long int *isplay,unsigned long int *userid,char* indate);

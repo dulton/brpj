@@ -249,6 +249,8 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int chan
 		m_LoginHandle[screenNo] = -1;
 		return false;
 	}
+
+	DlgMain->ShowCameraMessage(name,"连接成功",FALSE);
 	return true;
 }
 

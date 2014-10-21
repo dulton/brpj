@@ -487,6 +487,150 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		return false;
 	}  
 }
+
+bool IO::DEVICE_ReadCameraInfoFromCamID(long ncamera,IPLIST &CameraInfo)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString strSql;
+		
+		strSql.Format("select * from tb_device a   left join  T_ZD_ORG b on a.nid=b.nid where a.ncamera=%d",ncamera);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			VarSaveString2(CameraInfo.ip,m_pRecordsetPtr,_T("sipserver"));
+			VarSaveString2(	CameraInfo.name,m_pRecordsetPtr,_T("scameraname"));
+
+			CameraInfo.port =	VarSaveNumber2(m_pRecordsetPtr,"sport");
+
+			VarSaveString2(CameraInfo.user,m_pRecordsetPtr,_T("suser"));
+			VarSaveString2(	CameraInfo.psw,m_pRecordsetPtr,_T("spwd"));
+			VarSaveString2(	CameraInfo.area,m_pRecordsetPtr,_T("SORGNAME"));
+
+			CameraInfo.camID = VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			CameraInfo.venderID = VarSaveNumber2(m_pRecordsetPtr,"svenderid");
+			CameraInfo.channel = VarSaveNumber2(m_pRecordsetPtr,"channel");
+
+			VarSaveString2(CameraInfo.Rtspurl,m_pRecordsetPtr,_T("rtspurl"));
+
+			CameraInfo.RTP = VarSaveNumber2(m_pRecordsetPtr,"rtpmode");
+			CameraInfo.DecodeTag = VarSaveNumber2(m_pRecordsetPtr,"decodetag");
+
+			VarSaveStr2(CameraInfo.longitude,m_pRecordsetPtr,"longitude");
+			VarSaveStr2(CameraInfo.latitude,m_pRecordsetPtr,"latitude");
+			VarSaveStr2(CameraInfo.crossIndex,m_pRecordsetPtr,"crossindex");
+			CameraInfo.crossID = VarSaveNumber2(m_pRecordsetPtr,"crossid");	
+			CameraInfo.userID = VarSaveNumber2(m_pRecordsetPtr,"userid");
+			CameraInfo.userLV = VarSaveNumber2(m_pRecordsetPtr,"userlv");
+
+			m_pRecordsetPtr->MoveNext();
+			m_pRecordsetPtr->Close();
+
+			IOwriteLock=false;
+			return true;
+		}
+	
+		IOwriteLock=false;
+		return false;
+	
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_ReadCameraInfoFromCamID error£º%s", e.ErrorMessage());
+		//AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+}
+bool IO::DEVICE_ReadCameraInfoFromDetectID(long DetectID,IPLIST &CameraInfo)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString strSql;
+
+		strSql.Format("select * from tb_device a   left join  T_ZD_ORG b on a.nid=b.nid where a.DETECTID=%d",DetectID);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			VarSaveString2(CameraInfo.ip,m_pRecordsetPtr,_T("sipserver"));
+			VarSaveString2(	CameraInfo.name,m_pRecordsetPtr,_T("scameraname"));
+
+			CameraInfo.port =	VarSaveNumber2(m_pRecordsetPtr,"sport");
+
+			VarSaveString2(CameraInfo.user,m_pRecordsetPtr,_T("suser"));
+			VarSaveString2(	CameraInfo.psw,m_pRecordsetPtr,_T("spwd"));
+			VarSaveString2(	CameraInfo.area,m_pRecordsetPtr,_T("SORGNAME"));
+
+			CameraInfo.camID = VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+			CameraInfo.venderID = VarSaveNumber2(m_pRecordsetPtr,"svenderid");
+			CameraInfo.channel = VarSaveNumber2(m_pRecordsetPtr,"channel");
+
+			VarSaveString2(CameraInfo.Rtspurl,m_pRecordsetPtr,_T("rtspurl"));
+
+			CameraInfo.RTP = VarSaveNumber2(m_pRecordsetPtr,"rtpmode");
+			CameraInfo.DecodeTag = VarSaveNumber2(m_pRecordsetPtr,"decodetag");
+
+			VarSaveStr2(CameraInfo.longitude,m_pRecordsetPtr,"longitude");
+			VarSaveStr2(CameraInfo.latitude,m_pRecordsetPtr,"latitude");
+			VarSaveStr2(CameraInfo.crossIndex,m_pRecordsetPtr,"crossindex");
+			CameraInfo.crossID = VarSaveNumber2(m_pRecordsetPtr,"crossid");	
+			CameraInfo.userID = VarSaveNumber2(m_pRecordsetPtr,"userid");
+			CameraInfo.userLV = VarSaveNumber2(m_pRecordsetPtr,"userlv");
+
+			m_pRecordsetPtr->MoveNext();
+			m_pRecordsetPtr->Close();
+
+			IOwriteLock=false;
+			return true;
+		}
+
+		IOwriteLock=false;
+		return false;
+
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::DEVICE_ReadCameraInfoFromDetectID error£º%s", e.ErrorMessage());
+		//AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
 bool IO::DEVICE_JudgeCamera(long ncameraid)
 {
 	while(IOwriteLock)
@@ -4295,11 +4439,62 @@ int IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int 
 			strSql.Format(_T("update tb_mission set flag=2 where nid=%I64u"),(*missionID) );
 
 			_variant_t RecordAffected;
-			m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+			m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+			IOwriteLock=false;
+			return 1;
 		}
 
 		IOwriteLock=false;
-		return 1;
+		return 0;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Mission_READ error£º%s", e.ErrorMessage());
+		//AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+
+		return -1;
+	}  
+	IOwriteLock=false;
+}
+
+//¶ÁÈ¡·þÎñÆ÷ID
+long IO::DETECTSERVER_GetDeviceId(char *myip,long int channelnum)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid from TB_DETECT_SERVER t where sip='%s' and channelnum=%d"),myip,channelnum);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return 0;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			long  nid=VarSaveNumber2(m_pRecordsetPtr,"nid"); 
+
+			IOwriteLock=false;
+			return nid;
+		}
+
+		IOwriteLock=false;
+		return 0;
 	}
 	catch(_com_error e)
 	{
@@ -4308,7 +4503,7 @@ int IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int 
 		AfxMessageBox(in_errormessage);
 		IOwriteLock=false;
 
-		return -1;
+		return 0;
 	}  
 	IOwriteLock=false;
 }
