@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="YrElecarDetect"
+ targetNamespace="http://localhost/YrElecarDetect.wsdl"
+ xmlns:tns="http://localhost/YrElecarDetect.wsdl"
+ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:ns="urn:YrElecarDetect"
+ xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:HTTP="http://schemas.xmlsoap.org/wsdl/http/"
+ xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
+ xmlns:DIME="http://schemas.xmlsoap.org/ws/2002/04/dime/wsdl/"
+ xmlns:WSDL="http://schemas.xmlsoap.org/wsdl/"
+ xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+<types>
+
+ <schema targetNamespace="urn:YrElecarDetect"
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:ns="urn:YrElecarDetect"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="unqualified"
+  attributeFormDefault="unqualified">
+  <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+ </schema>
+
+</types>
+
+<message name="SendMissionRequest">
+ <part name="MsgXml" type="xsd:string"/><!-- ns__SendMission::MsgXml -->
+</message>
+
+<message name="SendMissionResponse">
+ <part name="ResponseXml" type="xsd:string"/><!-- ns__SendMission::ResponseXml -->
+</message>
+
+<message name="GetServerStatusRequest">
+ <part name="MsgXml" type="xsd:string"/><!-- ns__GetServerStatus::MsgXml -->
+</message>
+
+<message name="GetServerStatusResponse">
+ <part name="ResponseXml" type="xsd:string"/><!-- ns__GetServerStatus::ResponseXml -->
+</message>
+
+<message name="AddCameraRequest">
+ <part name="MsgXml" type="xsd:string"/><!-- ns__AddCamera::MsgXml -->
+</message>
+
+<message name="AddCameraResponse">
+ <part name="ResponseXml" type="xsd:string"/><!-- ns__AddCamera::ResponseXml -->
+</message>
+
+<message name="IfCameraRequest">
+ <part name="MsgXml" type="xsd:string"/><!-- ns__IfCamera::MsgXml -->
+</message>
+
+<message name="IfCameraResponse">
+ <part name="ResponseXml" type="xsd:string"/><!-- ns__IfCamera::ResponseXml -->
+</message>
+
+<message name="DelCameraRequest">
+ <part name="MsgXml" type="xsd:string"/><!-- ns__DelCamera::MsgXml -->
+</message>
+
+<message name="DelCameraResponse">
+ <part name="ResponseXml" type="xsd:string"/><!-- ns__DelCamera::ResponseXml -->
+</message>
+
+<portType name="YrElecarDetectPortType">
+ <operation name="SendMission">
+  <documentation>Service definition of function ns__SendMission</documentation>
+  <input message="tns:SendMissionRequest"/>
+  <output message="tns:SendMissionResponse"/>
+ </operation>
+ <operation name="GetServerStatus">
+  <documentation>Service definition of function ns__GetServerStatus</documentation>
+  <input message="tns:GetServerStatusRequest"/>
+  <output message="tns:GetServerStatusResponse"/>
+ </operation>
+ <operation name="AddCamera">
+  <documentation>Service definition of function ns__AddCamera</documentation>
+  <input message="tns:AddCameraRequest"/>
+  <output message="tns:AddCameraResponse"/>
+ </operation>
+ <operation name="IfCamera">
+  <documentation>Service definition of function ns__IfCamera</documentation>
+  <input message="tns:IfCameraRequest"/>
+  <output message="tns:IfCameraResponse"/>
+ </operation>
+ <operation name="DelCamera">
+  <documentation>Service definition of function ns__DelCamera</documentation>
+  <input message="tns:DelCameraRequest"/>
+  <output message="tns:DelCameraResponse"/>
+ </operation>
+</portType>
+
+<binding name="YrElecarDetect" type="tns:YrElecarDetectPortType">
+ <SOAP:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+ <operation name="SendMission">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="GetServerStatus">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="AddCamera">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="IfCamera">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="DelCamera">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+</binding>
+
+<service name="YrElecarDetect">
+ <documentation>gSOAP 2.8.17r generated service definition</documentation>
+ <port name="YrElecarDetect" binding="tns:YrElecarDetect">
+  <SOAP:address location="http://localhost/YrElecarDetect.cgi"/>
+ </port>
+</service>
+
+</definitions>
