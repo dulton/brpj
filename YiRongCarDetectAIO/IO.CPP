@@ -284,13 +284,19 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 	}  
 }
 
+
 bool IO::DEVICE_AddNewArea(CString AreaName)
-{
+{	
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
-		CString strSql = _T("select seq_zd_org.nextval as nid from dual");			//获取机构nid
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
-		unsigned long nid = m_pRecordsetPtr->GetCollect("nid");
+
+		long long nid =  AutoAddNid("zd_org");
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select sorgname, nid from t_zd_org t", \
@@ -304,9 +310,11 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
 
+			IOwriteLock=false;
 			return true;   		
 		}
 
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -314,6 +322,7 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_AddNewArea error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }

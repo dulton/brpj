@@ -85,7 +85,7 @@ SOAP_FMAC3 int * SOAP_FMAC4 soap_get_int(struct soap*, int *, const char*, const
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Fault
-#define SOAP_TYPE_SOAP_ENV__Fault (29)
+#define SOAP_TYPE_SOAP_ENV__Fault (30)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Fault(struct soap*, struct SOAP_ENV__Fault *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Fault(struct soap*, const struct SOAP_ENV__Fault *);
@@ -121,7 +121,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Fault(struct soap*, int, int, voi
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Reason
-#define SOAP_TYPE_SOAP_ENV__Reason (28)
+#define SOAP_TYPE_SOAP_ENV__Reason (29)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Reason(struct soap*, struct SOAP_ENV__Reason *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Reason(struct soap*, const struct SOAP_ENV__Reason *);
@@ -157,7 +157,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Reason(struct soap*, int, int, vo
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Detail
-#define SOAP_TYPE_SOAP_ENV__Detail (25)
+#define SOAP_TYPE_SOAP_ENV__Detail (26)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Detail(struct soap*, struct SOAP_ENV__Detail *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Detail(struct soap*, const struct SOAP_ENV__Detail *);
@@ -193,7 +193,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Detail(struct soap*, int, int, vo
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Code
-#define SOAP_TYPE_SOAP_ENV__Code (23)
+#define SOAP_TYPE_SOAP_ENV__Code (24)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Code(struct soap*, struct SOAP_ENV__Code *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Code(struct soap*, const struct SOAP_ENV__Code *);
@@ -229,7 +229,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Code(struct soap*, int, int, void
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Header
-#define SOAP_TYPE_SOAP_ENV__Header (22)
+#define SOAP_TYPE_SOAP_ENV__Header (23)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Header(struct soap*, struct SOAP_ENV__Header *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Header(struct soap*, const struct SOAP_ENV__Header *);
@@ -263,7 +263,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Header(struct soap*, int, int, vo
 #endif
 
 #ifndef SOAP_TYPE_ns__DelCamera
-#define SOAP_TYPE_ns__DelCamera (21)
+#define SOAP_TYPE_ns__DelCamera (22)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__DelCamera(struct soap*, struct ns__DelCamera *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__DelCamera(struct soap*, const struct ns__DelCamera *);
@@ -295,7 +295,7 @@ inline void soap_delete_ns__DelCamera(struct soap *soap, struct ns__DelCamera *p
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__DelCamera(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__DelCameraResponse
-#define SOAP_TYPE_ns__DelCameraResponse (20)
+#define SOAP_TYPE_ns__DelCameraResponse (21)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__DelCameraResponse(struct soap*, struct ns__DelCameraResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__DelCameraResponse(struct soap*, const struct ns__DelCameraResponse *);
@@ -320,14 +320,14 @@ inline struct ns__DelCameraResponse * soap_new_ns__DelCameraResponse(struct soap
 
 inline struct ns__DelCameraResponse * soap_new_req_ns__DelCameraResponse(struct soap *soap) { struct ns__DelCameraResponse *_p = soap_instantiate_ns__DelCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__DelCameraResponse(soap, _p); } return _p; }
 
-inline struct ns__DelCameraResponse * soap_new_set_ns__DelCameraResponse(struct soap *soap, char *ResponseXml) { struct ns__DelCameraResponse *_p = soap_instantiate_ns__DelCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__DelCameraResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
+inline struct ns__DelCameraResponse * soap_new_set_ns__DelCameraResponse(struct soap *soap, char **ResponseXml) { struct ns__DelCameraResponse *_p = soap_instantiate_ns__DelCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__DelCameraResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
 
 inline void soap_delete_ns__DelCameraResponse(struct soap *soap, struct ns__DelCameraResponse *p) { soap_delete(soap, p); }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__DelCameraResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__IfCamera
-#define SOAP_TYPE_ns__IfCamera (18)
+#define SOAP_TYPE_ns__IfCamera (19)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__IfCamera(struct soap*, struct ns__IfCamera *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__IfCamera(struct soap*, const struct ns__IfCamera *);
@@ -359,7 +359,7 @@ inline void soap_delete_ns__IfCamera(struct soap *soap, struct ns__IfCamera *p) 
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__IfCamera(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__IfCameraResponse
-#define SOAP_TYPE_ns__IfCameraResponse (17)
+#define SOAP_TYPE_ns__IfCameraResponse (18)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__IfCameraResponse(struct soap*, struct ns__IfCameraResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__IfCameraResponse(struct soap*, const struct ns__IfCameraResponse *);
@@ -384,14 +384,14 @@ inline struct ns__IfCameraResponse * soap_new_ns__IfCameraResponse(struct soap *
 
 inline struct ns__IfCameraResponse * soap_new_req_ns__IfCameraResponse(struct soap *soap) { struct ns__IfCameraResponse *_p = soap_instantiate_ns__IfCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__IfCameraResponse(soap, _p); } return _p; }
 
-inline struct ns__IfCameraResponse * soap_new_set_ns__IfCameraResponse(struct soap *soap, char *ResponseXml) { struct ns__IfCameraResponse *_p = soap_instantiate_ns__IfCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__IfCameraResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
+inline struct ns__IfCameraResponse * soap_new_set_ns__IfCameraResponse(struct soap *soap, char **ResponseXml) { struct ns__IfCameraResponse *_p = soap_instantiate_ns__IfCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__IfCameraResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
 
 inline void soap_delete_ns__IfCameraResponse(struct soap *soap, struct ns__IfCameraResponse *p) { soap_delete(soap, p); }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__IfCameraResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__AddCamera
-#define SOAP_TYPE_ns__AddCamera (15)
+#define SOAP_TYPE_ns__AddCamera (16)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__AddCamera(struct soap*, struct ns__AddCamera *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__AddCamera(struct soap*, const struct ns__AddCamera *);
@@ -423,7 +423,7 @@ inline void soap_delete_ns__AddCamera(struct soap *soap, struct ns__AddCamera *p
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__AddCamera(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__AddCameraResponse
-#define SOAP_TYPE_ns__AddCameraResponse (14)
+#define SOAP_TYPE_ns__AddCameraResponse (15)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__AddCameraResponse(struct soap*, struct ns__AddCameraResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__AddCameraResponse(struct soap*, const struct ns__AddCameraResponse *);
@@ -448,14 +448,14 @@ inline struct ns__AddCameraResponse * soap_new_ns__AddCameraResponse(struct soap
 
 inline struct ns__AddCameraResponse * soap_new_req_ns__AddCameraResponse(struct soap *soap) { struct ns__AddCameraResponse *_p = soap_instantiate_ns__AddCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__AddCameraResponse(soap, _p); } return _p; }
 
-inline struct ns__AddCameraResponse * soap_new_set_ns__AddCameraResponse(struct soap *soap, char *ResponseXml) { struct ns__AddCameraResponse *_p = soap_instantiate_ns__AddCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__AddCameraResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
+inline struct ns__AddCameraResponse * soap_new_set_ns__AddCameraResponse(struct soap *soap, char **ResponseXml) { struct ns__AddCameraResponse *_p = soap_instantiate_ns__AddCameraResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__AddCameraResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
 
 inline void soap_delete_ns__AddCameraResponse(struct soap *soap, struct ns__AddCameraResponse *p) { soap_delete(soap, p); }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__AddCameraResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__GetServerStatus
-#define SOAP_TYPE_ns__GetServerStatus (12)
+#define SOAP_TYPE_ns__GetServerStatus (13)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__GetServerStatus(struct soap*, struct ns__GetServerStatus *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__GetServerStatus(struct soap*, const struct ns__GetServerStatus *);
@@ -487,7 +487,7 @@ inline void soap_delete_ns__GetServerStatus(struct soap *soap, struct ns__GetSer
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__GetServerStatus(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__GetServerStatusResponse
-#define SOAP_TYPE_ns__GetServerStatusResponse (11)
+#define SOAP_TYPE_ns__GetServerStatusResponse (12)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__GetServerStatusResponse(struct soap*, struct ns__GetServerStatusResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__GetServerStatusResponse(struct soap*, const struct ns__GetServerStatusResponse *);
@@ -512,14 +512,14 @@ inline struct ns__GetServerStatusResponse * soap_new_ns__GetServerStatusResponse
 
 inline struct ns__GetServerStatusResponse * soap_new_req_ns__GetServerStatusResponse(struct soap *soap) { struct ns__GetServerStatusResponse *_p = soap_instantiate_ns__GetServerStatusResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__GetServerStatusResponse(soap, _p); } return _p; }
 
-inline struct ns__GetServerStatusResponse * soap_new_set_ns__GetServerStatusResponse(struct soap *soap, char *ResponseXml) { struct ns__GetServerStatusResponse *_p = soap_instantiate_ns__GetServerStatusResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__GetServerStatusResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
+inline struct ns__GetServerStatusResponse * soap_new_set_ns__GetServerStatusResponse(struct soap *soap, char **ResponseXml) { struct ns__GetServerStatusResponse *_p = soap_instantiate_ns__GetServerStatusResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__GetServerStatusResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
 
 inline void soap_delete_ns__GetServerStatusResponse(struct soap *soap, struct ns__GetServerStatusResponse *p) { soap_delete(soap, p); }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__GetServerStatusResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__SendMission
-#define SOAP_TYPE_ns__SendMission (9)
+#define SOAP_TYPE_ns__SendMission (10)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__SendMission(struct soap*, struct ns__SendMission *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__SendMission(struct soap*, const struct ns__SendMission *);
@@ -551,7 +551,7 @@ inline void soap_delete_ns__SendMission(struct soap *soap, struct ns__SendMissio
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__SendMission(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_ns__SendMissionResponse
-#define SOAP_TYPE_ns__SendMissionResponse (8)
+#define SOAP_TYPE_ns__SendMissionResponse (9)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__SendMissionResponse(struct soap*, struct ns__SendMissionResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__SendMissionResponse(struct soap*, const struct ns__SendMissionResponse *);
@@ -576,7 +576,7 @@ inline struct ns__SendMissionResponse * soap_new_ns__SendMissionResponse(struct 
 
 inline struct ns__SendMissionResponse * soap_new_req_ns__SendMissionResponse(struct soap *soap) { struct ns__SendMissionResponse *_p = soap_instantiate_ns__SendMissionResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__SendMissionResponse(soap, _p); } return _p; }
 
-inline struct ns__SendMissionResponse * soap_new_set_ns__SendMissionResponse(struct soap *soap, char *ResponseXml) { struct ns__SendMissionResponse *_p = soap_instantiate_ns__SendMissionResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__SendMissionResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
+inline struct ns__SendMissionResponse * soap_new_set_ns__SendMissionResponse(struct soap *soap, char **ResponseXml) { struct ns__SendMissionResponse *_p = soap_instantiate_ns__SendMissionResponse(soap, -1, NULL, NULL, NULL); if (_p) { soap_default_ns__SendMissionResponse(soap, _p); _p->ResponseXml = ResponseXml; } return _p; }
 
 inline void soap_delete_ns__SendMissionResponse(struct soap *soap, struct ns__SendMissionResponse *p) { soap_delete(soap, p); }
 
@@ -585,7 +585,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__SendMissionResponse(struct soap*, int, 
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Reason
-#define SOAP_TYPE_PointerToSOAP_ENV__Reason (31)
+#define SOAP_TYPE_PointerToSOAP_ENV__Reason (32)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToSOAP_ENV__Reason(struct soap*, struct SOAP_ENV__Reason *const*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_out_PointerToSOAP_ENV__Reason(struct soap*, const char *, int, struct SOAP_ENV__Reason *const*, const char *);
@@ -608,7 +608,7 @@ SOAP_FMAC3 struct SOAP_ENV__Reason ** SOAP_FMAC4 soap_get_PointerToSOAP_ENV__Rea
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Detail
-#define SOAP_TYPE_PointerToSOAP_ENV__Detail (30)
+#define SOAP_TYPE_PointerToSOAP_ENV__Detail (31)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToSOAP_ENV__Detail(struct soap*, struct SOAP_ENV__Detail *const*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_out_PointerToSOAP_ENV__Detail(struct soap*, const char *, int, struct SOAP_ENV__Detail *const*, const char *);
@@ -631,7 +631,7 @@ SOAP_FMAC3 struct SOAP_ENV__Detail ** SOAP_FMAC4 soap_get_PointerToSOAP_ENV__Det
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Code
-#define SOAP_TYPE_PointerToSOAP_ENV__Code (24)
+#define SOAP_TYPE_PointerToSOAP_ENV__Code (25)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToSOAP_ENV__Code(struct soap*, struct SOAP_ENV__Code *const*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_out_PointerToSOAP_ENV__Code(struct soap*, const char *, int, struct SOAP_ENV__Code *const*, const char *);
@@ -650,6 +650,25 @@ SOAP_FMAC3 struct SOAP_ENV__Code ** SOAP_FMAC4 soap_get_PointerToSOAP_ENV__Code(
 
 
 #endif
+
+#ifndef SOAP_TYPE_PointerTostring
+#define SOAP_TYPE_PointerTostring (7)
+#endif
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerTostring(struct soap*, char **const*);
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_PointerTostring(struct soap*, const char *, int, char **const*, const char *);
+SOAP_FMAC3 char *** SOAP_FMAC4 soap_in_PointerTostring(struct soap*, const char*, char ***, const char*);
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerTostring(struct soap*, char **const*, const char*, const char*);
+
+#ifndef soap_write_PointerTostring
+#define soap_write_PointerTostring(soap, data) ( soap_free_temp(soap), soap_begin_send(soap) || (soap_serialize_PointerTostring(soap, data),0) || soap_put_PointerTostring(soap, data, "byte", NULL) || soap_end_send(soap), (soap)->error )
+#endif
+
+SOAP_FMAC3 char *** SOAP_FMAC4 soap_get_PointerTostring(struct soap*, char ***, const char*, const char*);
+
+#ifndef soap_read_PointerTostring
+#define soap_read_PointerTostring(soap, data) ( soap_begin_recv(soap) || !soap_get_PointerTostring(soap, data, NULL, NULL) || soap_end_recv(soap), (soap)->error )
+#endif
+
 
 #ifndef SOAP_TYPE__QName
 #define SOAP_TYPE__QName (5)

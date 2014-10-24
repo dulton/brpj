@@ -14,7 +14,7 @@ compiling, linking, and/or using OpenSSL is allowed.
 #endif
 #include "soapH.h"
 
-SOAP_SOURCE_STAMP("@(#) soapServer.cpp ver 2.8.17r 2014-10-22 08:42:32 GMT")
+SOAP_SOURCE_STAMP("@(#) soapServer.cpp ver 2.8.17r 2014-10-24 03:48:06 GMT")
 
 
 extern "C" SOAP_FMAC5 int SOAP_FMAC6 soap_serve(struct soap *soap)
@@ -73,10 +73,10 @@ extern "C" SOAP_FMAC5 int SOAP_FMAC6 soap_serve_request(struct soap *soap)
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__SendMission(struct soap *soap)
 {	struct ns__SendMission soap_tmp_ns__SendMission;
 	struct ns__SendMissionResponse soap_tmp_ns__SendMissionResponse;
-	char soap_tmp_byte;
+	char * soap_tmp_string;
 	soap_default_ns__SendMissionResponse(soap, &soap_tmp_ns__SendMissionResponse);
-	soap_default_byte(soap, &soap_tmp_byte);
-	soap_tmp_ns__SendMissionResponse.ResponseXml = &soap_tmp_byte;
+	soap_tmp_string = NULL;
+	soap_tmp_ns__SendMissionResponse.ResponseXml = &soap_tmp_string;
 	soap_default_ns__SendMission(soap, &soap_tmp_ns__SendMission);
 	if (!soap_get_ns__SendMission(soap, &soap_tmp_ns__SendMission, "ns:SendMission", NULL))
 		return soap->error;
@@ -117,10 +117,10 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__SendMission(struct soap *soap)
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__GetServerStatus(struct soap *soap)
 {	struct ns__GetServerStatus soap_tmp_ns__GetServerStatus;
 	struct ns__GetServerStatusResponse soap_tmp_ns__GetServerStatusResponse;
-	char soap_tmp_byte;
+	char * soap_tmp_string;
 	soap_default_ns__GetServerStatusResponse(soap, &soap_tmp_ns__GetServerStatusResponse);
-	soap_default_byte(soap, &soap_tmp_byte);
-	soap_tmp_ns__GetServerStatusResponse.ResponseXml = &soap_tmp_byte;
+	soap_tmp_string = NULL;
+	soap_tmp_ns__GetServerStatusResponse.ResponseXml = &soap_tmp_string;
 	soap_default_ns__GetServerStatus(soap, &soap_tmp_ns__GetServerStatus);
 	if (!soap_get_ns__GetServerStatus(soap, &soap_tmp_ns__GetServerStatus, "ns:GetServerStatus", NULL))
 		return soap->error;
@@ -161,10 +161,10 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__GetServerStatus(struct soap *soap)
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__AddCamera(struct soap *soap)
 {	struct ns__AddCamera soap_tmp_ns__AddCamera;
 	struct ns__AddCameraResponse soap_tmp_ns__AddCameraResponse;
-	char soap_tmp_byte;
+	char * soap_tmp_string;
 	soap_default_ns__AddCameraResponse(soap, &soap_tmp_ns__AddCameraResponse);
-	soap_default_byte(soap, &soap_tmp_byte);
-	soap_tmp_ns__AddCameraResponse.ResponseXml = &soap_tmp_byte;
+	soap_tmp_string = NULL;
+	soap_tmp_ns__AddCameraResponse.ResponseXml = &soap_tmp_string;
 	soap_default_ns__AddCamera(soap, &soap_tmp_ns__AddCamera);
 	if (!soap_get_ns__AddCamera(soap, &soap_tmp_ns__AddCamera, "ns:AddCamera", NULL))
 		return soap->error;
@@ -205,10 +205,10 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__AddCamera(struct soap *soap)
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__IfCamera(struct soap *soap)
 {	struct ns__IfCamera soap_tmp_ns__IfCamera;
 	struct ns__IfCameraResponse soap_tmp_ns__IfCameraResponse;
-	char soap_tmp_byte;
+	char * soap_tmp_string;
 	soap_default_ns__IfCameraResponse(soap, &soap_tmp_ns__IfCameraResponse);
-	soap_default_byte(soap, &soap_tmp_byte);
-	soap_tmp_ns__IfCameraResponse.ResponseXml = &soap_tmp_byte;
+	soap_tmp_string = NULL;
+	soap_tmp_ns__IfCameraResponse.ResponseXml = &soap_tmp_string;
 	soap_default_ns__IfCamera(soap, &soap_tmp_ns__IfCamera);
 	if (!soap_get_ns__IfCamera(soap, &soap_tmp_ns__IfCamera, "ns:IfCamera", NULL))
 		return soap->error;
@@ -249,10 +249,10 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__IfCamera(struct soap *soap)
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__DelCamera(struct soap *soap)
 {	struct ns__DelCamera soap_tmp_ns__DelCamera;
 	struct ns__DelCameraResponse soap_tmp_ns__DelCameraResponse;
-	char soap_tmp_byte;
+	char * soap_tmp_string;
 	soap_default_ns__DelCameraResponse(soap, &soap_tmp_ns__DelCameraResponse);
-	soap_default_byte(soap, &soap_tmp_byte);
-	soap_tmp_ns__DelCameraResponse.ResponseXml = &soap_tmp_byte;
+	soap_tmp_string = NULL;
+	soap_tmp_ns__DelCameraResponse.ResponseXml = &soap_tmp_string;
 	soap_default_ns__DelCamera(soap, &soap_tmp_ns__DelCamera);
 	if (!soap_get_ns__DelCamera(soap, &soap_tmp_ns__DelCamera, "ns:DelCamera", NULL))
 		return soap->error;

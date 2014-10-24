@@ -42,134 +42,134 @@ compiling, linking, and/or using OpenSSL is allowed.
 #endif
 
 #ifndef SOAP_TYPE_ns__SendMissionResponse
-#define SOAP_TYPE_ns__SendMissionResponse (8)
+#define SOAP_TYPE_ns__SendMissionResponse (9)
 /* ns:SendMissionResponse */
 struct ns__SendMissionResponse
 {
 public:
-	char *ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
+	char **ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 8; } /* = unique type id SOAP_TYPE_ns__SendMissionResponse */
+	int soap_type() const { return 9; } /* = unique type id SOAP_TYPE_ns__SendMissionResponse */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__SendMission
-#define SOAP_TYPE_ns__SendMission (9)
+#define SOAP_TYPE_ns__SendMission (10)
 /* ns:SendMission */
 struct ns__SendMission
 {
 public:
 	char *MsgXml;	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 9; } /* = unique type id SOAP_TYPE_ns__SendMission */
+	int soap_type() const { return 10; } /* = unique type id SOAP_TYPE_ns__SendMission */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__GetServerStatusResponse
-#define SOAP_TYPE_ns__GetServerStatusResponse (11)
+#define SOAP_TYPE_ns__GetServerStatusResponse (12)
 /* ns:GetServerStatusResponse */
 struct ns__GetServerStatusResponse
 {
 public:
-	char *ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
+	char **ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 11; } /* = unique type id SOAP_TYPE_ns__GetServerStatusResponse */
+	int soap_type() const { return 12; } /* = unique type id SOAP_TYPE_ns__GetServerStatusResponse */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__GetServerStatus
-#define SOAP_TYPE_ns__GetServerStatus (12)
+#define SOAP_TYPE_ns__GetServerStatus (13)
 /* ns:GetServerStatus */
 struct ns__GetServerStatus
 {
 public:
 	char *MsgXml;	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 12; } /* = unique type id SOAP_TYPE_ns__GetServerStatus */
+	int soap_type() const { return 13; } /* = unique type id SOAP_TYPE_ns__GetServerStatus */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__AddCameraResponse
-#define SOAP_TYPE_ns__AddCameraResponse (14)
+#define SOAP_TYPE_ns__AddCameraResponse (15)
 /* ns:AddCameraResponse */
 struct ns__AddCameraResponse
 {
 public:
-	char *ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
+	char **ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 14; } /* = unique type id SOAP_TYPE_ns__AddCameraResponse */
+	int soap_type() const { return 15; } /* = unique type id SOAP_TYPE_ns__AddCameraResponse */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__AddCamera
-#define SOAP_TYPE_ns__AddCamera (15)
+#define SOAP_TYPE_ns__AddCamera (16)
 /* ns:AddCamera */
 struct ns__AddCamera
 {
 public:
 	char *MsgXml;	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 15; } /* = unique type id SOAP_TYPE_ns__AddCamera */
+	int soap_type() const { return 16; } /* = unique type id SOAP_TYPE_ns__AddCamera */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__IfCameraResponse
-#define SOAP_TYPE_ns__IfCameraResponse (17)
+#define SOAP_TYPE_ns__IfCameraResponse (18)
 /* ns:IfCameraResponse */
 struct ns__IfCameraResponse
 {
 public:
-	char *ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
+	char **ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 17; } /* = unique type id SOAP_TYPE_ns__IfCameraResponse */
+	int soap_type() const { return 18; } /* = unique type id SOAP_TYPE_ns__IfCameraResponse */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__IfCamera
-#define SOAP_TYPE_ns__IfCamera (18)
+#define SOAP_TYPE_ns__IfCamera (19)
 /* ns:IfCamera */
 struct ns__IfCamera
 {
 public:
 	char *MsgXml;	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 18; } /* = unique type id SOAP_TYPE_ns__IfCamera */
+	int soap_type() const { return 19; } /* = unique type id SOAP_TYPE_ns__IfCamera */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__DelCameraResponse
-#define SOAP_TYPE_ns__DelCameraResponse (20)
+#define SOAP_TYPE_ns__DelCameraResponse (21)
 /* ns:DelCameraResponse */
 struct ns__DelCameraResponse
 {
 public:
-	char *ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
+	char **ResponseXml;	/* SOAP 1.2 RPC return element (when namespace qualified) */	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 20; } /* = unique type id SOAP_TYPE_ns__DelCameraResponse */
+	int soap_type() const { return 21; } /* = unique type id SOAP_TYPE_ns__DelCameraResponse */
 };
 #endif
 
 #ifndef SOAP_TYPE_ns__DelCamera
-#define SOAP_TYPE_ns__DelCamera (21)
+#define SOAP_TYPE_ns__DelCamera (22)
 /* ns:DelCamera */
 struct ns__DelCamera
 {
 public:
 	char *MsgXml;	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 21; } /* = unique type id SOAP_TYPE_ns__DelCamera */
+	int soap_type() const { return 22; } /* = unique type id SOAP_TYPE_ns__DelCamera */
 };
 #endif
 
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Header
-#define SOAP_TYPE_SOAP_ENV__Header (22)
+#define SOAP_TYPE_SOAP_ENV__Header (23)
 /* SOAP Header: */
 struct SOAP_ENV__Header
 {
 public:
-	int soap_type() const { return 22; } /* = unique type id SOAP_TYPE_SOAP_ENV__Header */
+	int soap_type() const { return 23; } /* = unique type id SOAP_TYPE_SOAP_ENV__Header */
 #ifdef WITH_NOEMPTYSTRUCT
 private:
 	char dummy;	/* dummy member to enable compilation */
@@ -182,7 +182,7 @@ private:
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Code
-#define SOAP_TYPE_SOAP_ENV__Code (23)
+#define SOAP_TYPE_SOAP_ENV__Code (24)
 /* SOAP Fault Code: */
 struct SOAP_ENV__Code
 {
@@ -190,7 +190,7 @@ public:
 	char *SOAP_ENV__Value;	/* optional element of type xsd:QName */
 	struct SOAP_ENV__Code *SOAP_ENV__Subcode;	/* optional element of type SOAP-ENV:Code */
 public:
-	int soap_type() const { return 23; } /* = unique type id SOAP_TYPE_SOAP_ENV__Code */
+	int soap_type() const { return 24; } /* = unique type id SOAP_TYPE_SOAP_ENV__Code */
 };
 #endif
 
@@ -199,7 +199,7 @@ public:
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Detail
-#define SOAP_TYPE_SOAP_ENV__Detail (25)
+#define SOAP_TYPE_SOAP_ENV__Detail (26)
 /* SOAP-ENV:Detail */
 struct SOAP_ENV__Detail
 {
@@ -208,7 +208,7 @@ public:
 	int __type;	/* any type of element <fault> (defined below) */
 	void *fault;	/* transient */
 public:
-	int soap_type() const { return 25; } /* = unique type id SOAP_TYPE_SOAP_ENV__Detail */
+	int soap_type() const { return 26; } /* = unique type id SOAP_TYPE_SOAP_ENV__Detail */
 };
 #endif
 
@@ -217,14 +217,14 @@ public:
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Reason
-#define SOAP_TYPE_SOAP_ENV__Reason (28)
+#define SOAP_TYPE_SOAP_ENV__Reason (29)
 /* SOAP-ENV:Reason */
 struct SOAP_ENV__Reason
 {
 public:
 	char *SOAP_ENV__Text;	/* optional element of type xsd:string */
 public:
-	int soap_type() const { return 28; } /* = unique type id SOAP_TYPE_SOAP_ENV__Reason */
+	int soap_type() const { return 29; } /* = unique type id SOAP_TYPE_SOAP_ENV__Reason */
 };
 #endif
 
@@ -233,7 +233,7 @@ public:
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Fault
-#define SOAP_TYPE_SOAP_ENV__Fault (29)
+#define SOAP_TYPE_SOAP_ENV__Fault (30)
 /* SOAP Fault: */
 struct SOAP_ENV__Fault
 {
@@ -248,7 +248,7 @@ public:
 	char *SOAP_ENV__Role;	/* optional element of type xsd:string */
 	struct SOAP_ENV__Detail *SOAP_ENV__Detail;	/* optional element of type SOAP-ENV:Detail */
 public:
-	int soap_type() const { return 29; } /* = unique type id SOAP_TYPE_SOAP_ENV__Fault */
+	int soap_type() const { return 30; } /* = unique type id SOAP_TYPE_SOAP_ENV__Fault */
 };
 #endif
 
@@ -285,15 +285,15 @@ typedef char *_XML;
 \******************************************************************************/
 
 
-SOAP_FMAC5 int SOAP_FMAC6 ns__SendMission(struct soap*, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 ns__SendMission(struct soap*, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 ns__GetServerStatus(struct soap*, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 ns__GetServerStatus(struct soap*, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 ns__AddCamera(struct soap*, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 ns__AddCamera(struct soap*, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 ns__IfCamera(struct soap*, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 ns__IfCamera(struct soap*, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 ns__DelCamera(struct soap*, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 ns__DelCamera(struct soap*, char *MsgXml, char **ResponseXml);
 
 /******************************************************************************\
  *                                                                            *
@@ -322,15 +322,15 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_ns__DelCamera(struct soap*);
 \******************************************************************************/
 
 
-SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__SendMission(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__SendMission(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__GetServerStatus(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__GetServerStatus(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__AddCamera(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__AddCamera(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__IfCamera(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__IfCamera(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char **ResponseXml);
 
-SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__DelCamera(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char *ResponseXml);
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns__DelCamera(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *MsgXml, char **ResponseXml);
 
 #endif
 

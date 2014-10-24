@@ -6,7 +6,7 @@
  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- xmlns:ns="urn:YrElecarDetect"
+ xmlns:ns="zog:YrElecarDetect"
  xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
  xmlns:HTTP="http://schemas.xmlsoap.org/wsdl/http/"
  xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
@@ -16,12 +16,12 @@
 
 <types>
 
- <schema targetNamespace="urn:YrElecarDetect"
+ <schema targetNamespace="zog:YrElecarDetect"
   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:ns="urn:YrElecarDetect"
+  xmlns:ns="zog:YrElecarDetect"
   xmlns="http://www.w3.org/2001/XMLSchema"
   elementFormDefault="unqualified"
   attributeFormDefault="unqualified">
@@ -103,46 +103,46 @@
  <operation name="SendMission">
   <SOAP:operation style="rpc" soapAction=""/>
   <input>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </input>
   <output>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </output>
  </operation>
  <operation name="GetServerStatus">
   <SOAP:operation style="rpc" soapAction=""/>
   <input>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </input>
   <output>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </output>
  </operation>
  <operation name="AddCamera">
   <SOAP:operation style="rpc" soapAction=""/>
   <input>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </input>
   <output>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </output>
  </operation>
  <operation name="IfCamera">
   <SOAP:operation style="rpc" soapAction=""/>
   <input>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </input>
   <output>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </output>
  </operation>
  <operation name="DelCamera">
   <SOAP:operation style="rpc" soapAction=""/>
   <input>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </input>
   <output>
-     <SOAP:body use="encoded" namespace="urn:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+     <SOAP:body use="encoded" namespace="zog:YrElecarDetect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </output>
  </operation>
 </binding>

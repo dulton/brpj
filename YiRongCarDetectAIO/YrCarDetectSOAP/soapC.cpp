@@ -15,7 +15,7 @@ compiling, linking, and/or using OpenSSL is allowed.
 
 #include "soapH.h"
 
-SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.8.17r 2014-10-22 08:42:32 GMT")
+SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.8.17r 2014-10-24 03:48:06 GMT")
 
 
 #ifndef WITH_NOGLOBAL
@@ -212,6 +212,8 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		return soap_in_ns__SendMission(soap, NULL, NULL, "ns:SendMission");
 	case SOAP_TYPE_ns__SendMissionResponse:
 		return soap_in_ns__SendMissionResponse(soap, NULL, NULL, "ns:SendMissionResponse");
+	case SOAP_TYPE_PointerTostring:
+		return soap_in_PointerTostring(soap, NULL, NULL, "xsd:string");
 	case SOAP_TYPE__QName:
 	{	char **s;
 		s = soap_in__QName(soap, NULL, NULL, "xsd:QName");
@@ -378,6 +380,8 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap *soap, const void *ptr, co
 		return soap_out_ns__SendMission(soap, tag, id, (const struct ns__SendMission *)ptr, "ns:SendMission");
 	case SOAP_TYPE_ns__SendMissionResponse:
 		return soap_out_ns__SendMissionResponse(soap, tag, id, (const struct ns__SendMissionResponse *)ptr, "ns:SendMissionResponse");
+	case SOAP_TYPE_PointerTostring:
+		return soap_out_PointerTostring(soap, tag, id, (char **const*)ptr, "xsd:string");
 	case SOAP_TYPE__QName:
 		return soap_out_string(soap, tag, id, (char*const*)&ptr, "xsd:QName");
 	case SOAP_TYPE_string:
@@ -429,6 +433,9 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_markelement(struct soap *soap, const void *ptr, 
 		break;
 	case SOAP_TYPE_ns__SendMissionResponse:
 		soap_serialize_ns__SendMissionResponse(soap, (const struct ns__SendMissionResponse *)ptr);
+		break;
+	case SOAP_TYPE_PointerTostring:
+		soap_serialize_PointerTostring(soap, (char **const*)ptr);
 		break;
 	case SOAP_TYPE__QName:
 		soap_serialize_string(soap, (char*const*)&ptr);
@@ -1430,14 +1437,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__DelCamera(struct soap *soap, int st, in
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__DelCameraResponse(struct soap *soap, struct ns__DelCameraResponse *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_default_string(soap, &a->ResponseXml);
+	a->ResponseXml = NULL;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__DelCameraResponse(struct soap *soap, const struct ns__DelCameraResponse *a)
 {
 #ifndef WITH_NOIDREF
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_serialize_string(soap, &a->ResponseXml);
+	soap_serialize_PointerTostring(soap, &a->ResponseXml);
 #endif
 }
 
@@ -1446,7 +1453,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns__DelCameraResponse(struct soap *soap, cons
 	(void)soap; (void)tag; (void)id; (void)type;
 	if (soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_ns__DelCameraResponse), type))
 		return soap->error;
-	if (soap_out_string(soap, "ResponseXml", -1, &a->ResponseXml, ""))
+	if (soap_out_PointerTostring(soap, "ResponseXml", -1, &a->ResponseXml, ""))
 		return soap->error;
 	return soap_element_end_out(soap, tag);
 }
@@ -1464,8 +1471,8 @@ SOAP_FMAC3 struct ns__DelCameraResponse * SOAP_FMAC4 soap_in_ns__DelCameraRespon
 	{
 		for (;;)
 		{	soap->error = SOAP_TAG_MISMATCH;
-			if (soap_flag_ResponseXml && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_string(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
+			if (soap_flag_ResponseXml && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerTostring(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
 				{	soap_flag_ResponseXml--;
 					continue;
 				}
@@ -1642,14 +1649,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__IfCamera(struct soap *soap, int st, int
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__IfCameraResponse(struct soap *soap, struct ns__IfCameraResponse *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_default_string(soap, &a->ResponseXml);
+	a->ResponseXml = NULL;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__IfCameraResponse(struct soap *soap, const struct ns__IfCameraResponse *a)
 {
 #ifndef WITH_NOIDREF
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_serialize_string(soap, &a->ResponseXml);
+	soap_serialize_PointerTostring(soap, &a->ResponseXml);
 #endif
 }
 
@@ -1658,7 +1665,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns__IfCameraResponse(struct soap *soap, const
 	(void)soap; (void)tag; (void)id; (void)type;
 	if (soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_ns__IfCameraResponse), type))
 		return soap->error;
-	if (soap_out_string(soap, "ResponseXml", -1, &a->ResponseXml, ""))
+	if (soap_out_PointerTostring(soap, "ResponseXml", -1, &a->ResponseXml, ""))
 		return soap->error;
 	return soap_element_end_out(soap, tag);
 }
@@ -1676,8 +1683,8 @@ SOAP_FMAC3 struct ns__IfCameraResponse * SOAP_FMAC4 soap_in_ns__IfCameraResponse
 	{
 		for (;;)
 		{	soap->error = SOAP_TAG_MISMATCH;
-			if (soap_flag_ResponseXml && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_string(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
+			if (soap_flag_ResponseXml && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerTostring(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
 				{	soap_flag_ResponseXml--;
 					continue;
 				}
@@ -1854,14 +1861,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__AddCamera(struct soap *soap, int st, in
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__AddCameraResponse(struct soap *soap, struct ns__AddCameraResponse *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_default_string(soap, &a->ResponseXml);
+	a->ResponseXml = NULL;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__AddCameraResponse(struct soap *soap, const struct ns__AddCameraResponse *a)
 {
 #ifndef WITH_NOIDREF
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_serialize_string(soap, &a->ResponseXml);
+	soap_serialize_PointerTostring(soap, &a->ResponseXml);
 #endif
 }
 
@@ -1870,7 +1877,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns__AddCameraResponse(struct soap *soap, cons
 	(void)soap; (void)tag; (void)id; (void)type;
 	if (soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_ns__AddCameraResponse), type))
 		return soap->error;
-	if (soap_out_string(soap, "ResponseXml", -1, &a->ResponseXml, ""))
+	if (soap_out_PointerTostring(soap, "ResponseXml", -1, &a->ResponseXml, ""))
 		return soap->error;
 	return soap_element_end_out(soap, tag);
 }
@@ -1888,8 +1895,8 @@ SOAP_FMAC3 struct ns__AddCameraResponse * SOAP_FMAC4 soap_in_ns__AddCameraRespon
 	{
 		for (;;)
 		{	soap->error = SOAP_TAG_MISMATCH;
-			if (soap_flag_ResponseXml && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_string(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
+			if (soap_flag_ResponseXml && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerTostring(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
 				{	soap_flag_ResponseXml--;
 					continue;
 				}
@@ -2066,14 +2073,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__GetServerStatus(struct soap *soap, int 
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__GetServerStatusResponse(struct soap *soap, struct ns__GetServerStatusResponse *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_default_string(soap, &a->ResponseXml);
+	a->ResponseXml = NULL;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__GetServerStatusResponse(struct soap *soap, const struct ns__GetServerStatusResponse *a)
 {
 #ifndef WITH_NOIDREF
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_serialize_string(soap, &a->ResponseXml);
+	soap_serialize_PointerTostring(soap, &a->ResponseXml);
 #endif
 }
 
@@ -2082,7 +2089,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns__GetServerStatusResponse(struct soap *soap
 	(void)soap; (void)tag; (void)id; (void)type;
 	if (soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_ns__GetServerStatusResponse), type))
 		return soap->error;
-	if (soap_out_string(soap, "ResponseXml", -1, &a->ResponseXml, ""))
+	if (soap_out_PointerTostring(soap, "ResponseXml", -1, &a->ResponseXml, ""))
 		return soap->error;
 	return soap_element_end_out(soap, tag);
 }
@@ -2100,8 +2107,8 @@ SOAP_FMAC3 struct ns__GetServerStatusResponse * SOAP_FMAC4 soap_in_ns__GetServer
 	{
 		for (;;)
 		{	soap->error = SOAP_TAG_MISMATCH;
-			if (soap_flag_ResponseXml && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_string(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
+			if (soap_flag_ResponseXml && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerTostring(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
 				{	soap_flag_ResponseXml--;
 					continue;
 				}
@@ -2278,14 +2285,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_ns__SendMission(struct soap *soap, int st, 
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_ns__SendMissionResponse(struct soap *soap, struct ns__SendMissionResponse *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_default_string(soap, &a->ResponseXml);
+	a->ResponseXml = NULL;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns__SendMissionResponse(struct soap *soap, const struct ns__SendMissionResponse *a)
 {
 #ifndef WITH_NOIDREF
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_serialize_string(soap, &a->ResponseXml);
+	soap_serialize_PointerTostring(soap, &a->ResponseXml);
 #endif
 }
 
@@ -2294,7 +2301,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns__SendMissionResponse(struct soap *soap, co
 	(void)soap; (void)tag; (void)id; (void)type;
 	if (soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_ns__SendMissionResponse), type))
 		return soap->error;
-	if (soap_out_string(soap, "ResponseXml", -1, &a->ResponseXml, ""))
+	if (soap_out_PointerTostring(soap, "ResponseXml", -1, &a->ResponseXml, ""))
 		return soap->error;
 	return soap_element_end_out(soap, tag);
 }
@@ -2312,8 +2319,8 @@ SOAP_FMAC3 struct ns__SendMissionResponse * SOAP_FMAC4 soap_in_ns__SendMissionRe
 	{
 		for (;;)
 		{	soap->error = SOAP_TAG_MISMATCH;
-			if (soap_flag_ResponseXml && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_string(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
+			if (soap_flag_ResponseXml && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerTostring(soap, "ResponseXml", &a->ResponseXml, "xsd:string"))
 				{	soap_flag_ResponseXml--;
 					continue;
 				}
@@ -2551,6 +2558,59 @@ SOAP_FMAC3 struct SOAP_ENV__Code ** SOAP_FMAC4 soap_get_PointerToSOAP_ENV__Code(
 }
 
 #endif
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerTostring(struct soap *soap, char **const*a)
+{
+#ifndef WITH_NOIDREF
+	if (!soap_reference(soap, *a, SOAP_TYPE_string))
+		soap_serialize_string(soap, *a);
+#endif
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_PointerTostring(struct soap *soap, const char *tag, int id, char **const*a, const char *type)
+{
+	id = soap_element_id(soap, tag, id, *a, NULL, 0, type, SOAP_TYPE_string);
+	if (id < 0)
+		return soap->error;
+	return soap_out_string(soap, tag, id, *a, type);
+}
+
+SOAP_FMAC3 char *** SOAP_FMAC4 soap_in_PointerTostring(struct soap *soap, const char *tag, char ***a, const char *type)
+{
+	if (soap_element_begin_in(soap, tag, 1, NULL))
+		return NULL;
+	if (!a)
+		if (!(a = (char ***)soap_malloc(soap, sizeof(char **))))
+			return NULL;
+	*a = NULL;
+	if (!soap->null && *soap->href != '#')
+	{	soap_revert(soap);
+		if (!(*a = soap_in_string(soap, tag, *a, type)))
+			return NULL;
+	}
+	else
+	{	a = (char ***)soap_id_lookup(soap, soap->href, (void**)a, SOAP_TYPE_string, sizeof(char *), 1);
+		if (soap->body && soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	return a;
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerTostring(struct soap *soap, char **const*a, const char *tag, const char *type)
+{
+	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_PointerTostring);
+	if (soap_out_PointerTostring(soap, tag?tag:"byte", id, a, type))
+		return soap->error;
+	return soap_putindependent(soap);
+}
+
+SOAP_FMAC3 char *** SOAP_FMAC4 soap_get_PointerTostring(struct soap *soap, char ***p, const char *tag, const char *type)
+{
+	if ((p = soap_in_PointerTostring(soap, tag, p, type)))
+		if (soap_getindependent(soap))
+			return NULL;
+	return p;
+}
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize__QName(struct soap *soap, char *const*a)
 {
