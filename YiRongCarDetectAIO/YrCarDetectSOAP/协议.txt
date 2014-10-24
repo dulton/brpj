@@ -1,0 +1,131 @@
+提交任务
+
+发送
+
+要使用的识别服务器编号 detectid （由查询服务器使用状态返回）
+要进行识别的摄像头编号 cameraid (由插入摄像头返回)
+发送命令 0停止 1播放 
+<?xml     version='1.0'    encoding='UTF-8'?>
+
+<DetectID>3</DetectID> 
+<CameraID>123</CameraID>
+<Command>0</Command> 
+
+-----------------
+接收
+
+标志：成功，失败
+原因：字符串
+<code>0</code> 
+<message>成功</message> 
+========================
+查询识别服务器使用状态
+
+发送 
+空串
+-----------------
+接收
+N个
+
+识别服务器编号 detectid 
+服务器IP
+通道号
+是否占用
+是否故障 （当非故障且为占用 才是真正在做识别）
+占用的摄像头ID
+<code>0</code> 
+<message>成功</message> 
+<Total>30</Total>
+<DetectServerNo>
+<DetectID>111</DetectID>
+<ServerIP>192.168.1.2</ServerIP>
+<Channel>0</Channel>
+<IsOccupy>0</IsOccupy>
+<IsNormal>0</IsNormal>
+<CameraID>0</CameraID>
+</DetectServerNo>
+
+<DetectServerNo>
+<DetectID>111</DetectID>
+<ServerIP>192.168.1.2</ServerIP>
+<Channel>0</Channel>
+<IsOccupy>0</IsOccupy>
+<IsNormal>0</IsNormal>
+<CameraID>0</CameraID>
+</DetectServerNo>
+
+========================
+插入摄像头
+
+发送
+
+摄像头名称 
+摄像头IP
+端口号
+用户名
+密码
+通道号
+摄像头协议 0海康私有 1大华私有 4 流媒体
+流媒体地址
+流媒体传输模式 0=RTP-RTSP 1=RTP-UDP
+流媒体解码标志 0=PS码流（海康） 1=原始码流（国标）
+经度
+纬度
+卡口索引编号 crossIndexcode 用在插入卡口系统的过车信息中使用
+卡口道路编号 laneId 用在插入卡口系统的过车信息中使用
+
+<CamName>名称</CamName>
+<CamIP>192.168.1.2</CamIP>
+<Port>3000</Port>
+<User>0</User>
+<Password>0</Password>
+
+<CHANNEL>0</CHANNEL>
+
+SVENDERID
+
+RTSPURL
+RTPMODE
+DECODETAG
+
+
+longitude
+latitude
+crossindex
+laneId
+----------
+接收 
+摄像头编号
+成功，失败
+<code>0</code> 
+<message>成功</message> 
+<CameraID>123</CameraID>
+========================
+查询摄像头 是否存在
+
+发送
+摄像头编号
+	
+<CameraID>123</CameraID>
+----------
+接收 
+存在
+
+<code>0</code> 
+<message>成功</message> 
+1存在
+0不存在
+<flag>1</flag> 
+
+
+========================
+删除摄像头
+
+发送
+摄像头编号
+<CameraID>123</CameraID>
+----------
+接收 
+成功，失败
+<code>0</code> 
+<message>成功</message> 
