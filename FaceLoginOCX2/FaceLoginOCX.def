@@ -1,0 +1,9 @@
+; FaceLoginOCX.def : Declares the module parameters.
+
+LIBRARY      "FaceLoginOCX.OCX"
+
+EXPORTS
+	DllCanUnloadNow     PRIVATE
+	DllGetClassObject   PRIVATE
+	DllRegisterServer   PRIVATE
+	DllUnregisterServer PRIVATE

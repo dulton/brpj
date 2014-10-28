@@ -1,0 +1,257 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "1 TYPELIB ""FaceLoginOCX.tlb""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "TODO: <福建亿榕信息技术有限公司>"
+            VALUE "FileDescription", "TODO: <人脸识别登陆组件>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "FaceLoginOCX.ocx"
+            VALUE "LegalCopyright", "TODO: (c) <Yirong>.  All rights reserved."
+            VALUE "OriginalFilename", "FaceLoginOCX.ocx"
+            VALUE "ProductName", "TODO: <人脸识别登陆组件>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ABOUTDLL            ICON                    "FaceLoginOCX.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_FACELOGINOCX        BITMAP                  "FaceLoginOCXCtrl.bmp"
+IDB_BACKGROUND          BITMAP                  "res\\background.BMP"
+IDB_BITMAP_VIDEO        BITMAP                  "res\\video.BMP"
+IDB_BTN_CAPTURE_NORMAL  BITMAP                  "res\\capture-normal.BMP"
+IDB_BTN_CLEAR_NORMAL    BITMAP                  "res\\clear-normal.BMP"
+IDB_BTN_ENROLL_NORMAL   BITMAP                  "res\\enroll-normal.BMP"
+IDB_BTN_START_NORMAL    BITMAP                  "res\\start-normal.BMP"
+IDB_BITMAP_CEN          BITMAP                  "res\\combo\\bitmap-cen.BMP"
+IDB_BITMAP_LEFT         BITMAP                  "res\\combo\\bitmap-left.BMP"
+IDB_BITMAP_RIGHT        BITMAP                  "res\\combo\\bitmap-right.bmp"
+IDB_COMBO_BOTTOM        BITMAP                  "res\\combo\\combo-bottom.BMP"
+IDB_COMBO_LEFT          BITMAP                  "res\\combo\\combo-left.bmp"
+IDB_COMBO_RIGHT         BITMAP                  "res\\combo\\combo-right.BMP"
+IDB_COMBO_TOP           BITMAP                  "res\\combo\\combo-top.BMP"
+IDB_BITMAP_FACE1        BITMAP                  "res\\face1.bmp"
+IDB_BITMAP_FACE2        BITMAP                  "res\\face2.bmp"
+IDB_BITMAP_FACE3        BITMAP                  "res\\face3.bmp"
+IDB_BITMAP_FACE4        BITMAP                  "res\\face4.bmp"
+IDB_BTN_CAPTURE_PRESS   BITMAP                  "res\\capture-press.BMP"
+IDB_BTN_CAPTURE_PUSH    BITMAP                  "res\\capture-push.BMP"
+IDB_BTN_CLEAR_PRESS     BITMAP                  "res\\clear-press.BMP"
+IDB_BTN_CLEAR_PUSH      BITMAP                  "res\\clear-push.BMP"
+IDB_BTN_ENROLL_PRESS    BITMAP                  "res\\enroll-press.BMP"
+IDB_BTN_ENROLL_PUSH     BITMAP                  "res\\enroll-push.BMP"
+IDB_BTN_START_PRESS     BITMAP                  "res\\start-press.BMP"
+IDB_BTN_START_PUSH      BITMAP                  "res\\start-push.BMP"
+IDB_MATCHBACK           BITMAP                  "res\\matchBack.bmp"
+IDB_MATCH_VIDEO         BITMAP                  "res\\matchVideo.bmp"
+IDB_BITMAP_FACE1_CHOOSE BITMAP                  "res\\face1choose.bmp"
+IDB_BITMAP_FACE4_CHOOSE BITMAP                  "res\\face4choose.bmp"
+IDB_BITMAP_FACE2_CHOOSE BITMAP                  "res\\face2choose.bmp"
+IDB_BITMAP_FACE3_CHOOSE BITMAP                  "res\\face3choose.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX_FACELOGINOCX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About FaceLoginOCX Control"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDI_ABOUTDLL,IDC_STATIC,14,14,21,20
+    LTEXT           "FaceLoginOCX Control, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2013, ",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+END
+
+IDD_PROPPAGE_FACELOGINOCX DIALOG  0, 0, 250, 62
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "TODO: Place controls to manipulate properties of FaceLoginOCX Control on this dialog.",IDC_STATIC,7,25,229,16
+END
+
+IDD_FACEMATCH DIALOGEX 0, 0, 353, 289
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         208,IDC_STATIC_MAIN,"Static",SS_BITMAP,21,19,325,238
+    CONTROL         "Start",IDC_BTN_START,"Button",BS_OWNERDRAW | WS_TABSTOP,284,262,50,14
+    COMBOBOX        IDC_COMBO_DEV,199,264,73,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_FACEENROLL DIALOGEX 0, 0, 500, 308
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "人脸注册"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         208,IDC_STATIC_MAIN,"Static",SS_BITMAP,10,40,309,221
+    CONTROL         "Start",IDC_BTN_START,"Button",BS_OWNERDRAW | WS_TABSTOP,422,234,50,14
+    COMBOBOX        IDC_COMBO_DEV,345,234,73,86,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Capture",IDC_BTN_CAPTURE,"Button",BS_OWNERDRAW | WS_TABSTOP,331,261,50,17
+    CONTROL         "Clear",IDC_BTN_CLEAR,"Button",BS_OWNERDRAW | WS_TABSTOP,433,261,50,17
+    CONTROL         "Enroll",IDC_BTN_ENROLL,"Button",BS_OWNERDRAW | WS_TABSTOP,383,261,50,17
+    CONTROL         "",IDC_STATIC_FACE1,"Static",SS_OWNERDRAW | SS_NOTIFY,345,40,15,13
+    CONTROL         "",IDC_STATIC_FACE3,"Static",SS_OWNERDRAW | SS_NOTIFY,345,114,15,13
+    CONTROL         "",IDC_STATIC_FACE4,"Static",SS_OWNERDRAW | SS_NOTIFY,415,114,15,13
+    CONTROL         "",IDC_STATIC_FACE2,"Static",SS_OWNERDRAW | SS_NOTIFY,415,40,15,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX_FACELOGINOCX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_PROPPAGE_FACELOGINOCX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 243
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_FACEENROLL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 493
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 301
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_FACELOGINOCX        "FaceLoginOCX Control"
+    IDS_FACELOGINOCX_PPG    "FaceLoginOCX Property Page"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FACELOGINOCX_PPG_CAPTION "General"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+1 TYPELIB "FaceLoginOCX.tlb"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
