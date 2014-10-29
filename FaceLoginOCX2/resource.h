@@ -29,6 +29,8 @@
 #define IDC_STATIC_FACE4                212
 #define IDB_BTN_ENROLL_NORMAL           212
 #define IDB_BTN_START_NORMAL            213
+#define IDC_BUTTON2                     213
+#define IDC_BUTTON_CLOSE                213
 #define IDB_BITMAP_CEN                  215
 #define IDB_BITMAP_LEFT                 216
 #define IDB_BITMAP_RIGHT                217
@@ -55,16 +57,18 @@
 #define IDB_BITMAP_FACE1_CHOOSE         240
 #define IDB_BITMAP_FACE4_CHOOSE         241
 #define IDB_BITMAP_FACE2_CHOOSE         242
-#define IDB_BITMAP6                     243
 #define IDB_BITMAP_FACE3_CHOOSE         243
+#define IDB_BTN_CLOSE_NORMAL            244
+#define IDB_BTN_CLOSE_PRESS             245
+#define IDB_BTN_CLOSE_PUSH              246
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        244
+#define _APS_NEXT_RESOURCE_VALUE        247
 #define _APS_NEXT_COMMAND_VALUE         32768
-#define _APS_NEXT_CONTROL_VALUE         213
+#define _APS_NEXT_CONTROL_VALUE         214
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

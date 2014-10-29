@@ -178,6 +178,13 @@ int Service::HttpRequest( const string http_method,
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, lpService);
 
+		int timeout=10;
+		//设置URL地址错误 重连N次后推出
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, timeout);
+		//设置最低速度。为了中途拔网线
+		curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, 10);
+		curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, timeout);
+
 		if ( http_method == "PUT" )
 		{
 			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION,WriteHeaderCallback); // our static function

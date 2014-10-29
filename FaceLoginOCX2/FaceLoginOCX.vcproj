@@ -390,11 +390,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\combo\bitmap2.bmp"
+				RelativePath=".\res\bitmap2.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\res\bitmap2.bmp"
+				RelativePath=".\res\combo\bitmap2.bmp"
 				>
 			</File>
 			<File
@@ -431,6 +431,18 @@
 			</File>
 			<File
 				RelativePath=".\res\clear-push.BMP"
+				>
+			</File>
+			<File
+				RelativePath=".\res\close-normal.BMP"
+				>
+			</File>
+			<File
+				RelativePath=".\res\close-press.BMP"
+				>
+			</File>
+			<File
+				RelativePath=".\res\close-push.BMP"
 				>
 			</File>
 			<File

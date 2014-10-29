@@ -75,13 +75,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "TODO: <福建亿榕信息技术有限公司>"
-            VALUE "FileDescription", "TODO: <人脸识别登陆组件>"
+            VALUE "CompanyName", "<福建亿榕信息技术有限公司>"
+            VALUE "FileDescription", "<人脸识别登陆组件>"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "FaceLoginOCX.ocx"
-            VALUE "LegalCopyright", "TODO: (c) <Yirong>.  All rights reserved."
+            VALUE "LegalCopyright", "(c) <Yirong>.  All rights reserved."
             VALUE "OriginalFilename", "FaceLoginOCX.ocx"
-            VALUE "ProductName", "TODO: <人脸识别登陆组件>"
+            VALUE "ProductName", "<人脸识别登陆组件>"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -138,6 +138,9 @@ IDB_BITMAP_FACE1_CHOOSE BITMAP                  "res\\face1choose.bmp"
 IDB_BITMAP_FACE4_CHOOSE BITMAP                  "res\\face4choose.bmp"
 IDB_BITMAP_FACE2_CHOOSE BITMAP                  "res\\face2choose.bmp"
 IDB_BITMAP_FACE3_CHOOSE BITMAP                  "res\\face3choose.bmp"
+IDB_BTN_CLOSE_NORMAL    BITMAP                  "res\\close-normal.BMP"
+IDB_BTN_CLOSE_PRESS     BITMAP                  "res\\close-press.BMP"
+IDB_BTN_CLOSE_PUSH      BITMAP                  "res\\close-push.BMP"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -163,17 +166,17 @@ BEGIN
 END
 
 IDD_FACEMATCH DIALOGEX 0, 0, 353, 289
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         208,IDC_STATIC_MAIN,"Static",SS_BITMAP,21,19,325,238
     CONTROL         "Start",IDC_BTN_START,"Button",BS_OWNERDRAW | WS_TABSTOP,284,262,50,14
     COMBOBOX        IDC_COMBO_DEV,199,264,73,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "关闭",IDC_BUTTON_CLOSE,"Button",BS_OWNERDRAW | WS_TABSTOP,299,2,50,14
 END
 
-IDD_FACEENROLL DIALOGEX 0, 0, 500, 308
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "人脸注册"
+IDD_FACEENROLL DIALOGEX 0, 0, 500, 310
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         208,IDC_STATIC_MAIN,"Static",SS_BITMAP,10,40,309,221
@@ -186,6 +189,7 @@ BEGIN
     CONTROL         "",IDC_STATIC_FACE3,"Static",SS_OWNERDRAW | SS_NOTIFY,345,114,15,13
     CONTROL         "",IDC_STATIC_FACE4,"Static",SS_OWNERDRAW | SS_NOTIFY,415,114,15,13
     CONTROL         "",IDC_STATIC_FACE2,"Static",SS_OWNERDRAW | SS_NOTIFY,415,40,15,13
+    CONTROL         "关闭",IDC_BUTTON_CLOSE,"Button",BS_OWNERDRAW | WS_TABSTOP,436,16,50,14
 END
 
 
@@ -218,7 +222,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 493
         TOPMARGIN, 7
-        BOTTOMMARGIN, 301
+        BOTTOMMARGIN, 303
     END
 END
 #endif    // APSTUDIO_INVOKED

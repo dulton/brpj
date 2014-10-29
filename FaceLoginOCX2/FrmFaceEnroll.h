@@ -8,8 +8,8 @@
 #include <queue>
 #include "BitComboBox.h"
 
-#define VIDEO_WIDTH     640
-#define VIDEO_HEIGHT    480
+#define VIDEO_WIDTH     1920
+#define VIDEO_HEIGHT    1080
 #define PICTURE_MAX		4
 	
 
@@ -85,6 +85,8 @@ public:
 	CRect DrawRect;
 	//绘制图案的矩形框和初始化框的比例
 	float DrawScale;
+
+	bool m_closefocus;
 	
 	virtual BOOL OnInitDialog();
 protected:
@@ -95,6 +97,8 @@ public:
 	CBitmapButton m_btnEnroll;
 	CBitmapButton m_btnClear;
 	CBitComboBox m_cbDevice;
+
+	CBitmapButton m_btnclose;
 
 	afx_msg void OnClose();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
@@ -112,6 +116,9 @@ public:
 	afx_msg void OnStnClickedStaticFace2();
 	afx_msg void OnStnClickedStaticFace3();
 	afx_msg void OnStnClickedStaticFace4();
+
+	afx_msg void OnBnClickedButtonClose();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 #endif

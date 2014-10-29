@@ -20,6 +20,7 @@ DWORD WINAPI MacthThread(void *p)
 	while(pFrmFaceMatch->m_bThreadWork)
 	{
 		pFrmFaceMatch->MacthProcess();
+		Sleep(10);
 	}
 
 	pFrmFaceMatch->m_bIsClose = true;
@@ -124,6 +125,7 @@ DWORD WINAPI MacthDetectThread(void *p)
 		{
 			continue;
 		}
+		Sleep(10);
 	}
 
 	pFrmFaceMatch->m_bIsClose = true;
@@ -151,6 +153,7 @@ void CFrmFaceMatch::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_DEV, m_cbDevice);
 	DDX_Control(pDX, IDC_BTN_START, m_btnStart);
+	DDX_Control(pDX, IDC_BUTTON_CLOSE, m_btnclose);
 }
 
 
@@ -159,6 +162,8 @@ BEGIN_MESSAGE_MAP(CFrmFaceMatch, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTN_START, &CFrmFaceMatch::OnBnClickedBtnStart)
 	ON_WM_PAINT()
+	ON_BN_CLICKED(IDC_BUTTON_CLOSE, &CFrmFaceMatch::OnBnClickedButtonClose)
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -179,7 +184,7 @@ BOOL CFrmFaceMatch::OnInitDialog()
 void CFrmFaceMatch::OnCancel()
 {
 	// TODO: Add your specialized code here and/or call the base class
-
+		
 	StopMacthThread();
 	CDialog::OnCancel();
 }
@@ -214,7 +219,7 @@ void CFrmFaceMatch::OnTimer(UINT_PTR nIDEvent)
 			MacthResult = m_Detect.Token;//比对成功，返回令牌
 			OnCancel();
 		}
-		if(MacthTimeOut++ > 30)
+		if(MacthTimeOut++ > OCX_TIMEOUT_MAX)
 		{
 			if(MacthLog.IsEmpty())			//未检测到人脸，识别超时
 			{
@@ -322,6 +327,10 @@ void CFrmFaceMatch::InitChildWindow(void)
 	m_cbDevice.MoveWindow(303,425,145,100);
 	//m_cbDevice.InsertString(0,"摄像头列表");
 	//m_cbDevice.SetCurSel(0);
+	m_btnclose.LoadBitmaps(IDB_BTN_CLOSE_NORMAL,IDB_BTN_CLOSE_PRESS,IDB_BTN_CLOSE_PRESS,NULL);
+	m_btnclose.SizeToContent();		//自适应图片大小
+	
+	m_btnclose.MoveWindow(505,2,22,22);
 }
 
 /************************************
@@ -352,6 +361,8 @@ void CFrmFaceMatch::InitParameters(void)
 	{
 		m_MacthList.pop();
 	}
+	
+	m_closefocus=false;
 }
 
 /************************************
@@ -405,6 +416,7 @@ int CFrmFaceMatch::StopMacthThread(void)
 			m_pThreadMacth=NULL;
 		}
 		Sleep(100);
+
 		CloseCamera();
 		Invalidate();
 
@@ -450,4 +462,45 @@ void CFrmFaceMatch::OnPaint()
 	dc.StretchBlt(0,0,rect.Width(),rect.Height(),&memdc,0,0,bmp.bmWidth,bmp.bmHeight,SRCCOPY);
 	memdc.DeleteDC();
 	// Do not call CDialog::OnPaint() for painting messages
+}
+
+void CFrmFaceMatch::OnBnClickedButtonClose()
+{
+	// TODO: Add your message handler code here and/or call default
+	MacthLog.Format(_T("{\
+					   \"ret\":\"fail\",\
+					   \"user\":\"%s\",\
+					   \"sysID\":\"%d\",\
+					   \"content\":\"User_Cancle\"\
+					   }"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
+
+	MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCLE);
+
+	StopMacthThread();
+	CDialog::OnCancel();
+}
+
+void CFrmFaceMatch::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	bool old=m_closefocus;
+	if(point.x <535 && point.x >500 &&point.y <35 && point.y >1 )
+	{
+		m_closefocus=true;
+	}
+	else
+	{
+		m_closefocus=false;
+	}
+
+	if( old != m_closefocus)
+	{	
+		if(m_closefocus)
+			m_btnclose.SetFocus();
+		else
+			this->SetFocus();
+	}
+
+	CDialog::OnMouseMove(nFlags, point);
 }

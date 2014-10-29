@@ -259,6 +259,20 @@ void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
 		//pDC->FrameRect(rect, &pen);
 		FrameRect(hdcMem, face_Rect_List[i], (HBRUSH)tempBrush);
 		FrameRect(hdcMem, tempRect, (HBRUSH)tempBrush);
+
+		tempRect.left = face_Rect_List[i].left-2;
+		tempRect.top  = face_Rect_List[i].top-2;
+		tempRect.bottom = face_Rect_List[i].bottom+2;
+		tempRect.right  = face_Rect_List[i].right+2;
+
+		FrameRect(hdcMem, tempRect, (HBRUSH)tempBrush);
+
+		tempRect.left = face_Rect_List[i].left-3;
+		tempRect.top  = face_Rect_List[i].top-3;
+		tempRect.bottom = face_Rect_List[i].bottom+3;
+		tempRect.right  = face_Rect_List[i].right+3;
+
+		FrameRect(hdcMem, tempRect, (HBRUSH)tempBrush);
 	}
 
 
@@ -346,12 +360,11 @@ void CCommon::DrawFaceImageMin(CStatic *m_picBox,unsigned char *image,unsigned l
 			pPic->get_Height(&hmHeight);//获得图象真实高度
 	
 			//在控件上显示图片
-			pPic->Render(*pDC,5,5,rect.Width()-10,rect.Height()-10,0,hmHeight,hmWidth,-hmHeight,NULL); 
+			pPic->Render(*pDC,4,4,rect.Width()-8,rect.Height()-8,0,hmHeight,hmWidth,-hmHeight,NULL); 
 			pPic->Release(); 
 			pStream->Release();//释放数据流
 		
 		}  
-
 	}
 
 	if(hGlobal)

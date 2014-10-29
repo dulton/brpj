@@ -39,6 +39,8 @@
 #include <afxwin.h>
 
 //#define USE_CHTTP
+//超时宏定义 秒
+#define OCX_TIMEOUT_MAX				120
 
 //人脸注册、识别OCX返回值
 #define OCX_ERROR_NO_ERROR			0		//识别或注册成功

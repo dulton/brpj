@@ -188,7 +188,7 @@ void CBitComboBox::OnPaint()
 	GetClientRect(&rcRepaint);
 	rcRepaint.left = rcRepaint.left + bitLeft.bmWidth;
 	rcRepaint.right = rcRepaint.right - bitRight.bmWidth;
-	rcRepaint.top += 3; rcRepaint.bottom -= 3;
+	rcRepaint.top += 3; rcRepaint.bottom -= 0;
 /*
 	//Set the normal/highlight color when its repainted 
 	if( GetFocus()->m_hWnd == m_hWnd )

@@ -149,6 +149,8 @@ DWORD WINAPI EnrollDetectThread(void *p)
 		{
 			continue;
 		}
+		
+		Sleep(10);
 	}
 
 	pFrmFaceEnroll->m_bIsClose = true;
@@ -185,7 +187,6 @@ CFrmFaceEnroll::CFrmFaceEnroll(CWnd* pParent /*=NULL*/)
 	CfaceBGA[3].LoadBitmap(IDB_BITMAP_FACE4);    
 	CfaceBGA[3].GetBitmap(&faceBGA[3]);
 
-
 	CfaceBGB[0].LoadBitmap(IDB_BITMAP_FACE1_CHOOSE);    
 	CfaceBGB[0].GetBitmap(&faceBGB[0]);
 	CfaceBGB[1].LoadBitmap(IDB_BITMAP_FACE2_CHOOSE);    
@@ -194,7 +195,6 @@ CFrmFaceEnroll::CFrmFaceEnroll(CWnd* pParent /*=NULL*/)
 	CfaceBGB[2].GetBitmap(&faceBGB[2]);
 	CfaceBGB[3].LoadBitmap(IDB_BITMAP_FACE4_CHOOSE);    
 	CfaceBGB[3].GetBitmap(&faceBGB[3]);
-
 
 
 }
@@ -216,6 +216,7 @@ void CFrmFaceEnroll::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_CAPTURE, m_btnCapture);
 	DDX_Control(pDX, IDC_BTN_ENROLL, m_btnEnroll);
 	DDX_Control(pDX, IDC_BTN_CLEAR, m_btnClear);
+	DDX_Control(pDX, IDC_BUTTON_CLOSE, m_btnclose);
 }
 
 
@@ -231,6 +232,8 @@ BEGIN_MESSAGE_MAP(CFrmFaceEnroll, CDialog)
 	ON_STN_CLICKED(IDC_STATIC_FACE2, &CFrmFaceEnroll::OnStnClickedStaticFace2)
 	ON_STN_CLICKED(IDC_STATIC_FACE3, &CFrmFaceEnroll::OnStnClickedStaticFace3)
 	ON_STN_CLICKED(IDC_STATIC_FACE4, &CFrmFaceEnroll::OnStnClickedStaticFace4)
+	ON_BN_CLICKED(IDC_BUTTON_CLOSE, &CFrmFaceEnroll::OnBnClickedButtonClose)
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -245,6 +248,7 @@ BOOL CFrmFaceEnroll::OnInitDialog()
 	InitChildWindow();
 
 	StartEnrollThread();
+
 /*
 	char  str[128];
 	sprintf(str,"%d %d %d",BBitbmp.bmHeight,BBitbmp.bmWidthBytes,BBitbmp.bmBitsPixel);
@@ -278,7 +282,7 @@ void CFrmFaceEnroll::OnClose()
 						}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
 
 	EnrollResult = OCX_ERROR_USER_CANCLE;
-
+		
 	StopEnrollThread();
 	CDialog::OnClose();
 }
@@ -288,7 +292,7 @@ void CFrmFaceEnroll::OnTimer(UINT_PTR nIDEvent)
 	// TODO: Add your message handler code here and/or call default
 	if(nIDEvent == FACE_ENROLL_TIMER)
 	{
-		if(EnrollTimeOut++ > 60)
+		if(EnrollTimeOut++ > OCX_TIMEOUT_MAX)
 		{
 			EnrollLog.Format(_T("{\
 								\"ret\":\"fail\",\
@@ -417,6 +421,15 @@ void CFrmFaceEnroll::OnBnClickedBtnClear()
 								LR_LOADMAP3DCOLORS);
 	((CStatic*)GetDlgItem(IDC_STATIC_FACE4))->SetBitmap(hBitmap4);
 #else
+	if(false== FacePicList[0].choose &&
+		false== FacePicList[1].choose &&
+		false== FacePicList[2].choose &&
+		false== FacePicList[3].choose )
+	{
+		MessageBox("单击选择图片后进行清除","人脸注册");
+		return ;
+	}
+
 	for(int i=0;i<PICTURE_MAX;i++)
 	{
 		if( FacePicList[i].choose )
@@ -567,6 +580,12 @@ void CFrmFaceEnroll::InitChildWindow(void)
 	m_cbDevice.MoveWindow(528,337,145,100);
 	//m_cbDevice.InsertString(0,"摄像头列表");
 	//m_cbDevice.SetCurSel(0);
+
+	m_btnclose.LoadBitmaps(IDB_BTN_CLOSE_NORMAL,IDB_BTN_CLOSE_PRESS,IDB_BTN_CLOSE_PRESS,NULL);
+	m_btnclose.SizeToContent();		//自适应图片大小
+
+	m_btnclose.MoveWindow(720,7,22,22);
+
 }
 
 /************************************
@@ -605,7 +624,7 @@ void CFrmFaceEnroll::InitParameters(void)
 	}
 #endif
 
-
+m_closefocus=false;
 
 	
 
@@ -885,3 +904,45 @@ void CFrmFaceEnroll::OnStnClickedStaticFace4()
 	DisplayOne(3);
 }
 
+
+void CFrmFaceEnroll::OnBnClickedButtonClose()
+{
+	// TODO: Add your control notification handler code here
+	EnrollLog.Format(_T("{\
+						\"ret\":\"fail\",\
+						\"user\":\"%s\",\
+						\"sysID\":\"%d\",\
+						\"content\":\"User_Cancle\"\
+						}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
+
+	EnrollResult = OCX_ERROR_USER_CANCLE;
+
+	StopEnrollThread();
+	CDialog::OnCancel();
+}
+
+void CFrmFaceEnroll::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	bool old=m_closefocus;
+	if(point.x <750 && point.x >710 &&point.y <40 && point.y >1 )
+	{
+		m_closefocus=true;
+	}
+	else
+	{
+		m_closefocus=false;
+	}
+
+	if( old != m_closefocus)
+	{	
+		if(m_closefocus)
+			m_btnclose.SetFocus();
+		else
+			this->SetFocus();
+	}
+
+	CDialog::OnMouseMove(nFlags, point);
+
+}

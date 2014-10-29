@@ -347,6 +347,13 @@ void CFaceLoginOCXCtrl::AboutBox()
 *************************************/
 BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
+/*
+	strFaceServer="http://10.142.50.248:8087/frcs";
+	sysID = 13;
+	user="linhp";
+	password="111111";
+*/
+	
 	CString strlog;
 	strlog.Format(_T("<TIPS><MATCH> - Start Match - User<%s>"),user);
 	ShowOcxLog(strlog);
@@ -369,7 +376,7 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 	if(checkReslut == ERR_NONEED_MATCH)		//不需要人脸识别
 	{
 		faceMatch.MacthResult = faceMatch.m_Detect.Token;
-		return faceMatch.MacthResult.AllocSysString();;//返回令牌
+		return faceMatch.MacthResult.AllocSysString();//返回令牌
 	}
 	else if(checkReslut == ERR_BAD_USER)
 	{
@@ -416,11 +423,13 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 *************************************/
 int CFaceLoginOCXCtrl::StartFaceEnroll(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
+/*
 strFaceServer="http://10.142.50.248:8087/frcs";
-
 	sysID = 13;
 	user="linhp";
 	password="96E79218965EB72C92A549DD5A330112";
+*/
+
 	CString strlog;
 	strlog.Format(_T("<TIPS><ENROLL> - Start Enroll - User<%s>"),user);
 	ShowOcxLog(strlog);

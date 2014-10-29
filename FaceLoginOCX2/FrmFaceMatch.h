@@ -41,6 +41,9 @@ public:
 	bool b_listLock;
 	bool b_macthLock;
 
+	bool m_closefocus;
+
+
 	HANDLE m_pThreadDisplay;
 	HANDLE m_pThreadDetect;
 	HANDLE m_pThreadMacth;
@@ -67,6 +70,7 @@ protected:
 public:
 	CBitmapButton m_btnStart;
 	CBitComboBox m_cbDevice;
+	CBitmapButton m_btnclose;
 
 	afx_msg void OnClose();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
@@ -77,4 +81,7 @@ public:
 	int StopMacthThread(void);
 	void MacthProcess(void);
 	afx_msg void OnPaint();
+
+	afx_msg void OnBnClickedButtonClose();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
