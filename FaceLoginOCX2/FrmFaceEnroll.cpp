@@ -150,7 +150,7 @@ DWORD WINAPI EnrollDetectThread(void *p)
 			continue;
 		}
 		
-		Sleep(10);
+		Sleep(2);
 	}
 
 	pFrmFaceEnroll->m_bIsClose = true;
@@ -261,19 +261,15 @@ BOOL CFrmFaceEnroll::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
+void CFrmFaceEnroll::OnOK()
+{
+	// TODO: Add your control notification handler code here
+}
 
 void CFrmFaceEnroll::OnCancel()
 {
 	// TODO: Add your specialized code here and/or call the base class
 
-
-	StopEnrollThread();
-	CDialog::OnCancel();
-}
-
-void CFrmFaceEnroll::OnClose()
-{
-	// TODO: Add your message handler code here and/or call default
 	EnrollLog.Format(_T("{\
 						\"ret\":\"fail\",\
 						\"user\":\"%s\",\
@@ -282,8 +278,14 @@ void CFrmFaceEnroll::OnClose()
 						}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
 
 	EnrollResult = OCX_ERROR_USER_CANCLE;
-		
+
 	StopEnrollThread();
+	CDialog::OnCancel();
+}
+
+void CFrmFaceEnroll::OnClose()
+{
+	// TODO: Add your message handler code here and/or call default
 	CDialog::OnClose();
 }
 
@@ -558,9 +560,9 @@ void CFrmFaceEnroll::InitChildWindow(void)
 	GetDlgItem(IDC_STATIC_FACE4)->MoveWindow(631,168,96,112);
 
 	//按钮
-	m_btnStart.LoadBitmaps(IDB_BTN_START_NORMAL,NULL,NULL,NULL);
+	m_btnStart.LoadBitmaps(IDB_BTN_START_NORMAL,IDB_BTN_START_PRESS,NULL,NULL);
 	m_btnStart.SizeToContent();		//自适应图片大小
-	m_btnCapture.LoadBitmaps(IDB_BTN_CAPTURE_NORMAL,IDB_BTN_CAPTURE_PRESS,NULL);
+	m_btnCapture.LoadBitmaps(IDB_BTN_CAPTURE_NORMAL,IDB_BTN_CAPTURE_PRESS,NULL,NULL);
 	m_btnCapture.SizeToContent();		//自适应图片大小
 	m_btnEnroll.LoadBitmaps(IDB_BTN_ENROLL_NORMAL,IDB_BTN_ENROLL_PRESS,NULL,NULL);
 	m_btnEnroll.SizeToContent();		//自适应图片大小
@@ -788,6 +790,7 @@ void CFrmFaceEnroll::FaceCapture(unsigned char *image,unsigned long int width,un
 #endif
 	free(ClipImage);
 	ClipImage = NULL;
+
 }
 
 
@@ -908,17 +911,7 @@ void CFrmFaceEnroll::OnStnClickedStaticFace4()
 void CFrmFaceEnroll::OnBnClickedButtonClose()
 {
 	// TODO: Add your control notification handler code here
-	EnrollLog.Format(_T("{\
-						\"ret\":\"fail\",\
-						\"user\":\"%s\",\
-						\"sysID\":\"%d\",\
-						\"content\":\"User_Cancle\"\
-						}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
-
-	EnrollResult = OCX_ERROR_USER_CANCLE;
-
-	StopEnrollThread();
-	CDialog::OnCancel();
+	OnCancel();
 }
 
 void CFrmFaceEnroll::OnMouseMove(UINT nFlags, CPoint point)
@@ -935,14 +928,65 @@ void CFrmFaceEnroll::OnMouseMove(UINT nFlags, CPoint point)
 		m_closefocus=false;
 	}
 
+
 	if( old != m_closefocus)
 	{	
 		if(m_closefocus)
 			m_btnclose.SetFocus();
 		else
+		
 			this->SetFocus();
 	}
 
+	/*
+		int old=m_focus;
+	if(point.x <750 && point.x >710 &&point.y <40 && point.y >1 )
+	{
+	//关闭按钮
+	m_focus=1;
+	}
+	else if(point.x <730 && point.x >670 &&point.y <365 && point.y >335 )
+	{
+	//START
+	//m_focus=2;
+	}
+	else if(point.x <590 && point.x >525 &&point.y <440 && point.y >380 )
+	{
+	//m_btnCapture
+	m_focus=3;
+	}
+	else if(point.x <660 && point.x >595 &&point.y <440 && point.y >380 )
+	{
+	//m_btnEnroll
+	m_focus=4;
+	}
+	else if(point.x <730 && point.x >665 &&point.y <440 && point.y >380 )
+	{
+	//m_btnClear
+	m_focus=5;
+	}
+	else
+	{
+	m_focus=0;
+	}
+
+	if( old != m_focus)
+	{	
+	if(1==m_focus)
+	m_btnclose.SetFocus();
+	//else 	if(2==m_focus)
+	//m_btnStart.SetFocus();
+	else 	if(3==m_focus)
+	m_btnCapture.SetFocus();
+	else 	if(4==m_focus)
+	m_btnEnroll.SetFocus();
+	else 	if(5==m_focus)
+	m_btnClear.SetFocus();
+	else
+	this->SetFocus();
+	}
+	
+	*/
 	CDialog::OnMouseMove(nFlags, point);
 
 }

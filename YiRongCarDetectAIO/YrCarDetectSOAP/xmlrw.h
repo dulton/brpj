@@ -56,7 +56,7 @@ struct NAME_VALUE_S
 public:
 	string namestr;
 	string valuestr;
-	void i(string a,string b)
+	void ins(string a,string b)
 	{namestr=a;valuestr=b;}
 };
 
@@ -83,6 +83,10 @@ bool CreateXmlLite_UTF8_NoSub(char *name,struct NAME_VALUE_S mapdata[],int maple
 bool CreateXmlLite_UTF8_OneSub(char *name,struct NAME_VALUE_S mapdata[],int maplen,
 							   char *subname, char *sub2name,struct NAME_VALUE_S subdata[],int sublen,
 							   char *strText,unsigned long int len) ;
+
+bool CreateXmlLite_UTF8_Sub(char *name,struct NAME_VALUE_S mapdata[],int maplen,
+							char *subname,int subtotal,struct NAME_VALUE_S *subdata[],int sublen,
+							char *strText,unsigned long int len)  ;
 
 //插入CDATA数据  不带子树 不带总括名
 bool CreateXmlLite_UTF8_NoSub_NoName(struct NAME_VALUE_S mapdata[],int maplen,

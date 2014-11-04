@@ -20,7 +20,7 @@ DWORD WINAPI MacthThread(void *p)
 	while(pFrmFaceMatch->m_bThreadWork)
 	{
 		pFrmFaceMatch->MacthProcess();
-		Sleep(10);
+		Sleep(2);
 	}
 
 	pFrmFaceMatch->m_bIsClose = true;
@@ -125,7 +125,7 @@ DWORD WINAPI MacthDetectThread(void *p)
 		{
 			continue;
 		}
-		Sleep(10);
+		Sleep(2);
 	}
 
 	pFrmFaceMatch->m_bIsClose = true;
@@ -180,11 +180,23 @@ BOOL CFrmFaceMatch::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
+void CFrmFaceMatch::OnOK()
+{
+	// TODO: Add your control notification handler code here
+}
 
 void CFrmFaceMatch::OnCancel()
 {
 	// TODO: Add your specialized code here and/or call the base class
-		
+	MacthLog.Format(_T("{\
+					   \"ret\":\"fail\",\
+					   \"user\":\"%s\",\
+					   \"sysID\":\"%d\",\
+					   \"content\":\"User_Cancle\"\
+					   }"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
+
+	MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCLE);
+
 	StopMacthThread();
 	CDialog::OnCancel();
 }
@@ -192,16 +204,6 @@ void CFrmFaceMatch::OnCancel()
 void CFrmFaceMatch::OnClose()
 {
 	// TODO: Add your message handler code here and/or call default
-	MacthLog.Format(_T("{\
-						\"ret\":\"fail\",\
-						\"user\":\"%s\",\
-						\"sysID\":\"%d\",\
-						\"content\":\"User_Cancle\"\
-						}"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
-
-	MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCLE);
-
-	StopMacthThread();
 	CDialog::OnClose();
 }
 
@@ -467,17 +469,8 @@ void CFrmFaceMatch::OnPaint()
 void CFrmFaceMatch::OnBnClickedButtonClose()
 {
 	// TODO: Add your message handler code here and/or call default
-	MacthLog.Format(_T("{\
-					   \"ret\":\"fail\",\
-					   \"user\":\"%s\",\
-					   \"sysID\":\"%d\",\
-					   \"content\":\"User_Cancle\"\
-					   }"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
 
-	MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCLE);
-
-	StopMacthThread();
-	CDialog::OnCancel();
+	OnCancel();
 }
 
 void CFrmFaceMatch::OnMouseMove(UINT nFlags, CPoint point)

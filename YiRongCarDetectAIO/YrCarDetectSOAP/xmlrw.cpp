@@ -350,6 +350,81 @@ bool CreateXmlLite_UTF8_OneSub(char *name,struct NAME_VALUE_S mapdata[],int mapl
 }  
 
 
+//插入CDATA数据  带一个子树 
+bool CreateXmlLite_UTF8_Sub(char *name,struct NAME_VALUE_S mapdata[],int maplen,
+						   char *subname,int subtotal,struct NAME_VALUE_S *subdata[],int sublen,
+						  char *strText,unsigned long int len)  
+{  
+	char strinText[XMLRW_MAX_WSTR];
+
+	// 定义一个TiXmlDocument类指针  
+	TiXmlDocument pDoc;  
+/*
+	TiXmlDeclaration *pDeclaration = new TiXmlDeclaration("1.0","utf-8","");  
+	if (NULL==pDeclaration)  
+	{  
+		return false;  
+	}  
+
+	pDoc.LinkEndChild(pDeclaration);  
+*/
+	// 生成一个根节点：pRootEle 
+	TiXmlElement *pRootEle = new TiXmlElement(name);  
+	if (NULL==pRootEle)  
+	{  
+		return false;  
+	}  
+	pDoc.LinkEndChild(pRootEle);  
+
+	int it;
+	for(it=0;it<maplen;it++)
+	{
+		if(!CreateXMLData(pRootEle,
+			mapdata[it].namestr.c_str(),
+			mapdata[it].valuestr.c_str(),
+			strinText,XMLRW_MAX_WSTR,
+			false,false))
+			return false;
+	}
+
+	int j;
+	for(j=0;j<subtotal;j++)
+	{
+		// 生成一个根节点：pRootEle 
+		TiXmlElement *pSubEle = new TiXmlElement(subname);  
+		if (NULL==pSubEle)  
+		{  
+			return false;  
+		}  
+		pRootEle->LinkEndChild(pSubEle);  
+
+		for(it=0;it<sublen;it++)
+		{
+			if(!CreateXMLData(pSubEle,
+				subdata[j][it].namestr.c_str(),
+				subdata[j][it].valuestr.c_str(),
+				strinText,XMLRW_MAX_WSTR,
+				false,false))
+				return false;
+		}
+	}
+
+
+	//保存文件
+	//pDoc.SaveFile("d:\\1.xml");
+
+	//保存到字符串
+	TiXmlPrinter printer;
+	pDoc.Accept(&printer);
+	//	strResult.Format("%s", printer.CStr());
+	strcpy(strText,printer.CStr());
+
+	//printf("xml=\n%s\n",strText);
+
+	return true;  
+}  
+
+
 //报文解析
 bool ReadXML_UTF8_NoSub(const char *utf8xmlin,struct NAME_VALUE_S mapdata[],int maplen)
 {
@@ -374,7 +449,7 @@ bool ReadXML_UTF8_NoSub(const char *utf8xmlin,struct NAME_VALUE_S mapdata[],int 
 		for(pNodeRow = pRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
 		{
 			pNodeData = NULL;
-			if(ReadQueryNodeText(pNodeRow,pNodeData,mapdata[i].namestr,tempstr,XMLRW_MAX_WSTR,false))
+			if(ReadQueryNodeText(pNodeRow,pNodeData,mapdata[i].namestr,tempstr,XMLRW_MAX_WSTR,true))
 			{
 				mapdata[i].valuestr=tempstr;
 				break ;

@@ -87,9 +87,11 @@ public:
 	float DrawScale;
 
 	bool m_closefocus;
-	
+//	int m_focus;
+
 	virtual BOOL OnInitDialog();
 protected:
+	virtual	void OnOK();
 	virtual void OnCancel();
 public:
 	CBitmapButton m_btnStart;

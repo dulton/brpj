@@ -59,40 +59,35 @@ N个
 
 发送
 
-摄像头名称 
-摄像头IP
-端口号
-用户名
-密码
-通道号
-摄像头协议 0海康私有 1大华私有 4 流媒体
-流媒体地址
-流媒体传输模式 0=RTP-RTSP 1=RTP-UDP
-流媒体解码标志 0=PS码流（海康） 1=原始码流（国标）
-经度
-纬度
-卡口索引编号 crossIndexcode 用在插入卡口系统的过车信息中使用
-卡口道路编号 laneId 用在插入卡口系统的过车信息中使用
+摄像头名称  必填               
+摄像头IP          私有必填 
+端口号			私有必填 
+用户名			必填 
+密码			必填 
+通道号			私有必填 
+摄像头协议 0海康私有 1大华私有 4 流媒体  必填
+流媒体地址		流媒体必填 
+流媒体传输模式 0=RTP-RTSP 1=RTP-UDP  流媒体必填 
+流媒体解码标志 0=PS码流（海康） 1=原始码流（国标） 流媒体必填 
+经度 			选填
+纬度 			选填
+卡口索引编号 crossIndexcode 用在插入卡口系统的过车信息中使用  必填 
+卡口道路编号 laneId 用在插入卡口系统的过车信息中使用  必填 
 
 <CamName>名称</CamName>
 <CamIP>192.168.1.2</CamIP>
 <Port>3000</Port>
 <User>0</User>
 <Password>0</Password>
-
-<CHANNEL>0</CHANNEL>
-
-SVENDERID
-
-RTSPURL
-RTPMODE
-DECODETAG
-
-
-longitude
-latitude
-crossindex
-laneId
+<Channel>0</Channel>
+<VenderId>1</VenderId>
+<RtspURL>2</RtspURL>
+<RTPMode>3</RTPMode>
+<DecodeTAG>4</DecodeTAG>
+<Longitude>5</Longitude>
+<Latitude>6</Latitude>
+<CrossIndex>7</CrossIndex>
+<LaneId>8</LaneId>
 ----------
 接收 
 摄像头编号

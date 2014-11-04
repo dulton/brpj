@@ -343,11 +343,12 @@ bool IO::DEVICE_AddNewArea(char* AreaName)
 }
 
 
-bool IO::DEVICE_AddNewCamera(long long areaID,char* CamName,char* sip,int port,int channel,
-							 char* user,char* password,long venderID,char* Rtspurl,int RTP,int DecodeTag,
-							 char* longitude,char* latitude,	
-							 char* crossIndex,long crossID,
-							 long userID,long userLV)
+bool IO::DEVICE_AddNewCamera(long long areaID,const char* CamName,const char* sip,int port,int channel,
+							 const char* user,const char* password,long venderID,const char* Rtspurl,int RTP,int DecodeTag,
+							 const char* longitude,const char* latitude,	
+							 const char* crossIndex,long crossID,
+							 long userID,long userLV,
+							 long long *out_camid)
 {
 	while(IOwriteLock)
 	{
@@ -390,6 +391,8 @@ bool IO::DEVICE_AddNewCamera(long long areaID,char* CamName,char* sip,int port,i
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
+
+			(*out_camid)=ncamera;
 			IOwriteLock=false;
 			return true;   		
 		}
@@ -442,9 +445,50 @@ bool IO::DEVICE_IfCamera(unsigned long int camid)
 	}
 	catch(_com_error e)
 	{
-		
 		Log_fileout(LOG_ERROR,"IO::IfCamera error：%s", e.ErrorMessage());
 		
+		IOwriteLock=false;
+
+		return false;
+	}  
+}
+//测试识别服务器是否存在
+bool IO::DEVICE_IfDetectServer(unsigned long int detectid)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid from TB_DETECT_SERVER where nid=%d"),detectid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			IOwriteLock=false;
+			return true;
+		}
+
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		Log_fileout(LOG_ERROR,"IO::DEVICE_IfDetectServer error：%s", e.ErrorMessage());
+
 		IOwriteLock=false;
 
 		return false;
@@ -539,11 +583,9 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 	}
 	catch(_com_error e)
 	{
-		
 		Log_fileout(LOG_ERROR,"IO::DEVICE_ReadList error：%s", e.ErrorMessage());
 		
 		IOwriteLock=false;
-
 		return false;
 	}  
 

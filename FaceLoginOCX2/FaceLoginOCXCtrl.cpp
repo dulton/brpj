@@ -347,12 +347,12 @@ void CFaceLoginOCXCtrl::AboutBox()
 *************************************/
 BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
-/*
+
 	strFaceServer="http://10.142.50.248:8087/frcs";
 	sysID = 13;
 	user="linhp";
 	password="111111";
-*/
+
 	
 	CString strlog;
 	strlog.Format(_T("<TIPS><MATCH> - Start Match - User<%s>"),user);
@@ -423,12 +423,12 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 *************************************/
 int CFaceLoginOCXCtrl::StartFaceEnroll(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
-/*
+
 strFaceServer="http://10.142.50.248:8087/frcs";
 	sysID = 13;
 	user="linhp";
 	password="96E79218965EB72C92A549DD5A330112";
-*/
+
 
 	CString strlog;
 	strlog.Format(_T("<TIPS><ENROLL> - Start Enroll - User<%s>"),user);

@@ -102,15 +102,20 @@ public:
 	//插入任务
 	bool IO::Mission_ADD(unsigned long int detectid,unsigned long int camid,unsigned long int userid,unsigned long int isplay);
 
-bool IO::DEVICE_AddNewArea(char* AreaName);
-bool IO::DEVICE_AddNewCamera(long long areaID,char* CamName,char* sip,int port,int channel,
-							 char* user,char* password,long venderID,char* Rtspurl,int RTP,int DecodeTag,
-							 char* longitude,char* latitude,	
-							 char* crossIndex,long crossID,
-							 long userID,long userLV);
+	bool IO::DEVICE_AddNewArea(char* AreaName);
+
+	bool IO::DEVICE_AddNewCamera(long long areaID,const char* CamName,const char* sip,int port,int channel,
+		const char* user,const char* password,long venderID,const char* Rtspurl,int RTP,int DecodeTag,
+		const char* longitude,const char* latitude,	
+		const char* crossIndex,long crossID,
+		long userID,long userLV,
+		long long *out_camid);
 
 	//测试摄像头是否存在
 	bool IO::DEVICE_IfCamera(unsigned long int camid);
+	//测试识别服务器是否存在
+	bool IO::DEVICE_IfDetectServer(unsigned long int detectid);
+
 	//删除摄像头
 	bool IO::DEVICE_DeleteCamera(unsigned long int camid);
 	//视图查询
