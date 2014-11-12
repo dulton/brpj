@@ -347,12 +347,12 @@ void CFaceLoginOCXCtrl::AboutBox()
 *************************************/
 BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
-
+/*
 	strFaceServer="http://10.142.50.248:8087/frcs";
 	sysID = 13;
 	user="linhp";
 	password="111111";
-
+*/
 	
 	CString strlog;
 	strlog.Format(_T("<TIPS><MATCH> - Start Match - User<%s>"),user);
@@ -373,7 +373,13 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 	MatchSysID = sysID;
 	CFrmFaceMatch faceMatch;
 	int checkReslut = faceMatch.m_Detect.CheckMatchInfo(strFaceServer,sysID,user,sMd5);
-	if(checkReslut == ERR_NONEED_MATCH)		//不需要人脸识别
+	if(checkReslut == ERR_WRONG_VERSION)
+	{
+		CString ret;
+		ret.Format(_T("%d"),OCX_ERROR_VERSION_ERROR);
+		return ret.AllocSysString();//OCX程序版本不对
+	}
+	else if(checkReslut == ERR_NONEED_MATCH)		//不需要人脸识别
 	{
 		faceMatch.MacthResult = faceMatch.m_Detect.Token;
 		return faceMatch.MacthResult.AllocSysString();//返回令牌
@@ -424,7 +430,7 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 int CFaceLoginOCXCtrl::StartFaceEnroll(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
 
-strFaceServer="http://10.142.50.248:8087/frcs";
+strFaceServer="http://10.142.50.125:9080/frcs_new";
 	sysID = 13;
 	user="linhp";
 	password="96E79218965EB72C92A549DD5A330112";
@@ -448,7 +454,13 @@ strFaceServer="http://10.142.50.248:8087/frcs";
 	EnrollSysID = sysID;
 	CFrmFaceEnroll faceEnroll;
 	int result = faceEnroll.m_Detect.CheckRegInfo(strFaceServer,sysID,user,password);
-	if(result == ERR_BAD_USER)
+
+	if(result == ERR_WRONG_VERSION)
+	{
+		ret =  OCX_ERROR_VERSION_ERROR;
+		return ret;//OCX程序版本不对
+	}
+	else if(result == ERR_BAD_USER)
 	{
 		ret =  OCX_ERROR_UNALLOW_USER;
 		return ret;//非法用户直接返回
@@ -461,8 +473,13 @@ strFaceServer="http://10.142.50.248:8087/frcs";
 
 	if(faceEnroll.m_Detect.GetFaceCloudState())
 	{
-		faceEnroll.DoModal();
+		if(faceEnroll.InitLive())
+		{
+			faceEnroll.DoModal();
+		}
+
 		ret = faceEnroll.EnrollResult;
+		
 	}
 	else
 	{

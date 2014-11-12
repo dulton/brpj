@@ -3,6 +3,9 @@
 #include "base64_codec.h"
 #include "YUV2RGB.h"
 
+#include "json/json.h"
+#pragma comment(lib,"JsonApi.lib")
+
 #include "FaceLoginOCX.h"
 #include "FaceLoginOCXCtrl.h"
 extern CFaceLoginOCXCtrl *DlgFaceLoginOCXCtrl;
@@ -12,8 +15,9 @@ CFaceDetect::CFaceDetect(void)
 	m_macthThreshold = 0;
 	Facedb = 0;
 	HostInfo = "";
-	PersonID = "";
+	PersonID = 0;
 	ID_Card = "";
+	matchCount = 0;
 }
 
 CFaceDetect::~CFaceDetect(void)
@@ -22,11 +26,10 @@ CFaceDetect::~CFaceDetect(void)
 
 int CFaceDetect::GetFaceID(CString strHtml,CString *FaceID)
 {
-	int a,b;
 	if(strHtml.Find("bad personid") > 1)
 	{
 		CString strlog;
-		strlog.Format(_T("<ERROR><ENROLL> - <Bad Personid - %s>"),PersonID);
+		strlog.Format(_T("<ERROR><ENROLL> - <Bad Personid - %d>"),PersonID);
 		DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
 
 		return ERR_BAD_PERSON;
@@ -36,79 +39,122 @@ int CFaceDetect::GetFaceID(CString strHtml,CString *FaceID)
 		return ERR_REG_FAIL;
 	}
 
-	a = strHtml.Find("\"face_id\"");
-	b = strHtml.Find("}");
-	*FaceID = strHtml.Mid(a+12,b-a-14);
+	Json::Reader reader;  
+	Json::Value root;  
+	if (reader.parse(strHtml.GetBuffer(), root))
+	{  
+		*FaceID = root["face_id"].asCString(); 
+	}
+
+	//int a,b;
+	//a = strHtml.Find("\"face_id\"");
+	//b = strHtml.Find("}");
+	//*FaceID = strHtml.Mid(a+12,b-a-14);
 	return ERR_NO_ERROR;
 }
 
 int CFaceDetect::GetFaceCount(CString strHtml)
 {
-	int a,b;
-	a = strHtml.Find("\"list_size\"");
-	b = strHtml.Find("\"dection_list\"");
-	int faceCount = atoi(strHtml.Mid(a+13,b-a-15));
+	int faceCount = 0;
+	Json::Reader reader;  
+	Json::Value root;  
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		faceCount = root["list_size"].asInt();
+	}
+
+	//int a,b;
+	//a = strHtml.Find("\"list_size\"");
+	//b = strHtml.Find("\"dection_list\"");
+	//int faceCount = atoi(strHtml.Mid(a+13,b-a-15));
 	return faceCount;
 }
 
 void CFaceDetect::ParseFaceRect(int faceCount,CString strHtml,CRect *Face_List,CString *Image_List)
 {
-	int a,b;
-	for(int i=0;i<faceCount;i++)
-	{
-#if 0	//facecloud 0.4版本
-		a = strHtml.Find("\"left\"");
-		b = strHtml.Find("\"top\"");
-		Face_List[i].left = atoi(strHtml.Mid(a+8,b-12-a));
-		a = strHtml.Find("\"top\"");
-		b = strHtml.Find("\"right\"");
-		Face_List[i].top = atoi(strHtml.Mid(a+7,b-11-a));
-		a = strHtml.Find("\"right\"");
-		b = strHtml.Find("\"bottom\"");
-		Face_List[i].right = atoi(strHtml.Mid(a+9,b-13-a));
-		a = strHtml.Find("\"bottom\"");
-		b = strHtml.Find("}");
-		Face_List[i].bottom = atoi(strHtml.Mid(a+9,b-3-a));
-		strHtml = strHtml.Right(strHtml.GetLength()-b-2);
-#endif
-		a = strHtml.Find("\"left\"");
-		b = strHtml.Find("\"right\"");
-		Face_List[i].left = atoi(strHtml.Mid(a+8,b-a-12));
-		a = strHtml.Find("\"top\"");
-		Face_List[i].right = atoi(strHtml.Mid(b+9,a-b-11));
-		b = strHtml.Find("\"bottom\"");
-		Face_List[i].top = atoi(strHtml.Mid(a+7,b-a-11));
-		a = strHtml.Find("\"image_data\"");
-		Face_List[i].bottom = atoi(strHtml.Mid(b+9,a-b-3));
-		strHtml = strHtml.Right(strHtml.GetLength()-a);
-		//获取人脸图像
-		b = strHtml.Find("},");
-		Image_List[i] = strHtml.Mid(0,b+4);;
+	Json::Reader reader;  
+	Json::Value root;  
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		for(int i=0;i<faceCount;i++)
+		{
+			Face_List[i].left = root["dection_list"][i]["left"].asInt(); 
+			Face_List[i].right = root["dection_list"][i]["right"].asInt();  
+			Face_List[i].top = root["dection_list"][i]["top"].asInt();  
+			Face_List[i].bottom = root["dection_list"][i]["bottom"].asInt();  
+			//获取人脸图像
+			Json::Value image = root["dection_list"][i]["image_data"];
+			Image_List[i] = root["dection_list"][i]["image_data"]["content"].asCString();
+		}
 	}
+
+	//int a,b;
+	//for(int i=0;i<faceCount;i++)
+	//{
+	//	a = strHtml.Find("\"left\"");
+	//	b = strHtml.Find("\"right\"");
+	//	Face_List[i].left = atoi(strHtml.Mid(a+8,b-a-12));
+	//	a = strHtml.Find("\"top\"");
+	//	Face_List[i].right = atoi(strHtml.Mid(b+9,a-b-11));
+	//	b = strHtml.Find("\"bottom\"");
+	//	Face_List[i].top = atoi(strHtml.Mid(a+7,b-a-11));
+	//	a = strHtml.Find("\"image_data\"");
+	//	Face_List[i].bottom = atoi(strHtml.Mid(b+9,a-b-3));
+	//	strHtml = strHtml.Right(strHtml.GetLength()-a);
+	//	//获取人脸图像
+	//	b = strHtml.Find("},");
+	//	Image_List[i] = strHtml.Mid(0,b+4);;
+	//}
+	//FILE *fp = fopen("D://img.txt","wb");
+	//if(fp)
+	//{
+	//	fprintf(fp,"%s",Image_List[0]);
+	//	fclose(fp);
+	//}
 }
 
 bool CFaceDetect::CheckEnableFlag(CString strHtml)
 {
-	int a=0;
-	a = strHtml.Find("\"enableFR\"");
-	CString str = strHtml.Mid(a+11,4);
-
-	if(str == "true")
-	{
-		return true;
+	Json::Reader reader;  
+	Json::Value root;  
+	bool enableFR = false;
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		enableFR = root["enableFR"].asBool();
 	}
-	return false;
+	return enableFR;
+
+	//int a=0;
+	//a = strHtml.Find("\"enableFR\"");
+	//CString str = strHtml.Mid(a+11,4);
+
+	//if(str == "true")
+	//{
+	//	return true;
+	//}
+	//return false;
 }
 
 void CFaceDetect::GetToken(CString strHtml)
 {
-	int a=0;
-	a = strHtml.Find("\"token\"");
-	Token = strHtml.Mid(a+9,32);
+	Json::Reader reader;  
+	Json::Value root;  
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		Token = root["token"].asCString();
+	}
+
+	//int a=0;
+	//a = strHtml.Find("\"token\"");
+	//Token = strHtml.Mid(a+9,32);
 }
 
 int CFaceDetect::CheckResultFlag(CString strHtml)
 {
+	//CString strlog;
+	//strlog = strHtml;
+	//DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+
 	if(strHtml.IsEmpty())
 	{
 		CString strlog = _T("<ERROR><CHECK> - <FaceServer Out of service>");
@@ -116,65 +162,118 @@ int CFaceDetect::CheckResultFlag(CString strHtml)
 		return ERR_SER_REEOR;
 	}
 
-	int a=0;
-	a = strHtml.Find("\"flag\"");
-	CString flag = strHtml.Mid(a+7,4);
-
-	if(flag == "true")
-	{
-		return ERR_NO_ERROR;
+	Json::Reader reader;  
+	Json::Value root; 
+	bool flag = false;
+	CString version;
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		flag = root["flag"].asBool();
+		version = root["version"].asCString();
 	}
 
-	CString strlog;
-	strlog.Format(_T("<TIPS><CHECK> Unallow User"));
-	DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
-	return ERR_BAD_USER;
+	if(flag)
+	{
+		if(version != CURENT_OCX_VER)
+		{
+			return ERR_WRONG_VERSION;
+		}
+		else
+		{
+			return ERR_NO_ERROR;
+		}
+	}
+	else
+	{
+		CString strlog;
+		strlog.Format(_T("<TIPS><CHECK> Unallow User"));
+		DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+		return ERR_BAD_USER;
+	}
+
+	//int a=0;
+	//a = strHtml.Find("\"flag\"");
+	//CString flag = strHtml.Mid(a+7,4);
+
+	//if(flag == "true")
+	//{
+	//	return ERR_NO_ERROR;
+	//}
+
+	//CString strlog;
+	//strlog.Format(_T("<TIPS><CHECK> Unallow User"));
+	//DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+	//return ERR_BAD_USER;
 }
 
 void CFaceDetect::ReadEnrollInfo(CString strHtml)
 {
-	int a=0;
-	int b=0;
-	a = strHtml.Find("\"personid\"");
-	b = strHtml.Find("\"faceServerInfo\"");
-	PersonID = strHtml.Mid(a+11,b-a-12);
+	//CString strlog;
+	//strlog = strHtml;
+	//DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
 
-	a = strHtml.Find("\"faceServerInfo\"");
-	b = strHtml.Find("\"facedbid\"");
-	HostInfo = strHtml.Mid(a+25,b-a-27);
+	Json::Reader reader;  
+	Json::Value root; 
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		PersonID = root["personid"].asInt();
+		HostInfo = root["faceServerInfo"].asCString();
+		Facedb = root["facedbid"].asInt();
+	}
+	//int a=0;
+	//int b=0;
+	//a = strHtml.Find("\"personid\"");
+	//b = strHtml.Find("\"faceServerInfo\"");
+	//PersonID = strHtml.Mid(a+11,b-a-12);
 
-	a = strHtml.Find("\"facedbid\"");
-	b = strHtml.Find("}");
-	Facedb = atoi(strHtml.Mid(a+11,b-a-11));
+	//a = strHtml.Find("\"faceServerInfo\"");
+	//b = strHtml.Find("\"facedbid\"");
+	//HostInfo = strHtml.Mid(a+25,b-a-27);
+
+	//a = strHtml.Find("\"facedbid\"");
+	//b = strHtml.Find("}");
+	//Facedb = atoi(strHtml.Mid(a+11,b-a-11));
 
 	CString strlog;
-	strlog.Format(_T("<TIPS><ENROLL> - UserInfo<%s><%s><%s><%d>"),DlgFaceLoginOCXCtrl->EnrollUser,PersonID,HostInfo,Facedb);
+	strlog.Format(_T("<TIPS><ENROLL> - UserInfo<%s><%d><%s><%d>"),DlgFaceLoginOCXCtrl->EnrollUser,PersonID,HostInfo,Facedb);
 	DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
 }
 
 void CFaceDetect::ReadMatchInfo(CString strHtml)
 {
-	int a=0;
-	int b=0;
-	a = strHtml.Find("\"token\"");
-	b = strHtml.Find("\"enableFR\"");
-	Token = strHtml.Mid(a+9,b-a-11);
+	Json::Reader reader;  
+	Json::Value root; 
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		Token = root["token"].asCString();
+		ID_Card = root["idcard"].asCString();
+		HostInfo = root["faceServerInfo"].asCString();
+		Facedb = root["facedbid"].asInt();
+		m_macthThreshold = root["threshold"].asInt();
+		matchTimes = root["times"].asInt();
+	}
 
-	a = strHtml.Find("\"idcard\"");
-	b = strHtml.Find("\"faceServerInfo\"");
-	ID_Card = strHtml.Mid(a+10,b-a-12);
+	//int a=0;
+	//int b=0;
+	//a = strHtml.Find("\"token\"");
+	//b = strHtml.Find("\"enableFR\"");
+	//Token = strHtml.Mid(a+9,b-a-11);
 
-	a = strHtml.Find("\"faceServerInfo\"");
-	b = strHtml.Find("\"facedbid\"");
-	HostInfo = strHtml.Mid(a+25,b-a-27);
+	//a = strHtml.Find("\"idcard\"");
+	//b = strHtml.Find("\"faceServerInfo\"");
+	//ID_Card = strHtml.Mid(a+10,b-a-12);
 
-	a = strHtml.Find("\"facedbid\"");
-	b = strHtml.Find("\"threshold\"");
-	Facedb = atoi(strHtml.Mid(a+11,b-a-12));
+	//a = strHtml.Find("\"faceServerInfo\"");
+	//b = strHtml.Find("\"facedbid\"");
+	//HostInfo = strHtml.Mid(a+25,b-a-27);
 
-	a = strHtml.Find("\"threshold\"");
-	b = strHtml.Find("}");
-	m_macthThreshold = atoi(strHtml.Mid(a+13,b-a-14));
+	//a = strHtml.Find("\"facedbid\"");
+	//b = strHtml.Find("\"threshold\"");
+	//Facedb = atoi(strHtml.Mid(a+11,b-a-12));
+
+	//a = strHtml.Find("\"threshold\"");
+	//b = strHtml.Find("}");
+	//m_macthThreshold = atoi(strHtml.Mid(a+13,b-a-14));
 
 	CString strlog;
 	strlog.Format(_T("<TIPS><MATCH> - UserInfo<%s><%s><%s><%d><%f>"),DlgFaceLoginOCXCtrl->MatchUser,ID_Card,HostInfo,Facedb,m_macthThreshold);
@@ -336,10 +435,18 @@ CString CFaceDetect::GetMacthFace(CString strHtml)
 #else
 CString CFaceDetect::GetMacthFace(CString strHtml)
 {
-	int a,b;
-	a = strHtml.Find("\"face_id\"");
-	b = strHtml.Find("\"sim\"");
-	CString macthFace = strHtml.Mid(a+12,b-a-16);
+	CString macthFace = _T("");
+	Json::Reader reader;  
+	Json::Value root; 
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		macthFace = root["face_id"].asCString();
+	}
+
+	//int a,b;
+	//a = strHtml.Find("\"face_id\"");
+	//b = strHtml.Find("\"sim\"");
+	//CString macthFace = strHtml.Mid(a+12,b-a-16);
 	//FILE *fp = fopen("D://log.txt","a+");
 	//if(fp)
 	//{
@@ -354,10 +461,21 @@ CString CFaceDetect::GetMacthFace(CString strHtml)
 
 double CFaceDetect::GetMacthScore(CString strHtml)
 {
-	int a,b;
-	a = strHtml.Find("\"sim\"");
-	b = strHtml.Find("\"blur\"");
-	double macthScore = atof(strHtml.Mid(a+7,b-a-7));
+	//CString strlog = strHtml;
+	//DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+
+	double macthScore = 0;
+	Json::Reader reader;  
+	Json::Value root; 
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		macthScore = root["sim"].asDouble();
+	}
+
+	//int a,b;
+	//a = strHtml.Find("\"sim\"");
+	//b = strHtml.Find("\"blur\"");
+	//double macthScore = atof(strHtml.Mid(a+7,b-a-7));
 
 	return macthScore;
 }
@@ -397,15 +515,25 @@ void CFaceDetect::FaceMacth(CString strRequest,CString idCard,CString *strResult
 #else
 void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag)
 {
-	CString strIDcard;// = _T(",\"id_card\":\"1234\"}");
-	strIDcard.Format(_T("\"id_card\":\"%s\"}"),ID_Card);
-	CString strTemp = strRequest.Left(strRequest.GetLength()-1);
-	strTemp = "{"+strTemp + strIDcard;
+	//CString strIDcard;// = _T(",\"id_card\":\"1234\"}");
+	//strIDcard.Format(_T("\"id_card\":\"%s\"}"),ID_Card);
+	//CString strTemp = strRequest.Left(strRequest.GetLength()-1);
+	//strTemp = "{"+strTemp + strIDcard;
+	CString strTemp;
+	strTemp.Format(_T("{							\
+							\"image_data\":			\
+							{						\
+								\"type\": \"jpg\",	\
+								\"content\":\"%s\"	\
+							},						\
+							\"id_card\" : \"%s\"	\
+						}"),strRequest,ID_Card);
 
 	CString result;
 	CString strCompare;
 	strCompare.Format(_T("/faceops/image_compare?face_db=%d"),Facedb);
 	result = m_webService.PostData(HostInfo,strTemp,strCompare);
+	matchCount++;
 
 	if(*matchFlag == 1)
 	{
@@ -418,7 +546,15 @@ void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag
 	if(macthScore > m_macthThreshold)
 	{
 		CString faceID = GetMacthFace(result);
-		strTemp = strRequest.Mid(51,strRequest.GetLength()-60);
+		//strTemp = strRequest.Mid(51,strRequest.GetLength()-60);
+
+		CString image = _T("");
+		Json::Reader reader;  
+		Json::Value root;  
+		if (reader.parse(strTemp.GetBuffer(), root))   
+		{  
+			image = root["image_data"]["content"].asCString();
+		}
 
 		CString temp;
 		temp.Format(_T("{\
@@ -429,7 +565,7 @@ void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag
 						\"picture\":\"%s\",\
 						\"similarity\":\"%f\",\
 						\"flag\":\"true\"\
-						}"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID,faceID,strTemp,macthScore);
+						}"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID,faceID,image,macthScore);
 		temp.Replace("+","_");
 		*strResult = temp;
 
@@ -442,7 +578,14 @@ void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag
 	else if(macthScore != 0)
 	{
 		CString faceID = GetMacthFace(result);
-		strTemp = strRequest.Mid(51,strRequest.GetLength()-60);
+		//strTemp = strRequest.Mid(51,strRequest.GetLength()-60);
+		CString image = _T("");
+		Json::Reader reader;  
+		Json::Value root;  
+		if (reader.parse(strTemp.GetBuffer(), root))   
+		{  
+			image = root["image_data"]["content"].asCString();
+		}
 
 		CString temp;
 		temp.Format(_T("{\
@@ -453,7 +596,7 @@ void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag
 						\"picture\":\"%s\",\
 						\"similarity\":\"%f\",\
 						\"flag\":\"false\"\
-						}"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID,faceID,strTemp,macthScore);
+						}"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID,faceID,image,macthScore);
 		temp.Replace("+","_");
 		*strResult = temp;
 	}
@@ -490,7 +633,7 @@ int CFaceDetect::FaceEnroll(unsigned char *image,unsigned long int size,CString 
 	base64buf = NULL;
 
 	CString strEnroll;
-	strEnroll.Format(_T("/facedb/%d/persons/%s/image"),Facedb,PersonID);
+	strEnroll.Format(_T("/facedb/%d/persons/%d/image"),Facedb,PersonID);
 
 	CString result;
 	result = m_webService.PutData(HostInfo,strRequest,strEnroll);

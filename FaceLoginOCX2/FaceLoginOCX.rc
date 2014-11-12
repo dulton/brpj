@@ -77,7 +77,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "<福建亿榕信息技术有限公司>"
             VALUE "FileDescription", "<人脸识别登陆组件>"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "1.0.3"
             VALUE "InternalName", "FaceLoginOCX.ocx"
             VALUE "LegalCopyright", "(c) <Yirong>.  All rights reserved."
             VALUE "OriginalFilename", "FaceLoginOCX.ocx"

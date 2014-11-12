@@ -50,7 +50,16 @@
 #define OCX_ERROR_UNALLOW_USER		3		//非法用户
 #define OCX_ERROR_TIME_OUT			4		//超时
 #define OCX_ERROR_FACESERVER_DOWN	5		//服务器异常
-#define OCX_ERROR_USER_CANCLE		6		//用户取消
+#define OCX_ERROR_USER_CANCEL		6		//用户取消
+#define	OCX_ERROR_VERSION_ERROR		7		//OCX版本不对
+#define	OCX_ERROR_LIVEFACE_INIT_FAIL		8		//活体检测初始化失败
+#define	OCX_ERROR_LIVEFACE_WIDGET_FAIL		9		//活体检测WIDGET初始化失败
+#define	OCX_ERROR_LIVEFACE_FAIL		10		//活体检测判断为非活体
+
 
 //#define OCX_LOG_PATH	"C://Program Files//FaceLoginOCX//log.txt"
+#define CURENT_OCX_VER	"v1.0.3"			//当前程序版本号
 #define OCX_LOG_PATH	"D://log.txt"
+//开启和关闭活体检测 以及设置的路径
+#define LIVE_FACE_TEST  1
+#define LIVE_FACE_MODEL_PATH "C:\\FaceLoginModel"

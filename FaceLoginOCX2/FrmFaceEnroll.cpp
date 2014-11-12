@@ -52,7 +52,31 @@ DWORD WINAPI EnrollDisplayThread(void *p)
 						//		&buffer[y*tempw],tempw);
 						//}
 						memcpy(pFrmFaceEnroll->tempRGB,buffer,bitmapSize*sizeof(unsigned char));
+#if LIVE_FACE_TEST					
+						WidgetImage tempwidgetimage;
+						tempwidgetimage.imagedata=pFrmFaceEnroll->tempRGB;
+						tempwidgetimage.image_size=bitmapSize;
+						tempwidgetimage.width=pFrmFaceEnroll->m_lVideoWidth;
+						tempwidgetimage.height=pFrmFaceEnroll->m_lVideoHeight;
+						tempwidgetimage.widthStep=pFrmFaceEnroll->m_lVideoWidth*3;
+						int liveresult=0;
 
+						int fwld_re=FaceWidget_LiveDetector(pFrmFaceEnroll->widget_handle,(const WidgetImage &)tempwidgetimage,GetTickCount(),1,liveresult);
+						if(0==fwld_re && 0==liveresult)
+						{
+							pFrmFaceEnroll->EnrollLog.Format(_T("{\
+																\"ret\":\"fail\",\
+																\"user\":\"%s\",\
+																\"sysID\":\"%d\",\
+																\"content\":\"LiveDetect_Fail\"\
+																}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
+
+							pFrmFaceEnroll->EnrollResult = OCX_ERROR_LIVEFACE_FAIL;
+							pFrmFaceEnroll->m_bIsClose = true;
+							return 0;
+						}
+
+#endif
 						CString result = pFrmFaceEnroll->m_Detect.RGBtoBase64((unsigned char *)buffer,
 																				bitmapSize,
 																				pFrmFaceEnroll->m_lVideoWidth,
@@ -256,11 +280,56 @@ BOOL CFrmFaceEnroll::OnInitDialog()
 */
 
 
-
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
+
+BOOL CFrmFaceEnroll::InitLive()
+{
+#if LIVE_FACE_TEST
+	int ip[4]={0};
+	int port=0;
+	sscanf(m_Detect.HostInfo.GetBuffer(0),"http://%d.%d.%d.%d:%d",&ip[0],&ip[1],&ip[2],&ip[3],&port);
+	char ipstr[32]="";
+	sprintf(ipstr,"%d.%d.%d.%d",ip[0],ip[1],ip[2],ip[3]);
+
+	module_handle=NULL;
+	if(Face_InitModule(LIVE_FACE_MODEL_PATH,ipstr,port,&module_handle)<0)
+	{
+		EnrollLog.Format(_T("{\
+							\"ret\":\"fail\",\
+							\"user\":\"%s\",\
+							\"sysID\":\"%d\",\
+							\"content\":\"LiveDetect_InitModuleFail\"\
+							}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
+
+		EnrollResult = OCX_ERROR_LIVEFACE_INIT_FAIL;
+
+		return FALSE;
+	}
+
+	widget_handle=NULL;
+	widget_handle=FaceWidget_Init(module_handle);
+	if(NULL==widget_handle)
+	{
+		EnrollLog.Format(_T("{\
+							\"ret\":\"fail\",\
+							\"user\":\"%s\",\
+							\"sysID\":\"%d\",\
+							\"content\":\"LiveDetect_InitWidgetFail\"\
+							}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
+
+		EnrollResult = OCX_ERROR_LIVEFACE_WIDGET_FAIL;
+
+		Face_UnInitModule();
+
+		return FALSE;
+	}
+
+	return TRUE;
+#endif
+}
+
 void CFrmFaceEnroll::OnOK()
 {
 	// TODO: Add your control notification handler code here
@@ -269,17 +338,25 @@ void CFrmFaceEnroll::OnOK()
 void CFrmFaceEnroll::OnCancel()
 {
 	// TODO: Add your specialized code here and/or call the base class
+	if(-1==EnrollResult)
+	{
+		EnrollLog.Format(_T("{\
+							\"ret\":\"fail\",\
+							\"user\":\"%s\",\
+							\"sysID\":\"%d\",\
+							\"content\":\"User_Cancel\"\
+							}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
 
-	EnrollLog.Format(_T("{\
-						\"ret\":\"fail\",\
-						\"user\":\"%s\",\
-						\"sysID\":\"%d\",\
-						\"content\":\"User_Cancle\"\
-						}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
-
-	EnrollResult = OCX_ERROR_USER_CANCLE;
+		EnrollResult = OCX_ERROR_USER_CANCEL;
+	}
 
 	StopEnrollThread();
+
+#if LIVE_FACE_TEST
+	FaceWidget_UnInit(widget_handle);
+	Face_UnInitModule();
+#endif
+
 	CDialog::OnCancel();
 }
 
@@ -423,12 +500,21 @@ void CFrmFaceEnroll::OnBnClickedBtnClear()
 								LR_LOADMAP3DCOLORS);
 	((CStatic*)GetDlgItem(IDC_STATIC_FACE4))->SetBitmap(hBitmap4);
 #else
+	if(false== FacePicList[0].display &&
+		false== FacePicList[1].display &&
+		false== FacePicList[2].display &&
+		false== FacePicList[3].display )
+	{
+		MessageBox("请先捕获人脸","人脸注册");
+		return ;
+	}
+
 	if(false== FacePicList[0].choose &&
 		false== FacePicList[1].choose &&
 		false== FacePicList[2].choose &&
 		false== FacePicList[3].choose )
 	{
-		MessageBox("单击选择图片后进行清除","人脸注册");
+		MessageBox("单击选择图片后，进行清除","人脸注册");
 		return ;
 	}
 
@@ -603,6 +689,7 @@ void CFrmFaceEnroll::InitParameters(void)
 	m_lVideoWidth = 0;
 	m_lVideoHeight = 0;
 
+	EnrollResult = -1;
 	EnrollLog = _T("");
 	m_iCapIndex = 0;
 	EnrollTimeOut = 0;
@@ -911,6 +998,16 @@ void CFrmFaceEnroll::OnStnClickedStaticFace4()
 void CFrmFaceEnroll::OnBnClickedButtonClose()
 {
 	// TODO: Add your control notification handler code here
+
+	EnrollLog.Format(_T("{\
+						\"ret\":\"fail\",\
+						\"user\":\"%s\",\
+						\"sysID\":\"%d\",\
+						\"content\":\"User_Cancel\"\
+						}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
+
+	EnrollResult = OCX_ERROR_USER_CANCEL;
+
 	OnCancel();
 }
 

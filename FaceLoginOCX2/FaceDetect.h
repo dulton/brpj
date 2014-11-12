@@ -8,6 +8,7 @@
 #define ERR_SER_REEOR		3	//人脸平台异常
 #define ERR_BAD_USER		4	//非法用户
 #define ERR_NONEED_MATCH	5	//不需要进行人脸验证的标志
+#define ERR_WRONG_VERSION	6	//OCX版本与服务器版本不一致
 
 
 class CFaceDetect
@@ -19,11 +20,12 @@ public:
 	CMyWebService m_webService;
 	double m_macthThreshold;		//相似阈值
 	int Facedb;						//识别或者注册库
-	CString PersonID;				//待注册人员在facecloud的人员库ID
+	long PersonID;					//待注册人员在facecloud的人员库ID
 	CString ID_Card;				//待比对人员在facecloud的人员库中的ID_Card
 	CString HostInfo;				//facecloud的服务器地址信息
 	CString Token;					//验证令牌
-	//int macthScore;					//比对阀值
+	int matchTimes;					//平台设置的比对次数
+	int matchCount;					//当前比对次数
 public:
 	//获取facecloud的运行状态
 	bool GetFaceCloudState(void);

@@ -8,6 +8,14 @@
 #include <queue>
 #include "BitComboBox.h"
 
+#if LIVE_FACE_TEST
+
+#include "liveinc/recoWidget.h"
+#pragma comment(lib,"livelib/recoWidget.lib")
+
+#endif
+
+
 #define VIDEO_WIDTH     1920
 #define VIDEO_HEIGHT    1080
 #define PICTURE_MAX		4
@@ -66,6 +74,12 @@ public:
 	CBitmap    CfaceBGB[PICTURE_MAX];     
 	BITMAP faceBGB[PICTURE_MAX];
 
+
+#if LIVE_FACE_TEST
+	RecoModuleHandle module_handle;
+	RecoWidgetHandle widget_handle;
+#endif
+	BOOL InitLive();
 
 
 	void DisplayOne(int i);

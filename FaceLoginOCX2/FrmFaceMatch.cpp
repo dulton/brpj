@@ -112,10 +112,12 @@ DWORD WINAPI MacthDetectThread(void *p)
 				{
 					if(!pFrmFaceMatch->b_macthLock)
 					{
+						pFrmFaceMatch->b_macthLock = true;
 						for(int i=0;i<pFrmFaceMatch->face_Count;i++)
 						{
 							pFrmFaceMatch->m_MacthList.push(pFrmFaceMatch->Image_list[i]);
 						}
+						pFrmFaceMatch->b_macthLock = false;
 					}
 				}
 				pFrmFaceMatch->b_listLock = false;
@@ -188,14 +190,18 @@ void CFrmFaceMatch::OnOK()
 void CFrmFaceMatch::OnCancel()
 {
 	// TODO: Add your specialized code here and/or call the base class
-	MacthLog.Format(_T("{\
-					   \"ret\":\"fail\",\
-					   \"user\":\"%s\",\
-					   \"sysID\":\"%d\",\
-					   \"content\":\"User_Cancle\"\
-					   }"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
+	if(0==MacthResult.GetLength())
+	{
 
-	MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCLE);
+		MacthLog.Format(_T("{\
+						   \"ret\":\"fail\",\
+						   \"user\":\"%s\",\
+						   \"sysID\":\"%d\",\
+						   \"content\":\"User_Cancel\"\
+						   }"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
+
+		MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCEL);
+	}
 
 	StopMacthThread();
 	CDialog::OnCancel();
@@ -212,6 +218,12 @@ void CFrmFaceMatch::OnTimer(UINT_PTR nIDEvent)
 	// TODO: Add your message handler code here and/or call default
 	if(nIDEvent == FACE_MACTH_TIMER)
 	{
+		//比对次数超过限制
+		if(m_Detect.matchCount > m_Detect.matchTimes)
+		{
+			MacthResult.Format(_T("%d"),OCX_ERROR_MATCH_FAIL);
+			OnCancel();
+		}
 		if(matchFlag)
 		{
 			CString strlog;
@@ -343,7 +355,8 @@ void CFrmFaceMatch::InitParameters(void)
 	m_pThreadDisplay=NULL;
 	m_pThreadDetect=NULL;
 	m_pThreadMacth=NULL;
-
+	
+	MacthResult="";
 	MacthLog = "";
 	matchFlag = 0;
 	m_bIsClose = true;
@@ -434,11 +447,14 @@ void CFrmFaceMatch::MacthProcess(void)
 {
 	if(m_MacthList.size()>0)
 	{
-		b_macthLock = true;
-		CString strRequest = m_MacthList.front();
-		m_MacthList.pop();
-		m_Detect.FaceMacth(strRequest,&MacthLog,&matchFlag);
-		b_macthLock = false;
+		if(!b_macthLock)
+		{
+			b_macthLock = true;
+			CString strRequest = m_MacthList.front();
+			m_MacthList.pop();
+			m_Detect.FaceMacth(strRequest,&MacthLog,&matchFlag);
+			b_macthLock = false;
+		}
 	}
 }
 
@@ -469,6 +485,14 @@ void CFrmFaceMatch::OnPaint()
 void CFrmFaceMatch::OnBnClickedButtonClose()
 {
 	// TODO: Add your message handler code here and/or call default
+	MacthLog.Format(_T("{\
+					   \"ret\":\"fail\",\
+					   \"user\":\"%s\",\
+					   \"sysID\":\"%d\",\
+					   \"content\":\"User_Cancel\"\
+					   }"),DlgFaceLoginOCXCtrl->MatchUser,DlgFaceLoginOCXCtrl->MatchSysID);
+
+	MacthResult.Format(_T("%d"),OCX_ERROR_USER_CANCEL);
 
 	OnCancel();
 }

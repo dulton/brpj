@@ -6,6 +6,12 @@
 #include <queue>
 #include "BitComboBox.h"
 
+#if LIVE_FACE_TEST
+
+#include "liveinc/recoWidget.h"
+#pragma comment(lib,"curllib.lib")
+
+#endif
 // CFrmFaceMatch dialog
 
 class CFrmFaceMatch : public CDialog
