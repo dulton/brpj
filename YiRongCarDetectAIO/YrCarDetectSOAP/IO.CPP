@@ -436,10 +436,11 @@ bool IO::DEVICE_IfCamera(unsigned long int camid)
 		}
 		if(!m_pRecordsetPtr->adoEOF)
 		{
+			m_pRecordsetPtr->Close(); 
 			IOwriteLock=false;
 			return true;
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return false;
 	}
@@ -478,10 +479,11 @@ bool IO::DEVICE_IfDetectServer(unsigned long int detectid)
 		}
 		if(!m_pRecordsetPtr->adoEOF)
 		{
+			m_pRecordsetPtr->Close(); 
 			IOwriteLock=false;
 			return true;
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return false;
 	}
@@ -495,6 +497,92 @@ bool IO::DEVICE_IfDetectServer(unsigned long int detectid)
 	}  
 }
 
+//测试识别服务器是否正常
+bool IO::DEVICE_IfDetectServerEnable(unsigned long int detectid)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid from TB_DETECT_SERVER where nid=%d and isenable=1 "),detectid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			m_pRecordsetPtr->Close(); 
+			IOwriteLock=false;
+			return true;
+		}
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		Log_fileout(LOG_ERROR,"IO::DEVICE_IfDetectServerEnable error：%s", e.ErrorMessage());
+
+		IOwriteLock=false;
+
+		return false;
+	}  
+}
+//测试识别服务器是否占用
+bool IO::DEVICE_IfDetectServerPlay(unsigned long int detectid)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select nid from TB_DETECT_SERVER where nid=%d and ncamera=0 "),detectid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{	
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			m_pRecordsetPtr->Close(); 
+			IOwriteLock=false;
+			return true;
+		}
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
+		return false;
+	}
+	catch(_com_error e)
+	{
+		Log_fileout(LOG_ERROR,"IO::DEVICE_IfDetectServerPlay error：%s", e.ErrorMessage());
+
+		IOwriteLock=false;
+
+		return false;
+	}  
+}
 //删除摄像头
 bool IO::DEVICE_DeleteCamera(unsigned long int camid)
 {	
@@ -589,4 +677,50 @@ bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList)
 		return false;
 	}  
 
+}
+
+//在表中找摄像头 进行停止
+bool IO::DEVICE_SearchForStop(long *DetectServerID,long camid)
+{
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+	(*DetectServerID)=0;
+	try
+	{
+		CString	strSql;
+		strSql.Format(_T("select NID from TB_DETECT_SERVER where ncamera=%d"),camid);
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		if(m_pRecordsetPtr->BOF)
+		{
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		if(!m_pRecordsetPtr->adoEOF)
+		{
+			(*DetectServerID) =VarSaveNumber2(m_pRecordsetPtr,"NID");
+		}
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		Log_fileout(LOG_ERROR,"IO::DEVICE_SearchForStop error：%s", e.ErrorMessage());
+		IOwriteLock=false;
+
+		return false;
+	}  
+	IOwriteLock=false;
 }

@@ -1,0 +1,1 @@
+https://raw.githubusercontent.com/zogna/myip/master/wanip.txt

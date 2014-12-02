@@ -120,7 +120,11 @@ public:
 	bool IO::DEVICE_DeleteCamera(unsigned long int camid);
 	//视图查询
 	bool IO::DEVICE_ReadList(list<DEVICE_LIST> &DeviceList);
-
-
+	//查找是否有正在识别的摄像头
+	bool IO::DEVICE_SearchForStop(long *DetectServerID,long camid);
+	//测试识别服务器是否正常
+	bool IO::DEVICE_IfDetectServerEnable(unsigned long int detectid);
+	//测试识别服务器是否占用
+bool IO::DEVICE_IfDetectServerPlay(unsigned long int detectid);
 };
 #endif

@@ -70,7 +70,39 @@ int ns__SendMission(struct soap *soap, char *MsgXml, char **ResponseXml)
 			ErrorStringXML("-5","识别服务器不存在",strText,XMLRW_MAX_WSTR);
 			goto ALL_EXIT;
 		}
+	
+		//测试识别服务器是否正常
+		if(false == OracleIO.DEVICE_IfDetectServerEnable(DetectID))
+		{
+			ErrorStringXML("-6","识别服务器故障",strText,XMLRW_MAX_WSTR);
+			goto ALL_EXIT;
+		}
 		
+		if(Command)
+		{
+			long DetectDeviceID=0; 
+			//查找是否有正在识别的摄像头
+			if(false ==	OracleIO.DEVICE_SearchForStop(&DetectDeviceID,CameraID))
+			{
+				ErrorStringXML("-98","内部异常数据库出错",strText,XMLRW_MAX_WSTR);
+				goto ALL_EXIT;
+			}
+			if(DetectDeviceID>0)
+			{
+				char strtemp[XMLRW_MAX_WSTR]="";
+				sprintf(strtemp,"正在识别,服务器ID:%d",DetectDeviceID);
+				ErrorStringXML("-7",strtemp,strText,XMLRW_MAX_WSTR);
+				goto ALL_EXIT;
+			}
+			//测试识别服务器是否占用
+			if(false == OracleIO.DEVICE_IfDetectServerPlay(DetectID))
+			{
+				ErrorStringXML("-8","识别服务器被占用",strText,XMLRW_MAX_WSTR);
+				goto ALL_EXIT;
+			}
+
+		}
+	
 		if(false == OracleIO.Mission_ADD(DetectID,CameraID,GlobalConfig.UserID,Command))
 		{
 			ErrorStringXML("-98","内部异常数据库出错",strText,XMLRW_MAX_WSTR);
@@ -301,7 +333,7 @@ void IfCameraXML(char* code,char* message,char *flag,char *strText,int len)
 	struct NAME_VALUE_S Rmapdata[3];
 	Rmapdata[0].ins("Code",code);
 	Rmapdata[1].ins("Message",message);
-	Rmapdata[2].ins("flag",flag);
+	Rmapdata[2].ins("Flag",flag);
 
 	if(false==CreateXmlLite_UTF8_NoSub("Return",Rmapdata,3,strText,len) )
 	{
