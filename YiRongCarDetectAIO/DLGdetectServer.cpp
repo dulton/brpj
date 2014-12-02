@@ -44,15 +44,15 @@ BOOL CDLGdetectServer::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	m_list.InsertColumn(0, _T("识别ID") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(1, _T("识别IP" ), LVCFMT_LEFT, 100);
+	m_list.InsertColumn(1, _T("识别IP" ), LVCFMT_LEFT, 0);
 	m_list.InsertColumn(2, _T("识别通道"), LVCFMT_LEFT, 60);
 	m_list.InsertColumn(3, _T("识别故障"), LVCFMT_LEFT, 60);
 	m_list.InsertColumn(4, _T("识别占用"), LVCFMT_LEFT, 60);
 
 	m_list.InsertColumn(5, _T("摄像ID") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(6, _T("摄像名称" ), LVCFMT_LEFT, 100);
-	m_list.InsertColumn(7, _T("摄像IP"), LVCFMT_LEFT, 100);
-	m_list.InsertColumn(8, _T("摄像URL"), LVCFMT_LEFT, 20);
+	m_list.InsertColumn(6, _T("摄像名称" ), LVCFMT_LEFT, 300);
+	m_list.InsertColumn(7, _T("摄像IP"), LVCFMT_LEFT, 0);
+	m_list.InsertColumn(8, _T("摄像URL"), LVCFMT_LEFT, 0);
 	m_list.InsertColumn(9, _T("是否识别"), LVCFMT_LEFT, 60);
 
 	m_list.InsertColumn(10, _T("任务ID") , LVCFMT_LEFT, 60);

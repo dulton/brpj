@@ -15,6 +15,10 @@ IO::IO(void)
 
 	IOwriteLock=false;
 
+#if IVMS_ORACLE_DEVICETREE
+	IVMS_state=false;
+	IVMSwriteLock=false;
+#endif
 }
 
 IO::~IO(void)
@@ -239,12 +243,19 @@ int IO::ConnectionOracleDBTXT(char*  FileName)
 
 bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	 strsql = _T("select sorgname,nid from t_zd_org");
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -268,10 +279,12 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 		m_pRecordsetPtr->Close();
 		if(DeviceAreaList.size() > 0)
 		{
+			IOwriteLock=false;
 			return true;
 		}
 		else
 		{
+			IOwriteLock=false;
 			return false;
 		}
 	}
@@ -280,11 +293,40 @@ bool IO::DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_ReadAllOrgName error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
+//注意此表不加锁
+//插入表时获取自增的NID
+unsigned long long IO::AutoAddNid(TCHAR *TableName)
+{
 
+	try
+	{
+		unsigned long long id=0;
+
+		TCHAR	 strsql[2048];
+		_stprintf(strsql, _T("select seq_%s.nextval as nid from dual"),TableName);	    //获取nid
+
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql,NULL,adCmdText);	
+
+		id = VarSaveNumber2(m_pRecordsetPtr,"nid");
+
+		m_pRecordsetPtr->Close(); 
+
+		return id;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::AutoAddNid error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		return 0;
+	}  
+}
 bool IO::DEVICE_AddNewArea(CString AreaName)
 {	
 	while(IOwriteLock)
@@ -329,11 +371,18 @@ bool IO::DEVICE_AddNewArea(CString AreaName)
 
 bool IO::DEVICE_DeleteArea(long areaID)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from t_zd_org where nid=%d",areaID);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -341,6 +390,7 @@ bool IO::DEVICE_DeleteArea(long areaID)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_DeleteArea error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -352,6 +402,12 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 							 CString crossIndex,long crossID,
 							 long userID,long userLV)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
@@ -364,6 +420,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		unsigned long nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
@@ -403,8 +460,10 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
+			IOwriteLock=false;
 			return true;   		
 		}
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -412,12 +471,19 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_AddNewCamera error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
@@ -426,6 +492,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		variant_t nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
@@ -434,6 +501,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -481,10 +549,12 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		m_pRecordsetPtr->Close();
 		if(CameraList.size())
 		{
+			IOwriteLock=false;
 			return true;
 		}
 		else
 		{
+			IOwriteLock=false;
 			return false;
 		}
 	}
@@ -493,6 +563,7 @@ bool IO::DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_ReadCameraInfo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -508,7 +579,7 @@ bool IO::DEVICE_ReadCameraInfoFromCamID(long ncamera,IPLIST &CameraInfo)
 	try
 	{
 		CString strSql;
-		
+
 		strSql.Format("select * from tb_device a   left join  T_ZD_ORG b on a.nid=b.nid where a.ncamera=%d",ncamera);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -554,10 +625,10 @@ bool IO::DEVICE_ReadCameraInfoFromCamID(long ncamera,IPLIST &CameraInfo)
 			IOwriteLock=false;
 			return true;
 		}
-	
+
 		IOwriteLock=false;
 		return false;
-	
+
 	}
 	catch(_com_error e)
 	{
@@ -648,11 +719,11 @@ bool IO::DEVICE_JudgeCamera(long ncameraid)
 	}
 
 	IOwriteLock=true;
-	 int tempcount=0;
+	int tempcount=0;
 	try
 	{
 		CString strSql;
-		
+
 		strSql.Format("select count(1) from tb_device where ncamera=%d",ncameraid);
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
@@ -671,7 +742,7 @@ bool IO::DEVICE_JudgeCamera(long ncameraid)
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
-		
+
 		IOwriteLock=false;
 
 		if(tempcount >0)
@@ -694,11 +765,18 @@ bool IO::DEVICE_JudgeCamera(long ncameraid)
 
 bool IO::DEVICE_DeleteCamera(long cameraID)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_device where ncamera=%d",cameraID);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -706,11 +784,18 @@ bool IO::DEVICE_DeleteCamera(long cameraID)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_DeleteCamera error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
@@ -718,6 +803,8 @@ bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
+
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -734,6 +821,7 @@ bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList)
 		}
 		m_pRecordsetPtr->Close();
 
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -741,17 +829,27 @@ bool IO::DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_GetCameraWithAreaID error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::DEVICE_DeleteCameraWithAreaID(long AreaID)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_device where nid=%d",AreaID);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -759,16 +857,24 @@ bool IO::DEVICE_DeleteCameraWithAreaID(long AreaID)
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_DeleteCameraWithAreaID error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CString sip,int port,int channel,
 								 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
-								  CString longitude,CString latitude,
-								  CString crossIndex,long crossID,
+								 CString longitude,CString latitude,
+								 CString crossIndex,long crossID,
 								 long userID,long userLV)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
@@ -782,9 +888,11 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		variant_t a = m_pRecordsetPtr->GetCollect("nid");
+		m_pRecordsetPtr->Close(); 
 
 		strcpy(tempstr,CamName.GetBuffer(0));
 		filterstring(tempstr);
@@ -823,23 +931,25 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 						 sipserver='%s',sport=%d,channel=%d,suser='%s',spwd='%s',\
 						 nid=%d,svenderid = %d,rtspurl='%s',rtpmode=%d,decodetag=%d,\
 						 longitude='%s',latitude='%s',\
-						crossindex='%s',crossid=%d,\
-						  userID=%d,userLV=%d	\
+						 crossindex='%s',crossid=%d,\
+						 userID=%d,userLV=%d	\
 						 where ncamera=%d"), 
 						 CamName,sip,port,channel,user,password,nid,venderID, Rtspurl, RTP,DecodeTag,
 						 longitude,latitude,
 						 crossIndex, crossID,
-						  userID, userLV,
+						 userID, userLV,
 						 CamID);
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
+			IOwriteLock=false;
 			return	true;
 		}
 		else
 		{
+			IOwriteLock=false;
 			return false;
 		}
 	}
@@ -848,12 +958,20 @@ bool IO::DEVICE_UpdateCameraInfo(long CamID,CString AreaName,CString CamName,CSt
 		CString in_errormessage;
 		in_errormessage.Format("IO::DEVICE_UpdateCameraInfo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
@@ -862,6 +980,7 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(!(m_pRecordsetPtr->BOF))
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -899,8 +1018,10 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
+			IOwriteLock=false;
 			return true;   		
 		}
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -908,17 +1029,26 @@ bool IO::USER_AddNewUser(struct SET_USER_DATA_ST UserInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::USER_AddNewUser error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::USER_DeletetUser(unsigned long int nid)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_user where nid=%d",nid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -926,12 +1056,21 @@ bool IO::USER_DeletetUser(unsigned long int nid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::USER_DeletetUser error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
@@ -951,7 +1090,9 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 						 UserInfo.historyvideo, UserInfo.historyalarm, UserInfo.historydetect,\
 						 UserInfo.historyreport, UserInfo.admin,UserInfo.level,UserInfo.detect_limit, UserInfo.nid);
 		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+		IOwriteLock=false;
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
 			return	true;
@@ -966,12 +1107,19 @@ bool IO::USER_UpdateUserInfo(struct SET_USER_DATA_ST UserInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::USER_UpdateUserInfo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strsql;
@@ -980,6 +1128,7 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		variant_t var;
@@ -987,7 +1136,7 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		CString str;
 		temp.ChangeType(VT_NULL);
 
-	
+
 		VarSaveStr2(UserInfo->user,m_pRecordsetPtr,_T("suser"));
 		VarSaveStr2(UserInfo->psw,m_pRecordsetPtr,_T("spwd"));
 
@@ -1013,7 +1162,7 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 
 
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -1021,12 +1170,19 @@ bool IO::USER_ReadUserInfoWithName(char *user,struct SET_USER_DATA_ST *UserInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::USER_ReadUserInfoWithName error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST *UserInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strsql;
@@ -1034,6 +1190,7 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		variant_t var;
@@ -1064,7 +1221,7 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		UserInfo->detect_limit = VarSaveNumber2(m_pRecordsetPtr,"NDETECTLIMIT");
 
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -1072,18 +1229,27 @@ bool IO::USER_ReadUserInfoWithNid(unsigned long int nid,struct SET_USER_DATA_ST 
 		CString in_errormessage;
 		in_errormessage.Format("IO::USER_ReadUserInfoWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strsql = _T("select suser,nid from tb_user");
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -1096,7 +1262,7 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 			variant_t var;
 			variant_t temp; 
 			temp.ChangeType(VT_NULL);
-		
+
 			VarSaveStr2(UserInfo.user,m_pRecordsetPtr,_T("suser"));
 
 			UserInfo.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
@@ -1105,6 +1271,7 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
 		if(UserInfoList.size() > 0)
 		{
 			return true;
@@ -1119,6 +1286,7 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 		CString in_errormessage;
 		in_errormessage.Format("IO::USER_ReadAllUserInfo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -1126,14 +1294,15 @@ bool IO::USER_ReadAllUserInfo(list<struct SET_USER_LIST_ST> &UserInfoList)
 
 bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 {
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(10);
-		}
-
-		IOwriteLock=true;
 
 		CString strSql = _T("select seq_log.nextval as nid from dual");	    //获取电动车图像数据nid
 
@@ -1213,6 +1382,9 @@ unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTi
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
 		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
+
+		m_pRecordsetPtr->Close(); 
+
 		IOwriteLock=false;
 		return num;
 	}
@@ -1312,14 +1484,14 @@ bool IO::LOG_ReadSystemLog(char *SQLstr,int flag,long startNum,long endNum,list<
 bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
 								char *plate,int reliability,char *path,unsigned long int picsize,unsigned char *picdata)
 {
+	while(IOwriteLock)
+	{
+		Sleep(100);
+	}
+
+	IOwriteLock=true;
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(100);
-		}
-
-		IOwriteLock=true;
 
 		CString strSql = _T("select seq_match_result_car.nextval as nid from dual");	    //获取电动车图像数据nid
 
@@ -1406,14 +1578,15 @@ bool IO::CAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *platetyp
 bool IO::CAR_MatchResult_AddNewNoPicData(bool *isblack,unsigned long CAMID,char *platetype,char	*platecolor,char *direction,char *carcolor,
 										 char *plate,int reliability,char *path,unsigned long int picsize)
 {
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(10);
-		}
-
-		IOwriteLock=true;
 
 		CString strSql = _T("select seq_match_result_car.nextval as nid from dual");	    //获取电动车图像数据nid
 
@@ -1723,6 +1896,8 @@ unsigned long IO::CAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,cha
 
 		unsigned long num =  VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+
 		IOwriteLock=false;
 
 		return num;
@@ -1879,6 +2054,8 @@ unsigned long IO::CAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,cha
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
 		unsigned long num = VarSaveNumber2(m_pRecordsetPtr,"count(1)");
+
+		m_pRecordsetPtr->Close(); 
 
 		IOwriteLock=false;
 
@@ -2043,7 +2220,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 			struct HISTORY_DETECT_ST result = {0};
 
 			result.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
-	
+
 			VarSaveStr2(result.name,m_pRecordsetPtr,_T("scameraname"));
 			VarSaveStr2(result.ip,m_pRecordsetPtr,_T("sip"));
 
@@ -2051,7 +2228,7 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-	
+
 			VarSaveStr2(result.platetype,m_pRecordsetPtr,_T("stype"));
 
 			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
@@ -2094,6 +2271,13 @@ bool IO::CAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,li
 
 int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql = _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_car a  order by a.nid desc)  where  rownum=1");
@@ -2101,7 +2285,8 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
-		{
+		{	
+			IOwriteLock=false;
 			return 0;
 		}
 		else
@@ -2138,7 +2323,7 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
 
 			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
-		
+
 			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
 
 			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
@@ -2151,14 +2336,14 @@ int IO::CAR_MatchResult_ReadforListAll(struct HISTORY_DETECT_ST *HistoryList)
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return 1;
 	}
 	catch(_com_error e)
 	{
 
 		errormessage.Format("IO::CAR_MatchResult_ReadforListAll error：%s", e.ErrorMessage());
-
+		IOwriteLock=false;
 		return -1;
 	}  
 }
@@ -2305,6 +2490,12 @@ bool IO::CAR_AlarmResult_Execute(long nid,bool *isblack)
 
 unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql="";
@@ -2317,6 +2508,9 @@ unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startT
 
 		unsigned long int num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+
+		IOwriteLock=false;
 		return num;
 	}
 	catch(_com_error e)
@@ -2324,6 +2518,8 @@ unsigned long int IO::CAR_MatchResult_Count(unsigned long int CAMID,char *startT
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_MatchResult_Count error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return 0;
 	}  
 }
@@ -2332,14 +2528,15 @@ bool IO::ELECAR_MatchResult_AddNew(bool *isblack,unsigned long CAMID,char *plate
 								   char *plate,int reliability,
 								   char *path,unsigned long int picsize,unsigned char *picdata)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(10);
-		}
-
-		IOwriteLock=true;
 
 		CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
 
@@ -2423,14 +2620,15 @@ bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,ch
 											char *plate,int reliability,
 											char *path,unsigned long int picsize)
 {
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(10);
-		}
-
-		IOwriteLock=true;
 
 		CString strSql = _T("select seq_match_result_vehicle.nextval as nid from dual");	    //获取电动车图像数据nid
 
@@ -2493,6 +2691,13 @@ bool IO::ELECAR_MatchResult_AddNewNoPicdata(bool *isblack,unsigned long CAMID,ch
 
 bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strsql;
@@ -2503,6 +2708,7 @@ bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -2519,9 +2725,10 @@ bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 			memcpy(data, pbuffer, lDatasize);
 
 			SafeArrayUnaccessData(varBLOB.parray);
-
+			IOwriteLock=false;
 			return true;
 		}
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -2529,12 +2736,20 @@ bool IO::ELECAR_MatchResult_GetPicture(unsigned long NID,unsigned char *data)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_MatchResult_GetPicture error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strsql;
@@ -2545,6 +2760,7 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -2561,9 +2777,10 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 			memcpy(data, pbuffer, lDatasize);
 
 			SafeArrayUnaccessData(varBLOB.parray);
-
+			IOwriteLock=false;
 			return true;
 		}
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -2571,6 +2788,7 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_AlarmResult_GetPicture error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -2578,6 +2796,12 @@ bool IO::ELECAR_AlarmResult_GetPicture(unsigned long NID,unsigned char *data)
 unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
 											char *direction,int flag,char *SQLstr)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql="";
@@ -2659,7 +2883,8 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
 		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
-
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
 		return num;
 	}
 	catch(_com_error e)
@@ -2667,6 +2892,7 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_MatchResult_GetNum error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return 0;
 	}  
 }
@@ -2674,6 +2900,13 @@ unsigned long IO::ELECAR_MatchResult_GetNum(char *CamName,char *sip,char *plate,
 unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,char *startTime,char *endTime,
 											char *direction,int flag,char *SQLstr)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql="";
@@ -2756,6 +2989,8 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 
 		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
 		return num;
 	}
 	catch(_com_error e)
@@ -2763,12 +2998,19 @@ unsigned long IO::ELECAR_AlarmResult_GetNum(char *CamName,char *sip,char *plate,
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_AlarmResult_GetNum error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return 0;
 	}  
 }
 
 bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		//排序后分页
@@ -2792,6 +3034,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -2816,7 +3059,7 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 			sscanf(LPCTSTR((CString)vargetTime.bstrVal),"%d-%d-%d %d:%d:%d",
 				&result.year,&result.mon,&result.day,
 				&result.hour,&result.min,&result.sec);
-		
+
 			VarSaveStr2(result.platecolor,m_pRecordsetPtr,_T("scolour"));
 
 			VarSaveStr2(result.direction,m_pRecordsetPtr,_T("sdirection"));
@@ -2836,26 +3079,35 @@ bool IO::ELECAR_MatchResult_Read(char *SQLstr,int flag,long startNum,long endNum
 		m_pRecordsetPtr->Close();
 		if(HistoryList.size() > 0)
 		{
+			IOwriteLock=false;
 			return true;
 		}
 		else
 		{
+			IOwriteLock=false;
 			return false;
 		}
-
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
-		in_errormessage.Format("IO::ELECAR_MatchResult_Read error：%s", e.ErrorMessage());
+		in_errormessage.Format("IO::ELECAR_MatchResult_Read error：%d,%s",HistoryList.size(), e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_DETECT_ST> &HistoryList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql = _T("select * from (select row_number() over(order by dcreate desc) r,nid,scameraname,sip,to_char(dcreate),stype,scolour,sdirection,scolor,scarnumber,ndegree,sfile,nsize,ncamera,blackid from tb_alarm_vehicle");
@@ -2878,6 +3130,7 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -2921,8 +3174,10 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
 		if(HistoryList.size() > 0)
 		{
+
 			return true;
 		}
 		else
@@ -2930,19 +3185,26 @@ bool IO::ELECAR_AlarmResult_Read(char *SQLstr,int flag,long startNum,long endNum
 			return false;
 		}
 
-		return false;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_AlarmResult_Read error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql = _T("select * from (select a.*,to_char(a.dcreate) from tb_match_result_vehicle a  order by a.nid desc)  where  rownum=1");
@@ -2950,6 +3212,7 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return 0;
 		}
 		else
@@ -2994,7 +3257,7 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return 1;
 
 	}
@@ -3002,7 +3265,7 @@ int IO::ELECAR_MatchResult_ReadforlistAll(struct HISTORY_DETECT_ST *HistoryList)
 	{
 
 		errormessage.Format("IO::ELECAR_MatchResult_ReadforlistAll error：%s", e.ErrorMessage());
-
+		IOwriteLock=false;
 		return -1;
 	}  
 }
@@ -3066,7 +3329,7 @@ int IO::ELECAR_MatchResult_ReadforlistOne(long int camid,struct HISTORY_DETECT_S
 			VarSaveStr2(result.plate,m_pRecordsetPtr,_T("scarnumber"));
 
 			result.reliability =  VarSaveNumber2(m_pRecordsetPtr,"ndegree");
-			
+
 			VarSaveStr2(result.path,m_pRecordsetPtr,_T("sfile"));
 
 			result.picsize =  VarSaveNumber2(m_pRecordsetPtr,"nsize");
@@ -3142,6 +3405,12 @@ bool IO::ELECAR_AlarmResult_Execute(long nid,bool *isblack)
 
 unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *startTime,char *endTime)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql="";
@@ -3154,6 +3423,9 @@ unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *sta
 
 		unsigned long int num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+
+		IOwriteLock=false;
 		return num;
 	}
 	catch(_com_error e)
@@ -3161,12 +3433,20 @@ unsigned long int IO::ELECAR_MatchResult_Count(unsigned long int CAMID,char *sta
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_MatchResult_Count error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return 0;
 	}  
 }
 
 bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql = _T("select seq_black_car.nextval as nid from dual");
@@ -3191,8 +3471,10 @@ bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
+			IOwriteLock=false;
 			return true;
 		}
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -3200,17 +3482,25 @@ bool IO::CAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_AddNew error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::CAR_BlackTable_DeleteWithNid(unsigned long int nid)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_car_black where nid=%d",nid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3218,16 +3508,24 @@ bool IO::CAR_BlackTable_DeleteWithNid(unsigned long int nid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_DeleteWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 bool IO::CAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_alarm_car where blackid=%d",blackid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3235,12 +3533,20 @@ bool IO::CAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_Alarm_DeleteWithBlackNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
@@ -3254,7 +3560,8 @@ bool IO::CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 						 BlackInfo.plate,BlackInfo.brand,BlackInfo.name,BlackInfo.Phone,BlackInfo.other,BlackInfo.nid);
 
 		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	
+		IOwriteLock=false;
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
 			return	true;
@@ -3269,12 +3576,19 @@ bool IO::CAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_Edit error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 unsigned long IO::CAR_BlackTable_GetNum(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql = _T("select count(1) from tb_car_black");
@@ -3283,6 +3597,8 @@ unsigned long IO::CAR_BlackTable_GetNum(void)
 
 		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
 		return num;	
 	}
 	catch(_com_error e)
@@ -3290,12 +3606,20 @@ unsigned long IO::CAR_BlackTable_GetNum(void)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_GetNum error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return 0;
 	}  
 }
 
 bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -3303,6 +3627,7 @@ bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -3319,21 +3644,22 @@ bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST
 			struct BLACK_DATA_ST black = {0};
 
 			black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
-		
+
 			VarSaveStr2(black.plate,m_pRecordsetPtr,_T("scarnumber"));
-	
-				VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
 
-				VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
+			VarSaveStr2(black.brand,m_pRecordsetPtr,_T("sbrand"));
 
-				VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+			VarSaveStr2(black.name,m_pRecordsetPtr,_T("slostname"));
 
-				VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
+			VarSaveStr2(black.Phone,m_pRecordsetPtr,_T("sphone"));
+
+			VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 			BlackList.push_back(black);
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
 		if(BlackList.size() > 0)
 		{
 			return true;
@@ -3343,19 +3669,26 @@ bool IO::CAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST
 			return false;
 		}
 
-		return false;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_Read error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -3363,6 +3696,7 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -3370,7 +3704,7 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
-	
+
 		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
 		black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
@@ -3385,7 +3719,7 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3393,6 +3727,7 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_ReadOne error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -3400,6 +3735,12 @@ bool IO::CAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 
 bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql;
@@ -3407,6 +3748,8 @@ bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -3414,7 +3757,7 @@ bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 		variant_t temp; 
 		temp.ChangeType(VT_NULL);
 		CString str;
-	
+
 		memset(&black,0,sizeof(struct BLACK_DATA_ST));
 
 		black.nid =  VarSaveNumber2(m_pRecordsetPtr,"nid");
@@ -3430,6 +3773,7 @@ bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 
 		m_pRecordsetPtr->Close();
 
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3437,15 +3781,24 @@ bool IO::CAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_ReadOneWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 bool IO::CAR_BlackTable_DeleteAll(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql=_T("delete from tb_car_black");
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3453,15 +3806,23 @@ bool IO::CAR_BlackTable_DeleteAll(void)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 bool IO::CAR_Alarm_DeleteAll(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql=_T("delete from tb_alarm_car");
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3469,12 +3830,19 @@ bool IO::CAR_Alarm_DeleteAll(void)
 		CString in_errormessage;
 		in_errormessage.Format("IO::CAR_Alarm_DeleteAll error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql = _T("select seq_black_vehicle.nextval as nid from dual");
@@ -3499,8 +3867,10 @@ bool IO::ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 
 			m_pRecordsetPtr->Update();
 			m_pRecordsetPtr->Close(); 
+			IOwriteLock=false;
 			return true;
 		}
+		IOwriteLock=false;
 		return false;
 	}
 	catch(_com_error e)
@@ -3508,17 +3878,26 @@ bool IO::ELECAR_BlackTable_AddNew(struct BLACK_DATA_ST BlackInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_AddNew error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_BlackTable_DeleteWithNid(unsigned long int nid)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_vehicle_black where nid=%d",nid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3526,16 +3905,25 @@ bool IO::ELECAR_BlackTable_DeleteWithNid(unsigned long int nid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_DeleteWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 bool IO::ELECAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_alarm_vehicle  where blackid=%d",blackid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3543,6 +3931,7 @@ bool IO::ELECAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_Alarm_DeleteWithBlackNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -3550,6 +3939,13 @@ bool IO::ELECAR_Alarm_DeleteWithBlackNid(unsigned long int blackid)
 
 bool IO::ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
@@ -3564,6 +3960,7 @@ bool IO::ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		IOwriteLock=false;
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
 			return	true;
@@ -3578,12 +3975,20 @@ bool IO::ELECAR_BlackTable_Edit(struct BLACK_DATA_ST BlackInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_Edit error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 unsigned long IO::ELECAR_BlackTable_GetNum(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql = _T("select count(1) from tb_vehicle_black");
@@ -3592,6 +3997,8 @@ unsigned long IO::ELECAR_BlackTable_GetNum(void)
 
 		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
 		return num;	
 	}
 	catch(_com_error e)
@@ -3599,12 +4006,20 @@ unsigned long IO::ELECAR_BlackTable_GetNum(void)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_GetNum error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return 0;
 	}  
 }
 
 bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA_ST> &BlackList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -3612,6 +4027,7 @@ bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -3642,6 +4058,7 @@ bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
+		IOwriteLock=false;
 		if(BlackList.size() > 0)
 		{
 			return true;
@@ -3651,19 +4068,25 @@ bool IO::ELECAR_BlackTable_Read(long startNum,long endNum,list<struct BLACK_DATA
 			return false;
 		}
 
-		return false;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_Read error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString	strSql;
@@ -3671,6 +4094,7 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -3692,7 +4116,7 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3700,12 +4124,20 @@ bool IO::ELECAR_BlackTable_ReadOne(long Num,struct BLACK_DATA_ST &black)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_ReadOne error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -3713,6 +4145,7 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -3733,7 +4166,7 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 
 		VarSaveStr2(black.other,m_pRecordsetPtr,_T("smark"));
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3741,16 +4174,26 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_ReadOneWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::ELECAR_BlackTable_DeleteAll(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql=_T("delete from tb_vehicle_black");
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3758,16 +4201,28 @@ bool IO::ELECAR_BlackTable_DeleteAll(void)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_BlackTable_DeleteAll error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 //删除数据库黑名单 也要删这个
 bool IO::ELECAR_Alarm_DeleteAll(void)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+
 	try
 	{
 		CString strSql=_T("delete from tb_alarm_vehicle");
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3775,6 +4230,8 @@ bool IO::ELECAR_Alarm_DeleteAll(void)
 		CString in_errormessage;
 		in_errormessage.Format("IO::ELECAR_ALarm_DeleteAll error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -3783,20 +4240,24 @@ bool IO::ELECAR_Alarm_DeleteAll(void)
 bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender,char *type,\
 						   unsigned long long size,char *stime,char *etime,char *path)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+
 	try
 	{
-		while(IOwriteLock)
-		{
-			Sleep(10);
-		}
-
-		IOwriteLock=true;
 
 		CString strSql = _T("select seq_video.nextval as nid from dual");	    //获取电动车图像数据nid
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);
 
 		long id =  VarSaveNumber2(m_pRecordsetPtr,"nid");
+		m_pRecordsetPtr->Close(); 
+
 		filterstring(camName);
 		filterstring(camIp);
 		filterstring(path);
@@ -3863,11 +4324,19 @@ bool IO::VIDEO_AddNewVideo(char *camName,char *camIp,unsigned long int camVender
 
 bool IO::VIDEO_DeleteVideo(unsigned long int nid)
 {
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_video where nid=%d",nid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -3875,12 +4344,21 @@ bool IO::VIDEO_DeleteVideo(unsigned long int nid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::VIDEO_DeleteVideo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime,int flag,char *SQLstr)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+
 	try
 	{
 		CString	strSql="";
@@ -3933,6 +4411,8 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 
 		unsigned long num =VarSaveNumber2(m_pRecordsetPtr,"count(1)");
 
+		m_pRecordsetPtr->Close(); 
+		IOwriteLock=false;
 		return num;
 	}
 	catch(_com_error e)
@@ -3940,12 +4420,20 @@ unsigned long IO::VIDEO_GetNum(char *camName,char *camIp,char *stime,char *etime
 		CString in_errormessage;
 		in_errormessage.Format("IO::VIDEO_GetNum error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return 0;
 	}  
 }
 
 bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct HISTORY_VIDEO_ST> &Videolist)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql = _T("select * from (select row_number() over(order by nid desc) r,nid,scameraname,sip,svenderid,sformat,sfilesize,to_char(dstarttime),to_char(dendtime),spath from tb_video");
@@ -3968,6 +4456,8 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -4010,6 +4500,8 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
+
+		IOwriteLock=false;
 		if(Videolist.size() > 0)
 		{
 			return true;
@@ -4019,19 +4511,27 @@ bool IO::VIDEO_Read(char *SQLstr,int flag,long startNum,long endNum,list<struct 
 			return false;
 		}
 
-		return false;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::VIDEO_Read error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	char sTime[32]={0};
 	char eTime[32]={0};
 	sprintf(sTime,"%04d-%02d-%02d %02d:%02d:%02d",
@@ -4072,6 +4572,7 @@ bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 
 		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -4079,16 +4580,26 @@ bool IO::RECORD_PlanTable_AddNew(struct SET_RECORD_DATA_ST rPlan)
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_AddNew error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 bool IO::RECORD_PlanTable_DeleteWithNid(unsigned long int nid)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_record_plan where nid=%d",nid);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -4096,17 +4607,26 @@ bool IO::RECORD_PlanTable_DeleteWithNid(unsigned long int nid)
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_DeleteWithCamID(unsigned long int camID)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
 		strSql.Format("delete from tb_record_plan where ncamera=%d",camID);
-		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -4114,12 +4634,20 @@ bool IO::RECORD_PlanTable_DeleteWithCamID(unsigned long int camID)
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_DeleteWithNid error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	char sTime[32]={0};
 	char eTime[32]={0};
 	sprintf(sTime,"%04d-%02d-%02d %02d:%02d:%02d",
@@ -4152,7 +4680,9 @@ bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
 						 rPlan.StartWeek, rPlan.EndWeek, sTime, eTime, rPlan.nid);
 
 		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	
+
+		IOwriteLock=false;
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
 			return	true;
@@ -4167,12 +4697,21 @@ bool IO::RECORD_PlanTable_Edit(struct SET_RECORD_DATA_ST rPlan)
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_Edit error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_ST *rPlan)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql;
@@ -4180,6 +4719,7 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+			IOwriteLock=false;
 			return false;
 		}
 
@@ -4214,7 +4754,7 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 			&rPlan->EndHour,&rPlan->EndMin,&rPlan->EndSec);
 
 		m_pRecordsetPtr->Close();
-
+		IOwriteLock=false;
 		return true;
 	}
 	catch(_com_error e)
@@ -4222,12 +4762,20 @@ bool IO::RECORD_PlanTable_ReadOne(unsigned long int nid,struct SET_RECORD_DATA_S
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_ReadOne error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString	strSql = _T("select a.*,to_char(starttime),to_char(endtime) from tb_record_plan a");
@@ -4235,6 +4783,8 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)
 		{
+
+			IOwriteLock=false;
 			return false;
 		}
 		else
@@ -4280,6 +4830,8 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 			m_pRecordsetPtr->MoveNext();
 		}
 		m_pRecordsetPtr->Close();
+
+		IOwriteLock=false;
 		if(rPlanList.size() > 0)
 		{
 			return true;
@@ -4288,29 +4840,38 @@ bool IO::RECORD_PlanTable_ReadAll(list<struct SET_RECORD_DATA_ST> &rPlanList)
 		{
 			return false;
 		}
-
-		return false;
 	}
 	catch(_com_error e)
 	{
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_ReadAll error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_SetRecordState(unsigned long nid,int enable)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
 	try
 	{
 		CString strSql;
 		strSql.Format(_T("update tb_record_plan set enableflag=%d where nid=%d"),enable,nid);
 
 		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	
+		IOwriteLock=false;
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
+
 			return	true;
 		}
 		else
@@ -4323,12 +4884,19 @@ bool IO::RECORD_PlanTable_SetRecordState(unsigned long nid,int enable)
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_SetRecordState error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
 
 bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char *camname,char *ip)
 {
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
 
 	try
 	{
@@ -4341,7 +4909,8 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 			area,camname,ip,camid);
 
 		_variant_t RecordAffected;
-		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	  
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);	
+		IOwriteLock=false;
 		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
 		{
 			return	true;
@@ -4356,6 +4925,7 @@ bool IO::RECORD_PlanTable_UpdateCamInfo(unsigned long int camid,char *area,char 
 		CString in_errormessage;
 		in_errormessage.Format("IO::RECORD_PlanTable_UpdateCamInfo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
 		return false;
 	}  
 }
@@ -4450,10 +5020,12 @@ int IO::Mission_READ(long DetectDeviceId,long long *missionID,unsigned long int 
 			_variant_t RecordAffected;
 			m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
+			m_pRecordsetPtr->Close(); 
+
 			IOwriteLock=false;
 			return 1;
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return 0;
 	}
@@ -4498,10 +5070,11 @@ long IO::DETECTSERVER_GetDeviceId(char *myip,long int channelnum)
 		{
 			long  nid=VarSaveNumber2(m_pRecordsetPtr,"nid"); 
 
+			m_pRecordsetPtr->Close(); 
 			IOwriteLock=false;
 			return nid;
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return 0;
 	}
@@ -4524,9 +5097,10 @@ bool IO::DETECTFLAG_test(unsigned long int camid, long int *isplay)
 	{
 		Sleep(10);
 	}
-	
-	(*isplay) =0;
+
 	IOwriteLock=true;
+
+	(*isplay) =0;
 	try
 	{
 		CString	strSql;
@@ -4547,6 +5121,7 @@ bool IO::DETECTFLAG_test(unsigned long int camid, long int *isplay)
 			(*isplay) =  VarSaveNumber2(m_pRecordsetPtr,"camisplay");  
 		}
 
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return true;
 	}
@@ -4589,10 +5164,12 @@ long IO::DETECTSERVER_UserOpenNum(unsigned long int userid)
 		if(!m_pRecordsetPtr->adoEOF)
 		{
 			long temp=  VarSaveNumber2(m_pRecordsetPtr,"count(1)");  
+
+			m_pRecordsetPtr->Close(); 
 			IOwriteLock=false;
 			return temp;
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return 0;
 	}
@@ -4623,7 +5200,7 @@ bool IO::Mission_DeviceFlag(long long missionID,unsigned long int camid,char* my
 	{
 		filterstring(myip);
 		CString	strSql;
-	
+
 		if(isplay)
 		{
 			//开始播放
@@ -4681,7 +5258,7 @@ bool IO::DETECTSERVER_heart(char* myip)
 
 		//开始播放
 		strSql.Format(_T("update TB_DETECT_SERVER set lasttime=sysdate where sip='%s'"),myip);
-		
+
 		_variant_t RecordAffected;
 		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
 
@@ -5445,7 +6022,12 @@ int IO::IVMS_ConnectionOracleDBTXT(char*  FileName)
 //获取根节点   全读
 int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
 
+	IVMSwriteLock=true;
 	TCHAR	 strsql[5120];
 	try
 	{
@@ -5456,6 +6038,7 @@ int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit)
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5483,9 +6066,10 @@ int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit)
 		CString in_errormessage;
 		in_errormessage.Format("IO::IVMS_ReadControlunit error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
-
+		IVMSwriteLock=false;
 		return false;
 	}  
+	IVMSwriteLock=false;
 	return true;
 
 }
@@ -5494,7 +6078,12 @@ int IO::IVMS_ReadControlunit(list<struct CONTROL_UNIT_ST> &Controlunit)
 //获取区域 节点 全读
 int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
 
+	IVMSwriteLock=true;
 	TCHAR	 strsql[5120];
 	try
 	{
@@ -5505,6 +6094,7 @@ int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo)
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5533,9 +6123,10 @@ int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo)
 		CString in_errormessage;
 		in_errormessage.Format("IO::IVMS_ReadRegionInfo error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
-
+		IVMSwriteLock=false;
 		return false;
 	}  
+	IVMSwriteLock=false;
 	return true;
 
 }
@@ -5544,6 +6135,12 @@ int IO::IVMS_ReadRegionInfo(list<struct REGION_INFO_ST> &RegionInfo)
 //获取流媒体服务器 全读
 int IO::IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IVMSwriteLock=true;
 
 	TCHAR	 strsql[5120];
 	try
@@ -5555,6 +6152,7 @@ int IO::IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver)
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5584,15 +6182,22 @@ int IO::IVMS_ReadStreamserver(list<struct STREAM_SERVER_ST> &Streamserver)
 		CString in_errormessage;
 		in_errormessage.Format("IO::IVMS_ReadStreamserver error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
-
+		IVMSwriteLock=false;
 		return false;
 	}  
+	IVMSwriteLock=false;
 	return true;
 
 }
 //获取PAG服务器 全读
 int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IVMSwriteLock=true;
 
 	TCHAR	 strsql[5120];
 	try
@@ -5604,6 +6209,7 @@ int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver)
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5634,8 +6240,11 @@ int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver)
 		in_errormessage.Format("IO::IVMS_ReadPAGserver error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 
+		IVMSwriteLock=false;
 		return false;
 	}  
+
+	IVMSwriteLock=false;
 	return true;
 
 }
@@ -5643,7 +6252,12 @@ int IO::IVMS_ReadPAGserver(list<struct PAG_SERVER_ST> &PAGserver)
 //获取设备信息  全读
 int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regionid)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
 
+	IVMSwriteLock=true;
 	TCHAR	 strsql[5120];
 	try
 	{
@@ -5654,6 +6268,8 @@ int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regio
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5683,8 +6299,11 @@ int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regio
 		in_errormessage.Format("IO::IVMS_ReadCaminfoALL error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 
+		IVMSwriteLock=false;
 		return false;
 	}  
+
+	IVMSwriteLock=false;
 	return true;
 
 }
@@ -5692,7 +6311,12 @@ int IO::IVMS_ReadCaminfoALL(list<struct CAMERA_INFO_LITE_ST> &Caminfo,long regio
 //获取设备信息  全读
 int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *keyword)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
 
+	IVMSwriteLock=true;
 	TCHAR	 strsql[5120];
 	try
 	{
@@ -5704,6 +6328,7 @@ int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *key
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return 0;
 		}
 		else
@@ -5731,9 +6356,10 @@ int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *key
 		CString in_errormessage;
 		in_errormessage.Format("IO::IVMS_ReadCaminfoFind error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
-
+		IVMSwriteLock=false;
 		return -1;
 	}  
+	IVMSwriteLock=false;
 	return 1;
 
 }
@@ -5742,6 +6368,13 @@ int IO::IVMS_ReadCaminfoFind(list<struct CAMERA_INFO_LITE_ST> &Caminfo,char *key
 //获取设备信息  全读
 int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connectflag)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IVMSwriteLock=true;
+
 
 	TCHAR	 strsql[5120];
 	try
@@ -5753,6 +6386,7 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5783,10 +6417,10 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 			Caminfo->STREAM_TYPE = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_TYPE");
 			Caminfo->STREAM_SVR_ID = VarSaveNumber2(IVMS_pRecordsetPtr,"STREAM_SVR_ID");	
 			VarSaveStr2(tempstr,IVMS_pRecordsetPtr,_T("DECODE_TAG"));
-				
+
 			longitude=VarSaveDouble2(IVMS_pRecordsetPtr,"longitude");
 			latitude=VarSaveDouble2(IVMS_pRecordsetPtr,"latitude");
-			
+
 			sprintf(Caminfo->longitude,"%f",longitude);
 			sprintf(Caminfo->latitude,"%f",latitude);
 
@@ -5837,6 +6471,7 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 		in_errormessage.Format("IO::IVMS_ReadCaminfoOne CAMERA error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
 
+		IVMSwriteLock=false;
 		return false;
 	}  
 
@@ -5848,6 +6483,7 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5891,9 +6527,10 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 		CString in_errormessage;
 		in_errormessage.Format("IO::IVMS_ReadCaminfoOne DEVICE error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
-
+		IVMSwriteLock=false;
 		return false;
 	}  
+	IVMSwriteLock=false;
 	return true;
 
 }
@@ -5906,6 +6543,12 @@ int IO::IVMS_ReadCaminfoOne(struct CAMERA_INFO_ST *Caminfo,long camid,int connec
 //获取机构编号
 int IO::IVMS_ReadControlunitForSOAP(char *index_code)
 {
+	while(IVMSwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IVMSwriteLock=true;
 
 	TCHAR	 strsql[5120];
 	try
@@ -5916,6 +6559,7 @@ int IO::IVMS_ReadControlunitForSOAP(char *index_code)
 		IVMS_pRecordsetPtr = IVMS_pConnection->Execute((_bstr_t)strsql, NULL, adCmdText);
 		if(IVMS_pRecordsetPtr->BOF)
 		{
+			IVMSwriteLock=false;
 			return false;
 		}
 		else
@@ -5936,9 +6580,10 @@ int IO::IVMS_ReadControlunitForSOAP(char *index_code)
 		CString in_errormessage;
 		in_errormessage.Format("IO::IVMS_ReadControlunitForSOAP error：%s", e.ErrorMessage());
 		AfxMessageBox(in_errormessage);
-
+		IVMSwriteLock=false;
 		return false;
 	}  
+	IVMSwriteLock=false;
 	return true;
 
 }

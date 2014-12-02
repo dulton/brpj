@@ -61,7 +61,12 @@ CDLGscreen::CDLGscreen(CWnd* pParent /*=NULL*/)
 	}
 	*/
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
-		CSdeviceID[i]=0;
+	{	CSdeviceID[i]=0;
+		m_videoInfo[i].camID=0;
+		m_videoInfo[i].isplay=false;
+		m_videoInfo[i].isRecord=false;
+
+	}
 }
 
 
@@ -303,6 +308,23 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 	if (!pWnd)
 	{
 		return false;
+	}
+
+
+	//只能有一个视频在播放
+	for(int i=0;i<MAX_DEVICE_NUM;i++)
+	{
+		if(true == m_videoInfo[i].isplay)
+		{
+			if(id == m_videoInfo[i].camID)
+			{
+#if (!(OPEN_CS_MODE && !ALLTAB_CLIENT_MODE))
+			//非服务器执行
+			MessageBox("正在其他窗口播放中",MESSAGEBOX_TITLE);
+#endif
+				return false;
+			}
+		}
 	}
 
 	if(m_videoInfo[screenNo].isplay == true)

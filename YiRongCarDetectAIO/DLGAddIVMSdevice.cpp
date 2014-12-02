@@ -262,11 +262,13 @@ void CDLGAddIVMSdevice::OnBnClickedOk()
 			}
 		}
 		Rtspurl+=tempstr;
-
-		sprintf(tempstr,"%s:%d:MAIN:",CamData.IndexCode,CamData.channel);
+	// 强制通道号=0
+	//	sprintf(tempstr,"%s:%d:MAIN:",CamData.IndexCode,CamData.channel);
+		sprintf(tempstr,"%s:0:MAIN:",CamData.IndexCode);
 
 		Rtspurl+=tempstr;
-/*
+
+/* //屏蔽28281
 		if(1==CamData.RTP)
 		{
 			sprintf(tempstr,"UDP&streamform=gb28181");

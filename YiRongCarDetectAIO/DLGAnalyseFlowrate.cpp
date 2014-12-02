@@ -41,9 +41,12 @@ CDLGAnalyseFlowrate::CDLGAnalyseFlowrate(CWnd* pParent /*=NULL*/)
 
 	m_StartHour=cstime;
 
+	m_Day=nowtime;
+
+	nowtime+=3600;
 	m_EndMon=nowtime;
 	m_EndHour=nowtime;
-	m_Day=nowtime;
+
 }
 
 

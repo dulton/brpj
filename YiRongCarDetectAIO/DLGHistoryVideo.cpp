@@ -48,6 +48,7 @@ CDLGHistoryVideo::CDLGHistoryVideo(CWnd* pParent /*=NULL*/)
 
 	m_StartHour=cstime;
 
+	nowtime+=3600;
 	m_EndMon=nowtime;
 	m_EndHour=nowtime;
 

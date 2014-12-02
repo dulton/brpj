@@ -1439,6 +1439,15 @@ void CYiRongCarDetectAIODlg::OnMenuitemSetSystem()
 	}
 
 	DlgSetSystem.DoModal();
+
+#if (OPEN_CS_MODE && !ALLTAB_CLIENT_MODE)
+	//重新初始化读取服务器ID
+	for(int j=0;j<MAX_DEVICE_NUM;j++)
+	{	
+		DlgScreen.CSdeviceID[j]=OracleIO.DETECTSERVER_GetDeviceId(DlgSetSystem.m_myip.GetBuffer(0),j);
+	}
+#endif
+
 }
 //系统参数导入
 void CYiRongCarDetectAIODlg::OnMenuitemSetSystemIn() 
@@ -1577,7 +1586,7 @@ void CYiRongCarDetectAIODlg::ListMainInit(void)
 
 	m_ListCar.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 40);
 	m_ListCar.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_ListCar.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 160);
+	m_ListCar.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 200);
 	m_ListCar.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
 	m_ListCar.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 60);
 	m_ListCar.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);

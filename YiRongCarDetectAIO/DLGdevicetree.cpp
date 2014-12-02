@@ -615,11 +615,12 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				return ;
 			}
 
+			
 			int screenNo = DlgMain->DlgScreen.GetCurWindId();
 			if( DlgMain->DlgScreen.GetCurWindPlayState(screenNo))
 			{
 				//自动选择 未在播放的 跳转
-				for(int i=0;i<MAX_AREA;i++)
+				for(int i=0;i<MAX_DEVICE_NUM;i++)
 				{
 					if(false==DlgMain->DlgScreen.GetCurWindPlayState(i))
 					{

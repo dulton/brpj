@@ -443,7 +443,7 @@ int IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long
 			(*userid) =  VarSaveNumber2(m_pRecordsetPtr,"userid");
 			VarSaveStr2(indate,m_pRecordsetPtr,"to_char(indate)");
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return 1;
 	}
@@ -462,7 +462,6 @@ int IO::MISSION_Read(long long *Missionid,unsigned long int *camid,unsigned long
 //在表中找摄像头 进行停止
 bool IO::DEVICE_SearchForStop(long *DetectServerID,long camid)
 {
-
 
 	while(IOwriteLock)
 	{
@@ -492,7 +491,7 @@ bool IO::DEVICE_SearchForStop(long *DetectServerID,long camid)
 		{
 			(*DetectServerID) =VarSaveNumber2(m_pRecordsetPtr,"NID");
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return true;
 	}
@@ -543,7 +542,7 @@ bool IO::DEVICE_SearchForStart(long *DetectServerID)
 		{
 			(*DetectServerID) =VarSaveNumber2(m_pRecordsetPtr,"nid");
 		}
-
+		m_pRecordsetPtr->Close(); 
 		IOwriteLock=false;
 		return true;
 	}
@@ -595,6 +594,7 @@ bool IO::MISSION_AddStop(long DetectServerID,unsigned long int camid)
 			IOwriteLock=false;
 			return true;
 		}
+
 		IOwriteLock=false;
 		return false;
 	}

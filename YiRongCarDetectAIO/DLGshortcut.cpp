@@ -83,12 +83,6 @@ BOOL CDLGshortcut::OnInitDialog()
 
 #endif
 
-	//如果识别数量限制 也要屏蔽
-	if(DlgLogin.CurrentUser.detect_limit<1)
-	{
-		GetDlgItem(IDC_BUTTON_CAR)->EnableWindow(FALSE);
-	}
-
 #if ALLTAB_CLIENT_MODE
 
 	GetDlgItem(IDC_BUTTON_ALARM)->EnableWindow(FALSE);

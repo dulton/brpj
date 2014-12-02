@@ -402,6 +402,9 @@ public:
 
 	bool DisConnectionOracleDB(void);				//断开与oracle数据库的连接
 	int ConnectionOracleDBTXT(char* FileName);		//连接数据库
+
+	unsigned long long IO::AutoAddNid(TCHAR *TableName);
+
 	/**************************设备表*******************************/
 	bool DEVICE_ReadAllOrgName(vector<struct DEVICE_AREA_ST>& DeviceAreaList);	//读取所有的区域
 	bool DEVICE_AddNewArea(CString AreaName);					//新增区域
@@ -571,7 +574,7 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 #endif
 
 #if IVMS_ORACLE_DEVICETREE
-
+	bool IVMSwriteLock;
 	bool IVMS_state;
 	_ConnectionPtr IVMS_pConnection;					//创建oracle connection对象
 	_RecordsetPtr IVMS_pRecordsetPtr;					//创建数据记录集

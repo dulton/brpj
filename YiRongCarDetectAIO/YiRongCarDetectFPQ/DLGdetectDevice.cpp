@@ -102,7 +102,7 @@ void CDLGdetectDevice::AutoSize()
 	//ап╠М
 	CRect list_Rect;
 	list_Rect.top = rc.top;
-	list_Rect.bottom = rc.bottom-150;
+	list_Rect.bottom = rc.bottom-120;
 	list_Rect.left = rc.left ;
 	list_Rect.right = rc.right;
 

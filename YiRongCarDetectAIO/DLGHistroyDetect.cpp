@@ -55,6 +55,7 @@ CDLGHistroyDetect::CDLGHistroyDetect(CWnd* pParent /*=NULL*/)
 
 	m_StartHour=cstime;
 
+	nowtime+=3600;
 	m_EndMon=nowtime;
 	m_EndHour=nowtime;
 
@@ -512,16 +513,15 @@ void CDLGHistroyDetect::DisplayerList(void)
 		sprintf(str,"%d",beglist->picsize);
 		m_List.SetItemText(nItem,10,str);
 
-	
-	if( HISTORY_DETECT_FLAG_ALARM ==flag)
-	{
-		if(OracleIO.ELECAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+		if( HISTORY_DETECT_FLAG_ALARM ==flag)
 		{
+			if(OracleIO.ELECAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+			{
 				m_List.SetItemText(nItem,11,blackdata.name);
 				m_List.SetItemText(nItem,12,blackdata.brand);
 				m_List.SetItemText(nItem,13,blackdata.Phone);
+			}
 		}
-	}
 #endif
 
 	}
