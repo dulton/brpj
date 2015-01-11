@@ -52,14 +52,25 @@
 #define OCX_ERROR_FACESERVER_DOWN	5		//服务器异常
 #define OCX_ERROR_USER_CANCEL		6		//用户取消
 #define	OCX_ERROR_VERSION_ERROR		7		//OCX版本不对
-#define	OCX_ERROR_LIVEFACE_INIT_FAIL		8		//活体检测初始化失败
-#define	OCX_ERROR_LIVEFACE_WIDGET_FAIL		9		//活体检测WIDGET初始化失败
-#define	OCX_ERROR_LIVEFACE_FAIL		10		//活体检测判断为非活体
+#define OCX_ERROR_UNREGIST_USER		8		//当前用户未注册人脸  //旧版该号码为8
+#define	OCX_ERROR_LIVEFACE_INIT_FAIL		9		//活体检测初始化失败
+#define	OCX_ERROR_LIVEFACE_WIDGET_FAIL		10		//活体检测WIDGET初始化失败
+#define	OCX_ERROR_LIVEFACE_FAIL		11		//活体检测判断为非活体
+#define	OCX_ERROR_NO_PERSION_ID		12		//注册人脸出现FACEID 为空。一般是没PERSION ID引起的
 
 
-//#define OCX_LOG_PATH	"C://Program Files//FaceLoginOCX//log.txt"
-#define CURENT_OCX_VER	"v1.0.3"			//当前程序版本号
-#define OCX_LOG_PATH	"D://log.txt"
+#define CURENT_OCX_VER	"v1.1.1"			//当前程序版本号
+#define OCX_LOG_PATH	"C:\\Users\\FaceLoginOCX\\FLlog.dll"
 //开启和关闭活体检测 以及设置的路径
 #define LIVE_FACE_TEST  1
-#define LIVE_FACE_MODEL_PATH "C:\\FaceLoginModel"
+#define MD5_OPEN		0					//V1.1.0取消识别密码加密
+#define LIVE_FACE_MODEL_PATH "C:/Users/FaceLoginModel/"
+
+
+//新皮肤对应的颜色
+#define COMBO_COLOR_OLD (RGB(0,41,41)) 
+#define COMBO_COLOR_A (RGB(95,157,153))
+//替换完新皮肤。这里要改成 COMBO_COLOR_A
+#define SKIN_COMBO_COLOR COMBO_COLOR_OLD
+
+

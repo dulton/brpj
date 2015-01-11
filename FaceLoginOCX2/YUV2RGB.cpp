@@ -4,6 +4,29 @@
 #include "ijl.h"
 #pragma comment(lib,"ijl15l.lib")
 
+void RGBup2down(unsigned char* pRGB24, int iWidth, int iHeight,unsigned char *RGBW)
+{
+	int tempw=iWidth*3;
+	int halfh=iHeight/2;
+	int  y;
+	for(y=0; y <= halfh; y++)
+	{
+		memcpy(RGBW,&pRGB24[y*tempw],tempw);
+		memcpy(&pRGB24[y*tempw],&pRGB24[(iHeight-1-y)*tempw],tempw);
+		memcpy(&pRGB24[(iHeight-1-y)*tempw],RGBW,tempw);
+	}
+}
+
+void RGBup2downOUT(unsigned char* pRGB24, int iWidth, int iHeight,unsigned char *RGBdst)
+{
+	int tempw=iWidth*3;
+	int  y;
+	for(y=0; y < iHeight; y++)
+	{
+		memcpy(&RGBdst[(iHeight-1-y)*tempw],&pRGB24[y*tempw],tempw);
+	}
+}
+
 void RGB32to24(unsigned char *src,unsigned char *dst,long w,long h)
 {
 	long i,j;

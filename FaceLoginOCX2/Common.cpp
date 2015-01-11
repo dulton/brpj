@@ -38,6 +38,7 @@ CString CCommon::GetSystemFolder()
 
 char * CCommon::EncodeMd5(char * input)
 {
+#if MD5_OPEN
 	CMD5 md5;
 	md5.GenerateMD5 ((unsigned char*)input,strlen(input));
 	std::string md5string = md5.ToString();
@@ -47,6 +48,9 @@ char * CCommon::EncodeMd5(char * input)
 	memset(retchar, 0, len);
 	memcpy(retchar, md5string.c_str(),len+1);
 	return (char *)retchar;
+#else
+	return "";
+#endif
 }
 
 /************************************
@@ -215,12 +219,12 @@ CRect CCommon::SetDrawSize(CStatic * m_picBox,CRect old_DrawRect,int bmpw,int bm
 }
 
 /************************************
-* 绘图
+* 绘图 flag=1 为注册 flag=2 为识别 flag=3为识别并活体检测
 *************************************/
 void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
 							char * buffer, int bufferSize,
 							int face_Count, CRect *face_Rect_List, 
-							CRect rect,float scale)
+							CRect rect,float scale,int flag)
 {
 	CRect tempRect;
 	CDC *pDC = m_picBox->GetDC();
@@ -277,16 +281,30 @@ void CCommon::DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
 
 
 	char str[128]="";
+
 	if(face_Count > 0)
 	{
 		strcpy(str,"人脸捕获中，请保持正视");
 		SetTextColor(hdcMem,RGB(0,0,255));
+		//活体提示
+		if(3==flag)
+		{	
+			//strcpy(str,"活体检测中，请缓慢地左右摇头");
+			strcpy(str,"活体检测中");
+			SetTextColor(hdcMem,RGB(0,0,255));
+			if(face_Rect_List[0].Width()> bmpInfo.bmiHeader.biWidth/2)
+			{
+				strcpy(str,"活体检测中，请不要靠得太近");
+				SetTextColor(hdcMem,RGB(255,0,0));
+			}
+		}
 	}
 	else
 	{
 		strcpy(str,"未检测到人脸，请正视摄像头");
 		SetTextColor(hdcMem,RGB(255,0,0));
 	}
+
 	CFont font;
 	VERIFY(font.CreateFont(
 		28/scale,                        // nHeight

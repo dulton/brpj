@@ -8,12 +8,7 @@
 #include <queue>
 #include "BitComboBox.h"
 
-#if LIVE_FACE_TEST
 
-#include "liveinc/recoWidget.h"
-#pragma comment(lib,"livelib/recoWidget.lib")
-
-#endif
 
 
 #define VIDEO_WIDTH     1920
@@ -74,13 +69,11 @@ public:
 	CBitmap    CfaceBGB[PICTURE_MAX];     
 	BITMAP faceBGB[PICTURE_MAX];
 
+	IMGLIST *FacePicList;
 
-#if LIVE_FACE_TEST
-	RecoModuleHandle module_handle;
-	RecoWidgetHandle widget_handle;
-#endif
+
 	BOOL InitLive();
-
+	void unInitLive();
 
 	void DisplayOne(int i);
 
@@ -90,6 +83,7 @@ public:
 	CString Image_list[32];
 	std::queue<CString>	m_DetectList;
 	unsigned char *tempRGB;
+
 //	std::queue<IMGLIST>	m_FaceList;
 //	IMGLIST tempFaceImage;
 

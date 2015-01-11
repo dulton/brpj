@@ -3,6 +3,9 @@
 #define _YUV2RGBIPL_H_
 
 
+void RGBup2down(unsigned char* pRGB24, int iWidth, int iHeight,unsigned char *RGBW);
+void RGBup2downOUT(unsigned char* pRGB24, int iWidth, int iHeight,unsigned char *RGBdst);
+
 void RGB32to24(unsigned char *src,unsigned char *dst,long w,long h);
 
 

@@ -9,7 +9,8 @@
 #define ERR_BAD_USER		4	//非法用户
 #define ERR_NONEED_MATCH	5	//不需要进行人脸验证的标志
 #define ERR_WRONG_VERSION	6	//OCX版本与服务器版本不一致
-
+#define ERR_UNREGIST_FACE	7	//未注册人脸
+#define ERR_NO_PERSION_ID	8	//注册人脸出现FACEID 为空。一般是没PERSION ID引起的
 
 class CFaceDetect
 {
@@ -26,6 +27,9 @@ public:
 	CString Token;					//验证令牌
 	int matchTimes;					//平台设置的比对次数
 	int matchCount;					//当前比对次数
+	int livePort;					//活体检测端口
+	bool enableLive;				//是否启用活体检测
+	CString liveServer;					//验证令牌
 public:
 	//获取facecloud的运行状态
 	bool GetFaceCloudState(void);
@@ -42,7 +46,11 @@ public:
 	int CheckResultFlag(CString strHtml);
 	//判断当前人员是否需要人来验证
 	bool CheckEnableFlag(CString strHtml);
-	//判断当前人员是否需要人来验证
+
+	//判断当前人员是否已注册人脸
+	bool CheckRegistFlag(CString strHtml);
+
+	//判断当前人员是否需要人脸验证
 	void GetToken(CString strHtml);
 	//校验当前识别人员信息
 	int CheckMatchInfo(CString strFaceServer,int sysID,CString user,CString password);
@@ -68,4 +76,5 @@ public:
 	//人脸截图
 	void Clip(int faceCount,CRect *faceRect,int imageWidth,int imageHeight,CRect *ClipRect);
 	void ClipFaceImage(unsigned char *image,int w,int h,unsigned char *clipImage,unsigned long int *size,CRect ClipRect);
+
 };

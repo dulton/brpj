@@ -295,7 +295,12 @@ int Service::HttpRequest( const string http_method,
 			return curl_code;
 
 		}
-		else if ( 400 <= http_code )
+		else if( 200 == http_code)
+		{
+			error_str = "";
+			return http_code;
+		}
+		else 
 		{
 			//DebugPrintA(3, "Http-code=%d",http_code);
 			int start, end;
@@ -311,8 +316,6 @@ int Service::HttpRequest( const string http_method,
 
 			return http_code;
 		}
-		else
-			error_str = "";
 	}
 
 	return CURLE_OK;

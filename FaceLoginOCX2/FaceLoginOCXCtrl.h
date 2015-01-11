@@ -22,7 +22,8 @@ public:
 	virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
 	virtual void DoPropExchange(CPropExchange* pPX);
 	virtual void OnResetState();
-
+	
+	char curpath[260];
 // Implementation
 protected:
 	~CFaceLoginOCXCtrl();

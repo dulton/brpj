@@ -12,7 +12,7 @@
 #include "FaceLoginOCXCtrl.h"
 extern CFaceLoginOCXCtrl *DlgFaceLoginOCXCtrl;
 
-IMGLIST FacePicList[PICTURE_MAX];
+
 
 
 
@@ -43,6 +43,7 @@ DWORD WINAPI EnrollDisplayThread(void *p)
 				bmpInfo.bmiHeader.biBitCount = 24;  
 				try
 				{
+
 					if(!pFrmFaceEnroll->b_listLock)
 					{
 						//int tempw=pFrmFaceEnroll->m_lVideoWidth*3;
@@ -52,31 +53,7 @@ DWORD WINAPI EnrollDisplayThread(void *p)
 						//		&buffer[y*tempw],tempw);
 						//}
 						memcpy(pFrmFaceEnroll->tempRGB,buffer,bitmapSize*sizeof(unsigned char));
-#if LIVE_FACE_TEST					
-						WidgetImage tempwidgetimage;
-						tempwidgetimage.imagedata=pFrmFaceEnroll->tempRGB;
-						tempwidgetimage.image_size=bitmapSize;
-						tempwidgetimage.width=pFrmFaceEnroll->m_lVideoWidth;
-						tempwidgetimage.height=pFrmFaceEnroll->m_lVideoHeight;
-						tempwidgetimage.widthStep=pFrmFaceEnroll->m_lVideoWidth*3;
-						int liveresult=0;
 
-						int fwld_re=FaceWidget_LiveDetector(pFrmFaceEnroll->widget_handle,(const WidgetImage &)tempwidgetimage,GetTickCount(),1,liveresult);
-						if(0==fwld_re && 0==liveresult)
-						{
-							pFrmFaceEnroll->EnrollLog.Format(_T("{\
-																\"ret\":\"fail\",\
-																\"user\":\"%s\",\
-																\"sysID\":\"%d\",\
-																\"content\":\"LiveDetect_Fail\"\
-																}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
-
-							pFrmFaceEnroll->EnrollResult = OCX_ERROR_LIVEFACE_FAIL;
-							pFrmFaceEnroll->m_bIsClose = true;
-							return 0;
-						}
-
-#endif
 						CString result = pFrmFaceEnroll->m_Detect.RGBtoBase64((unsigned char *)buffer,
 																				bitmapSize,
 																				pFrmFaceEnroll->m_lVideoWidth,
@@ -95,7 +72,7 @@ DWORD WINAPI EnrollDisplayThread(void *p)
 					//显示摄像头画面及人脸框叠加
 					pFrmFaceEnroll->m_common->DrawCtrlImage((CStatic *)pFrmFaceEnroll->GetDlgItem(IDC_STATIC_MAIN), bmpInfo, 
 															buffer, bitmapSize,pFrmFaceEnroll->face_Count,pFrmFaceEnroll->face_Rect_List,
-															pFrmFaceEnroll->DrawRect,pFrmFaceEnroll->DrawScale);
+															pFrmFaceEnroll->DrawRect,pFrmFaceEnroll->DrawScale,1);
 				}
 				catch(...)
 				{
@@ -104,7 +81,7 @@ DWORD WINAPI EnrollDisplayThread(void *p)
 			}
 			else
 			{			
-				Sleep(100);
+				Sleep(10);
 			}
 
 		}
@@ -195,6 +172,10 @@ CFrmFaceEnroll::CFrmFaceEnroll(CWnd* pParent /*=NULL*/)
 	EnrollLog = _T("");
 	EnrollResult = -1;
 	tempRGB = NULL;
+
+	FacePicList=NULL;
+	FacePicList=(IMGLIST *)calloc(4,sizeof(IMGLIST));
+
 	for(int i=0;i<PICTURE_MAX;i++)
 	{
 		FacePicList[i].choose=false;
@@ -219,8 +200,6 @@ CFrmFaceEnroll::CFrmFaceEnroll(CWnd* pParent /*=NULL*/)
 	CfaceBGB[2].GetBitmap(&faceBGB[2]);
 	CfaceBGB[3].LoadBitmap(IDB_BITMAP_FACE4_CHOOSE);    
 	CfaceBGB[3].GetBitmap(&faceBGB[3]);
-
-
 }
 
 CFrmFaceEnroll::~CFrmFaceEnroll()
@@ -229,6 +208,11 @@ CFrmFaceEnroll::~CFrmFaceEnroll()
 	{
 		free(tempRGB);
 		tempRGB = NULL;
+	}
+	if(FacePicList)
+	{
+		free(FacePicList);
+		FacePicList = NULL;
 	}
 }
 
@@ -286,49 +270,13 @@ BOOL CFrmFaceEnroll::OnInitDialog()
 
 BOOL CFrmFaceEnroll::InitLive()
 {
-#if LIVE_FACE_TEST
-	int ip[4]={0};
-	int port=0;
-	sscanf(m_Detect.HostInfo.GetBuffer(0),"http://%d.%d.%d.%d:%d",&ip[0],&ip[1],&ip[2],&ip[3],&port);
-	char ipstr[32]="";
-	sprintf(ipstr,"%d.%d.%d.%d",ip[0],ip[1],ip[2],ip[3]);
-
-	module_handle=NULL;
-	if(Face_InitModule(LIVE_FACE_MODEL_PATH,ipstr,port,&module_handle)<0)
-	{
-		EnrollLog.Format(_T("{\
-							\"ret\":\"fail\",\
-							\"user\":\"%s\",\
-							\"sysID\":\"%d\",\
-							\"content\":\"LiveDetect_InitModuleFail\"\
-							}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
-
-		EnrollResult = OCX_ERROR_LIVEFACE_INIT_FAIL;
-
-		return FALSE;
-	}
-
-	widget_handle=NULL;
-	widget_handle=FaceWidget_Init(module_handle);
-	if(NULL==widget_handle)
-	{
-		EnrollLog.Format(_T("{\
-							\"ret\":\"fail\",\
-							\"user\":\"%s\",\
-							\"sysID\":\"%d\",\
-							\"content\":\"LiveDetect_InitWidgetFail\"\
-							}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
-
-		EnrollResult = OCX_ERROR_LIVEFACE_WIDGET_FAIL;
-
-		Face_UnInitModule();
-
-		return FALSE;
-	}
-
 	return TRUE;
-#endif
 }
+
+void CFrmFaceEnroll::unInitLive()
+{
+}
+
 
 void CFrmFaceEnroll::OnOK()
 {
@@ -351,11 +299,6 @@ void CFrmFaceEnroll::OnCancel()
 	}
 
 	StopEnrollThread();
-
-#if LIVE_FACE_TEST
-	FaceWidget_UnInit(widget_handle);
-	Face_UnInitModule();
-#endif
 
 	CDialog::OnCancel();
 }
@@ -605,6 +548,20 @@ void CFrmFaceEnroll::OnBnClickedBtnEnroll()
 			OnCancel();
 			return;
 		}
+		else if(ret == ERR_NO_PERSION_ID)
+		{
+			EnrollLog.Format(_T("{\
+								\"ret\":\"fail\",\
+								\"user\":\"%s\",\
+								\"sysID\":\"%d\",\
+								\"content\":\"No_Personid\"\
+								}"),DlgFaceLoginOCXCtrl->EnrollUser,DlgFaceLoginOCXCtrl->EnrollSysID);
+
+			EnrollResult = OCX_ERROR_NO_PERSION_ID;
+
+			OnCancel();
+			return;
+		}
 	}
 	EnrollLog.Format(_T("{\
 						\"ret\":\"success\",\
@@ -656,6 +613,7 @@ void CFrmFaceEnroll::InitChildWindow(void)
 	m_btnClear.SizeToContent();		//自适应图片大小
 
 	m_btnStart.MoveWindow(673,338,53,24);
+
 	m_btnCapture.MoveWindow(527,382,58,57);
 	m_btnEnroll.MoveWindow(597,382,58,57);
 	m_btnClear.MoveWindow(667,382,58,57);
@@ -663,8 +621,8 @@ void CFrmFaceEnroll::InitChildWindow(void)
 	//设备列表combo
 	m_cbDevice.SetComboBitmap(IDB_BITMAP_LEFT,IDB_BITMAP_RIGHT,IDB_BITMAP_CEN);
 	m_cbDevice.SetComboListBitmap(IDB_COMBO_LEFT, IDB_COMBO_RIGHT,IDB_COMBO_TOP,IDB_COMBO_BOTTOM);
-	m_cbDevice.SetHighlightColor(RGB(0,41,41),RGB(255,255,255));
-	m_cbDevice.SetNormalPositionColor(RGB(0,41,41),RGB(255,255,255));
+	m_cbDevice.SetHighlightColor(SKIN_COMBO_COLOR,RGB(255,255,255));
+	m_cbDevice.SetNormalPositionColor(SKIN_COMBO_COLOR,RGB(255,255,255));
 	m_cbDevice.MoveWindow(528,337,145,100);
 	//m_cbDevice.InsertString(0,"摄像头列表");
 	//m_cbDevice.SetCurSel(0);
@@ -781,7 +739,7 @@ int CFrmFaceEnroll::StopEnrollThread(void)
 			free(tempRGB);
 			tempRGB=NULL;
 		}
-
+		
 		return 1;
 	}
 	return 0;

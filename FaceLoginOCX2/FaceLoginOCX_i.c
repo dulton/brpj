@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Tue Nov 11 15:30:54 2014
+/* at Thu Jan 08 11:13:28 2015
  */
 /* Compiler settings for .\FaceLoginOCX.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

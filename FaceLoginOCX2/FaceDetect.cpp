@@ -6,6 +6,7 @@
 #include "json/json.h"
 #pragma comment(lib,"JsonApi.lib")
 
+
 #include "FaceLoginOCX.h"
 #include "FaceLoginOCXCtrl.h"
 extern CFaceLoginOCXCtrl *DlgFaceLoginOCXCtrl;
@@ -18,6 +19,7 @@ CFaceDetect::CFaceDetect(void)
 	PersonID = 0;
 	ID_Card = "";
 	matchCount = 0;
+	enableLive=false;
 }
 
 CFaceDetect::~CFaceDetect(void)
@@ -50,7 +52,17 @@ int CFaceDetect::GetFaceID(CString strHtml,CString *FaceID)
 	//a = strHtml.Find("\"face_id\"");
 	//b = strHtml.Find("}");
 	//*FaceID = strHtml.Mid(a+12,b-a-14);
-	return ERR_NO_ERROR;
+	if(FaceID->IsEmpty())
+	{	
+		CString strlog;
+		strlog.Format(_T("<ERROR><ENROLL> - <Bad Personid - %d>"),PersonID);
+		DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+		return ERR_NO_PERSION_ID;
+	}
+	else
+	{	
+		return ERR_NO_ERROR;
+	}
 }
 
 int CFaceDetect::GetFaceCount(CString strHtml)
@@ -133,6 +145,17 @@ bool CFaceDetect::CheckEnableFlag(CString strHtml)
 	//	return true;
 	//}
 	//return false;
+}
+bool CFaceDetect::CheckRegistFlag(CString strHtml)
+{
+	Json::Reader reader;  
+	Json::Value root;  
+	bool regFlag = false;
+	if (reader.parse(strHtml.GetBuffer(), root))   
+	{  
+		regFlag = root["registFace"].asBool();
+	}
+	return regFlag;
 }
 
 void CFaceDetect::GetToken(CString strHtml)
@@ -219,6 +242,11 @@ void CFaceDetect::ReadEnrollInfo(CString strHtml)
 		PersonID = root["personid"].asInt();
 		HostInfo = root["faceServerInfo"].asCString();
 		Facedb = root["facedbid"].asInt();
+
+		livePort = root["livePort"].asInt();
+		enableLive = root["enableLive"].asBool();
+		liveServer = root["liveServer"].asCString();
+
 	}
 	//int a=0;
 	//int b=0;
@@ -235,7 +263,7 @@ void CFaceDetect::ReadEnrollInfo(CString strHtml)
 	//Facedb = atoi(strHtml.Mid(a+11,b-a-11));
 
 	CString strlog;
-	strlog.Format(_T("<TIPS><ENROLL> - UserInfo<%s><%d><%s><%d>"),DlgFaceLoginOCXCtrl->EnrollUser,PersonID,HostInfo,Facedb);
+	strlog.Format(_T("<TIPS><ENROLL> - UserInfo<%s><%d><%s><%d><%s:%d>"),DlgFaceLoginOCXCtrl->EnrollUser,PersonID,HostInfo,Facedb,liveServer,livePort);
 	DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
 }
 
@@ -251,6 +279,11 @@ void CFaceDetect::ReadMatchInfo(CString strHtml)
 		Facedb = root["facedbid"].asInt();
 		m_macthThreshold = root["threshold"].asInt();
 		matchTimes = root["times"].asInt();
+
+		livePort = root["livePort"].asInt();
+		enableLive = root["enableLive"].asBool();
+		liveServer = root["liveServer"].asCString();
+
 	}
 
 	//int a=0;
@@ -276,7 +309,7 @@ void CFaceDetect::ReadMatchInfo(CString strHtml)
 	//m_macthThreshold = atoi(strHtml.Mid(a+13,b-a-14));
 
 	CString strlog;
-	strlog.Format(_T("<TIPS><MATCH> - UserInfo<%s><%s><%s><%d><%f>"),DlgFaceLoginOCXCtrl->MatchUser,ID_Card,HostInfo,Facedb,m_macthThreshold);
+	strlog.Format(_T("<TIPS><MATCH> - UserInfo<%s><%s><%s><%d><%f><%s:%d>"),DlgFaceLoginOCXCtrl->MatchUser,ID_Card,HostInfo,Facedb,m_macthThreshold,liveServer,livePort);
 	DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
 }
 
@@ -318,6 +351,10 @@ int CFaceDetect::CheckMatchInfo(CString strFaceServer,int sysID,CString user,CSt
 	{
 		if(CheckEnableFlag(result))	//判断是否需要进行人脸验证
 		{
+			if(!CheckRegistFlag(result)) //判断是否注册人脸
+			{
+				return ERR_UNREGIST_FACE;
+			}
 			ReadMatchInfo(result);
 			return ERR_NO_ERROR;
 		}
@@ -468,8 +505,18 @@ double CFaceDetect::GetMacthScore(CString strHtml)
 	Json::Reader reader;  
 	Json::Value root; 
 	if (reader.parse(strHtml.GetBuffer(), root))   
-	{  
-		macthScore = root["sim"].asDouble();
+	{
+		int ret = root["ret"].asInt();
+		if(ret == 0)
+		{
+			macthScore = root["sim"].asDouble();
+		}
+		else
+		{
+			CString strlog;
+			strlog.Format(_T("<ERROR><Match> - Error Code <%d>"),ret);
+			DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+		}
 	}
 
 	//int a,b;
@@ -533,7 +580,7 @@ void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag
 	CString strCompare;
 	strCompare.Format(_T("/faceops/image_compare?face_db=%d"),Facedb);
 	result = m_webService.PostData(HostInfo,strTemp,strCompare);
-	matchCount++;
+
 
 	if(*matchFlag == 1)
 	{
@@ -576,7 +623,8 @@ void CFaceDetect::FaceMacth(CString strRequest,CString *strResult,int *matchFlag
 		*matchFlag = 1;
 	}
 	else if(macthScore != 0)
-	{
+	{	
+		matchCount++;
 		CString faceID = GetMacthFace(result);
 		//strTemp = strRequest.Mid(51,strRequest.GetLength()-60);
 		CString image = _T("");

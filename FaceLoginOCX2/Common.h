@@ -5,6 +5,13 @@
 #include "DirectShow.h"
 #pragma comment(lib,"DirectShow.lib") 
 
+#if LIVE_FACE_TEST
+
+#include "liveinc/recoWidget.h"
+#pragma comment(lib,"livelib/recoWidget.lib")
+
+#endif
+
 #pragma once
 
 class CCommon
@@ -28,7 +35,7 @@ public:
 	void DrawCtrlImage(CStatic * m_picBox, BITMAPINFO bmpInfo,
 							char * buffer, int bufferSize,
 							int face_Count, CRect *face_Rect_List, 
-							CRect rect,float scale);
+							CRect rect,float scale,int flag);
 
 	void DrawFaceImageMin(CStatic *m_picBox,unsigned char *image,unsigned long int size);
 

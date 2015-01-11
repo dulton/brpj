@@ -103,65 +103,7 @@ CString CMyWebService::GetData(CString strHost,CString strConnection)
 
 	return strHtml;
 }
-#else
-CString CMyWebService::PostData(CString strHost,CString strRequest,CString strConnection)
-{
-	Service CService;
-	CService.InitData();
-	int nRes ;
-	string resp_buffer;
-	string resp_header;
-	CString strUrl = strHost + strConnection;
 
-	nRes = CService.HttpRequest("POST",strUrl.GetBuffer(0),strRequest.GetBuffer(0),strRequest.GetLength(),"",0,0);
-
-	resp_buffer = CService.m_resp_buffer;
-	resp_header = CService.m_resp_header;
-
-	CString strHtml;
-	strHtml = resp_buffer.c_str();
-	return strHtml;
-}
-
-CString CMyWebService::PutData(CString strHost,CString strRequest,CString strConnection)
-{
-	Service CService;
-	CService.InitData();
-	int nRes ;
-	string resp_buffer;
-	string resp_header;
-	CString strUrl = strHost + strConnection;
-
-	nRes = CService.HttpRequest("PUT",strUrl.GetBuffer(0),strRequest.GetBuffer(0),strRequest.GetLength(),"",0,0);
-
-	resp_buffer = CService.m_resp_buffer;
-	resp_header = CService.m_resp_header;
-
-	CString strHtml;
-	strHtml = resp_buffer.c_str();
-	return strHtml;
-}
-
-CString CMyWebService::GetData(CString strHost,CString strConnection)
-{
-	Service CService;
-	CService.InitData();
-	int nRes ;
-	string resp_buffer;
-	string resp_header;
-
-	CString strSend;
-	strSend = strHost + strConnection;
-	nRes = CService.HttpRequest("GET",strSend.GetBuffer(0));
-
-	resp_buffer = CService.m_resp_buffer;
-	resp_header = CService.m_resp_header;
-
-	CString strHtml;
-	strHtml = resp_buffer.c_str();
-	return strHtml;
-}
-#endif
 
 CString CMyWebService::DeleteData(CString strRequest,CString strConnection)
 {
@@ -191,3 +133,87 @@ CString CMyWebService::DeleteData(CString strRequest,CString strConnection)
 
 	return strHtml;
 }
+
+#else
+CString CMyWebService::PostData(CString strHost,CString strRequest,CString strConnection)
+{
+	Service CService;
+	CService.InitData();
+	int nRes ;
+	string resp_buffer;
+	string resp_header;
+	CString strUrl = strHost + strConnection;
+
+	nRes = CService.HttpRequest("POST",strUrl.GetBuffer(0),strRequest.GetBuffer(0),strRequest.GetLength(),"",0,0);
+
+
+	if(0!=nRes && 200 !=nRes)
+	{
+		CString strlog;
+		strlog.Format(_T("nres==%s=%d"),strUrl.GetBuffer(0),nRes);
+		DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+		return "";
+	}
+
+	resp_buffer = CService.m_resp_buffer;
+	resp_header = CService.m_resp_header;
+
+	CString strHtml;
+	strHtml = resp_buffer.c_str();
+	return strHtml;
+}
+
+CString CMyWebService::PutData(CString strHost,CString strRequest,CString strConnection)
+{
+	Service CService;
+	CService.InitData();
+	int nRes ;
+	string resp_buffer;
+	string resp_header;
+	CString strUrl = strHost + strConnection;
+
+	nRes = CService.HttpRequest("PUT",strUrl.GetBuffer(0),strRequest.GetBuffer(0),strRequest.GetLength(),"",0,0);
+
+	if(0!=nRes && 200 !=nRes)
+	{
+		CString strlog;
+		strlog.Format(_T("nres==%s=%d"),strUrl.GetBuffer(0),nRes);
+		DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+		return "";
+	}
+	resp_buffer = CService.m_resp_buffer;
+	resp_header = CService.m_resp_header;
+
+	CString strHtml;
+	strHtml = resp_buffer.c_str();
+	return strHtml;
+}
+
+CString CMyWebService::GetData(CString strHost,CString strConnection)
+{
+	Service CService;
+	CService.InitData();
+	int nRes ;
+	string resp_buffer;
+	string resp_header;
+
+	CString strSend;
+	strSend = strHost + strConnection;
+	nRes = CService.HttpRequest("GET",strSend.GetBuffer(0));
+
+	if(0!=nRes && 200 !=nRes)
+	{
+		CString strlog;
+		strlog.Format(_T("nres==%s=%d"),strSend.GetBuffer(0),nRes);
+		DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+		return "";
+	}
+
+	resp_buffer = CService.m_resp_buffer;
+	resp_header = CService.m_resp_header;
+
+	CString strHtml;
+	strHtml = resp_buffer.c_str();
+	return strHtml;
+}
+#endif

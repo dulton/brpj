@@ -6,13 +6,11 @@
 #include <queue>
 #include "BitComboBox.h"
 
-#if LIVE_FACE_TEST
 
-#include "liveinc/recoWidget.h"
-#pragma comment(lib,"curllib.lib")
 
-#endif
 // CFrmFaceMatch dialog
+#define VIDEO_WIDTH     1920
+#define VIDEO_HEIGHT    1080
 
 class CFrmFaceMatch : public CDialog
 {
@@ -24,6 +22,17 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_FACEMATCH };
+
+
+#if LIVE_FACE_TEST
+	RecoModuleHandle module_handle;
+	RecoWidgetHandle widget_handle;
+	WidgetImage tempwidgetimage;
+	int liveflag;
+#endif
+	BOOL InitLive();
+	void unInitLive();
+
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -69,6 +78,12 @@ public:
 	CRect DrawRect;
 	//绘制图案的矩形框和初始化框的比例
 	float DrawScale;
+
+	//为活体检测做的时间标记
+	bool ns_timeflag;
+	LARGE_INTEGER ns_Freq;
+	LARGE_INTEGER ns_firsttime;
+	long long firsttime;
 
 	virtual BOOL OnInitDialog();
 protected:

@@ -271,7 +271,30 @@ BOOL CFaceLoginOCXCtrl::CFaceLoginOCXCtrlFactory::UpdateRegistry(BOOL bRegister)
 //		return AfxOleUnregisterClass(m_clsid, m_lpszProgID);
 //}
 
+//获取程序目录
+bool GetCurExePath(char *path, int size)
+{
+	char charRet[512] = "0";
+	GetModuleFileNameA(NULL, charRet, 512);
+	int l = strlen(charRet);
+	if ((l == 0) || (size < l)) {
+		return false;
+	}
+	int pos = 0;
+	for (int i = strlen(charRet) - 1; i >= 0; i--) {
+		if ((charRet[i] == '\\') || (charRet[i] == '/')) {
+			pos = i;
+			break;
+		}
+	}
+	if (pos == 0) {
+		return false;
+	}
+	memset(path, 0, size);
+	memcpy(path, charRet, (pos <= size) ? pos : size);
 
+	return true;
+}
 
 // CFaceLoginOCXCtrl::CFaceLoginOCXCtrl - Constructor
 
@@ -280,6 +303,11 @@ CFaceLoginOCXCtrl::CFaceLoginOCXCtrl()
 	InitializeIIDs(&IID_DFaceLoginOCX, &IID_DFaceLoginOCXEvents);
 	// TODO: Initialize your control's instance data here.
 	DlgFaceLoginOCXCtrl = this;
+
+	//GetCurrentDirectory(260,curpath);
+
+	GetCurExePath(curpath,260);
+	//ShowOcxLog(curpath);
 }
 
 
@@ -289,6 +317,17 @@ CFaceLoginOCXCtrl::CFaceLoginOCXCtrl()
 CFaceLoginOCXCtrl::~CFaceLoginOCXCtrl()
 {
 	// TODO: Cleanup your control's instance data here.
+#if 0
+	CString tempstr;
+	tempstr.Format("%s\\%s",curpath,"net.lic");
+	DeleteFile(tempstr);
+	tempstr.Format("%s\\%s",curpath,"calibf.txt");
+	DeleteFile(tempstr);
+	tempstr.Format("%s\\%s",curpath,"fft_size_cachef.txt");
+	DeleteFile(tempstr);
+	tempstr.Format("%s\\%s",curpath,"model_calib.dat");
+	DeleteFile(tempstr);
+#endif
 }
 
 
@@ -348,31 +387,38 @@ void CFaceLoginOCXCtrl::AboutBox()
 BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
 /*
-	strFaceServer="http://10.142.50.248:8087/frcs";
-	sysID = 13;
-	user="linhp";
-	password="111111";
+	strFaceServer="http://10.142.50.125:9080/frcs_new";
+	sysID = 1;
+	user="123";
+	password="123456";
 */
-	
+
 	CString strlog;
 	strlog.Format(_T("<TIPS><MATCH> - Start Match - User<%s>"),user);
 	ShowOcxLog(strlog);
 
 	CCommon m_Common;
-	if(m_Common.GetCamNum() < 1)
-	{
-		CString ret;
-		ret.Format(_T("%d"),OCX_ERROR_NO_ERROR);
-		return ret.AllocSysString();//未检测到摄像头直接返回
-	}
+
+#if MD5_OPEN
 	CString sMd5;
 	CString temp = password;
 	sMd5 = m_Common.EncodeMd5(temp.GetBuffer());
+#endif
 
 	MatchUser = user;
 	MatchSysID = sysID;
 	CFrmFaceMatch faceMatch;
+
+#if MD5_OPEN
 	int checkReslut = faceMatch.m_Detect.CheckMatchInfo(strFaceServer,sysID,user,sMd5);
+#else
+	int checkReslut = faceMatch.m_Detect.CheckMatchInfo(strFaceServer,sysID,user,password);
+#endif
+
+
+	strlog.Format(_T("<TIPS><MATCH>222 - Start Match - User<%d>"),checkReslut);
+	ShowOcxLog(strlog);
+
 	if(checkReslut == ERR_WRONG_VERSION)
 	{
 		CString ret;
@@ -384,22 +430,62 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 		faceMatch.MacthResult = faceMatch.m_Detect.Token;
 		return faceMatch.MacthResult.AllocSysString();//返回令牌
 	}
+	else if(checkReslut == ERR_UNREGIST_FACE)		//未注册人脸
+	{
+		CString ret;
+		ret.Format(_T("%d"),OCX_ERROR_UNREGIST_USER);
+		return ret.AllocSysString();//未注册人脸直接返回
+	}
 	else if(checkReslut == ERR_BAD_USER)
 	{
 		CString ret;
 		ret.Format(_T("%d"),OCX_ERROR_UNALLOW_USER);
 		return ret.AllocSysString();//非法用户直接返回
 	}
-	else if(checkReslut == ERR_NONEED_MATCH)		//不需要人脸识别
+	else if(checkReslut == ERR_SER_REEOR)			//人脸平台异常
 	{
 		CString ret;
 		ret.Format(_T("%d"),OCX_ERROR_FACESERVER_DOWN);
 		return ret.AllocSysString();//平台异常直接返回
 	}
+	
+	//判断摄像头
+	if(m_Common.GetCamNum() < 1)
+	{
+		strlog = _T("<ERROR><MATCH> - No find camera!");
+		ShowOcxLog(strlog);
+
+		CString ret;
+		ret.Format(_T("%d"),OCX_ERROR_NO_CAMERA);
+		return ret.AllocSysString();//未检测到摄像头直接返回
+	}
+
 
 	if(faceMatch.m_Detect.GetFaceCloudState())
 	{
-		faceMatch.DoModal();
+		//long aa=GetTickCount();
+
+		if(faceMatch.m_Detect.enableLive)
+		{
+#if LIVE_FACE_TEST
+			if(faceMatch.InitLive())
+#endif
+			{
+				//	CString strlog;
+				//	strlog.Format(_T("InitLive：%d"),GetTickCount()-aa);
+				//	DlgFaceLoginOCXCtrl->ShowOcxLog(strlog);
+
+				faceMatch.DoModal();
+			}
+#if LIVE_FACE_TEST
+			faceMatch.unInitLive();
+#endif
+		}
+		else
+
+		{
+			faceMatch.DoModal();
+		}
 	}
 	else
 	{
@@ -429,12 +515,12 @@ BSTR CFaceLoginOCXCtrl::StartFaceMacth(LPCTSTR strFaceServer,int sysID,LPCTSTR u
 *************************************/
 int CFaceLoginOCXCtrl::StartFaceEnroll(LPCTSTR strFaceServer,int sysID,LPCTSTR user,LPCTSTR password)
 {
-
-strFaceServer="http://10.142.50.125:9080/frcs_new";
+/*
+	strFaceServer="http://10.142.50.125:9080/frcs_new";
 	sysID = 13;
 	user="linhp";
 	password="96E79218965EB72C92A549DD5A330112";
-
+*/
 
 	CString strlog;
 	strlog.Format(_T("<TIPS><ENROLL> - Start Enroll - User<%s>"),user);
@@ -442,10 +528,7 @@ strFaceServer="http://10.142.50.125:9080/frcs_new";
 
 	//CString result = _T("");
 	CCommon m_Common;
-	if(m_Common.GetCamNum() < 1)
-	{
-		return OCX_ERROR_NO_CAMERA;
-	}
+	
 	int ret = 0;
 	//CString sMd5;
 	//CString temp = password;
@@ -471,13 +554,18 @@ strFaceServer="http://10.142.50.125:9080/frcs_new";
 		return ret;//平台异常直接返回
 	}
 
+	//判断摄像头
+	if(m_Common.GetCamNum() < 1)
+	{
+		strlog = _T("<ERROR><ENROLL> - No find camera!");
+		ShowOcxLog(strlog);
+
+		return OCX_ERROR_NO_CAMERA;
+	}
+
 	if(faceEnroll.m_Detect.GetFaceCloudState())
 	{
-		if(faceEnroll.InitLive())
-		{
-			faceEnroll.DoModal();
-		}
-
+		faceEnroll.DoModal();
 		ret = faceEnroll.EnrollResult;
 		
 	}
