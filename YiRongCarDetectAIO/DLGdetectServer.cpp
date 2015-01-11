@@ -89,6 +89,7 @@ void CDLGdetectServer::OnBnClickedCancel()
 void CDLGdetectServer::OnBnClickedButtonFlush()
 {
 	// TODO: Add your control notification handler code here
+#if OPEN_CS_MODE
 	list<DEVICE_LIST> DeviceList;
 
 	m_list.DeleteAllItems();
@@ -152,6 +153,7 @@ void CDLGdetectServer::OnBnClickedButtonFlush()
 		else
 			m_list.SetItemText(nItem,14,"¹Ø±ÕÊ¶±ð");
 	}
+#endif
 }
 
 void CDLGdetectServer::OnTimer(UINT_PTR nIDEvent)

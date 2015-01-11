@@ -30,3 +30,4 @@ public:
 	afx_msg void OnBnClickedButtonFlush();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
+

@@ -70,8 +70,10 @@ CVideoCarDetect::CVideoCarDetect()
 	CarSet.RangeRate.x1=100;
 	CarSet.RangeRate.y0=10;
 	CarSet.RangeRate.y1=90;
+
 	//默认省份字符  
 	//省份汉字：云 京 冀 吉 宁 川 新 晋 桂 沪 津 浙 渝 湘 琼 甘 皖 粤 苏 蒙 藏 豫 贵 赣 辽 鄂 闽 陕 青 鲁 黑
+	memset(CarSet.DefaultChar,0,CAR_STR_MAX);
 	memcpy(CarSet.DefaultChar,"闽",CAR_STR_MAX);
 	//31个省 标志位
 	//0: 开启该汉字识别 1: 屏蔽该汉字识别
@@ -572,6 +574,13 @@ int CVideoCarDetect::WriteDBResult()
 				
 #if ALLTAB_DETECT_CAR_MODE
 				//汽车
+
+				if('0'==CarInfo[i].Str[0] && '2'==CarInfo[i].Str[1])
+				{
+					char tempchange[32];
+					sprintf(tempchange,"%s%s",CarSet.DefaultChar,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5]);
+					strcpy(CarInfo[i].Str,tempchange);	
+				}
 				//输出照片
 				sprintf(pathstr,"%s\\%s %d %s %s %d "
 					//					"%d %d %d %d"

@@ -74,7 +74,7 @@ void UTF82CHARLite(const char *utf8,char *str)
 
 void CHAR2UTF8(const char *str,char *utf8,unsigned long int len)
 {
-	wchar_t * wbuff=(wchar_t *)calloc(len+4,sizeof(wchar_t));
+	wchar_t * wbuff=(wchar_t *)calloc(len*2+4/*+4*/,sizeof(wchar_t));
 	MultiByteToWideChar(CP_ACP, 0, str, -1, wbuff, len+2);  
 	// buffLen = WideCharToMultiByte(CP_UTF8, 0, wbuff, -1, NULL, 0, 0, 0);  
 	//  utf8 = new char[buffLen+1];  
@@ -84,7 +84,7 @@ void CHAR2UTF8(const char *str,char *utf8,unsigned long int len)
 
 void UTF82CHAR(const char *utf8,char *str,unsigned long int len)
 {
-	wchar_t * wbuff=(wchar_t *)calloc(len,sizeof(wchar_t));
+	wchar_t * wbuff=(wchar_t *)calloc(len*2+4,sizeof(wchar_t));
 	//	int buffLen = 0;  
 	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, wbuff, len+2);  
 	//	buffLen = WideCharToMultiByte(CP_ACP, 0, wbuff, -1, NULL, 0, 0, 0);  

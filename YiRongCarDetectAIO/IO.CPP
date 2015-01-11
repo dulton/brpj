@@ -5149,7 +5149,7 @@ long IO::DETECTSERVER_UserOpenNum(unsigned long int userid)
 	try
 	{
 		CString	strSql;
-		strSql.Format(_T("select count(1) from TB_DETECT_SERVER a left join tb_mission b on a.missionid=b.nid where a.missionid  is not null and b.userid=%d"),userid);
+		strSql.Format(_T("select count(1) from TB_DETECT_SERVER a left join tb_mission b on a.missionid=b.nid  where a.ncamera!=0 and  b.userid=%d"),userid);
 
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);
 		if(m_pRecordsetPtr->BOF)

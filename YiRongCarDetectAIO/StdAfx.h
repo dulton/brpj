@@ -111,7 +111,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 *************************************/
 
 //客户端模式 请设置 车牌识别代码为 OPEN_CARDETECT_CODE 0
-#define ALLTAB_CLIENT_MODE 0
+#define ALLTAB_CLIENT_MODE 1
 //汽车模式 1 电动车模式 0
 //切换电动车和汽车。
 //A.记得换到IDD主窗口里换LOGO。 电动车用 IDB_LOGO_ELECAR 和汽车用 IDB_LOGO
@@ -120,7 +120,7 @@ YRVM_PINGTAI_ELECAR_MIX_MODE=1
 #define ALLTAB_DETECT_CAR_MODE 0
 
 //开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 1
+#define OPEN_CARDETECT_CODE 0
 
 //海康 市局设备树
 #define IVMS_ORACLE_DEVICETREE 1
