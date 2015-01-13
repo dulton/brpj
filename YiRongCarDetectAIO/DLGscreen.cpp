@@ -350,6 +350,20 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 		m_videoInfo[screenNo].Rtspurl = Rtspurl;
 		m_videoInfo[screenNo].RTP = RTP;
 		m_videoInfo[screenNo].DecodeTag = DecodeTag;
+/*
+		char nstr[1024]="";
+		sprintf(nstr,"startcreen=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
+			m_videoInfo[screenNo].camID,
+			m_videoInfo[screenNo].area,
+			m_videoInfo[screenNo].name,
+			m_videoInfo[screenNo].ip,
+			m_videoInfo[screenNo].port ,
+			m_videoInfo[screenNo].channel,
+			screenNo,
+			m_videoInfo[screenNo].venderID ,
+			m_videoInfo[screenNo].Rtspurl);
+		DlgMain->NewLogMessage(nstr);
+*/
 
 #if (!(OPEN_CS_MODE && !ALLTAB_CLIENT_MODE))
 //服务器不能更新图标
@@ -378,7 +392,27 @@ void CDLGscreen::StopPlay(int screenNo)
 		m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
 		DlgMain->ShowCameraMessage(m_videoInfo[screenNo].name.GetBuffer(0),"连接停止",FALSE);
 	}
+
+	/*
+	if(m_videoInfo[screenNo].isplay == true)
+	{
 	
+	char nstr[1024]="";
+	sprintf(nstr,"stopcreen=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
+		m_videoInfo[screenNo].camID,
+		m_videoInfo[screenNo].area,
+		m_videoInfo[screenNo].name,
+		m_videoInfo[screenNo].ip,
+		m_videoInfo[screenNo].port ,
+		m_videoInfo[screenNo].channel,
+		screenNo,
+		m_videoInfo[screenNo].venderID ,
+			m_videoInfo[screenNo].Rtspurl);
+	DlgMain->NewLogMessage(nstr);
+	
+	}
+*/
+
 #if OPEN_CARDETECT_CODE 
 	//停止识别
 	if(false == m_videoInfo[screenNo].enableDetect)

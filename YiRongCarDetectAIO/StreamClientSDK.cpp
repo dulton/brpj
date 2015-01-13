@@ -28,7 +28,7 @@ extern IO OracleIO;
 
 void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWidth,long nHeight,long nStamp,long nType,long nReserved)
 {
-	
+
 	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetPortWndindex(nPort);
 	if(screenNo<0)
 		return;
@@ -40,11 +40,24 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 
 		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
 	}
-
+	/*
+	char nstr[1024]="";
+	sprintf(nstr," Stream=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
+	DlgMain->DlgScreen.m_videoInfo[screenNo].camID,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].area,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].name,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].ip,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].port ,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].channel,
+	screenNo,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].venderID ,
+	DlgMain->DlgScreen.m_videoInfo[screenNo].Rtspurl);
+	DlgMain->NewLogMessage(nstr);
+	*/
 
 	//在这做识别
 
-		//OracleIO.LOG_AddNewSystemLog("admin","c");
+	//OracleIO.LOG_AddNewSystemLog("admin","c");
 	//车牌识别
 #if OPEN_CARDETECT_CODE 	
 
@@ -101,33 +114,34 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 	CStreamClientSDK *StreamClientSDK = (CStreamClientSDK *)userdata;
 
 	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetHandleWindID(sessionhandle);
-	LONG lPort = StreamClientSDK->m_lPort[screenNo];
+	LONG lPort= StreamClientSDK->m_lPort[screenNo];
 
 	CWnd* pWnd=NULL;
-
+	char nstr[1024]="";
 
 	switch  (datatype) 
 	{ 
 	case STREAM_HEAD:   // 码流头数据 
 
-		if (lPort < 0)
+
+		if (DB33_PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
 		{
-			if (DB33_PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
-			{
-				DlgMain->DlgScreen.m_video.m_StreamClient.m_lPort[screenNo] = lPort;
-			}
+			DlgMain->DlgScreen.m_video.m_StreamClient.m_lPort[screenNo] = lPort;
 		}
+
 		//m_iPort = lPort; //第一次回调的是系统头，将获取的播放库port号赋值给全局port，下次回调数据时即使用此port号播放
 		if (ilen > 0)
 		{
 			if (!DB33_PlayM4_SetStreamOpenMode(lPort, STREAME_REALTIME))  //设置实时流播放模式
 			{
 				DB33_PlayM4_FreePort(lPort);
+				StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			}
 			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080*3)) //打开流接口
 			{
 				DB33_PlayM4_FreePort(lPort);
+					StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			}
 
@@ -136,6 +150,7 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 
 				DB33_PlayM4_CloseStream(lPort);
 				DB33_PlayM4_FreePort(lPort);
+					StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			}
 
@@ -146,12 +161,14 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				{
 					DB33_PlayM4_CloseStream(lPort);
 					DB33_PlayM4_FreePort(lPort);
+						StreamClientSDK->m_lPort[screenNo]=-1;
 					return 0;
 				}
 				if (!DB33_PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 				{
 					DB33_PlayM4_CloseStream(lPort);
 					DB33_PlayM4_FreePort(lPort);
+						StreamClientSDK->m_lPort[screenNo]=-1;
 					break;
 				}
 			}
@@ -161,26 +178,33 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				{
 					DB33_PlayM4_CloseStream(lPort);
 					DB33_PlayM4_FreePort(lPort);
+						StreamClientSDK->m_lPort[screenNo]=-1;
 					break;
 				}
 			}
 		}
-
+		/*
+		sprintf(nstr," Stream=%d,%d",	
+		screenNo,lPort);
+		DlgMain->NewLogMessage(nstr);
+	*/
 		break;
-	
+
 	case STREAM_DATA:   // 码流数据 
+
 		if (ilen > 0 && lPort != -1)
 		{
 			if (!DB33_PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
 			{
 				DB33_PlayM4_CloseStream(lPort);
 				DB33_PlayM4_FreePort(lPort);
+					StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			} 
 
 		}
 		break; 
-		
+
 	case STREAM_PLAYBACK_FINISH:    // 回放/下载至结束 =;
 		break; 
 	default: 
@@ -264,7 +288,7 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 	m_RealHandle[screenNo]=StreamClient_CreateSession();
 	if(m_RealHandle[screenNo]>=0)
 	{
-		
+
 		i=StreamClient_SetMsgCallBack(m_RealHandle[screenNo],StreamClientSDKMsgFunc,name);
 		if(i)
 		{
@@ -273,7 +297,7 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 			m_RealHandle[screenNo]=-1;
 			return false;
 		}
-		
+
 		//解码
 		if(DecodeTag==DECODETAG_PS)
 		{
@@ -330,12 +354,12 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 
 void CStreamClientSDK::StopPlay(int screenNo)
 {
-	
+
 	if(m_RealHandle[screenNo] >=0)
 	{
 		//关闭预览
 		StreamClient_Stop(m_RealHandle[screenNo]);
-		
+
 		//注销用户
 		StreamClient_DestroySession(m_RealHandle[screenNo]);
 		//停止播放
@@ -343,7 +367,7 @@ void CStreamClientSDK::StopPlay(int screenNo)
 		DB33_PlayM4_CloseStream(m_lPort[screenNo]);
 
 		DB33_PlayM4_FreePort(m_lPort[screenNo]);
-		
+	
 #if OPEN_CARDETECT_CODE 	
 		//停止识别
 		if(false == DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
@@ -384,12 +408,11 @@ void CStreamClientSDK::Capture(int screenNo,char *filename)
 
 int CStreamClientSDK::GetPortWndindex(long lport)
 {
-	int Wndindex=0;
+
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
 		if(m_lPort[i] == lport)
-			return Wndindex;
-		Wndindex++;
+			return i;
 	}
 	return -1;
 }

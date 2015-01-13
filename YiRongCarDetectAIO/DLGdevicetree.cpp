@@ -8,6 +8,7 @@
 
 #include "DLGWarnning.h"
 
+#include "Web90server.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -21,7 +22,8 @@ extern CYiRongCarDetectAIODlg *DlgMain;
 #include "DLGLogin.h"
 extern CDLGLogin DlgLogin;
 
-
+#include "DLGSetSystem.h"
+extern CDLGSetSystem DlgSetSystem;
 
 /////////////////////////////////////////////////////////////////////////////
 // CDLGdevicetree dialog
@@ -219,8 +221,12 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				return ;
 			}
 
+
+
+
 		TCHAR crossIndex[64]="";	//卡口编号
 		long crossID=0;	//卡口ID
+		long ncamera=0;
 
 			OracleIO.DEVICE_AddNewCamera(DlgAddDevice.m_CamArea,\
 				DlgAddDevice.m_CamName,\
@@ -238,8 +244,11 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 				crossIndex,
 				crossID,
 				DlgLogin.CurrentUser.nid,
-				DlgAddDevice.m_level);
-
+				DlgAddDevice.m_level,
+				&ncamera);
+#if IVMS_KAKOU_SOAP
+			kakouADDdevice( ncamera,DlgAddIVMSDevice.CamData.name,DlgAddIVMSDevice.CamData.longitude,DlgAddIVMSDevice.CamData.latitude);
+#endif
 			DlgMain->ShowCameraMessage(	DlgAddDevice.m_CamName.GetBuffer(0),"添加设备成功",0);
 		}
 		OnMenuitemUpdate();
@@ -497,7 +506,12 @@ void CDLGdevicetree::OnMenuitemDeleteDevice()
 		Sleep(1000);
 #endif
 
+#if IVMS_KAKOU_SOAP
+		kakouDeldevice(iplist[i].camID);
+#endif
+
 		OracleIO.DEVICE_DeleteCamera(iplist[i].camID);
+
 		//删除定时录制计划
 		OracleIO.RECORD_PlanTable_DeleteWithCamID(iplist[i].camID);
 
@@ -561,6 +575,10 @@ void CDLGdevicetree::OnMenuitemDeletearea()
 			}
 		}
 		m_DeviceTree.DeleteItem(m_selectItem);
+
+#if IVMS_KAKOU_SOAP
+		kakouDelArea(DlgAddDevice.AreaList[ItemCount].nid);
+#endif
 
 		OracleIO.DEVICE_DeleteCameraWithAreaID(DlgAddDevice.AreaList[ItemCount].nid);
 		OracleIO.DEVICE_DeleteArea(DlgAddDevice.AreaList[ItemCount].nid);
@@ -693,6 +711,7 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 		
 		TCHAR crossIndex[64]="";	//卡口编号
 		long crossID=0;	//卡口ID
+		long ncamera=0;
 		OracleIO.DEVICE_AddNewCamera(DlgAddDevice.AreaList[count].name,\
 			DlgAddIVMSDevice.CamData.name,  
 			DlgAddIVMSDevice.CamData.ip,  
@@ -706,11 +725,14 @@ void CDLGdevicetree::OnMenuitemAddivmsdevice()
 			DlgAddIVMSDevice.CamData.DecodeTag,
 			DlgAddIVMSDevice.CamData.longitude,
 			DlgAddIVMSDevice.CamData.latitude,
-					crossIndex,
-				crossID,
-				DlgLogin.CurrentUser.nid,
-				DlgLogin.CurrentUser.level);
-
+			crossIndex,
+			crossID,
+			DlgLogin.CurrentUser.nid,
+			DlgLogin.CurrentUser.level,
+			&ncamera);
+#if IVMS_KAKOU_SOAP
+		kakouADDdevice( ncamera,DlgAddIVMSDevice.CamData.name,DlgAddIVMSDevice.CamData.longitude,DlgAddIVMSDevice.CamData.latitude);
+#endif
 		DlgMain->ShowCameraMessage(	DlgAddIVMSDevice.CamData.name,"添加设备成功",0);
 		OnMenuitemUpdate();
 	}
@@ -724,4 +746,127 @@ void CDLGdevicetree::OnMenuitemFlushtree()
 {
 	// TODO: Add your command handler code here
 	OnMenuitemUpdate();
+}
+
+
+bool CDLGdevicetree::kakouADDdevice(long ncamera,char *name,char *longitude,char *latitude)
+{
+
+	char failstr[256]="";
+
+	if(SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
+		DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
+		DlgMain->sessionIdstr,failstr))
+	{
+		char index_code[64]="";
+		if(!OracleIO.IVMS_ReadControlunitForSOAP(index_code))
+			return false;
+
+		char crossindex[64]="";
+		sprintf(crossindex,"E1ECA2111%05d",ncamera);
+		char newname[64]="";
+		sprintf(newname,"ELECAR_%s",name);
+
+		char crossIdstr[64]="";
+		memset(failstr,0,256);
+		if(SendSoap_insertCrossingInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+			DlgMain->sessionIdstr,
+			index_code,
+			crossindex,newname,longitude,latitude,
+			crossIdstr,
+			failstr))
+		{
+			OracleIO.Update_kakou_CrossIndex_id(ncamera,crossindex,atoi(crossIdstr));
+			return true;
+		}
+		else
+		{
+			DlgMain->ShowCameraMessage(	name,failstr,1);
+			return false;
+		}
+
+	}
+	else
+	{
+		DlgMain->ShowCameraMessage(	name,failstr,1);
+		return false;
+	}
+
+}
+
+bool CDLGdevicetree::kakouDeldevice(long ncamera)
+{
+
+	char failstr[256]="";
+
+	char crossindex[64]="";
+	OracleIO.Get_kakou_cross_index(ncamera,crossindex);
+
+	if(0== strlen(crossindex))
+		return true;
+
+	if(SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
+		DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
+		DlgMain->sessionIdstr,failstr))
+	{
+		if(! SendSoap_deleteCrossingInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+			DlgMain->sessionIdstr,
+			crossindex,
+			failstr))
+		{
+			DlgMain->ShowRuntimeMessage(failstr,1);
+			return false;
+		}
+
+	}
+	else
+	{
+		DlgMain->ShowRuntimeMessage(failstr,1);
+		return false;
+	}
+	return true;
+}
+
+bool CDLGdevicetree::kakouDelArea(long areaid)
+{
+
+	char failstr[256]="";
+
+	list<struct CrossIndex_ST> crossindex;
+	crossindex.clear();
+
+	OracleIO.Get_kakou_Area_cross_index(areaid,crossindex);
+
+	if(crossindex.size()<=0)
+		return true;
+
+	if(! SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
+		DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
+		DlgMain->sessionIdstr,failstr))
+	{
+		DlgMain->ShowRuntimeMessage(failstr,1);
+		return false;
+	}
+
+
+	list<struct CrossIndex_ST> ::iterator beglist;
+
+	for(beglist=crossindex.begin();beglist!=crossindex.end();beglist++)
+	{
+		if(0== strlen(beglist->index))
+			continue;
+
+		if(! SendSoap_deleteCrossingInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+			DlgMain->sessionIdstr,
+			beglist->index,
+			failstr))
+		{
+			DlgMain->ShowRuntimeMessage(failstr,1);
+			return false;
+		}
+
+	}
+
+	return true;
+	
 }

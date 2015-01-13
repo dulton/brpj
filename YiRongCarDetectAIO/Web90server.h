@@ -71,6 +71,12 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 								 char *crossIdstr,
 								char *failstr);
 
+bool SendSoap_deleteCrossingInfo(char *wsdlUrl,
+								 char *id,
+								 char *crossindex,
+								char *failstr);
+
+
 bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 								char *id,char *crossindex,char *passTime,char *plateInfo,bool isPicUrl,
 								char *picPlateurl,unsigned char *picPlatedata,long picPlatelen,

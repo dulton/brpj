@@ -316,6 +316,11 @@ struct STREAM_SERVER_ST
 
 };
 
+struct CrossIndex_ST
+{
+	char index[64];
+};
+
 #endif
 
 
@@ -413,7 +418,7 @@ public:
 							 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
 							 CString longitude,CString latitude,	
 							 CString crossIndex,long crossID,
-							 long userID,long userLV);
+							 long userID,long userLV,long *ncameraid);
 	bool DEVICE_ReadCameraInfo(char* AreaName,vector<IPLIST>& CameraList);			//读某个区域所有的摄像机信息
 	bool DEVICE_DeleteCamera(long cameraID);											//删除摄像机
 	bool DEVICE_DeleteCameraWithAreaID(long AreaID);									//删除某个区域的所有摄像机
@@ -594,6 +599,9 @@ bool IO::ELECAR_BlackTable_ReadOneWithNid(long Nid,struct BLACK_DATA_ST &black);
 
 #if IVMS_KAKOU_SOAP && IVMS_ORACLE_DEVICETREE
 	int IVMS_ReadControlunitForSOAP(char *index_code);
+	int IO::Update_kakou_CrossIndex_id(long ncamera,char *cross_index,long cross_id);
+	bool IO::Get_kakou_cross_index(long ncamera,char *crossindex);
+	bool IO::Get_kakou_Area_cross_index(long areaid,list<struct CrossIndex_ST> &crossindex);
 #endif
 
 };

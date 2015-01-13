@@ -90,13 +90,11 @@ void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *p
 	{
 	case NET_DVR_SYSHEAD: //系统头
 		
-		if (lPort < 0)
-		{
 			if (PlayM4_GetPort(&lPort))  //获取播放库未使用的通道号
 			{
 				DlgMain->DlgScreen.m_video.m_haikang.m_lPort[screenNo] = lPort;
 			}
-		}
+	
 		//m_iPort = lPort; //第一次回调的是系统头，将获取的播放库port号赋值给全局port，下次回调数据时即使用此port号播放
 		if (dwBufSize > 0)
 		{

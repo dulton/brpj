@@ -20,7 +20,7 @@ extern IO OracleIO;
 #include "DLGLogin.h"
 extern CDLGLogin DlgLogin;
 
-
+#include "Web90server.h"
 
 
 #if ALLTAB_DETECT_CAR_MODE
@@ -765,15 +765,26 @@ int CCarDetect::Result()
 
 #else
 //电动车
-				//输出照片
-				sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
-					dirstr,
-					timestr,camid,l_ipaddr,
-					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
-					CarInfo[i].Reliability,
-					CarDirection(CarInfo[i].Direction),
-					JpgSize);
-	
+#if IVMS_KAKOU_SOAP	
+//无中文
+sprintf(pathstr,"%s\\%s %d %s %s %d %d .jpg",	\
+		dirstr,
+		timestr,camid,l_ipaddr,
+		&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+		CarInfo[i].Reliability,
+		JpgSize);
+#else
+//输出照片
+sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
+		dirstr,
+		timestr,camid,l_ipaddr,
+		&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+		CarInfo[i].Reliability,
+		CarDirection(CarInfo[i].Direction),
+		JpgSize);
+#endif
+				
+
 				fp=fopen(pathstr,"wb");
 				if(fp)
 				{
@@ -786,7 +797,19 @@ int CCarDetect::Result()
 #if OPEN_TOMCAT_MODE
 
 				char tomcatpathURL[1024];
-				
+#if IVMS_KAKOU_SOAP	
+				//无中文
+				sprintf(tomcatpathURL,"%s/%04d-%02d-%02d/%d/%s %d %s %s %d %d .jpg",	\
+					DlgSetSystem.m_tomcat_url.GetBuffer(0),
+					nowtime.GetYear(),
+					nowtime.GetMonth(),
+					nowtime.GetDay(),
+					camid,
+					timestr,camid,l_ipaddr,
+					&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],
+					CarInfo[i].Reliability,
+					JpgSize);
+#else
 				sprintf(tomcatpathURL,"%s/%04d-%02d-%02d/%d/%s %d %s %s %d %s %d .jpg",	\
 					DlgSetSystem.m_tomcat_url.GetBuffer(0),
 					nowtime.GetYear(),
@@ -798,7 +821,9 @@ int CCarDetect::Result()
 					CarInfo[i].Reliability,
 					CarDirection(CarInfo[i].Direction),
 					JpgSize);
-				
+#endif
+
+
 				//TOMCAT 照片不写数据库
 				tempadd=OracleIO.ELECAR_MatchResult_AddNewNoPicdata(
 					&isBlack,
@@ -809,6 +834,81 @@ int CCarDetect::Result()
 					CarInfo[i].Reliability,	
 					tomcatpathURL,
 					JpgSize);
+
+#if (IVMS_KAKOU_SOAP && !ALLTAB_CLIENT_MODE)
+				//卡口车牌
+				char crossindex[64]="";
+				char failstr[1024]="";
+				unsigned char tempbmpd[2]="";
+				OracleIO.Get_kakou_cross_index(camid,crossindex);
+				if(strlen(crossindex)>0)
+				{
+					/*
+					//写入卡口系统		URL不支持中文
+					//数据写到IVMS 数据库 select * from BMS_VEHICLE_PASS t 表中
+					SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+						DlgMain->sessionIdstr,
+						crossindex,
+						Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],true,
+						"",tempbmpd,0,
+						tomcatpathURL,tempbmpd,0,
+						failstr);
+						*/
+					SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+						DlgMain->sessionIdstr,
+						crossindex,
+						Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],false,
+						"",tempbmpd,0,
+						"",Jpg,JpgSize,
+						failstr);
+					
+				}
+				else
+				{
+					//插入设备
+					char index_code[64]="";
+					if(OracleIO.IVMS_ReadControlunitForSOAP(index_code))
+					{
+						char crossindex[64]="";
+						sprintf(crossindex,"E1ECA2111%05d",camid);
+						char newname[64]="";
+						sprintf(newname,"ELECAR_%s",cam_name);
+
+						char crossIdstr[64]="";
+						memset(failstr,0,1024);
+						if(SendSoap_insertCrossingInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+							DlgMain->sessionIdstr,
+							index_code,
+							crossindex,newname,"0","0",
+							crossIdstr,
+							failstr))
+						{
+							OracleIO.Update_kakou_CrossIndex_id(camid,crossindex,atoi(crossIdstr));
+							/*
+							//写入卡口系统		
+							SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+								DlgMain->sessionIdstr,
+								crossindex,
+								Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],true,
+								"",tempbmpd,0,
+								tomcatpathURL,tempbmpd,0,
+								failstr);
+								*/
+							SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+								DlgMain->sessionIdstr,
+								crossindex,
+								Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],false,
+								"",tempbmpd,0,
+								"",Jpg,JpgSize,
+								failstr);
+					
+						}
+					}
+				}
+#endif
+
+
+			
 #else
 				//网络保存
 				if(DlgSetSystem.m_check_savenet)

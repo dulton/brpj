@@ -9,8 +9,13 @@
 #include "DLGAddDevice.h"
 #include "DLGAddIVMSdevice.h"
 #include "IO.h"
+#include <vector>
+#include <list>
+using namespace::std;
 /////////////////////////////////////////////////////////////////////////////
 // CDLGdevicetree dialog
+
+
 
 class CDLGdevicetree : public CDialog
 {
@@ -42,6 +47,10 @@ public:
 	//ÆÁ±Î²Ù×÷
 	void OnOK();
 	void OnCancel();
+
+	bool kakouADDdevice(long ncamera,char *name,char *longitude,char *latitude);
+	bool kakouDeldevice(long ncamera);
+	bool kakouDelArea(long areaid);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

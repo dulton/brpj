@@ -122,7 +122,7 @@ BOOL CDLGAddIVMSdevice::OnInitDialog()
 	OracleIO.IVMS_ReadStreamserver(Streamserver);
 	OracleIO.IVMS_ReadPAGserver(PAGserver);
 
-	m_camvender.SetCurSel(0);
+	m_camvender.SetCurSel(1);
 	InitALL();
 
 	Rtspurl="";

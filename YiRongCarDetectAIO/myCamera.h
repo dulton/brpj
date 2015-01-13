@@ -16,7 +16,8 @@ class CMyCamera
 public:
 	CMyCamera();
 	virtual ~CMyCamera();
-		long m_LoginHandle[MAX_DEVICE_NUM];
+	
+	long m_LoginHandle[MAX_DEVICE_NUM];
 	long m_RealHandle[MAX_DEVICE_NUM];
 
 #if	OPEN_DAHUA_SDK

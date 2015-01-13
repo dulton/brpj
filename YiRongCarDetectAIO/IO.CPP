@@ -400,7 +400,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 							 CString user,CString password,long venderID,CString Rtspurl,int RTP,int DecodeTag,
 							 CString longitude,CString latitude,	
 							 CString crossIndex,long crossID,
-							 long userID,long userLV)
+							 long userID,long userLV,long *ncameraid)
 {
 	while(IOwriteLock)
 	{
@@ -428,6 +428,7 @@ bool IO::DEVICE_AddNewCamera(CString AreaName,CString CamName,CString sip,int po
 		strSql = _T("select seq_ncamera.nextval as ncamera from dual");	    //获取ncamera
 		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql,NULL,adCmdText);	
 		unsigned long ncamera	= VarSaveNumber2(m_pRecordsetPtr,"ncamera");
+		(*ncameraid)=ncamera;
 
 		m_pRecordsetPtr.CreateInstance(_uuidof(Recordset));
 		HRESULT hr = m_pRecordsetPtr->Open("select * from tb_device", \
@@ -645,6 +646,7 @@ bool IO::DEVICE_ReadCameraInfoFromDetectID(long DetectID,IPLIST &CameraInfo)
 	{
 		Sleep(10);
 	}
+
 
 	IOwriteLock=true;
 	try
@@ -6587,4 +6589,144 @@ int IO::IVMS_ReadControlunitForSOAP(char *index_code)
 	return true;
 
 }
+
+//更新卡口编号
+int IO::Update_kakou_CrossIndex_id(long ncamera,char *cross_index,long cross_id)
+{	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+
+	try
+	{
+		CString strSql;
+		filterstring(cross_index);
+	
+
+		strSql.Format(_T("update TB_DEVICE set CROSSINDEX='%s',CROSSID=%d where ncamera=%d"),
+			cross_index,cross_id,
+			ncamera);
+		_variant_t RecordAffected;
+		m_pConnection->Execute((_bstr_t)strSql, &RecordAffected, adCmdText);
+
+		IOwriteLock=false;
+		if(RecordAffected.uintVal == 1)	   //判断是否更新成功
+		{
+			return	true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Update_kakou_CrossIndex_id error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+		IOwriteLock=false;
+		return false;
+	}  
+
+}
+
+//获取卡口编号
+bool IO::Get_kakou_cross_index(long ncamera,char *crossindex)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString strSql;
+		strSql.Format("select crossindex from TB_DEVICE where ncamera=%d",ncamera);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		if(m_pRecordsetPtr->BOF)
+		{
+
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			VarSaveStr2(crossindex,m_pRecordsetPtr,_T("crossindex"));
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Get_kakou_cross_index error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
+
+bool IO::Get_kakou_Area_cross_index(long areaid,list<struct CrossIndex_ST> &crossindex)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+
+	IOwriteLock=true;
+	try
+	{
+		CString strSql;
+		strSql.Format("select crossindex from TB_DEVICE where nid=%d",areaid);
+		m_pRecordsetPtr = m_pConnection->Execute((_bstr_t)strSql, NULL, adCmdText);	
+		if(m_pRecordsetPtr->BOF)
+		{
+
+			IOwriteLock=false;
+			return false;
+		}
+		else
+		{
+			m_pRecordsetPtr->MoveFirst();
+		}
+
+		while(!m_pRecordsetPtr->adoEOF)
+		{
+			struct CrossIndex_ST tempdata={0};
+
+			VarSaveStr2(tempdata.index,m_pRecordsetPtr,_T("crossindex"));
+			crossindex.push_back(tempdata);
+
+			m_pRecordsetPtr->MoveNext();
+		}
+		m_pRecordsetPtr->Close();
+
+		IOwriteLock=false;
+		return true;
+	}
+	catch(_com_error e)
+	{
+		CString in_errormessage;
+		in_errormessage.Format("IO::Get_kakou_Area_cross_index error：%s", e.ErrorMessage());
+		AfxMessageBox(in_errormessage);
+
+		IOwriteLock=false;
+		return false;
+	}  
+}
+
+
 #endif

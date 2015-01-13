@@ -39,6 +39,9 @@ public:
 
 	//}}AFX_DATA
 
+
+
+
 	UINT  m_DetectListTimer;
 	int  m_DetectListTimerFlag;
 	long int oldnid[MAX_DEVICE_NUM];
@@ -75,7 +78,6 @@ public:
 	//切换位置
 	void UpdatePannelPosition();
 	
-
 
 	//切换栏
 	void TabMainInit(void);
@@ -118,6 +120,14 @@ public:
 	HANDLE CS_Receivepthread;
 	//线程在用=false  线程未用=ture
 	bool CS_ReceiveThreadFlag;
+
+#if IVMS_KAKOU_SOAP
+	char sessionIdstr[128];
+	
+	//卡口登陆
+	bool CS_KakouLoginThreadFlag;
+	HANDLE CS_KakouLoginpthread;
+#endif
 
 
 	// ClassWizard generated virtual function overrides

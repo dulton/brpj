@@ -184,7 +184,7 @@ BOOL CDLGSetSystem::OnInitDialog()
 
 #endif
 
-#if (IVMS_KAKOU_SOAP && !ALLTAB_CLIENT_MODE)
+#if (IVMS_KAKOU_SOAP)
 	
 	GetDlgItem(IDC_STATIC_KAKOU)->ShowWindow(TRUE);
 

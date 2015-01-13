@@ -206,6 +206,34 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CYiRongCarDetectAIODlg message handlers
+#if IVMS_KAKOU_SOAP
+//卡口登陆
+DWORD WINAPI CS_KakouLogin_ThreadPROC(LPVOID lpParameter)
+{
+	CYiRongCarDetectAIODlg *pdlg = (CYiRongCarDetectAIODlg*)lpParameter;
+	pdlg->CS_KakouLoginThreadFlag=TRUE;
+	long  KAKOU_MAX_TIME =60;
+
+	long sleeptime=KAKOU_MAX_TIME*1000;
+	char failstr[1024]="";
+
+	while(pdlg->CS_KakouLoginThreadFlag)
+	{
+		memset(failstr,0,1024);
+		if(! SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
+			DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
+			DlgMain->sessionIdstr,failstr))
+		{
+			DlgMain->ShowRuntimeMessage(failstr,0);
+		}
+
+		Sleep(sleeptime);
+	}
+
+	pdlg->CS_KakouLoginThreadFlag=FALSE;
+	return 0;
+}
+#endif
 
 #if OPEN_CS_MODE
 //心跳线程
@@ -240,7 +268,8 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 	{
 		if(pdlg->DlgScreen.CSdeviceID[j]>0)
 		{
-			IPLIST CameraInfo;
+			IPLIST CameraInfo={0};
+
 			if(false == OracleIO.DEVICE_ReadCameraInfoFromDetectID(pdlg->DlgScreen.CSdeviceID[j],CameraInfo))
 				continue;
 
@@ -273,6 +302,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 				OracleIO.Mission_DeviceFlag(0,CameraInfo.camID,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],0);
 			}
 		}
+		Sleep(1000);
 	}
 
 	long long missionID;
@@ -299,7 +329,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 				{
 					if(isplay)
 					{
-						IPLIST CameraInfo;
+						IPLIST CameraInfo={0};
 
 						if(false==OracleIO.DEVICE_ReadCameraInfoFromCamID(camid,CameraInfo))
 							OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],0);
@@ -322,6 +352,20 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 								CameraInfo.RTP,
 								CameraInfo.DecodeTag);
 
+/*
+							char nstr[1024]="";
+							sprintf(nstr,"start=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
+								CameraInfo.camID,
+								CameraInfo.area.GetBuffer(0),
+								CameraInfo.name.GetBuffer(0),
+								CameraInfo.ip.GetBuffer(0),
+								CameraInfo.port,
+								CameraInfo.channel,
+								j,
+								CameraInfo.venderID,
+								CameraInfo.Rtspurl.GetBuffer(0));
+							DlgMain->NewLogMessage(nstr);
+*/
 							if(ret)
 							{
 								//成功
@@ -342,6 +386,21 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 						if(pdlg->DlgScreen.m_videoInfo[j].isplay && pdlg->DlgScreen.m_videoInfo[j].camID >=0)
 						{	
 							pdlg->DlgScreen.StopPlay(j);
+						/*	
+							char nstr[1024]="";
+							sprintf(nstr,"stop=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
+								pdlg->DlgScreen.m_videoInfo[j].camID,
+								pdlg->DlgScreen.m_videoInfo[j].area,
+								pdlg->DlgScreen.m_videoInfo[j].name,
+								pdlg->DlgScreen.m_videoInfo[j].ip,
+								pdlg->DlgScreen.m_videoInfo[j].port ,
+								pdlg->DlgScreen.m_videoInfo[j].channel,
+								j,
+								pdlg->DlgScreen.m_videoInfo[j].venderID ,
+								pdlg->DlgScreen.m_videoInfo[j].Rtspurl);
+							DlgMain->NewLogMessage(nstr);
+						*/
+							
 						}
 
 						OracleIO.Mission_DeviceFlag(missionID,camid,DlgSetSystem.m_myip.GetBuffer(0),pdlg->DlgScreen.CSdeviceID[j],isplay);
@@ -349,7 +408,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 				}
 			}
 		}
-		Sleep(100);
+		Sleep(1000);
 	}
 
 	pdlg->CS_ReceiveThreadFlag=FALSE;
@@ -496,9 +555,19 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	//初始即最大化
 	ShowWindow(SW_MAXIMIZE);   
+
+#if IVMS_KAKOU_SOAP
+	char failstr[256]="";
+	if(!SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
+		DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
+		sessionIdstr,failstr))
+		MessageBox(failstr);
+
+#endif
+
 /*
 	char failstr[256]="";
-	char sessionIdstr[128]="c3bf3b4f-84d5-4866-ba3e-6035ccfa9015";
+	char sessionIdstr[128]="dd863bcd-29c5-480b-862f-4aa27c013e60";
 	if(0)
 	{
 		SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
@@ -506,7 +575,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 			sessionIdstr,failstr);
 	}
 
-	if(1)
+	if(0)
 	{
 		char index_code[64]="";
 
@@ -521,14 +590,14 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 							failstr);
 	}
 
-	if(0)
+	if(1)
 	{
 
 	unsigned char tempdata[32]="aa";
 	SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 		sessionIdstr,
-		"11114",
-		"2014-09-22 15:06:07","22345",true,
+		"11117",
+		"2015-01-11 15:06:07","22345",true,
 		"",tempdata,2,
 		"http://35.24.13.36:8089/picture/2014-09-22/244/2014-09-22-15-20-59 244 35.33.140.12 E0163 92 从上到下 187566 .jpg",tempdata,2,
 		failstr);
@@ -544,7 +613,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	if(NULL==CS_Heartpthread)
 	{
-		MessageBox("创建线程错误");
+		MessageBox("CS_Heartpthread创建线程错误");
 	}
 	else
 		CS_HeartThreadFlag=TRUE;
@@ -564,7 +633,7 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 
 	if(NULL==CS_Receivepthread)
 	{
-		MessageBox("创建线程错误");
+		MessageBox("CS_Receivepthread创建线程错误");
 	}
 	else
 		CS_ReceiveThreadFlag=TRUE;
@@ -614,7 +683,20 @@ BOOL CYiRongCarDetectAIODlg::OnInitDialog()
 */
 
 #endif
+#if (IVMS_KAKOU_SOAP && !ALLTAB_CLIENT_MODE)
+	//开启登陆卡口线程
+	CS_KakouLoginThreadFlag=FALSE;
+	CS_KakouLoginpthread=NULL;
 
+	CS_KakouLoginpthread=CreateThread(NULL,0,CS_KakouLogin_ThreadPROC,this,0,NULL);
+
+	if(NULL==CS_KakouLoginpthread)
+	{
+		MessageBox("CS_KakouLoginpthread创建线程错误");
+	}
+	else
+		CS_KakouLoginThreadFlag=TRUE;
+#endif
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

@@ -433,11 +433,28 @@ bool CreateXmlLite_Vehicle(char *name,bool isPicUrl,struct NAME_VALUE_S mapdata[
 	}  
 	pDoc.LinkEndChild(pRootEle);  
 
-	
+
+	/*
+	//标准写法
 	if(isPicUrl)
 		pRootEle->SetAttribute("isPicUrl",1);
 	else
 		pRootEle->SetAttribute("isPicUrl",0);
+*/
+
+//规避写法
+//tinyxml.CPP和.H添加
+/*
+void TiXmlElement::SetAttribute( const char * name )
+{	
+	TiXmlAttribute* attrib = attributeSet.FindOrCreate( name );
+}
+*/
+	if(isPicUrl)
+		pRootEle->SetAttribute("isPicUrl=1");
+	else
+		pRootEle->SetAttribute("isPicUrl=0");
+
 
 	int it;
 	for(it=0;it<maplen;it++)
@@ -555,7 +572,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 
 	if(0!=nRes)
 	{
-		strcat(failstr," SendInitSystemSoap POST出错");
+		strcat(failstr," SendInitSystemSoap POST出错 卡口服务未启动");
 		printf("SendInitSystemSoap POST出错\n");
 		CService.DestroyData();
 		return false;
@@ -619,6 +636,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 
 	char codestr[32]="";
 	char messagestr[1024]="";
+	char sessionstr[128]="";
 
 	TiXmlElement *pNodeRow = NULL;
 	TiXmlElement *pNodeData = NULL;
@@ -634,15 +652,19 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		{
 			printf("message=%s\n",messagestr);
 		}
-		if(ReadQueryNodeText(pNodeRow,pNodeData,"sessionId",sessionIdstr,XMLRW_MAX_STR,true))
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"sessionId",sessionstr,XMLRW_MAX_STR,true))
 		{
-			printf("sessionId=%s\n",sessionIdstr);
+			printf("sessionId=%s\n",sessionstr);
+			if(strlen(sessionstr)>0)
+			{
+				strcpy(sessionIdstr,sessionstr);
+			}
 		}
 	}
 
 	if (0!=atol(codestr))
 	{
-		sprintf(failstr,"SendInitSystemSoap XMLmessage出错 %s",messagestr);
+		sprintf(failstr,"卡口系统SendInitSystemSoap XMLmessage出错 %s",messagestr);
 		return false;
 	}
 
@@ -799,6 +821,147 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 
 
 
+bool SendSoap_deleteCrossingInfo(char *wsdlUrl,
+								 char *id,
+								 char *crossindex,
+								char *failstr)
+{
+	Service CService;
+
+	long xmlstrlen=5120;
+
+	char xmlstr[5120];
+	char xmllitestr[5120];
+
+	char soapactionstr[512]="Content-Type: application/soap+xml;charset=UTF-8;action=\"urn:deleteCrossingInfo\"";
+
+	struct NAME_VALUE_S mapdata[2];
+	mapdata[0].i("sessionId",id);
+	mapdata[1].i("crossingIndex",crossindex);
+
+
+	if(false==CreateXmlLite("crossingInfo",mapdata,2,
+		xmllitestr,xmlstrlen))
+	{
+		strcpy(failstr,"SendSoap_deleteCrossingInfo 无法创建XML lite文件");
+		printf("SendSoap_deleteCrossingInfo 无法创建XML lite文件\n");
+
+		return false;
+	}
+
+	if(false==CreateXml("ser:deleteCrossingInfo",
+		xmllitestr,
+		xmlstr,xmlstrlen))
+	{
+		strcpy(failstr,"SendSoap_deleteCrossingInfo 无法创建XML文件");
+		printf("SendSoap_deleteCrossingInfo 无法创建XML文件\n");
+
+		return false;
+	}
+
+	CService.InitData();
+
+	int nRes = CService.PostSoap(wsdlUrl,soapactionstr,xmlstr,failstr);
+
+	if(0!=nRes)
+	{
+		strcat(failstr," SendSoap_deleteCrossingInfo POST出错 卡口服务未启动");
+		printf("SendSoap_deleteCrossingInfo POST出错\n");
+		CService.DestroyData();
+		return false;
+	}
+	
+	if(WEB_KAKOU_DEBUG)
+		printf("SendSoap_deleteCrossingInfo resp_buffer=%s\n",CService.m_resp_buffer.c_str());
+
+/*
+	if(NULL!=strstr(CService.m_resp_buffer.c_str(),"<ns:return>"))
+	{
+		strcat(failstr," SendPidPushSoap 返回报文不为0");
+		CService.DestroyData();
+		return false;
+	}
+	*/
+/*
+	//出来默认UTF-8了
+	char* charstr=(char *)calloc(CService.m_resp_buffer.length()*2+4,sizeof(char));
+
+	UTF82CHAR(CService.m_resp_buffer.c_str(),charstr,CService.m_resp_buffer.length()*2);
+
+	//防止报文错误 找左起第一个<符合传下去进行解析
+	const char *presp=strchr(charstr,'<');
+	if(NULL== presp)
+	{
+		strcpy(failstr,"SendInitSystemSoap XML出错 找不到<");
+		printf("SendInitSystemSoap XML出错 找不到<\n");
+		free(charstr);
+		CService.DestroyData();
+		return false;
+	}
+
+	char* utf8=(char *)calloc(strlen(presp)*2+4,sizeof(char));
+	
+	CHAR2UTF8(presp,utf8,strlen(presp)*2);
+*/
+	char returnstr[XMLRW_MAX_STR]="";
+
+	if(false == XMLgetReturnData(CService.m_resp_buffer.c_str(),returnstr))
+	{
+		strcat(failstr," SendSoap_deleteCrossingInfo XMLgetReturnDataT出错");
+		CService.DestroyData();
+		return false;
+	}
+	// 可以清空了
+	CService.DestroyData();
+
+# if 0 //不管返回值
+
+	//放在栈里 内存不会泄露
+	TiXmlDocument returnDocument;
+	returnDocument.Parse(returnstr);
+
+
+	TiXmlElement *preturnRootEle = returnDocument.RootElement();
+	if (NULL==preturnRootEle)
+	{
+		strcpy(failstr,"SendSoap_deleteCrossingInfo XMLreturn出错");
+		printf("SendSoap_deleteCrossingInfo XMLreturn出错\n");
+		return false;
+	}
+
+	char codestr[32]="";
+	char messagestr[1024]="";
+	char sessionstr[128]="";
+
+	TiXmlElement *pNodeRow = NULL;
+	TiXmlElement *pNodeData = NULL;
+
+	for(pNodeRow = preturnRootEle; pNodeRow; pNodeRow = pNodeRow->NextSiblingElement())
+	{
+		pNodeData = NULL;
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"code",codestr,XMLRW_MAX_STR,true))
+		{
+			printf("code=%s\n",codestr);
+		}
+		if(ReadQueryNodeText(pNodeRow,pNodeData,"message",messagestr,XMLRW_MAX_STR,true))
+		{
+			printf("message=%s\n",messagestr);
+		}
+		
+	}
+
+	if (0!=atol(codestr))
+	{
+		sprintf(failstr,"卡口系统SendSoap_deleteCrossingInfo XMLmessage出错 %s",messagestr);
+		return false;
+	}
+#endif
+
+	return true;
+
+}
+
+
 
 bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 								 char *id,char *crossindex,char *passTime,char *plateInfo,bool isPicUrl,
@@ -857,7 +1020,7 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 	}
 
 	mapdata[13].i("alarmAction","0"); //违法代码 正常
-	mapdata[14].i("vehicleState","2"); //行车状态 非机动车
+	mapdata[14].i("vehicleState","1"); //行车状态  正常
 	mapdata[15].i("reserved1","");
 	mapdata[16].i("reserved2","");
 

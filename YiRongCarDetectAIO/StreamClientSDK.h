@@ -18,6 +18,7 @@ public:
 	long m_lPort[MAX_DEVICE_NUM];
 	BOOL m_bPTZCtrl;
 
+
 	CString CapturePath[MAX_DEVICE_NUM];
 
 	void SDKInit();
