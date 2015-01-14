@@ -1,0 +1,4 @@
+3
+3 YiRongCarDetectAIO.exe YiRongCarDetectAIO.exe
+3 yrversion.txt yrversion.txt
+3 yrsysteminfo.ini yrsysteminfo.ini

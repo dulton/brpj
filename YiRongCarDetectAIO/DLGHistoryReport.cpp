@@ -93,9 +93,9 @@ BOOL CDLGHistoryReport::OnInitDialog()
 	CDialog::OnInitDialog();
 	
 	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_List.InsertColumn(1, _T("用户名" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(1, _T("用户名" ), LVCFMT_LEFT, 100);
 	m_List.InsertColumn(2, _T("时间"), LVCFMT_LEFT, 140);
-	m_List.InsertColumn(3, _T("日志信息"), LVCFMT_LEFT, 380);
+	m_List.InsertColumn(3, _T("日志信息"), LVCFMT_LEFT, 425);
 
 	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 

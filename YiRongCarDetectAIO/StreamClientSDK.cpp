@@ -25,7 +25,7 @@ extern IO OracleIO;
 #include "DB33PlayCtrlSDK/PlayM4.h"
 #pragma comment(lib, "DB33PlayCtrlSDK/DB33PlayCtrl.lib")
 
-
+/*
 void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWidth,long nHeight,long nStamp,long nType,long nReserved)
 {
 
@@ -40,20 +40,6 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 
 		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
 	}
-	/*
-	char nstr[1024]="";
-	sprintf(nstr," Stream=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
-	DlgMain->DlgScreen.m_videoInfo[screenNo].camID,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].area,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].name,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].ip,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].port ,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].channel,
-	screenNo,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].venderID ,
-	DlgMain->DlgScreen.m_videoInfo[screenNo].Rtspurl);
-	DlgMain->NewLogMessage(nstr);
-	*/
 
 	//在这做识别
 
@@ -94,8 +80,61 @@ void CALLBACK StreamClientHikanCBFun(long nPort,char * pBuf,long nSize,long nWid
 
 #endif
 
-
 }
+*/
+
+void CALLBACK StreamClientHikanCBFun(DISPLAY_INFO *pstDisplayInfo)
+{
+	int screenNo=pstDisplayInfo->nUser;
+	if(screenNo<0)
+		return;
+
+	if( ! DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].IsEmpty())
+	{
+		DB33_PlayM4_ConvertToJpegFile(pstDisplayInfo->pBuf, pstDisplayInfo->nBufLen, pstDisplayInfo->nWidth, pstDisplayInfo->nHeight, pstDisplayInfo->nType, 
+			DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo].GetBuffer(0));
+
+		DlgMain->DlgScreen.m_video.m_StreamClient.CapturePath[screenNo]="";
+	}
+
+	//在这做识别
+	//OracleIO.LOG_AddNewSystemLog("admin","c");
+	//车牌识别
+#if OPEN_CARDETECT_CODE 	
+
+	//启用识别
+	if(DlgMain->DlgScreen.m_videoInfo[screenNo].enableDetect)
+	{
+		//拷贝数值
+		DlgMain->DlgScreen.CarDetect[screenNo].m_playhandle=screenNo;
+
+		DlgMain->DlgScreen.CarDetect[screenNo].alarmflag=
+			DlgMain->DlgScreen.m_videoInfo[screenNo].enableAlarm;
+
+		DlgMain->DlgScreen.CarDetect[screenNo].camid=
+			DlgMain->DlgScreen.m_videoInfo[screenNo].camID;
+
+		strcpy(DlgMain->DlgScreen.CarDetect[screenNo].cam_name,
+			DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
+
+		if(DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetLength() >1)
+		{
+			strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,
+				DlgMain->DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+		}
+		else
+			strcpy(DlgMain->DlgScreen.CarDetect[screenNo].l_ipaddr,"0.0.0.0");
+
+		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
+		DlgMain->DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
+			(unsigned char *)pstDisplayInfo->pBuf,pstDisplayInfo->nWidth,pstDisplayInfo->nHeight,pstDisplayInfo->nBufLen);
+
+		DlgMain->DlgScreen.CarDetect[screenNo].Result();
+	}
+
+#endif
+}
+
 
 int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype, void* pdata,
 								int ilen) 
@@ -141,16 +180,24 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 			if (!DB33_PlayM4_OpenStream(lPort, (PBYTE)pdata, ilen, 1920*1080*3)) //打开流接口
 			{
 				DB33_PlayM4_FreePort(lPort);
-					StreamClientSDK->m_lPort[screenNo]=-1;
+				StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			}
-
+/*
 			if (!DB33_PlayM4_SetDisplayCallBack(lPort, StreamClientHikanCBFun))
 			{
 
 				DB33_PlayM4_CloseStream(lPort);
 				DB33_PlayM4_FreePort(lPort);
-					StreamClientSDK->m_lPort[screenNo]=-1;
+				StreamClientSDK->m_lPort[screenNo]=-1;
+				break;
+			}
+*/
+			if (!DB33_PlayM4_SetDisplayCallBackEx(lPort, StreamClientHikanCBFun,screenNo))
+			{
+				DB33_PlayM4_CloseStream(lPort);
+				DB33_PlayM4_FreePort(lPort);
+				StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			}
 
@@ -161,14 +208,14 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				{
 					DB33_PlayM4_CloseStream(lPort);
 					DB33_PlayM4_FreePort(lPort);
-						StreamClientSDK->m_lPort[screenNo]=-1;
+					StreamClientSDK->m_lPort[screenNo]=-1;
 					return 0;
 				}
 				if (!DB33_PlayM4_Play(lPort, pWnd->m_hWnd)) //播放开始
 				{
 					DB33_PlayM4_CloseStream(lPort);
 					DB33_PlayM4_FreePort(lPort);
-						StreamClientSDK->m_lPort[screenNo]=-1;
+					StreamClientSDK->m_lPort[screenNo]=-1;
 					break;
 				}
 			}
@@ -178,16 +225,15 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 				{
 					DB33_PlayM4_CloseStream(lPort);
 					DB33_PlayM4_FreePort(lPort);
-						StreamClientSDK->m_lPort[screenNo]=-1;
+					StreamClientSDK->m_lPort[screenNo]=-1;
 					break;
 				}
 			}
 		}
-		/*
-		sprintf(nstr," Stream=%d,%d",	
-		screenNo,lPort);
+#if DEBUG_CHUANLIU
+		sprintf(nstr," Stream=%d,%d,%d",	screenNo,lPort,sessionhandle);
 		DlgMain->NewLogMessage(nstr);
-	*/
+#endif
 		break;
 
 	case STREAM_DATA:   // 码流数据 
@@ -196,9 +242,9 @@ int  StreamClientHikanCBinitFun(int sessionhandle, void* userdata, int datatype,
 		{
 			if (!DB33_PlayM4_InputData(lPort, (PBYTE)pdata, ilen))
 			{
-				DB33_PlayM4_CloseStream(lPort);
-				DB33_PlayM4_FreePort(lPort);
-					StreamClientSDK->m_lPort[screenNo]=-1;
+				//DB33_PlayM4_CloseStream(lPort);
+				//DB33_PlayM4_FreePort(lPort);
+				//StreamClientSDK->m_lPort[screenNo]=-1;
 				break;
 			} 
 
@@ -234,14 +280,21 @@ int  CALLBACK StreamClientSDKMsgFunc(int  sessionhandle,  void*  userdata,  int 
 	{ 
 		return 0; 
 	} 
-	char *name=(char*)userdata;
+	
+	int screenNo = DlgMain->DlgScreen.m_video.m_StreamClient.GetHandleWindID(sessionhandle);
+
+	if(screenNo < 0 )
+	{ 
+		return 0; 
+	} 
 
 	char errDescribe[512] = {0}; 
 	sprintf(errDescribe,  "StreamClient recv errCode:%d, errDescribe:%s", 
 		opt, 
 		StreamClient_GetErrMsgByErrCode(opt)); 
 
-	DlgMain->ShowCameraMessage(name,errDescribe,FALSE);
+	DlgMain->ShowCameraMessage(DlgMain->DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0),errDescribe,FALSE);
+
 
 	return 0; 
 } 
@@ -289,7 +342,7 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 	if(m_RealHandle[screenNo]>=0)
 	{
 
-		i=StreamClient_SetMsgCallBack(m_RealHandle[screenNo],StreamClientSDKMsgFunc,name);
+		i=StreamClient_SetMsgCallBack(m_RealHandle[screenNo],StreamClientSDKMsgFunc,NULL);
 		if(i)
 		{
 			DlgMain->ShowCameraMessage(name,(char*)StreamClient_GetErrMsgByErrCode(i),FALSE);

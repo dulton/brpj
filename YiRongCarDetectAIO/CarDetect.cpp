@@ -838,29 +838,34 @@ sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 #if (IVMS_KAKOU_SOAP && !ALLTAB_CLIENT_MODE)
 				//卡口车牌
 				char crossindex[64]="";
-				char failstr[1024]="";
+				char failstr[256]="";
 				unsigned char tempbmpd[2]="";
 				OracleIO.Get_kakou_cross_index(camid,crossindex);
 				if(strlen(crossindex)>0)
 				{
-					/*
+#if 1
 					//写入卡口系统		URL不支持中文
 					//数据写到IVMS 数据库 select * from BMS_VEHICLE_PASS t 表中
-					SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+					//URL
+					if(!SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 						DlgMain->sessionIdstr,
 						crossindex,
 						Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],true,
 						"",tempbmpd,0,
 						tomcatpathURL,tempbmpd,0,
-						failstr);
-						*/
-					SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+						failstr))
+#else
+					if(!SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 						DlgMain->sessionIdstr,
 						crossindex,
 						Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],false,
 						"",tempbmpd,0,
 						"",Jpg,JpgSize,
-						failstr);
+						failstr))
+#endif
+					{
+						DlgMain->NewLogMessage(failstr);
+					}
 					
 				}
 				else
@@ -869,13 +874,12 @@ sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 					char index_code[64]="";
 					if(OracleIO.IVMS_ReadControlunitForSOAP(index_code))
 					{
-						char crossindex[64]="";
 						sprintf(crossindex,"E1ECA2111%05d",camid);
 						char newname[64]="";
 						sprintf(newname,"ELECAR_%s",cam_name);
 
 						char crossIdstr[64]="";
-						memset(failstr,0,1024);
+						memset(failstr,0,256);
 						if(SendSoap_insertCrossingInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 							DlgMain->sessionIdstr,
 							index_code,
@@ -884,23 +888,28 @@ sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 							failstr))
 						{
 							OracleIO.Update_kakou_CrossIndex_id(camid,crossindex,atoi(crossIdstr));
-							/*
-							//写入卡口系统		
-							SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+#if 1
+							//写入卡口系统	
+							//URL
+							if(!SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 								DlgMain->sessionIdstr,
 								crossindex,
 								Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],true,
 								"",tempbmpd,0,
 								tomcatpathURL,tempbmpd,0,
-								failstr);
-								*/
-							SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
+								failstr))
+#else
+							if(!SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
 								DlgMain->sessionIdstr,
 								crossindex,
 								Timeformat,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5],false,
 								"",tempbmpd,0,
 								"",Jpg,JpgSize,
-								failstr);
+								failstr))
+#endif
+							{
+								DlgMain->NewLogMessage(failstr);
+							}
 					
 						}
 					}

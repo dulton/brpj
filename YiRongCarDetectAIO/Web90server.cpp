@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Web90server.h"
 
-#define WEB_KAKOU_DEBUG 1
+#define WEB_KAKOU_DEBUG 0
 
 void ReadFromFile(char**data,char* pfile)
 {
@@ -449,6 +449,13 @@ void TiXmlElement::SetAttribute( const char * name )
 {	
 	TiXmlAttribute* attrib = attributeSet.FindOrCreate( name );
 }
+#ifdef TIXML_USE_STL
+void TiXmlElement::SetAttribute( const std::string& name)
+{	
+	TiXmlAttribute* attrib = attributeSet.FindOrCreate( name );
+}
+#endif
+
 */
 	if(isPicUrl)
 		pRootEle->SetAttribute("isPicUrl=1");
@@ -1007,15 +1014,22 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 	}
 	else
 	{
-		//转成BASE64传入
-		char *Platebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picPlatelen)+10,sizeof(char));
-		base64_encode(Platebase64str,(OUT_ENBASE64_SIZE(picPlatelen)+10)*sizeof(char),picPlatedata,picPlatelen);
+		if(0==picPlatelen)
+		{
+			mapdata[11].i("picPlate",""); //车牌图
+		}
+		else
+		{
+			//转成BASE64传入
+			char *Platebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picPlatelen)+10,sizeof(char));
+			base64_encode(Platebase64str,(OUT_ENBASE64_SIZE(picPlatelen)+10)*sizeof(char),picPlatedata,picPlatelen);
+			mapdata[11].i("picPlate",Platebase64str); //车牌图
+		}
 
 		char *Vehiclebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picVehiclelen)+10,sizeof(char));
 		base64_encode(Vehiclebase64str,(OUT_ENBASE64_SIZE(picVehiclelen)+10)*sizeof(char),picVehicledata,picVehiclelen);
 
 		//转BASE64
-		mapdata[11].i("picPlate",Platebase64str); //车牌图
 		mapdata[12].i("picVehicle",Vehiclebase64str); //过车图
 	}
 

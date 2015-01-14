@@ -1339,6 +1339,7 @@ bool IO::LOG_AddNewSystemLog(char *userName,char *logStr)
 		IOwriteLock=false;
 		return false;
 	}  
+	IOwriteLock=false;
 }
 
 unsigned long IO::LOG_GetSystemLogNum(char *userName,char *startTime,char *endTime,int flag,char *SQLstr)

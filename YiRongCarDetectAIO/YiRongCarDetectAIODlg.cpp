@@ -215,11 +215,11 @@ DWORD WINAPI CS_KakouLogin_ThreadPROC(LPVOID lpParameter)
 	long  KAKOU_MAX_TIME =60;
 
 	long sleeptime=KAKOU_MAX_TIME*1000;
-	char failstr[1024]="";
+	char failstr[256]="";
 
 	while(pdlg->CS_KakouLoginThreadFlag)
 	{
-		memset(failstr,0,1024);
+		memset(failstr,0,256);
 		if(! SendSoap_InitSystem(DlgSetSystem.m_kakou_url.GetBuffer(),DlgSetSystem.m_kakou_ip.GetBuffer(),
 			DlgSetSystem.m_kakou_user.GetBuffer(),DlgSetSystem.m_kakou_psw.GetBuffer(),
 			DlgMain->sessionIdstr,failstr))
@@ -352,7 +352,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 								CameraInfo.RTP,
 								CameraInfo.DecodeTag);
 
-/*
+#if DEBUG_CHUANLIU
 							char nstr[1024]="";
 							sprintf(nstr,"start=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
 								CameraInfo.camID,
@@ -365,7 +365,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 								CameraInfo.venderID,
 								CameraInfo.Rtspurl.GetBuffer(0));
 							DlgMain->NewLogMessage(nstr);
-*/
+#endif
 							if(ret)
 							{
 								//³É¹¦
@@ -386,7 +386,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 						if(pdlg->DlgScreen.m_videoInfo[j].isplay && pdlg->DlgScreen.m_videoInfo[j].camID >=0)
 						{	
 							pdlg->DlgScreen.StopPlay(j);
-						/*	
+#if DEBUG_CHUANLIU	
 							char nstr[1024]="";
 							sprintf(nstr,"stop=%d,%s,%s,%s,%d,%d,%d,%d,rtsp=%s",	
 								pdlg->DlgScreen.m_videoInfo[j].camID,
@@ -399,7 +399,7 @@ DWORD WINAPI CS_Receive_ThreadPROC(LPVOID lpParameter)
 								pdlg->DlgScreen.m_videoInfo[j].venderID ,
 								pdlg->DlgScreen.m_videoInfo[j].Rtspurl);
 							DlgMain->NewLogMessage(nstr);
-						*/
+#endif
 							
 						}
 
