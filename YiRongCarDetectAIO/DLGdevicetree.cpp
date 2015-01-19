@@ -765,6 +765,18 @@ bool CDLGdevicetree::kakouADDdevice(long ncamera,char *name,char *longitude,char
 		char crossindex[64]="";
 		sprintf(crossindex,"E1ECA2111%05d",ncamera);
 		char newname[64]="";
+
+		char *tempp=name;
+		//È¥µô¿Õ¸ñ
+		while(*tempp)   
+		{  
+			if( (*tempp) == ' ' )
+			{
+				(*tempp) = '_';
+			}
+			tempp++;  
+		} 
+
 		sprintf(newname,"ELECAR_%s",name);
 
 		char crossIdstr[64]="";

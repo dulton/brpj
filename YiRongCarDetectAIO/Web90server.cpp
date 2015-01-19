@@ -80,6 +80,7 @@ void CHAR2UTF8(const char *str,char *utf8,unsigned long int len)
 	//  utf8 = new char[buffLen+1];  
 	WideCharToMultiByte(CP_UTF8, 0, wbuff, -1, (LPSTR)utf8, len*2+4, 0, 0); 
 	free(wbuff);
+	wbuff=NULL;
 }
 
 void UTF82CHAR(const char *utf8,char *str,unsigned long int len)
@@ -91,6 +92,7 @@ void UTF82CHAR(const char *utf8,char *str,unsigned long int len)
 	//	m_gb2312 = new char[buffLen+1];  
 	WideCharToMultiByte(CP_ACP, 0, wbuff, -1, (LPSTR)str, len*2+4, 0, 0);  
 	free(wbuff);
+	wbuff=NULL;
 }
 
 
@@ -558,7 +560,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		xmllitestr,xmlstrlen))
 	{
 		strcpy(failstr,"SendSoap_InitSystem 无法创建XML lite文件");
-		printf("SendSoap_InitSystem 无法创建XML lite文件\n");
+		//printf("SendSoap_InitSystem 无法创建XML lite文件\n");
 
 		return false;
 	}
@@ -568,7 +570,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		xmlstr,xmlstrlen))
 	{
 		strcpy(failstr,"SendSoap_InitSystem 无法创建XML文件");
-		printf("SendSoap_InitSystem 无法创建XML文件\n");
+		//printf("SendSoap_InitSystem 无法创建XML文件\n");
 
 		return false;
 	}
@@ -580,7 +582,7 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 	if(0!=nRes)
 	{
 		strcat(failstr," SendInitSystemSoap POST出错 卡口服务未启动");
-		printf("SendInitSystemSoap POST出错\n");
+	//	printf("SendInitSystemSoap POST出错\n");
 		CService.DestroyData();
 		return false;
 	}
@@ -632,17 +634,16 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 	TiXmlDocument returnDocument;
 	returnDocument.Parse(returnstr);
 
-
 	TiXmlElement *preturnRootEle = returnDocument.RootElement();
 	if (NULL==preturnRootEle)
 	{
 		strcpy(failstr,"SendInitSystemSoap XMLreturn出错");
-		printf("SendInitSystemSoap XMLreturn出错\n");
+		//printf("SendInitSystemSoap XMLreturn出错\n");
 		return false;
 	}
 
 	char codestr[32]="";
-	char messagestr[1024]="";
+	char messagestr[256]="";
 	char sessionstr[128]="";
 
 	TiXmlElement *pNodeRow = NULL;
@@ -653,15 +654,17 @@ bool SendSoap_InitSystem(char *wsdlUrl,char *ip,char *username,char *psw,
 		pNodeData = NULL;
 		if(ReadQueryNodeText(pNodeRow,pNodeData,"code",codestr,XMLRW_MAX_STR,true))
 		{
-			printf("code=%s\n",codestr);
+			//printf("code=%s\n",codestr);
+			NULL;
 		}
 		if(ReadQueryNodeText(pNodeRow,pNodeData,"message",messagestr,XMLRW_MAX_STR,true))
 		{
-			printf("message=%s\n",messagestr);
+		//	printf("message=%s\n",messagestr);
+			NULL;
 		}
 		if(ReadQueryNodeText(pNodeRow,pNodeData,"sessionId",sessionstr,XMLRW_MAX_STR,true))
 		{
-			printf("sessionId=%s\n",sessionstr);
+			//printf("sessionId=%s\n",sessionstr);
 			if(strlen(sessionstr)>0)
 			{
 				strcpy(sessionIdstr,sessionstr);
@@ -719,7 +722,7 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 	mapdata[5].i("drivewayNum","1");
 	mapdata[6].i("controlindexCode",index_code);
 
-	struct NAME_VALUE_S subdata[7];
+	struct NAME_VALUE_S subdata[3];
 
 	subdata[0].i("laneNum","1");
 	subdata[1].i("laneName","车道1");
@@ -741,7 +744,7 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 		xmlstr,xmlstrlen))
 	{
 		strcpy(failstr,"SendSoap_insertCrossingInfo 无法创建XML文件");
-		printf("SendSoap_insertCrossingInfo 无法创建XML文件\n");
+		//printf("SendSoap_insertCrossingInfo 无法创建XML文件\n");
 
 		return false;
 	}
@@ -753,7 +756,7 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 	if(0!=nRes)
 	{
 		strcat(failstr," SendSoap_insertCrossingInfo POST出错");
-		printf("SendSoap_insertCrossingInfo POST出错\n");
+		//printf("SendSoap_insertCrossingInfo POST出错\n");
 		CService.DestroyData();
 		return false;
 	}
@@ -788,12 +791,12 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 	if (NULL==preturnRootEle)
 	{
 		strcpy(failstr,"SendSoap_insertCrossingInfo XMLreturn出错");
-		printf("SendSoap_insertCrossingInfo XMLreturn出错\n");
+		//printf("SendSoap_insertCrossingInfo XMLreturn出错\n");
 		return false;
 	}
 
 	char codestr[32]="";
-	char messagestr[1024]="";
+	char messagestr[256]="";
 
 	TiXmlElement *pNodeRow = NULL;
 	TiXmlElement *pNodeData = NULL;
@@ -803,15 +806,18 @@ bool SendSoap_insertCrossingInfo(char *wsdlUrl,
 		pNodeData = NULL;
 		if(ReadQueryNodeText(pNodeRow,pNodeData,"code",codestr,XMLRW_MAX_STR,true))
 		{
-			printf("code=%s\n",codestr);
+		//	printf("code=%s\n",codestr);
+			NULL;
 		}
 		if(ReadQueryNodeText(pNodeRow,pNodeData,"message",messagestr,XMLRW_MAX_STR,true))
 		{
-			printf("message=%s\n",messagestr);
+			//printf("message=%s\n",messagestr);
+			NULL;
 		}
 		if(ReadQueryNodeText(pNodeRow,pNodeData,"crossId",crossIdstr,XMLRW_MAX_STR,true))
 		{
-			printf("crossId=%s\n",crossIdstr);
+			//printf("crossId=%s\n",crossIdstr);
+			NULL;
 		}
 	}
 
@@ -851,7 +857,7 @@ bool SendSoap_deleteCrossingInfo(char *wsdlUrl,
 		xmllitestr,xmlstrlen))
 	{
 		strcpy(failstr,"SendSoap_deleteCrossingInfo 无法创建XML lite文件");
-		printf("SendSoap_deleteCrossingInfo 无法创建XML lite文件\n");
+		//printf("SendSoap_deleteCrossingInfo 无法创建XML lite文件\n");
 
 		return false;
 	}
@@ -861,7 +867,7 @@ bool SendSoap_deleteCrossingInfo(char *wsdlUrl,
 		xmlstr,xmlstrlen))
 	{
 		strcpy(failstr,"SendSoap_deleteCrossingInfo 无法创建XML文件");
-		printf("SendSoap_deleteCrossingInfo 无法创建XML文件\n");
+		//printf("SendSoap_deleteCrossingInfo 无法创建XML文件\n");
 
 		return false;
 	}
@@ -873,7 +879,7 @@ bool SendSoap_deleteCrossingInfo(char *wsdlUrl,
 	if(0!=nRes)
 	{
 		strcat(failstr," SendSoap_deleteCrossingInfo POST出错 卡口服务未启动");
-		printf("SendSoap_deleteCrossingInfo POST出错\n");
+	//	printf("SendSoap_deleteCrossingInfo POST出错\n");
 		CService.DestroyData();
 		return false;
 	}
@@ -978,7 +984,7 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 {
 	Service CService;
 
-	long xmlstrlen=512000;
+	long xmlstrlen=728000;
 	//这里的值特别大
 	char *xmlstr=(char *)calloc(xmlstrlen,sizeof(char));
 	char *xmllitestr=(char *)calloc(xmlstrlen,sizeof(char));
@@ -1021,12 +1027,12 @@ bool SendSoap_insertVehicleInfo(char *wsdlUrl,
 		else
 		{
 			//转成BASE64传入
-			char *Platebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picPlatelen)+10,sizeof(char));
+			Platebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picPlatelen)+10,sizeof(char));
 			base64_encode(Platebase64str,(OUT_ENBASE64_SIZE(picPlatelen)+10)*sizeof(char),picPlatedata,picPlatelen);
 			mapdata[11].i("picPlate",Platebase64str); //车牌图
 		}
 
-		char *Vehiclebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picVehiclelen)+10,sizeof(char));
+		Vehiclebase64str=(char *)calloc(OUT_ENBASE64_SIZE(picVehiclelen)+10,sizeof(char));
 		base64_encode(Vehiclebase64str,(OUT_ENBASE64_SIZE(picVehiclelen)+10)*sizeof(char),picVehicledata,picVehiclelen);
 
 		//转BASE64

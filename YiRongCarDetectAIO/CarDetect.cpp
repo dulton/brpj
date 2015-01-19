@@ -99,6 +99,7 @@ CCarDetect::~CCarDetect()
 		lc_plate_analysis_destroy(CarHandle);
 
 	free(Jpg);
+	Jpg=NULL;
 
 	/*
 	int i;
@@ -843,7 +844,7 @@ sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 				OracleIO.Get_kakou_cross_index(camid,crossindex);
 				if(strlen(crossindex)>0)
 				{
-#if 1
+#if 0
 					//写入卡口系统		URL不支持中文
 					//数据写到IVMS 数据库 select * from BMS_VEHICLE_PASS t 表中
 					//URL
@@ -876,6 +877,17 @@ sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 					{
 						sprintf(crossindex,"E1ECA2111%05d",camid);
 						char newname[64]="";
+						char *tempp=cam_name;
+						//去掉空格
+						while(*tempp)   
+						{  
+							if( (*tempp) == ' ' )
+							{
+								(*tempp) = '_';
+							}
+							tempp++;  
+						} 
+
 						sprintf(newname,"ELECAR_%s",cam_name);
 
 						char crossIdstr[64]="";
@@ -888,7 +900,7 @@ sprintf(pathstr,"%s\\%s %d %s %s %d %s %d .jpg",	\
 							failstr))
 						{
 							OracleIO.Update_kakou_CrossIndex_id(camid,crossindex,atoi(crossIdstr));
-#if 1
+#if 0
 							//写入卡口系统	
 							//URL
 							if(!SendSoap_insertVehicleInfo(DlgSetSystem.m_kakou_url.GetBuffer(),
