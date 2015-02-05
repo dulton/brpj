@@ -3,7 +3,7 @@
 
 #define SIGNALDOWN_DEBUG 0
 
-#define LOWSPEEDLIMIT 32
+#define LOWSPEEDLIMIT 12
 
 //¿©’π∂®“Â
 #define SD_curl_easy_setopt_EXT(A,B,C)			\
@@ -189,8 +189,23 @@ bool SignalDownload::HTTPDownload(const TCHAR *url,
 		sprintf(failstr,"HTTPDownload %s",curl_easy_strerror(res));
 
 		fprintf(stderr, "curl result %s\n",curl_easy_strerror(res));	
+		long i=totalstrlen;
+	if(outflag)
+	{
 		fclose(outfile);
 		outfile=NULL;
+	}
+	else
+	{
+		totalstrlen=0;
+		if(NULL!=outstr)
+		{
+			free(outstr);
+			outstr=NULL;
+		}
+	}
+
+
 		curl_easy_cleanup(curl);
 		curl=NULL;
 		return false;							
