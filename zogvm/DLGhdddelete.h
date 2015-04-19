@@ -43,4 +43,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButtonDeleteDouble();
+	afx_msg void OnBnClickedButtonRebuildDouble();
 };

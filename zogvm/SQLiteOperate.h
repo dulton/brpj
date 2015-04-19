@@ -144,6 +144,43 @@ struct YYETS_ST
 };
 
 
+struct EXTERN_ED2K_ST
+{
+	long long  nid;
+	char name[256];	//纯文件名
+	long long filesize; //文件长度
+	char ed2k[512];
+};
+
+enum POINT_EM
+{
+	POINT_PATH=0,
+	POINT_NAME=1,
+	POINT_CREATTIME=2,
+	POINT_LASTTIME=3,
+	POINT_FILESIZE=4,
+	POINT_RESOLUTION=5,
+};
+
+//排序用的标记
+struct UPDOWN_ST
+{
+	bool issearch;
+	bool type_video;
+	bool type_audio;
+	bool type_sub;
+	bool type_other;
+
+	POINT_EM point; 
+
+	bool path;
+	bool name;
+	bool creattime;
+	bool lasttime;
+	bool filesize;
+	bool resolution;
+};
+
 class CSqliteOperate
 {
 public:
@@ -164,13 +201,13 @@ public:
 	//执行SQL语句
 	void Sql_UpdateExecute(char *sql);
 	void Sql_FindExecute(char *sql);
-int CSqliteOperate::Sql_CallBackExecute(char *sql,int (*callback)(void*,int,char**,char**), void *list);
-void CSqliteOperate::Begin(void);
-void CSqliteOperate::Commit(void);
+	int Sql_CallBackExecute(char *sql,int (*callback)(void*,int,char**,char**), void *list);
+	void Begin(void);
+	void Commit(void);
 
 	void filterstring(char *str,char *dst);
-void CSqliteOperate::filterstringForLike(char *str,char *dst);
-void CSqliteOperate::filterstringNameForLike(char *str,char *dst);
+	void filterstringForLike(char *str,char *dst);
+	void filterstringNameForLike(char *str,char *dst);
 
 	void ZiDian_CreateTable(void);
 	void ZiDian_Add(int mainzidian,char *zidian);
@@ -181,22 +218,22 @@ void CSqliteOperate::filterstringNameForLike(char *str,char *dst);
 	bool Double_Read(list<struct DOUBLE_FILE_ST> &List);
 	void Double_ReadOne(long long *double_nid,long long file_nid);
 	void Double_DeleteAll(void);
-void CSqliteOperate::File_CleanDouble2Zero(void);
+	void File_CleanDouble2Zero(void);
 
 	void Type_CreateTable(void);
 	void Type_Add(int maintype,char *type);
 	void Type_ModifyEnable(char* nid,int enable);
 	bool Type_Read(list<struct FILETYPE_ST> &List);
-void CSqliteOperate::Type_Add_Lock(int maintype,char *type);
-void CSqliteOperate::Type_DeleteAll(void);
-void CSqliteOperate::Type_AddAll(void);
+	void Type_Add_Lock(int maintype,char *type);
+	void Type_DeleteAll(void);
+	void Type_AddAll(void);
 
 	void Hdd_CreateTable(void);
 	void Hdd_Add(char *serno,char *area,char *mark,long long TotalBytes,long long FreeBytes);
 	void Hdd_ModifyEnable(char* nid,int enable);
 	bool Hdd_Read(list<struct HDD_ST> &List);
 	void Hdd_SetNonsert(void);
-	void CSqliteOperate::Hdd_DeleteforHdd(long long hdd_nid);
+	void Hdd_DeleteforHdd(long long hdd_nid);
 
 	void File_CreateTable(void);
 	void File_CreateView(void);
@@ -217,45 +254,38 @@ void CSqliteOperate::Type_AddAll(void);
 	void File_SetDouble(long long double_nid,char *file_nid_str);
 
 
-
 	long long File_NumberForHDD(long long hdd_nid);
 	bool File_ReadHddPage(list<struct FILE_VIEW_ST> &List,long long hdd_nid,bool up,long long start,int num);
 
 	void File_ResetDouble2Zero(void);
 
 	long long File_DoubleNumber(void);
-	bool File_ReadDouble(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
+	bool File_ReadDouble(list<struct FILE_VIEW_ST> &List,long long start,int num);
 
 	long long File_TrashNumber(void);
-	bool File_ReadTrash(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
+	bool File_ReadTrash(list<struct FILE_VIEW_ST> &List,long long start,int num);
 
 
-	long long File_NumberForSearch(char *str);
-	bool File_ReadPathForSearch(char *str,list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
+	void File_filterUpDown(char *SQLstr,struct UPDOWN_ST updown);
 
-	long long File_Number(void);
-	bool File_ReadPath(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
+	long long File_NumberForSearch(char *SQLstr,char *str);
+	bool File_ReadForSearch(char *SQLstr,char *str,list<struct FILE_VIEW_ST> &List,long long start,int num);
 
-/*
-	bool File_ReadName(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
-	bool File_ReadSize(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
-
-	bool File_ReadResolution(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
-	bool File_ReadTime(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
-	bool File_ReadCreatDate(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
-	bool File_ReadLastDate(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num);
-*/
-
-
+	long long File_Number(char *SQLstr);
+	bool File_Read(char *SQLstr,list<struct FILE_VIEW_ST> &List,long long start,int num);
 
 	//YYETS
-	long long CSqliteOperate::YYETS_Number(void);
+	long long YYETS_Number(void);
+	long long YYETS_NumberForSearch(char *str);
+	bool YYETS_Read(list<struct YYETS_ST> &List,long long start,int num);
+	bool YYETS_ReadForSearch(char *str,list<struct YYETS_ST> &List,long long start,int num);
 
-	long long CSqliteOperate::YYETS_NumberForSearch(char *str);
+	void ExternED2K_CreateTable(void);
+	void ExternED2K_Add(struct EXTERN_ED2K_ST data);
 
-	bool CSqliteOperate::YYETS_Read(list<struct YYETS_ST> &List,long long start,int num);
+	void File_CleanIDX(long long hdd_nid);
+;
 
-	bool CSqliteOperate::YYETS_ReadForSearch(char *str,list<struct YYETS_ST> &List,long long start,int num);
 };
 
 

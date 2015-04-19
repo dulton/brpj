@@ -219,6 +219,10 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\DLGAddEd2k.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DLGFileType.cpp"
 				>
 				<FileConfiguration
@@ -421,6 +425,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+			<File
+				RelativePath=".\DLGAddEd2k.h"
+				>
+			</File>
 			<File
 				RelativePath="DLGFileType.h"
 				>

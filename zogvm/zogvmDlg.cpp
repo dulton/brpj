@@ -7,15 +7,14 @@
 
 #include "DLGFileType.h"
 
-#include "SqliteOperate.h"
+
 extern CSqliteOperate SQLDB;
 
 #include "DLGHdd.h"
 #include "DLGhdddelete.h"
 #include "video.h"
 #include "DLGYYETS.h"
-
-#include "rhashinclude\rhash.h"
+#include "DLGAddEd2k.h"
 
 CZogvmDlg *pZogvmDlg;
 
@@ -26,7 +25,8 @@ list<struct FILE_VIEW_ST> outputList;
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
+	long long 	aaaa;
+		long long  bbbb;
 /////////////////////////////////////////////////////////////////////////////
 // CZogvmDlg dialog
 
@@ -34,6 +34,10 @@ CZogvmDlg::CZogvmDlg(CWnd* pParent /*=NULL*/)
 : CDialog(CZogvmDlg::IDD, pParent)
 , m_sreach(_T(""))
 , m_c_delete_trash(FALSE)
+, m_c_video(TRUE)
+, m_c_audio(TRUE)
+, m_c_sub(TRUE)
+, m_c_other(TRUE)
 {
 	//{{AFX_DATA_INIT(CZogvmDlg)
 	// NOTE: the ClassWizard will add member initialization here
@@ -61,6 +65,10 @@ void CZogvmDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_LAST, m_last_button);
 	DDX_Control(pDX, IDC_BUTTON_JUMP, m_jump_button);
 	DDX_Check(pDX, IDC_CHECK_DELETE_TRASH, m_c_delete_trash);
+	DDX_Check(pDX, IDC_CHECK_VIDEO, m_c_video);
+	DDX_Check(pDX, IDC_CHECK_AUDIO, m_c_audio);
+	DDX_Check(pDX, IDC_CHECK_SUB, m_c_sub);
+	DDX_Check(pDX, IDC_CHECK_OTHER, m_c_other);
 }
 
 BEGIN_MESSAGE_MAP(CZogvmDlg, CDialog)
@@ -87,347 +95,12 @@ BEGIN_MESSAGE_MAP(CZogvmDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_TRASH, &CZogvmDlg::OnBnClickedButtonTrash)
 	ON_BN_CLICKED(IDC_BUTTON_TRASH_CLEAN, &CZogvmDlg::OnBnClickedButtonTrashClean)
 	ON_COMMAND(ID_YYETS, &CZogvmDlg::OnYyets)
+	ON_COMMAND(ID_ADD_ED2K, &CZogvmDlg::OnAddEd2k)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CZogvmDlg message handlers
-//获取文件后缀,并变小写
-CString GetFileExt(CString fileName)
-{
-	return (fileName.Right(fileName.GetLength()-fileName.ReverseFind('.'))).MakeLower();
-}
 
-//获取文件相对路径。去除盘符和名字
-CString GetFilePathNoName(CString filepath)
-{
-	CString path=filepath.Right(filepath.GetLength()-filepath.Find('\\')-1);
-	return path.Left(path.ReverseFind('\\')+1);
-}
-//比较后缀
-int checkExt(list<struct FILETYPE_ST> typeList,char *fileext) 
-{
-	list<struct FILETYPE_ST>::iterator beglist;
-
-	for(beglist=typeList.begin();beglist!=typeList.end();beglist++)
-	{
-		if(beglist->enable && 0== strcmp(beglist->type,fileext) )
-		{
-			return beglist->maintype ;
-		}
-	}
-	// -1为无效
-	return -1;
-}
-
-struct STR_SPLITE_S
-{
-	char s[256];
-};
-
-//分割字符串
-void StrSplite(list<struct STR_SPLITE_S> &strList,char *src) 
-{
-	struct STR_SPLITE_S a={0};
-	int i=0;
-	strList.clear();
-
-	while(*src)
-	{
-		if(' '==(*src) || '.'==(*src) || '-'==(*src) || '_'==(*src)|| '+'==(*src))
-		{
-			//小写
-			strlwr(a.s);
-			strList.push_back(a);
-			memset(&a,0,sizeof(struct STR_SPLITE_S));
-			i=0;
-		}
-		else
-		{
-			a.s[i]=(*src);
-			i++;
-		}
-		src++;
-
-	}
-	strlwr(a.s);
-	strList.push_back(a);
-}
-
-//比较字符串
-void checkStr(struct FILE_ST &data,list<struct ZIDIAN_ST> zidianList,list<struct STR_SPLITE_S> strList) 
-{
-	list<struct STR_SPLITE_S>::iterator beglistA;
-	list<struct ZIDIAN_ST>::iterator beglistB;
-
-	for(beglistA=strList.begin();beglistA!=strList.end();beglistA++)
-	{
-		if(strlen(beglistA->s) <=16)
-		{
-			for(beglistB=zidianList.begin();beglistB!=zidianList.end();beglistB++)
-			{
-				if(0==strcmp(beglistA->s,beglistB->lowzidian))
-				{
-					if(ZIDIAN_YAZHI == beglistB->mainzidian)
-					{
-						strcpy(data.zidian_yazhi,beglistB->zidian);
-					}
-					else if(ZIDIAN_HUAZHI == beglistB->mainzidian)
-					{
-						strcpy(data.zidian_huazhi,beglistB->zidian);
-					}
-					else if(ZIDIAN_FENBIANLV == beglistB->mainzidian)
-					{
-						strcpy(data.zidian_fenbianlv,beglistB->zidian);
-					}
-					else if(ZIDIAN_3D == beglistB->mainzidian)
-					{
-						strcpy(data.zidian_3d,beglistB->zidian);
-					}
-					else if(ZIDIAN_YEAR == beglistB->mainzidian)
-					{
-						strcpy(data.zidian_year,beglistB->zidian);
-					}
-					break;
-				}
-			}
-		}
-	}
-
-}
-
-
-//遍历所有文件
-void FindAllFile(long long hdd_nid,CString hdd_area,
-				 list<struct FILETYPE_ST> typeList,list<struct ZIDIAN_ST> zidianList)
-{
-
-	CTime cTime;
-	CTime lTime;
-	CString fileName;
-	CString fileExt;
-
-	struct FILE_ST data;
-	list<STR_SPLITE_S> strList;
-
-	CFileFind fileFinder;
-	CString filePath = hdd_area + _T("//*.*");
-
-	BOOL bFinished = fileFinder.FindFile(filePath);
-
-	while(bFinished)  //每次循环对应一个类别目录
-	{
-		bFinished = fileFinder.FindNextFile();
-
-		if(fileFinder.IsDirectory() && !fileFinder.IsDots())  //若是目录则递归调用此方法
-		{
-			FindAllFile(hdd_nid,fileFinder.GetFilePath(),typeList,zidianList);
-		}
-		else  //再判断是否为txt文件
-		{
-			//获取文件类型
-			fileName = fileFinder.GetFileName();
-			fileExt=GetFileExt(fileName);
-
-			memset(&data,0,sizeof(struct FILE_ST ));
-			//有效后缀
-			data.maintype=checkExt(typeList,fileExt.GetBuffer(0));
-
-			if(data.maintype >=0)
-			{
-				if(SQLDB.File_CheckDoublePos(fileName.GetBuffer(0),
-					GetFilePathNoName(fileFinder.GetFilePath()).GetBuffer(0),
-					hdd_nid))
-					continue;
-
-				fileFinder.GetCreationTime(cTime);
-				fileFinder.GetLastWriteTime(lTime);
-
-				strcpy(data.name,fileName.GetBuffer(0)	);
-				strcpy(data.path,GetFilePathNoName(fileFinder.GetFilePath()).GetBuffer(0));
-
-				data.hdd_nid=hdd_nid;
-				strcpy(data.type,fileExt.GetBuffer(0));
-				data.filesize=fileFinder.GetLength();
-
-				data.CreationTime=cTime.GetTime();
-				data.LastWriteTime=lTime.GetTime();
-
-			}
-			if(MAINTYPE_OTHER == data.maintype )
-			{
-				strList.clear();
-				StrSplite(strList,fileName.GetBuffer(0));
-				checkStr(data,zidianList,strList); 
-				strList.clear();
-			}
-			else if( MAINTYPE_SUB == data.maintype)
-			{
-				NULL;
-			}
-			else  if(MAINTYPE_VIDEO == data.maintype )
-			{
-				#if OPEN_FFMEPG
-				VideoPlay(fileFinder.GetFilePath().GetBuffer(0),
-					&data.filetime,&data.resolutionW,&data.resolutionH);
-#endif
-				strList.clear();
-				StrSplite(strList,fileName.GetBuffer(0));
-				checkStr(data,zidianList,strList); 
-				strList.clear();
-			}
-			else  if(MAINTYPE_MUSIC == data.maintype )
-			{
-				#if OPEN_FFMEPG
-				AudioPlay(fileFinder.GetFilePath().GetBuffer(0),&data.filetime) ;
-#endif
-				NULL;
-			}
-			if(data.maintype >=0)
-			{
-				SQLDB.File_Add(data);
-			}
-		}
-	}
-
-	fileFinder.Close();
-}
-void CheckAllDoubleFile(long long hdd_nid)
-{
-	long long doublenid;
-	CString strid;
-	char cstrid[64];
-
-	list<struct FILE_VIEW_LITE_ST> fileviewList;
-	list<struct FILE_VIEW_LITE_ST>::iterator beglist;
-	list<struct FILE_VIEW_LITE_ST> fileviewDoubleList;
-	list<struct FILE_VIEW_LITE_ST>::iterator Doublebeglist;
-	fileviewList.clear();
-	fileviewDoubleList.clear();
-
-	if(SQLDB.File_ReadHddAllwithVideoAudio(fileviewList,hdd_nid))
-	{
-		for(beglist=fileviewList.begin();beglist!=fileviewList.end();beglist++)
-		{
-			fileviewDoubleList.clear();
-			SQLDB.File_CheckDouble(beglist->file_maintype,beglist->filesize,
-				beglist->file_name,beglist->file_md5,
-				fileviewDoubleList);
-
-			//查看重复 必须多于1条
-			if(fileviewDoubleList.size()>1)
-			{
-				//发现重复的
-				doublenid=0;
-				//看看之前有没ID。 复用他
-				for(Doublebeglist=fileviewDoubleList.begin();Doublebeglist!=fileviewDoubleList.end();Doublebeglist++)
-				{
-					if(Doublebeglist->double_nid>0)
-					{
-						doublenid=Doublebeglist->double_nid;
-						break;
-					}
-				}
-				//新增ID
-				if(doublenid <=0 )
-				{
-					SQLDB.Double_Add(beglist->file_nid);
-					//获取一个DOUBLEID 
-					SQLDB.Double_ReadOne(&doublenid,beglist->file_nid);
-				}
-				//写到各个文件里
-				if(doublenid >0)	
-				{
-					strid="";
-					for(Doublebeglist=fileviewDoubleList.begin();Doublebeglist!=fileviewDoubleList.end();Doublebeglist++)
-					{
-						if(Doublebeglist!=fileviewDoubleList.begin())
-							sprintf(cstrid,",%I64u",Doublebeglist->file_nid);
-						else
-							sprintf(cstrid,"%I64u",Doublebeglist->file_nid);
-						strid+=cstrid;
-					}
-
-					SQLDB.File_SetDouble(doublenid,strid.GetBuffer(0));
-				}
-			}
-		
-		}
-	}
-	fileviewList.clear();
-	fileviewDoubleList.clear();
-
-}
-void CheckAllIsFile(long long hdd_nid)
-{
-	FILE *fp=NULL;
-	char str[512];
-
-	list<struct FILE_VIEW_LITE_ST> fileviewList;
-	list<struct FILE_VIEW_LITE_ST>::iterator beglist;
-	
-	fileviewList.clear();
-	//查看文件是否存在
-	if(SQLDB.File_ReadHddAllandOld(fileviewList,hdd_nid))
-	{
-			
-		for(beglist=fileviewList.begin();beglist!=fileviewList.end();beglist++)
-		{
-			sprintf(str,"%s%s%s",beglist->hdd_area,beglist->file_path,beglist->file_name);
-			fp=fopen(str,"rb");
-			if(fp)
-			{
-				//文件存在
-				fclose(fp);
-				fp=NULL;
-			}
-			else
-			{
-				//文件不存在
-				SQLDB.File_Delete(beglist->file_nid);
-			}
-		}
-	}
-	//重置全部文件为0
-	SQLDB.File_SetNoFlagOne(hdd_nid);
-	fileviewList.clear();
-
-}
-
-//生成ED2K连接。
-void GetEd2kUrl(char* path,char *name,char *dst)
-{
-	unsigned char digest[64]="";
-	char outputed2k[256]="";
-	char outputaich[256]="";
-
-	strcpy(dst,"");
-	long long sizemax=1024*1024;
-	sizemax*=1024*4;
-
-	long long size=filesize(path);
-	if(size >= sizemax)
-	{
-		//大于4G 退出
-		return ;
-	}
-	rhash_library_init(); 
-
-	rhash_file(RHASH_ED2K,path, digest);
-	rhash_print_bytes(outputed2k, digest, rhash_get_digest_size(RHASH_ED2K),(RHPR_HEX));
-
-
-	rhash_file(RHASH_AICH,path, digest);
-	rhash_print_bytes(outputaich, digest, rhash_get_digest_size(RHASH_AICH),(RHPR_BASE32 ));
-
-	sprintf(dst,"ed2k://|file|%s|%I64u|%s|h=%s",name,size,outputed2k,outputaich);
-
-//	rhash_file(RHASH_TTH,filepath, digest);
-//	rhash_print_bytes(output, digest, rhash_get_digest_size(RHASH_TTH),(RHPR_BASE32 ));
-
-//	rhash_file(RHASH_SHA1,filepath, digest);
-//	rhash_print_bytes(output, digest, rhash_get_digest_size(RHASH_SHA1 ),RHPR_HEX);
-
-}
 //////////////////////////////////////////////////////////////////////////////
 DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
 {
@@ -449,14 +122,15 @@ DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
 
 	//建目录
 	FindAllFile(hddst.hdd_nid,hddst.area,typeList,zidianList);
-	
+
 	sprintf(tempstr,"%s %s ：判断文件是否存在..",hddst.serno,hddst.mark);
 	pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 
+	//缺少 关联 IDX代码
+	SQLDB.File_CleanIDX(hddst.hdd_nid);
+
 	//查看文件是否存在
 	CheckAllIsFile(hddst.hdd_nid);
-
-	//缺少 关联 IDX代码
 
 
 	//设置自己查找完毕
@@ -493,6 +167,7 @@ DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
 	//查看重复文件
 	CheckAllDoubleFile(hddst.hdd_nid);
 
+
 	sprintf(tempstr,"%s %s ：扫描完毕",hddst.serno,hddst.mark);
 	pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 	
@@ -519,7 +194,8 @@ DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
 	
 	if(flag)
 	{
-		sprintf(tempstr,"全部扫描完毕~么么哒",hddst.serno,hddst.mark);
+		bbbb=GetTickCount()-aaaa;
+		sprintf(tempstr,"全部扫描完毕~么么哒 耗时%I64u分钟",bbbb/60000);
 		pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 		pZogvmDlg->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(TRUE);
 	}
@@ -660,6 +336,7 @@ void CZogvmDlg::OnButtonBuild()
 	GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(FALSE);
 
 
+aaaa=GetTickCount();
 	SQLDB.Begin();
 	SQLDB.Hdd_SetNonsert();
 	CDLGHdd::Add27HDDid();
@@ -747,16 +424,16 @@ void CZogvmDlg::DisplayerList()
 	switch(ModeFlag)
 	{
 	case MODE_DOUBLE:
-		SQLDB.File_ReadDouble(WinfileviewList,true,si-1,ei-(si-1));
+		SQLDB.File_ReadDouble(WinfileviewList,si-1,ei-(si-1));
 		break;
 	case MODE_FIND:
 		if(m_sreach.IsEmpty())
-			SQLDB.File_ReadPath(WinfileviewList,true,si-1,ei-(si-1));
+			SQLDB.File_Read(SQLstr,WinfileviewList,si-1,ei-(si-1));
 		else
-			SQLDB.File_ReadPathForSearch(m_sreach.GetBuffer(0),WinfileviewList,true,si-1,ei-(si-1));
+			SQLDB.File_ReadForSearch(SQLstr,m_sreach.GetBuffer(0),WinfileviewList,si-1,ei-(si-1));
 		break;
 	case MODE_TRASH:
-		SQLDB.File_ReadTrash(WinfileviewList,true,si-1,ei-(si-1));
+		SQLDB.File_ReadTrash(WinfileviewList,si-1,ei-(si-1));
 		break;
 	default:return ;
 
@@ -768,7 +445,9 @@ void CZogvmDlg::DisplayerList()
 	list<struct FILE_VIEW_ST>::iterator beglist;
 	char str[128];
 	int i=0;
-	CTime temptime;
+	SYSTEMTIME   systime;
+	FILETIME  temptime;
+	ULARGE_INTEGER  uli; 
 
 	for(beglist=WinfileviewList.begin();beglist!=WinfileviewList.end();beglist++)
 	{
@@ -801,19 +480,32 @@ void CZogvmDlg::DisplayerList()
 
 		m_list.SetItemText(i,7,beglist->file_data.type);
 
-		temptime=beglist->file_data.CreationTime;
+		if(beglist->file_data.CreationTime)
+		{
+			uli.QuadPart=beglist->file_data.CreationTime;
+			temptime.dwLowDateTime=uli.LowPart;
+			temptime.dwHighDateTime=uli.HighPart;
+			FileTimeToSystemTime(&temptime,&systime);
 
-		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
-			temptime.GetYear(),temptime.GetMonth(),temptime.GetDay(),
-			temptime.GetHour(),temptime.GetMinute(),temptime.GetSecond());
-		m_list.SetItemText(i,8,str);
+			sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
+				systime.wYear,systime.wMonth,systime.wDay,
+				systime.wHour,systime.wMinute,systime.wSecond);
 
-		temptime=beglist->file_data.LastWriteTime;
+			m_list.SetItemText(i,8,str);
+		}
 
-		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
-			temptime.GetYear(),temptime.GetMonth(),temptime.GetDay(),
-			temptime.GetHour(),temptime.GetMinute(),temptime.GetSecond());
-		m_list.SetItemText(i,9,str);
+		if(beglist->file_data.LastWriteTime)
+		{
+			uli.QuadPart=beglist->file_data.LastWriteTime;
+			temptime.dwLowDateTime=uli.LowPart;
+			temptime.dwHighDateTime=uli.HighPart;
+			FileTimeToSystemTime(&temptime,&systime);
+
+			sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
+				systime.wYear,systime.wMonth,systime.wDay,
+				systime.wHour,systime.wMinute,systime.wSecond);
+			m_list.SetItemText(i,9,str);
+		}
 
 		//sprintf(str,"%I64u",);
 		DisplaySize(beglist->file_data.filesize,str);
@@ -884,15 +576,15 @@ void CZogvmDlg::DisplayerList()
 
 	if(ListTotal%PAGE_MAX_NUM)
 	{
-		sprintf(str,"共%d条 %d/%d页",
+		sprintf(str,"共%d条 %d/%d页 每页%d条",
 			ListTotal,
-			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM+1);
+			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM+1,PAGE_MAX_NUM);
 	}
 	else
 	{
-		sprintf(str,"共%d条 %d/%d页",
+		sprintf(str,"共%d条 %d/%d页 每页%d条",
 			ListTotal,
-			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM);
+			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM,PAGE_MAX_NUM);
 	}
 	GetDlgItem(IDC_STATIC_INFO)->SetWindowText(str);
 	InvalidateRect(printf_Rect, TRUE);
@@ -910,10 +602,33 @@ void CZogvmDlg::OnButtonFind()
 
 	ListTotal=0;
 
+	memset(SQLstr,0,1024);
+	
+	SQLupdown.type_video=m_c_video;
+	SQLupdown.type_audio=m_c_audio;
+	SQLupdown.type_sub=m_c_sub;
+	SQLupdown.type_other=m_c_other;
+
+	SQLupdown.point=POINT_PATH; 
+	SQLupdown.path=true;
+	SQLupdown.name=false;
+	SQLupdown.creattime=false;
+	SQLupdown.lasttime=false;
+	SQLupdown.filesize=false;
+	SQLupdown.resolution=false;
+
 	if(m_sreach.IsEmpty())
-		ListTotal=SQLDB.File_Number();
+	{
+		SQLupdown.issearch=false;
+		SQLDB.File_filterUpDown(SQLstr,SQLupdown);
+		ListTotal=SQLDB.File_Number(SQLstr);
+	}
 	else
-		ListTotal=SQLDB.File_NumberForSearch(m_sreach.GetBuffer(0));
+	{
+		SQLupdown.issearch=true;
+		SQLDB.File_filterUpDown(SQLstr,SQLupdown);
+		ListTotal=SQLDB.File_NumberForSearch(SQLstr,m_sreach.GetBuffer(0));
+	}
 
 	ListNow=0;
 
@@ -1015,8 +730,67 @@ void CZogvmDlg::OnLvnColumnclickList(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	// TODO: 在此添加控件通知处理程序代码
-	//sort_column = pNMLV->iSubItem;//点击的列
+	int sort_column = pNMLV->iSubItem;//点击的列
+	UpdateData(TRUE);
 
+	if(MODE_FIND ==ModeFlag )
+	{
+		switch(sort_column)
+		{
+		case 4:		
+			SQLupdown.point=POINT_PATH;
+			SQLupdown.path=!SQLupdown.path;
+			break;
+		case 5:		
+			SQLupdown.point=POINT_NAME;
+			SQLupdown.name=!SQLupdown.name;
+			break;
+		case 8:		
+			SQLupdown.point=POINT_CREATTIME;
+			SQLupdown.creattime=!SQLupdown.creattime;
+			break;
+		case 9:		
+			SQLupdown.point=POINT_LASTTIME;
+			SQLupdown.lasttime=!SQLupdown.lasttime;
+			break;
+		case 10:	
+			SQLupdown.point=POINT_FILESIZE;
+			SQLupdown.filesize=!SQLupdown.filesize;
+			break;
+		case 16:	
+			SQLupdown.point=POINT_RESOLUTION;
+			SQLupdown.resolution=!SQLupdown.resolution;
+			break;
+		default:return ;
+		}
+
+		ListTotal=0;
+
+		memset(SQLstr,0,1024);
+
+		SQLupdown.type_video=m_c_video;
+		SQLupdown.type_audio=m_c_audio;
+		SQLupdown.type_sub=m_c_sub;
+		SQLupdown.type_other=m_c_other;
+
+		if(m_sreach.IsEmpty())
+		{
+			SQLupdown.issearch=false;
+			SQLDB.File_filterUpDown(SQLstr,SQLupdown);
+			ListTotal=SQLDB.File_Number(SQLstr);
+		}
+		else
+		{
+			SQLupdown.issearch=true;
+			SQLDB.File_filterUpDown(SQLstr,SQLupdown);
+			ListTotal=SQLDB.File_NumberForSearch(SQLstr,m_sreach.GetBuffer(0));
+		}
+
+		ListNow=0;
+
+		ModeFlag=MODE_FIND;
+		DisplayerList();
+	}
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 }
@@ -1182,7 +956,9 @@ DWORD WINAPI ExeclThreadPROC(LPVOID lpParameter)
 
 	int i=0;
 	long j,k,m;
-	CTime temptime;
+	SYSTEMTIME   systime;
+	FILETIME  temptime;
+	ULARGE_INTEGER  uli; 
 	int ret;
 
 	char str[2048];
@@ -1303,22 +1079,36 @@ DWORD WINAPI ExeclThreadPROC(LPVOID lpParameter)
 
 				MultiByteToWideChar(CP_ACP, 0, filebeglist->file_data.type, -1, wbuff, 2048); 
 				sheet[k]->label(m,3,wbuff);
+	
+				if(filebeglist->file_data.CreationTime)
+				{
+					uli.QuadPart=filebeglist->file_data.CreationTime;
+					temptime.dwLowDateTime=uli.LowPart;
+					temptime.dwHighDateTime=uli.HighPart;
+					FileTimeToSystemTime(&temptime,&systime);
 
-				temptime=filebeglist->file_data.CreationTime;
+					sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
+						systime.wYear,systime.wMonth,systime.wDay,
+						systime.wHour,systime.wMinute,systime.wSecond);
 
-				sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
-					temptime.GetYear(),temptime.GetMonth(),temptime.GetDay(),
-					temptime.GetHour(),temptime.GetMinute(),temptime.GetSecond());
-				MultiByteToWideChar(CP_ACP, 0, str, -1, wbuff, 2048); 
-				sheet[k]->label(m,4,wbuff);
+					MultiByteToWideChar(CP_ACP, 0, str, -1, wbuff, 2048); 
+					sheet[k]->label(m,4,wbuff);
+				}
 
-				temptime=filebeglist->file_data.LastWriteTime;
+				if(filebeglist->file_data.LastWriteTime)
+				{
+					uli.QuadPart=filebeglist->file_data.LastWriteTime;
+					temptime.dwLowDateTime=uli.LowPart;
+					temptime.dwHighDateTime=uli.HighPart;
+					FileTimeToSystemTime(&temptime,&systime);
 
-				sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
-					temptime.GetYear(),temptime.GetMonth(),temptime.GetDay(),
-					temptime.GetHour(),temptime.GetMinute(),temptime.GetSecond());
-				MultiByteToWideChar(CP_ACP, 0, str, -1, wbuff, 2048); 
-				sheet[k]->label(m,5,wbuff);
+					sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d", 
+						systime.wYear,systime.wMonth,systime.wDay,
+						systime.wHour,systime.wMinute,systime.wSecond);
+
+					MultiByteToWideChar(CP_ACP, 0, str, -1, wbuff, 2048); 
+					sheet[k]->label(m,5,wbuff);
+				}
 
 				sprintf(str,"%I64u",filebeglist->file_data.filesize);
 				MultiByteToWideChar(CP_ACP, 0, str, -1, wbuff, 2048); 
@@ -1371,7 +1161,6 @@ void CZogvmDlg::OnBnClickedButtonOutputexecl()
 	GetDlgItem(IDC_BUTTON_OUTPUTEXECL)->EnableWindow(FALSE);
 
 }
-
 
 void CZogvmDlg::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -1432,7 +1221,7 @@ void CZogvmDlg::OnBnClickedButtonTrashClean()
 
 		WinfileviewList.clear();
 
-		SQLDB.File_ReadTrash(WinfileviewList,true,0,PAGE_MAX_NUM);
+		SQLDB.File_ReadTrash(WinfileviewList,0,PAGE_MAX_NUM);
 
 		if(WinfileviewList.size()>0)
 		{
@@ -1466,4 +1255,11 @@ void CZogvmDlg::OnYyets()
 	// TODO: Add your command handler code here
 	CDLGYYETS DlgYyets;
 	DlgYyets.DoModal();
+}
+
+void CZogvmDlg::OnAddEd2k()
+{
+	// TODO: Add your command handler code here
+	CDLGAddEd2k DlgEd2k;
+	DlgEd2k.DoModal();
 }

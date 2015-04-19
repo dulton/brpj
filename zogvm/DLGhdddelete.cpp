@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "zogvm.h"
 #include "DLGhdddelete.h"
+#include "video.h"
 
 extern CSqliteOperate SQLDB;
 // CDLGhdddelete dialog
@@ -31,6 +32,7 @@ void CDLGhdddelete::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDLGhdddelete, CDialog)
 		ON_BN_CLICKED(IDC_CHECK, OnCheck)
 		ON_BN_CLICKED(IDC_BUTTON_DELETE_DOUBLE, &CDLGhdddelete::OnBnClickedButtonDeleteDouble)
+		ON_BN_CLICKED(IDC_BUTTON_REBUILD_DOUBLE, &CDLGhdddelete::OnBnClickedButtonRebuildDouble)
 END_MESSAGE_MAP()
 
 
@@ -146,10 +148,40 @@ void CDLGhdddelete::OnBnClickedButtonDeleteDouble()
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
 
-		SQLDB.Begin();
+	SQLDB.Begin();
 	SQLDB.Double_DeleteAll();
 	SQLDB.File_CleanDouble2Zero();
-			SQLDB.Commit();
+	SQLDB.Commit();
 
 	MessageBox("删除完毕",NULL);
+}
+
+
+DWORD WINAPI DoubleThreadPROC(LPVOID lpParameter)
+{
+	list<struct HDD_ST> temphddList;
+	temphddList.clear();
+	SQLDB.Hdd_Read(temphddList);
+
+	CDLGhdddelete *Pdlg=(CDLGhdddelete *)lpParameter;
+
+	list<struct HDD_ST>::iterator beglist;
+
+	for(beglist=temphddList.begin();beglist!=temphddList.end();beglist++)
+	{
+		//查看重复文件
+		CheckAllDoubleFile(beglist->hdd_nid);
+	}
+
+
+	return 0;
+}
+void CDLGhdddelete::OnBnClickedButtonRebuildDouble()
+{
+	// TODO: Add your control notification handler code here
+	GetDlgItem(IDC_BUTTON_REBUILD_DOUBLE)->EnableWindow(FALSE);
+
+	CreateThread(NULL,0,DoubleThreadPROC,this,0,NULL);
+	Sleep(1000);
+	GetDlgItem(IDC_BUTTON_REBUILD_DOUBLE)->EnableWindow(TRUE);
 }

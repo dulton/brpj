@@ -17,6 +17,7 @@ using namespace::std;
 #include "xlslib_include\xlslib.h"
 using namespace xlslib_core;
 
+#include "SqliteOperate.h"
 
 
 enum MODE_FLAG_EM
@@ -49,6 +50,8 @@ public:
 	void CZogvmDlg::DisplayerList();
 	char OutputPath[260];
 
+	char SQLstr[1024] ;
+	struct UPDOWN_ST SQLupdown;
 	int ModeFlag;
 
 	CRect printf_Rect;
@@ -104,6 +107,11 @@ public:
 	afx_msg void OnBnClickedButtonTrashClean();
 	BOOL m_c_delete_trash;
 	afx_msg void OnYyets();
+	afx_msg void OnAddEd2k();
+	BOOL m_c_video;
+	BOOL m_c_audio;
+	BOOL m_c_sub;
+	BOOL m_c_other;
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -92,9 +92,6 @@ void CSqliteOperate::Commit(void)
 	Sql_UpdateExecute("commit;");
 }
 
-
-
-
 void CSqliteOperate::filterstring(char *str,char *dst)
 {
 	while(*str)   
@@ -135,6 +132,8 @@ void CSqliteOperate::filterstringForLike(char *str,char *dst)
 				b[i]=0;
 				if(!A.IsEmpty())
 					A+="or ";
+				else
+					A+="( ";
 				sprintf(c,"lower(name) like lower('%%%s%%') or lower(path) like lower('%%%s%%') ",b,b);
 				A+=c;
 				i=0;
@@ -153,9 +152,15 @@ void CSqliteOperate::filterstringForLike(char *str,char *dst)
 		b[i]=0;
 		if(!A.IsEmpty())
 			A+="or ";
+		else
+			A+="( ";
 		sprintf(c,"lower(name) like lower('%%%s%%') or lower(path) like lower('%%%s%%') ",b,b);
 		A+=c;
 		i=0;
+	}
+	if(!A.IsEmpty())
+	{
+		A+=") ";
 	}
 
 	strcpy(dst,A.GetBuffer(0));
@@ -296,7 +301,7 @@ void CSqliteOperate::ZiDian_CreateTable(void)
 				sprintf(str,"%d",i);
 				ZiDian_Add(ZIDIAN_YEAR,str);
 			}
-		
+
 			Commit();
 
 		}
@@ -526,9 +531,9 @@ void CSqliteOperate::Type_AddAll(void)
 		Sleep(10);
 	}
 	IOwriteLock=true;
-	
+
 	//使用BEGIN 和COMMIT 事务加速
-		Begin();
+	Begin();
 
 	Type_Add(MAINTYPE_OTHER,".iso");
 
@@ -577,9 +582,9 @@ void CSqliteOperate::Type_AddAll(void)
 	Type_Add(MAINTYPE_SUB,".ass");
 	Type_Add(MAINTYPE_SUB,".ssa");
 	Type_Add(MAINTYPE_SUB,".sub");
-	//Type_Add(MAINTYPE_SUB,".idx"); //开启  挪动的时候用SUB来挪
+	Type_Add(MAINTYPE_SUB,".idx"); //开启  挪动的时候用SUB来挪
 	Type_Add(MAINTYPE_SUB,".sup");
-	
+
 	Commit();
 
 	IOwriteLock=false;
@@ -732,7 +737,7 @@ void CSqliteOperate::Hdd_CreateTable(void)
 			//不适合该表。因为REPLACE 需要全字段都要插入。不然会被默认值代替。
 			sql.Format("create table tb_hdd(hdd_nid integer primary key,serno nvarchar(32), \
 					   area nvarchar(32), mark nvarchar(128), \
-					   insertflag integer,	enable integer \
+					   insertflag integer,	enable integer, \
 					   TotalBytes int8,FreeBytes int8)");
 			Sql_UpdateExecute(sql.GetBuffer(0));
 
@@ -789,8 +794,8 @@ void CSqliteOperate::Hdd_Add(char *serno,char *area,char *mark,long long TotalBy
 	}
 	/*//不能用
 	sql.Format("replace into tb_hdd(serno,area,mark,insertflag,TotalBytes ,FreeBytes ) \
-			   values('%s','%s','%s',1, %I64u,%I64u)",
-			   serno,area2str,mark2str,TotalBytes ,FreeBytes );
+	values('%s','%s','%s',1, %I64u,%I64u)",
+	serno,area2str,mark2str,TotalBytes ,FreeBytes );
 	Sql_UpdateExecute(sql.GetBuffer(0));
 	*/
 
@@ -1117,7 +1122,114 @@ void CSqliteOperate::File_CleanDouble2Zero(void)
 }
 
 
-long long CSqliteOperate::File_Number(void)
+
+
+void CSqliteOperate::File_filterUpDown(char *SQLstr,struct UPDOWN_ST updown)
+{
+	CString tempsql="";
+	bool orflag=false;
+
+	if(
+		(updown.type_video &&
+		updown.type_audio &&
+		updown.type_sub &&
+		updown.type_other ) ||
+		(!updown.type_video &&
+		!updown.type_audio &&
+		!updown.type_sub &&
+		!updown.type_other ) 
+		)
+	{
+		// 全选  全不选  啥都不干 
+		NULL;
+	}
+	else if(!(updown.type_video &&
+		updown.type_audio &&
+		updown.type_sub &&
+		updown.type_other ) )
+	{
+		if(updown.issearch)
+			tempsql+=" and ( ";
+		else
+			tempsql+=" where (";
+
+		if(updown.type_video)
+		{
+			tempsql+=" maintype= 1 ";
+			orflag=true;
+		}
+		if(updown.type_audio)
+		{
+			if(orflag)
+				tempsql+=" or ";
+
+			tempsql+=" maintype= 2 ";
+			orflag=true;
+		}
+		if(updown.type_sub)
+		{
+			if(orflag)
+				tempsql+=" or ";
+
+			tempsql+=" maintype= 3 ";
+			orflag=true;
+		}
+		if(updown.type_other)
+		{
+			if(orflag)
+				tempsql+=" or ";
+
+			tempsql+=" maintype= 0 ";
+			orflag=true;
+		}
+		tempsql+=" ) ";
+	}
+
+	switch(updown.point)
+	{
+	case POINT_PATH:	
+		if(updown.path)
+			tempsql+=" order by hdd_nid asc,lower(path) asc ";			
+		else					
+			tempsql+=" order by hdd_nid desc,lower(path) desc ";	
+		break;
+	case	POINT_NAME:
+		if(updown.name)
+			tempsql+=" order by lower(name) asc ";			
+		else					
+			tempsql+=" order by lower(name) desc ";	
+		break;
+	case	POINT_CREATTIME:
+		if(updown.creattime)
+			tempsql+=" order by CreationTime asc ";			
+		else					
+			tempsql+=" order by CreationTime desc ";	
+		break;
+	case	POINT_LASTTIME:
+		if(updown.lasttime)
+			tempsql+=" order by LastWriteTime asc ";			
+		else					
+			tempsql+=" order by LastWriteTime desc ";	
+		break;
+	case	POINT_FILESIZE:
+		if(updown.filesize)
+			tempsql+=" order by filesize asc ";			
+		else					
+			tempsql+=" order by filesize desc ";	
+		break;
+	case	POINT_RESOLUTION:
+		if(updown.resolution)
+			tempsql+=" order by zidian_fenbianlv asc ";			
+		else					
+			tempsql+=" order by zidian_fenbianlv desc ";	
+		break;
+
+	}
+	strcpy(SQLstr,tempsql.GetBuffer(0));
+
+}
+
+long long CSqliteOperate::File_Number(char *SQLstr)
 {
 	while(IOwriteLock)
 	{
@@ -1125,7 +1237,7 @@ long long CSqliteOperate::File_Number(void)
 	}
 	IOwriteLock=true;
 	CString sql;
-	sql.Format("select count(1) from filelist_view");
+	sql.Format("select count(1) from filelist_view %s",SQLstr);
 	Sql_FindExecute(sql.GetBuffer(0));
 
 	if (SQLITE_ROW == sqlite3_step(stmt)) 
@@ -1139,7 +1251,7 @@ long long CSqliteOperate::File_Number(void)
 	return 0;
 }
 
-long long CSqliteOperate::File_NumberForSearch(char *str)
+long long CSqliteOperate::File_NumberForSearch(char *SQLstr,char *str)
 {
 	while(IOwriteLock)
 	{
@@ -1149,7 +1261,9 @@ long long CSqliteOperate::File_NumberForSearch(char *str)
 	CString sql;
 	char likestr[5120];
 	filterstringForLike(str,likestr);
-	sql.Format("select count(1) from filelist_view where %s",likestr);
+
+	sql.Format("select count(1) from filelist_view where %s %s ",likestr,SQLstr);
+
 	Sql_FindExecute(sql.GetBuffer(0));
 
 	if (SQLITE_ROW == sqlite3_step(stmt)) 
@@ -1355,14 +1469,11 @@ bool CSqliteOperate::File_CheckDouble(int maintype,long long size,char *name,cha
 	CString strSql;
 
 	char name2str[2048]="";
-	filterstring(name,name2str);
+	//	filterstring(name,name2str);
+	//strSql.Format(_T("select * from filelist_view where maintype=%d and (filesize=%I64u or lower(name) like lower('%%%s%%'))"),maintype,size,name2str);
 
-	strSql.Format(_T("select * from filelist_view where maintype=%d and (filesize=%I64u or lower(name) like lower('%%%s%%'))"),maintype,size,name2str);
-	//	strSql.Format(_T("select * from filelist_view where maintype=%d and filesize=%I64u"),maintype,size);
-
-
+	strSql.Format(_T("select * from filelist_view where maintype=%d and filesize=%I64u"),maintype,size);
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileLiteCallBack , &List); 
-
 
 	IOwriteLock=false;
 	if(res == SQLITE_OK)
@@ -1412,7 +1523,7 @@ long long CSqliteOperate::File_DoubleNumber(void)
 	return 0;
 }
 
-bool CSqliteOperate::File_ReadDouble(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
+bool CSqliteOperate::File_ReadDouble(list<struct FILE_VIEW_ST> &List,long long start,int num)
 {
 	while(IOwriteLock)
 	{
@@ -1423,12 +1534,7 @@ bool CSqliteOperate::File_ReadDouble(list<struct FILE_VIEW_ST> &List,bool up,lon
 
 	CString strSql;
 
-	if(up)
-		strSql.Format(_T("select * from filelist_view where double_nid >0 order by double_nid asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view where double_nid >0 order by double_nid desc limit %I64u,%d"),start,num);
-
-
+	strSql.Format(_T("select * from filelist_view where double_nid >0 order by double_nid asc limit %I64u,%d"),start,num);
 
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
 
@@ -1465,7 +1571,7 @@ long long CSqliteOperate::File_TrashNumber(void)
 	return 0;
 }
 
-bool CSqliteOperate::File_ReadTrash(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
+bool CSqliteOperate::File_ReadTrash(list<struct FILE_VIEW_ST> &List,long long start,int num)
 {
 	while(IOwriteLock)
 	{
@@ -1476,14 +1582,8 @@ bool CSqliteOperate::File_ReadTrash(list<struct FILE_VIEW_ST> &List,bool up,long
 
 	CString strSql;
 
-	if(up)
-		strSql.Format(_T("select * from filelist_view where filesize=0 or path like '%%Sample\'order by double_nid asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view where filesize=0 or path like '%%Sample\'order by double_nid desc limit %I64u,%d"),start,num);
-
-
-
-
+	strSql.Format(_T("select * from filelist_view where filesize=0 or path like '%%Sample\'order by double_nid asc limit %I64u,%d"),start,num);
+	
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
 
 
@@ -1513,7 +1613,7 @@ void CSqliteOperate::Double_DeleteAll(void)
 
 
 ////////////////////////////////////////////////////
-bool CSqliteOperate::File_ReadPath(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
+bool CSqliteOperate::File_Read(char *SQLstr,list<struct FILE_VIEW_ST> &List,long long start,int num)
 {
 	while(IOwriteLock)
 	{
@@ -1524,11 +1624,7 @@ bool CSqliteOperate::File_ReadPath(list<struct FILE_VIEW_ST> &List,bool up,long 
 
 	CString strSql;
 
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by hdd_nid asc,lower(path) asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by hdd_nid desc,lower(path) desc limit %I64u,%d"),start,num);
-
+	strSql.Format(_T("select * from filelist_view %s limit %I64u,%d"),SQLstr,start,num);
 
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
 
@@ -1544,7 +1640,7 @@ bool CSqliteOperate::File_ReadPath(list<struct FILE_VIEW_ST> &List,bool up,long 
 }
 
 ////////////////////////////////////////////////////
-bool CSqliteOperate::File_ReadPathForSearch(char *str,list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
+bool CSqliteOperate::File_ReadForSearch(char *SQLstr,char *str,list<struct FILE_VIEW_ST> &List,long long start,int num)
 {
 	while(IOwriteLock)
 	{
@@ -1558,10 +1654,7 @@ bool CSqliteOperate::File_ReadPathForSearch(char *str,list<struct FILE_VIEW_ST> 
 
 	CString strSql;
 
-	if(up)
-		strSql.Format(_T("select * from filelist_view where %s order by hdd_nid asc,lower(path) asc limit %I64u,%d"),likestr,start,num);
-	else
-		strSql.Format(_T("select * from filelist_view where %s order by hdd_nid desc,lower(path) desc limit %I64u,%d"),likestr,start,num);
+	strSql.Format(_T("select * from filelist_view where %s %s limit %I64u,%d"),likestr,SQLstr,start,num);
 
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
 
@@ -1575,179 +1668,6 @@ bool CSqliteOperate::File_ReadPathForSearch(char *str,list<struct FILE_VIEW_ST> 
 	return false;
 
 }
-
-#if 0
-////////////////////////////////////////////////////
-bool CSqliteOperate::File_ReadName(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
-{
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-	IOwriteLock=true;
-	List.clear();
-	CString strSql;
-
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by lower(name) asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by lower(name) desc limit %I64u,%d"),start,num);
-
-
-	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
-
-	IOwriteLock=false;
-	if(res == SQLITE_OK)
-	{
-		if(List.size())
-			return true;
-	}
-	return false;
-
-}
-
-////////////////////////////////////////////////////
-//下标start 从0 开始 采集NUM个
-bool CSqliteOperate::File_ReadSize(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
-{
-
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-	IOwriteLock=true;
-	List.clear();
-	CString strSql;
-
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by filesize asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by filesize desc limit %I64u,%d"),start,num);
-
-
-	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
-
-	IOwriteLock=false;
-	if(res == SQLITE_OK)
-	{
-		if(List.size())
-			return true;
-	}
-	return false;
-
-}
-
-
-
-bool CSqliteOperate::File_ReadResolution(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
-{
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-	IOwriteLock=true;
-	List.clear();
-	CString strSql;
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by resolutionW asc,resolutionH asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by resolutionW desc,resolutionH desc limit %I64u,%d"),start,num);
-
-
-	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
-
-	IOwriteLock=false;
-	if(res == SQLITE_OK)
-	{
-		if(List.size())
-			return true;
-	}
-	return false;
-
-}
-
-bool CSqliteOperate::File_ReadTime(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
-{
-
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-	IOwriteLock=true;
-	List.clear();
-	CString strSql;
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by filetime asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by filetime desc limit %I64u,%d"),start,num);
-
-
-	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
-
-	IOwriteLock=false;
-	if(res == SQLITE_OK)
-	{
-		if(List.size())
-			return true;
-	}
-	return false;
-
-}
-
-bool CSqliteOperate::File_ReadCreatDate(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
-{
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-	IOwriteLock=true;
-	List.clear();
-	CString strSql;
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by CreationTime asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by CreationTime desc limit %I64u,%d"),start,num);
-
-	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
-
-	IOwriteLock=false;
-	if(res == SQLITE_OK)
-	{
-		if(List.size())
-			return true;
-	}
-	return false;
-
-}
-
-bool CSqliteOperate::File_ReadLastDate(list<struct FILE_VIEW_ST> &List,bool up,long long start,int num)
-{
-	while(IOwriteLock)
-	{
-		Sleep(10);
-	}
-	IOwriteLock=true;
-	List.clear();
-	CString strSql;
-	if(up)
-		strSql.Format(_T("select * from filelist_view order by LastWriteTime asc limit %I64u,%d"),start,num);
-	else
-		strSql.Format(_T("select * from filelist_view order by LastWriteTime desc limit %I64u,%d"),start,num);
-
-
-	int res = Sql_CallBackExecute(strSql.GetBuffer(0),FileCallBack , &List); 
-
-	IOwriteLock=false;
-	if(res == SQLITE_OK)
-	{
-		if(List.size())
-			return true;
-	}
-	return false;
-
-}
-
-#endif
 
 
 
@@ -1856,7 +1776,7 @@ bool CSqliteOperate::YYETS_ReadForSearch(char *str,list<struct YYETS_ST> &List,l
 	CString strSql;
 
 	strSql.Format(_T("select * from tb_yyets where %s limit %I64u,%d"),likestr,start,num);
-	
+
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),YYETSCallBack , &List); 
 
 	IOwriteLock=false;
@@ -1867,4 +1787,76 @@ bool CSqliteOperate::YYETS_ReadForSearch(char *str,list<struct YYETS_ST> &List,l
 	}
 	return false;
 
+}
+
+
+void CSqliteOperate::ExternED2K_CreateTable(void)
+{
+
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+
+	CString sql;
+	sql.Format("select count(1) from sqlite_master where type='table' and name='tb_ed2k'");
+	Sql_FindExecute(sql.GetBuffer(0));
+
+	if (SQLITE_ROW == sqlite3_step(stmt)) 
+	{
+		int row = sqlite3_column_int(stmt, 0);
+		sqlite3_finalize(stmt);
+		if(0 == row)
+		{
+			sql.Format("create table tb_ed2k(nid integer primary key,\
+					   name nvarchar(260) unique,\
+					   filesize int8,\
+					   ed2k nvarchar(512));");
+			Sql_UpdateExecute(sql.GetBuffer(0));
+
+		}
+	}
+	IOwriteLock=false;
+}
+
+void CSqliteOperate::ExternED2K_Add(struct EXTERN_ED2K_ST data)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+	char sql[2048];
+
+	char name2str[2048]="";
+	char ed2k2str[2048]="";
+	filterstring(data.name,name2str);
+	filterstring(data.ed2k,ed2k2str);
+
+	sprintf(sql,"replace into tb_ed2k(name,filesize,ed2k)\
+				values('%s',%I64u,'%s')",
+				name2str,data.filesize,ed2k2str);
+	Sql_UpdateExecute(sql);
+	IOwriteLock=false;
+
+}
+
+void CSqliteOperate::File_CleanIDX(long long hdd_nid)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+
+	CString sql;
+
+	sql.Format("delete from tb_file where type='.idx' and hdd_nid=%I64u and name \
+				not in \
+				(select  replace (name,'.sub','.idx') from tb_file where type='.sub' and hdd_nid=%I64u)",
+				hdd_nid,hdd_nid);
+	Sql_UpdateExecute(sql.GetBuffer(0));
+
+	IOwriteLock=false;
 }

@@ -81,7 +81,8 @@ BOOL CDLGYYETS::OnInitDialog()
 
 	//初始即最大化 //放最后
 	ShowWindow(SW_MAXIMIZE);   
-
+	
+	OnBnClickedButtonFind();
 
 	return TRUE;
 }
@@ -210,8 +211,11 @@ void CDLGYYETS::OnBnClickedButtonMagnet()
 			{
 				if(beglist->yyets_nid == nid)
 				{
-					str+=beglist->magnet;
-					str+"\n\t\n";
+					if(strlen(beglist->magnet)>0)
+					{
+						str+=beglist->magnet;
+						str+="\r\n";
+					}
 					break;
 				}
 			}
@@ -249,8 +253,11 @@ void CDLGYYETS::OnBnClickedButtonEd2k()
 			{
 				if(beglist->yyets_nid == nid)
 				{
-					str+=beglist->ed2k;
-					str+"\n\t\n";
+					if(strlen(beglist->ed2k)>0)
+					{
+						str+=beglist->ed2k;
+						str+="\r\n";
+					}
 					break;
 				}
 			}
@@ -287,8 +294,11 @@ void CDLGYYETS::OnBnClickedButtonWanpan()
 			{
 				if(beglist->yyets_nid == nid)
 				{
-					str+=beglist->wanpan;
-					str+"\n\t\n";
+					if(strlen(beglist->wanpan)>0)
+					{
+						str+=beglist->wanpan;
+						str+="\r\n";
+					}
 					break;
 				}
 			}
@@ -346,15 +356,15 @@ void CDLGYYETS::DisplayerList()
 	
 	if(ListTotal%PAGE_MAX_NUM)
 	{
-		sprintf(str,"共%d条 %d/%d页",
+		sprintf(str,"共%d条 %d/%d页 每页%d条",
 			ListTotal,
-			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM+1);
+			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM+1,PAGE_MAX_NUM);
 	}
 	else
 	{
-		sprintf(str,"共%d条 %d/%d页",
+		sprintf(str,"共%d条 %d/%d页 每页%d条",
 			ListTotal,
-			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM);
+			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM,PAGE_MAX_NUM);
 	}
 	GetDlgItem(IDC_STATIC_INFO)->SetWindowText(str);
 	InvalidateRect(printf_Rect, TRUE);

@@ -60,8 +60,7 @@ BOOL CZogvmApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
-	long long ftime=GetTickCount();
-	long long etime;
+
 
 	FILE* fp=fopen("zogvm.db","rb");
 	if(fp)
@@ -88,9 +87,7 @@ BOOL CZogvmApp::InitInstance()
 	CDLGHdd::Add27HDDid();
 	SQLDB.Commit();
 
-	etime=GetTickCount();
-	long long aaa=etime-ftime;
-	
+
 
 	CZogvmDlg dlg;
 	m_pMainWnd = &dlg;

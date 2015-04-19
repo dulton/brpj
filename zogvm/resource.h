@@ -16,6 +16,7 @@
 #define IDI_VIDEO                       139
 #define IDD_HDD_DELETE                  140
 #define IDD_YYETS                       142
+#define IDD_ADD_ED2K                    143
 #define IDC_CHECK_VIDEO                 1001
 #define IDC_LIST_VIDEO                  1002
 #define IDC_EDIT_SREACH                 1004
@@ -28,10 +29,10 @@
 #define IDC_BUTTON_OUTPUTEXECL          1009
 #define IDC_BUTTON_NEW                  1009
 #define IDC_BUTTON_DELETE_DOUBLE        1009
+#define IDC_BUTTON_TXT                  1009
 #define IDC_BUTTON_TRASH                1010
 #define IDC_BUTTON_MAGNET               1010
 #define IDC_BUTTON_TRASH_CLEAN          1011
-#define IDC_BUTTON_DELETE_DOUBLE3       1012
 #define IDC_BUTTON_WANPAN               1012
 #define IDC_CHECK_MUSIC                 1036
 #define IDC_LIST_MUSIC                  1037
@@ -55,20 +56,28 @@
 #define IDC_BUTTON_REBUILD              1057
 #define IDC_CHECK_DELETE_TRASH          1058
 #define IDC_BUTTON_ED2K                 1059
+#define IDC_EDIT_TXT                    1060
+#define IDC_EDIT_DB                     1061
+#define IDC_COMBO_ENCODE                1062
+#define IDC_BUTTON_REBUILDDOUBLE        1063
+#define IDC_BUTTON_REBUILD_DOUBLE       1063
 #define ID_MENUITEM_SET_TYPE            32772
 #define ID_MENUITEM_SET_HDD             32773
 #define ID_32774                        32774
 #define ID_HDD_DELETE                   32775
 #define ID_32776                        32776
 #define ID_YYETS                        32777
+#define ID_32778                        32778
+#define ID_ADD                          32779
+#define ID_ADD_ED2K                     32780
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        143
-#define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1060
+#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_COMMAND_VALUE         32781
+#define _APS_NEXT_CONTROL_VALUE         1064
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
