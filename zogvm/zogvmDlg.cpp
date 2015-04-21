@@ -7,6 +7,7 @@
 
 #include "DLGFileType.h"
 
+#define   NEW_MODE 1
 
 extern CSqliteOperate SQLDB;
 
@@ -15,8 +16,9 @@ extern CSqliteOperate SQLDB;
 #include "video.h"
 #include "DLGYYETS.h"
 #include "DLGAddEd2k.h"
-
+#include "DLGViewEd2k.h"
 CZogvmDlg *pZogvmDlg;
+
 
 list<struct FILE_VIEW_ST> outputList;
 
@@ -45,6 +47,8 @@ CZogvmDlg::CZogvmDlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_page = 1;
+	ListTotal=0;
+	ListNow=0;
 	pZogvmDlg=this;
 	ModeFlag=MODE_FIND;
 }
@@ -96,13 +100,78 @@ BEGIN_MESSAGE_MAP(CZogvmDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_TRASH_CLEAN, &CZogvmDlg::OnBnClickedButtonTrashClean)
 	ON_COMMAND(ID_YYETS, &CZogvmDlg::OnYyets)
 	ON_COMMAND(ID_ADD_ED2K, &CZogvmDlg::OnAddEd2k)
+	ON_COMMAND(ID_VIEW_ED2K, &CZogvmDlg::OnViewEd2k)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CZogvmDlg message handlers
 
 //////////////////////////////////////////////////////////////////////////////
-DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
+#if NEW_MODE
+DWORD WINAPI BuildThreadPROC(LPVOID lpParameter)
+{
+
+	CZogvmDlg *pDlg=(CZogvmDlg *)lpParameter;
+
+	char tempstr[256];
+
+	pDlg->hddList.clear();
+	//几个硬盘开几个线程
+	SQLDB.Hdd_Read(pDlg->hddList);
+
+	list<struct FILETYPE_ST> typeList;
+	typeList.clear();
+	SQLDB.Type_Read(typeList); 
+
+	list<struct ZIDIAN_ST> zidianList;
+	zidianList.clear();
+	SQLDB.ZiDian_Read(zidianList); 
+
+	list<struct HDD_ST>::iterator beglist;
+
+	for(beglist=pDlg->hddList.begin();beglist!=pDlg->hddList.end();beglist++)
+	{
+		if(beglist->insertflag && beglist->enable)
+		{
+			sprintf(tempstr,"%s %s ：建目录中..",beglist->serno,beglist->mark);
+			pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
+
+			//建目录
+			FindAllFile_NEW(beglist->hdd_nid,beglist->area,typeList,zidianList);
+
+			//缺少 关联 IDX代码
+			SQLDB.File_CleanIDX(beglist->hdd_nid);
+
+			sprintf(tempstr,"%s %s ：判断文件是否存在..",beglist->serno,beglist->mark);
+			pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
+			//查看文件是否存在
+			CheckAllIsFile(beglist->hdd_nid);
+
+		}
+	}
+
+	for(beglist=pDlg->hddList.begin();beglist!=pDlg->hddList.end();beglist++)
+	{
+		if(beglist->insertflag && beglist->enable)
+		{
+			sprintf(tempstr,"%s %s ：判断重复文件..",beglist->serno,beglist->mark);
+			pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
+			//查看重复文件
+			CheckAllDoubleFile(beglist->hdd_nid);
+		}
+	}
+
+	bbbb=GetTickCount()-aaaa;
+	sprintf(tempstr,"全部扫描完毕~么么哒 耗时%I64u分钟",bbbb/60000);
+	pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
+	pZogvmDlg->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(TRUE);
+	
+
+	return 0;
+}
+#else
+
+DWORD WINAPI BuildThreadPROC(LPVOID lpParameter)
 {
 	struct HDD_ST  hddst;
 	memcpy(&hddst,(struct HDD_ST *)lpParameter,sizeof(struct HDD_ST));
@@ -202,6 +271,7 @@ DWORD WINAPI PlayThreadPROC(LPVOID lpParameter)
 
 	return 0;
 }
+#endif
 
 BOOL CZogvmDlg::OnInitDialog()
 {
@@ -329,7 +399,22 @@ void CZogvmDlg::OnMenuitemSetHdd()
 	DlgHdd.DoModal();
 }
 
+#if NEW_MODE
 
+void CZogvmDlg::OnButtonBuild() 
+{
+	// TODO: Add your control notification handler code here
+	GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(FALSE);
+aaaa=GetTickCount();
+	SQLDB.Begin();
+	SQLDB.Hdd_SetNonsert();
+	CDLGHdd::Add27HDDid();
+	SQLDB.Commit();
+	
+	CreateThread(NULL,0,BuildThreadPROC,(void*)this,0,NULL);
+
+}
+#else
 void CZogvmDlg::OnButtonBuild() 
 {
 	// TODO: Add your control notification handler code here
@@ -356,7 +441,7 @@ aaaa=GetTickCount();
 		{
 			flag=true;
 			beglist->dealstep=DEALSTEP_START;
-			CreateThread(NULL,0,PlayThreadPROC,(void*)&(*beglist),0,NULL);
+			CreateThread(NULL,0,BuildThreadPROC,(void*)&(*beglist),0,NULL);
 		}
 	}
 
@@ -364,6 +449,7 @@ aaaa=GetTickCount();
 		GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(TRUE);
 
 }
+#endif
 
 char*  MainType2Str(int type)
 {
@@ -666,7 +752,6 @@ void CZogvmDlg::OnSize(UINT nType, int cx, int cy)
 	//必须 样式=重叠，边框=调整大小
 	m_list.MoveWindow(list_Rect);
 
-	int buttonh=25;
 	int buttonbmpw=24,buttonbmph=18,buttongap=10;
 
 	CRect b_Rect;
@@ -1262,4 +1347,11 @@ void CZogvmDlg::OnAddEd2k()
 	// TODO: Add your command handler code here
 	CDLGAddEd2k DlgEd2k;
 	DlgEd2k.DoModal();
+}
+
+void CZogvmDlg::OnViewEd2k()
+{
+	// TODO: Add your command handler code here
+	CDLGViewEd2k DlgViewEd2k;
+	DlgViewEd2k.DoModal();
 }

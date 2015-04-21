@@ -32,6 +32,10 @@ void StrSplite(list<struct STR_SPLITE_S> &strList,char *src) ;
 void checkStr(struct FILE_ST &data,list<struct ZIDIAN_ST> zidianList,list<struct STR_SPLITE_S> strList) ;
 void FindAllFile(long long hdd_nid,CString hdd_area,
 				 list<struct FILETYPE_ST> typeList,list<struct ZIDIAN_ST> zidianList);
+
+void FindAllFile_NEW(long long hdd_nid,CString hdd_area,
+					 list<struct FILETYPE_ST> typeList,list<struct ZIDIAN_ST> zidianList);
+
 void CheckAllDoubleFile(long long hdd_nid);
 
 void CheckAllIsFile(long long hdd_nid);

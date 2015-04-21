@@ -1,31 +1,38 @@
-// DLGYYETS.cpp : implementation file
+// DLGViewEd2k.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "zogvm.h"
-#include "DLGYYETS.h"
+#include "DLGViewEd2k.h"
+
 #include "video.h"
 
 extern TCHAR CurrentDir[MAX_PATH];
-// CDLGYYETS dialog
+// CDLGViewEd2k dialog
 
-IMPLEMENT_DYNAMIC(CDLGYYETS, CDialog)
+IMPLEMENT_DYNAMIC(CDLGViewEd2k, CDialog)
 
-CDLGYYETS::CDLGYYETS(CWnd* pParent /*=NULL*/)
-: CDialog(CDLGYYETS::IDD, pParent)
+CDLGViewEd2k::CDLGViewEd2k(CWnd* pParent /*=NULL*/)
+: CDialog(CDLGViewEd2k::IDD, pParent)
 {
 	m_sreach=_T("");
 	m_page = 1;
 	ListTotal=0;
 	ListNow=0;
+	sprintf(libpath[EXTERN_ED2K_NGC],"%s\\externdb\\ngc.db",CurrentDir);
+	sprintf(libpath[EXTERN_ED2K_NHK],"%s\\externdb\\nhk.db",CurrentDir);
+	strcpy(libname[EXTERN_ED2K_NGC],"台湾版DC和NGC");
+	strcpy(libname[EXTERN_ED2K_NHK],"NHK");
+	
+
 }
 
-CDLGYYETS::~CDLGYYETS()
+CDLGViewEd2k::~CDLGViewEd2k()
 {
-	YyetsDB.CloseDB();
+	ed2kDB.CloseDB();
 }
 
-void CDLGYYETS::DoDataExchange(CDataExchange* pDX)
+void CDLGViewEd2k::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_SREACH, m_sreach);
@@ -37,48 +44,55 @@ void CDLGYYETS::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_NEXT, m_next_button);
 	DDX_Control(pDX, IDC_BUTTON_LAST, m_last_button);
 	DDX_Control(pDX, IDC_BUTTON_JUMP, m_jump_button);
-		DDX_Check(pDX, IDC_CHECK, m_check);
+	DDX_Check(pDX, IDC_CHECK, m_check);
+	DDX_Control(pDX, IDC_COMBO_LIB, m_c_lib);
 }
 
 
-BEGIN_MESSAGE_MAP(CDLGYYETS, CDialog)
-	ON_BN_CLICKED(IDC_BUTTON_FIND, &CDLGYYETS::OnBnClickedButtonFind)
-	ON_BN_CLICKED(IDC_BUTTON_MAGNET, &CDLGYYETS::OnBnClickedButtonMagnet)
-	ON_BN_CLICKED(IDC_BUTTON_ED2K, &CDLGYYETS::OnBnClickedButtonEd2k)
-	ON_BN_CLICKED(IDC_BUTTON_WANPAN, &CDLGYYETS::OnBnClickedButtonWanpan)
+BEGIN_MESSAGE_MAP(CDLGViewEd2k, CDialog)
+	ON_BN_CLICKED(IDC_BUTTON_FIND, &CDLGViewEd2k::OnBnClickedButtonFind)
+	ON_BN_CLICKED(IDC_BUTTON_ED2K, &CDLGViewEd2k::OnBnClickedButtonEd2k)
 	ON_BN_CLICKED(IDC_BUTTON_FIRST, OnButtonFirst)
 	ON_BN_CLICKED(IDC_BUTTON_PREVIOUS, OnButtonPrevious)
 	ON_BN_CLICKED(IDC_BUTTON_NEXT, OnButtonNext)
 	ON_BN_CLICKED(IDC_BUTTON_LAST, OnButtonLast)
 	ON_BN_CLICKED(IDC_BUTTON_JUMP, OnButtonJump)
-		ON_BN_CLICKED(IDC_CHECK, OnCheck)
+	ON_BN_CLICKED(IDC_CHECK, OnCheck)
 	ON_WM_SIZE()
+	ON_CBN_CLOSEUP(IDC_COMBO_LIB, &CDLGViewEd2k::OnCbnCloseupComboLib)
 END_MESSAGE_MAP()
 
-BOOL CDLGYYETS::OnInitDialog()
+BOOL CDLGViewEd2k::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	char tempstr[260];
-	sprintf(tempstr,"%s\\externdb\\yyets.db",CurrentDir);
-	FILE* fp=fopen(tempstr,"rb");
-	if(fp)
-	{
-		fclose(fp);
-		YyetsDB.OpenDB(tempstr);
+	FILE* fp;
+	combo_total=0;
+	for(int i=0;i<MAX_EXTERN_ED2K_LIB_NUM;i++)
+	{	
+		fp=fopen(libpath[i],"rb");
+		if(fp)
+		{
+			m_c_lib.AddString(libname[i]); 
+			combo_index[combo_total]=i;
+			combo_total++;
+			fclose(fp);
+		}
 	}
-	else
+
+	if(0==combo_total)
 	{
-		MessageBox("yyets数据库未找到","错误");
+		MessageBox("数据库未找到","错误");
 		return FALSE;
 	}
+
+	m_c_lib.SetCurSel(0);
+	ed2kDB.OpenDB(libpath[combo_index[0]]);
 
 	m_list.InsertColumn(0, _T("序列号") , LVCFMT_LEFT, 70);
 	m_list.InsertColumn(1, _T("片名") , LVCFMT_LEFT, 600);
 	m_list.InsertColumn(2, _T("容量") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(3, _T("磁力链接") , LVCFMT_LEFT, 200);
-	m_list.InsertColumn(4, _T("电驴链接") , LVCFMT_LEFT, 200);
-	m_list.InsertColumn(5, _T("网盘链接") , LVCFMT_LEFT, 200);
+	m_list.InsertColumn(3, _T("电驴链接") , LVCFMT_LEFT, 200);
 
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -86,18 +100,18 @@ BOOL CDLGYYETS::OnInitDialog()
 
 	//初始即最大化 //放最后
 	ShowWindow(SW_MAXIMIZE);   
-	
+
 	OnBnClickedButtonFind();
 
 	return TRUE;
 }
-void CDLGYYETS::OnOK() 
+void CDLGViewEd2k::OnOK() 
 {
 	// TODO: Add extra validation here
 
 	//	CDialog::OnOK();
 }
-void CDLGYYETS::OnSize(UINT nType, int cx, int cy)
+void CDLGViewEd2k::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
 
@@ -105,7 +119,7 @@ void CDLGYYETS::OnSize(UINT nType, int cx, int cy)
 	CRect		m_clientRect;		//程序界面区域位置
 	GetClientRect(&m_clientRect);
 
-	int height=70;
+	int height=90;
 
 	CRect list_Rect;
 	list_Rect.top = 	m_clientRect.top+height;
@@ -170,9 +184,9 @@ void CDLGYYETS::OnSize(UINT nType, int cx, int cy)
 	Invalidate();
 }
 
-// CDLGYYETS message handlers
+// CDLGViewEd2k message handlers
 
-void CDLGYYETS::OnBnClickedButtonFind()
+void CDLGViewEd2k::OnBnClickedButtonFind()
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
@@ -180,16 +194,17 @@ void CDLGYYETS::OnBnClickedButtonFind()
 	ListTotal=0;
 
 	if(m_sreach.IsEmpty())
-		ListTotal=YyetsDB.YYETS_Number();
+		ListTotal=ed2kDB.ExternED2K_Number();
 	else
-		ListTotal=YyetsDB.YYETS_NumberForSearch(m_sreach.GetBuffer(0));
+		ListTotal=ed2kDB.ExternED2K_NumberForSearch(m_sreach.GetBuffer(0));
 
 	ListNow=0;
 
 	DisplayerList();
 }
 
-void CDLGYYETS::OnBnClickedButtonMagnet()
+
+void CDLGViewEd2k::OnBnClickedButtonEd2k()
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
@@ -198,10 +213,10 @@ void CDLGYYETS::OnBnClickedButtonMagnet()
 	char tempstr[32]={0};
 	long long nid;
 
-	if(yyetsList.size() <=0)
+	if(ed2kList.size() <=0)
 		return ;
 
-	list<struct YYETS_ST>::iterator beglist;
+	list<struct EXTERN_ED2K_ST>::iterator beglist;
 
 	ClearClipboradBuffer();
 
@@ -212,51 +227,9 @@ void CDLGYYETS::OnBnClickedButtonMagnet()
 			m_list.GetItemText(i,0,tempstr,32);
 			sscanf(tempstr,"%I64u",&nid);
 
-			for(beglist=yyetsList.begin();beglist!=yyetsList.end();beglist++)
+			for(beglist=ed2kList.begin();beglist!=ed2kList.end();beglist++)
 			{
-				if(beglist->yyets_nid == nid)
-				{
-					if(strlen(beglist->magnet)>0)
-					{
-						str+=beglist->magnet;
-						str+="\r\n";
-					}
-					break;
-				}
-			}
-		}
-	}
-	
-	AppendBufferToClipboard(str.GetBuffer(0),str.GetLength());
-
-}
-
-void CDLGYYETS::OnBnClickedButtonEd2k()
-{
-	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	int i;
-	CString str="";
-	char tempstr[32]={0};
-	long long nid;
-
-	if(yyetsList.size() <=0)
-		return ;
-
-	list<struct YYETS_ST>::iterator beglist;
-
-	ClearClipboradBuffer();
-
-	for( i=0;i<m_list.GetItemCount();i++)
-	{
-		if(m_list.GetCheck(i))
-		{
-			m_list.GetItemText(i,0,tempstr,32);
-			sscanf(tempstr,"%I64u",&nid);
-
-			for(beglist=yyetsList.begin();beglist!=yyetsList.end();beglist++)
-			{
-				if(beglist->yyets_nid == nid)
+				if(beglist->nid == nid)
 				{
 					if(strlen(beglist->ed2k)>0)
 					{
@@ -272,51 +245,35 @@ void CDLGYYETS::OnBnClickedButtonEd2k()
 	AppendBufferToClipboard(str.GetBuffer(0),str.GetLength());
 }
 
-void CDLGYYETS::OnBnClickedButtonWanpan()
+void CDLGViewEd2k::DisplaySize(long long size,char* str)
 {
-	// TODO: Add your control notification handler code here
-	UpdateData(TRUE);
-	int i;
-	CString str="";
-	char tempstr[32]={0};
-	long long nid;
+	long long temp=size/1024;
 
-	if(yyetsList.size() <=0)
-		return ;
-
-	list<struct YYETS_ST>::iterator beglist;
-
-	ClearClipboradBuffer();
-
-	for( i=0;i<m_list.GetItemCount();i++)
+	if(temp==0)
 	{
-		if(m_list.GetCheck(i))
-		{
-			m_list.GetItemText(i,0,tempstr,32);
-			sscanf(tempstr,"%I64u",&nid);
-
-			for(beglist=yyetsList.begin();beglist!=yyetsList.end();beglist++)
-			{
-				if(beglist->yyets_nid == nid)
-				{
-					if(strlen(beglist->wanpan)>0)
-					{
-						str+=beglist->wanpan;
-						str+="\r\n";
-					}
-					break;
-				}
-			}
-		}
+		sprintf(str,"%I64u",size);
+		return ;
+	}
+	temp/=1024;
+	if(temp==0)
+	{
+		sprintf(str,"%I64u K",size/1024);
+		return ;
+	}
+	temp/=1024;
+	if(temp==0)
+	{
+		sprintf(str,"%I64u M",size/(1024*1024));
+		return ;
 	}
 
-	AppendBufferToClipboard(str.GetBuffer(0),str.GetLength());
+	sprintf(str,"%.02lf G",(double)(size/1024/1024)/1024.0);
 }
 
-void CDLGYYETS::DisplayerList()
+void CDLGViewEd2k::DisplayerList()
 {
 	m_list.DeleteAllItems();
-	yyetsList.clear();
+	ed2kList.clear();
 
 	if(0==ListTotal)
 	{
@@ -335,30 +292,28 @@ void CDLGYYETS::DisplayerList()
 
 
 	if(m_sreach.IsEmpty())
-		YyetsDB.YYETS_Read(yyetsList,si-1,ei-(si-1));
+		ed2kDB.ExternED2K_Read(ed2kList,si-1,ei-(si-1));
 	else
-		YyetsDB.YYETS_ReadForSearch(m_sreach.GetBuffer(0),yyetsList,si-1,ei-(si-1));
+		ed2kDB.ExternED2K_ReadForSearch(m_sreach.GetBuffer(0),ed2kList,si-1,ei-(si-1));
 
-	if(yyetsList.size()<=0)
+	if(ed2kList.size()<=0)
 		return ;
 
-	list<struct YYETS_ST>::iterator beglist;
+	list<struct EXTERN_ED2K_ST>::iterator beglist;
 	char str[128];
 	int i=0;
 
-	for(beglist=yyetsList.begin();beglist!=yyetsList.end();beglist++)
+	for(beglist=ed2kList.begin();beglist!=ed2kList.end();beglist++)
 	{
-		sprintf(str,"%I64u",beglist->yyets_nid);
+		sprintf(str,"%I64u",beglist->nid);
 		m_list.InsertItem( i,str);
 		m_list.SetItemText(i,1,beglist->name);
-		m_list.SetItemText(i,2,beglist->filesize);
-		m_list.SetItemText(i,3,beglist->magnet);
-		m_list.SetItemText(i,4,beglist->ed2k);
-		m_list.SetItemText(i,5,beglist->wanpan);
-
+		DisplaySize(beglist->filesize,str);
+		m_list.SetItemText(i,2,str);
+		m_list.SetItemText(i,3,beglist->ed2k);
 		i++;
 	}
-	
+
 	if(ListTotal%PAGE_MAX_NUM)
 	{
 		sprintf(str,"共%d条 %d/%d页 每页%d条",
@@ -379,7 +334,7 @@ void CDLGYYETS::DisplayerList()
 }
 
 
-void CDLGYYETS::OnButtonFirst() 
+void CDLGViewEd2k::OnButtonFirst() 
 {
 	// TODO: Add your control notification handler code here
 	if(0==ListTotal)
@@ -389,7 +344,7 @@ void CDLGYYETS::OnButtonFirst()
 	DisplayerList();
 }
 
-void CDLGYYETS::OnButtonPrevious() 
+void CDLGViewEd2k::OnButtonPrevious() 
 {
 	// TODO: Add your control notification handler code here
 	if(0==ListTotal)
@@ -401,7 +356,7 @@ void CDLGYYETS::OnButtonPrevious()
 	DisplayerList();
 }
 
-void CDLGYYETS::OnButtonNext() 
+void CDLGViewEd2k::OnButtonNext() 
 {
 	// TODO: Add your control notification handler code here
 	if(0==ListTotal)
@@ -413,7 +368,7 @@ void CDLGYYETS::OnButtonNext()
 	DisplayerList();
 }
 
-void CDLGYYETS::OnButtonLast() 
+void CDLGViewEd2k::OnButtonLast() 
 {
 	// TODO: Add your control notification handler code here
 	if(0==ListTotal)
@@ -425,7 +380,7 @@ void CDLGYYETS::OnButtonLast()
 	DisplayerList();
 }
 
-void CDLGYYETS::OnButtonJump() 
+void CDLGViewEd2k::OnButtonJump() 
 {
 	// TODO: Add your control notification handler code here
 	if(0==ListTotal)
@@ -451,7 +406,7 @@ void CDLGYYETS::OnButtonJump()
 }
 
 
-void CDLGYYETS::OnCheck() 
+void CDLGViewEd2k::OnCheck() 
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
@@ -460,3 +415,13 @@ void CDLGYYETS::OnCheck()
 		m_list.SetCheck(i,m_check);
 }
 
+
+void CDLGViewEd2k::OnCbnCloseupComboLib()
+{
+	// TODO: Add your control notification handler code here
+		UpdateData(TRUE);
+	
+		ed2kDB.CloseDB();
+		ed2kDB.OpenDB(libpath[combo_index[m_c_lib.GetCurSel()]]);
+		OnBnClickedButtonFind();
+}

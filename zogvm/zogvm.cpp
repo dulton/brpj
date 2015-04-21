@@ -10,6 +10,8 @@ CSqliteOperate SQLDB;
 #include "DLGHdd.h"
 #include "stdint.h"
 
+TCHAR CurrentDir[MAX_PATH];
+
 
 
 #ifdef _DEBUG
@@ -60,6 +62,8 @@ BOOL CZogvmApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+
+	GetCurrentDirectory(MAX_PATH, CurrentDir);
 
 
 	FILE* fp=fopen("zogvm.db","rb");

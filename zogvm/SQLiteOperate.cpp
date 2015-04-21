@@ -1727,7 +1727,10 @@ static int YYETSCallBack(void *context, int argc, char **argv, char **ColName)
 	UTF82CHAR(argv[1],cInfo.name,strlen(argv[1]));
 	UTF82CHAR(argv[2],cInfo.filesize,strlen(argv[2]));
 	UTF82CHAR(argv[3],cInfo.magnet,strlen(argv[3]));
-	UTF82CHAR(argv[4],cInfo.ed2k,strlen(argv[4]));
+
+	if(strlen(argv[4]) < 500)
+		UTF82CHAR(argv[4],cInfo.ed2k,strlen(argv[4]));
+
 	UTF82CHAR(argv[5],cInfo.wanpan,strlen(argv[5]));
 
 	mSqlite->push_back(cInfo);
@@ -1775,7 +1778,7 @@ bool CSqliteOperate::YYETS_ReadForSearch(char *str,list<struct YYETS_ST> &List,l
 
 	CString strSql;
 
-	strSql.Format(_T("select * from tb_yyets where %s limit %I64u,%d"),likestr,start,num);
+	strSql.Format(_T("select * from tb_yyets where %s order by lower(name) asc limit %I64u,%d"),likestr,start,num);
 
 	int res = Sql_CallBackExecute(strSql.GetBuffer(0),YYETSCallBack , &List); 
 
@@ -1841,6 +1844,126 @@ void CSqliteOperate::ExternED2K_Add(struct EXTERN_ED2K_ST data)
 	IOwriteLock=false;
 
 }
+
+
+
+long long CSqliteOperate::ExternED2K_Number(void)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+	CString sql;
+	sql.Format("select count(1) from tb_ed2k");
+	Sql_FindExecute(sql.GetBuffer(0));
+
+	if (SQLITE_ROW == sqlite3_step(stmt)) 
+	{
+		long long row = sqlite3_column_int64(stmt, 0);
+		sqlite3_finalize(stmt);
+		IOwriteLock=false;
+		return row;
+	}
+	IOwriteLock=false;
+	return 0;
+}
+
+long long CSqliteOperate::ExternED2K_NumberForSearch(char *str)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+	CString sql;
+	char likestr[5120];
+	filterstringNameForLike(str,likestr);
+	sql.Format("select count(1) from tb_ed2k where %s",likestr);
+	Sql_FindExecute(sql.GetBuffer(0));
+
+	if (SQLITE_ROW == sqlite3_step(stmt)) 
+	{
+		long long row = sqlite3_column_int64(stmt, 0);
+		sqlite3_finalize(stmt);
+		IOwriteLock=false;
+		return row;
+	}
+	IOwriteLock=false;
+	return 0;
+}
+static int ExternED2KCallBack(void *context, int argc, char **argv, char **ColName)
+{
+	list<struct EXTERN_ED2K_ST> *mSqlite = (list<struct EXTERN_ED2K_ST> *)context; 
+
+	struct EXTERN_ED2K_ST cInfo = {0};
+
+	sscanf(argv[0],"%I64u",&cInfo.nid);
+
+	UTF82CHAR(argv[1],cInfo.name,strlen(argv[1]));
+	sscanf(argv[2],"%I64u",&cInfo.filesize);
+	UTF82CHAR(argv[3],cInfo.ed2k,strlen(argv[3]));
+
+	mSqlite->push_back(cInfo);
+
+	return 0;
+}
+
+bool CSqliteOperate::ExternED2K_Read(list<struct EXTERN_ED2K_ST> &List,long long start,int num)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+	List.clear();
+
+	CString strSql;
+
+	strSql.Format(_T("select * from tb_ed2k limit %I64u,%d"),start,num);
+
+	int res = Sql_CallBackExecute(strSql.GetBuffer(0),ExternED2KCallBack , &List); 
+
+	IOwriteLock=false;
+	if(res == SQLITE_OK)
+	{
+		if(List.size())
+			return true;
+	}
+	return false;
+
+}
+
+////////////////////////////////////////////////////
+bool CSqliteOperate::ExternED2K_ReadForSearch(char *str,list<struct EXTERN_ED2K_ST> &List,long long start,int num)
+{
+	while(IOwriteLock)
+	{
+		Sleep(10);
+	}
+	IOwriteLock=true;
+	List.clear();
+
+	char likestr[5120];
+	filterstringNameForLike(str,likestr);
+
+	CString strSql;
+
+	strSql.Format(_T("select * from tb_ed2k where %s order by lower(name) asc limit %I64u,%d"),likestr,start,num);
+
+	int res = Sql_CallBackExecute(strSql.GetBuffer(0),ExternED2KCallBack , &List); 
+
+	IOwriteLock=false;
+	if(res == SQLITE_OK)
+	{
+		if(List.size())
+			return true;
+	}
+	return false;
+
+}
+
+
 
 void CSqliteOperate::File_CleanIDX(long long hdd_nid)
 {

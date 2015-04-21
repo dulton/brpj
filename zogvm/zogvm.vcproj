@@ -269,6 +269,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DLGViewEd2k.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DLGYYETS.cpp"
 				>
 			</File>
@@ -439,6 +443,10 @@
 			</File>
 			<File
 				RelativePath=".\DLGhdddelete.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DLGViewEd2k.h"
 				>
 			</File>
 			<File

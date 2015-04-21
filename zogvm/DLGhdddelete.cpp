@@ -163,7 +163,7 @@ DWORD WINAPI DoubleThreadPROC(LPVOID lpParameter)
 	temphddList.clear();
 	SQLDB.Hdd_Read(temphddList);
 
-	CDLGhdddelete *Pdlg=(CDLGhdddelete *)lpParameter;
+//	CDLGhdddelete *Pdlg=(CDLGhdddelete *)lpParameter;
 
 	list<struct HDD_ST>::iterator beglist;
 

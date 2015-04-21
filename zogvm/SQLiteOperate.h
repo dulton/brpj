@@ -282,6 +282,10 @@ public:
 
 	void ExternED2K_CreateTable(void);
 	void ExternED2K_Add(struct EXTERN_ED2K_ST data);
+	long long CSqliteOperate::ExternED2K_Number(void);
+	long long CSqliteOperate::ExternED2K_NumberForSearch(char *str);
+	bool ExternED2K_ReadForSearch(char *str,list<struct EXTERN_ED2K_ST> &List,long long start,int num);
+	bool ExternED2K_Read(list<struct EXTERN_ED2K_ST> &List,long long start,int num);
 
 	void File_CleanIDX(long long hdd_nid);
 ;

@@ -112,6 +112,7 @@ public:
 	BOOL m_c_audio;
 	BOOL m_c_sub;
 	BOOL m_c_other;
+	afx_msg void OnViewEd2k();
 };
 
 //{{AFX_INSERT_LOCATION}}

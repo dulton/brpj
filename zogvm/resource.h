@@ -17,6 +17,7 @@
 #define IDD_HDD_DELETE                  140
 #define IDD_YYETS                       142
 #define IDD_ADD_ED2K                    143
+#define IDD_VIEW_ED2K                   145
 #define IDC_CHECK_VIDEO                 1001
 #define IDC_LIST_VIDEO                  1002
 #define IDC_EDIT_SREACH                 1004
@@ -59,8 +60,9 @@
 #define IDC_EDIT_TXT                    1060
 #define IDC_EDIT_DB                     1061
 #define IDC_COMBO_ENCODE                1062
-#define IDC_BUTTON_REBUILDDOUBLE        1063
 #define IDC_BUTTON_REBUILD_DOUBLE       1063
+#define IDC_COMBO1                      1064
+#define IDC_COMBO_LIB                   1064
 #define ID_MENUITEM_SET_TYPE            32772
 #define ID_MENUITEM_SET_HDD             32773
 #define ID_32774                        32774
@@ -70,14 +72,16 @@
 #define ID_32778                        32778
 #define ID_ADD                          32779
 #define ID_ADD_ED2K                     32780
+#define ID_32781                        32781
+#define ID_VIEW_ED2K                    32782
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        145
-#define _APS_NEXT_COMMAND_VALUE         32781
-#define _APS_NEXT_CONTROL_VALUE         1064
+#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_CONTROL_VALUE         1065
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

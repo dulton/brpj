@@ -205,7 +205,7 @@ int AppendBufferToClipboard( char *cBuffer, unsigned long nSize )
 //从剪切板获取字符串
 int GetBufferFromClipboard( char *cBuffer, unsigned long  nMaxSize )
 {
-	int nNeedSize = 0;
+	unsigned long nNeedSize = 0;
 	HANDLE hClipboard = NULL;
 	char *pClipBuf = NULL;
 
@@ -232,7 +232,7 @@ int GetBufferFromClipboard( char *cBuffer, unsigned long  nMaxSize )
 		return 0;
 	}
 
-	return -1;
+
 }
 //清空剪切板
 int ClearClipboradBuffer(void)
@@ -264,6 +264,7 @@ CString GetFilePathNoName(CString filepath)
 {
 	CString path=filepath.Right(filepath.GetLength()-filepath.Find('\\')-1);
 	return path.Left(path.ReverseFind('\\')+1);
+
 }
 //比较后缀
 int checkExt(list<struct FILETYPE_ST> typeList,char *fileext) 
@@ -467,6 +468,138 @@ void FindAllFile(long long hdd_nid,CString hdd_area,
 
 	fileFinder.Close();
 }
+
+//遍历所有文件
+void FindAllFile_NEW(long long hdd_nid,CString hdd_area,
+				 list<struct FILETYPE_ST> typeList,list<struct ZIDIAN_ST> zidianList)
+{
+
+	FILETIME cTime;
+	FILETIME lTime;
+	CString fileName;
+	CString fileExt;
+
+    ULARGE_INTEGER  uli; 
+
+	struct FILE_ST data;
+
+	list<struct FILE_ST> Filedata;
+	list<STR_SPLITE_S> strList;
+
+	CFileFind fileFinder;
+	CString filePath = hdd_area + _T("//*.*");
+
+	BOOL bFinished = fileFinder.FindFile(filePath);
+
+	Filedata.clear();
+	while(bFinished)  //每次循环对应一个类别目录
+	{
+		bFinished = fileFinder.FindNextFile();
+
+		if(fileFinder.IsDots())
+			continue;
+		else if(fileFinder.IsDirectory())  //若是目录则递归调用此方法
+		{
+			FindAllFile(hdd_nid,fileFinder.GetFilePath(),typeList,zidianList);
+		}
+		else  //再判断是否为txt文件
+		{
+			//获取文件类型
+			fileName = fileFinder.GetFileName();
+			fileExt=GetFileExt(fileName);
+
+			memset(&data,0,sizeof(struct FILE_ST ));
+			//有效后缀
+			data.maintype=checkExt(typeList,fileExt.GetBuffer(0));
+
+			if(data.maintype >=0)
+			{
+				if(SQLDB.File_CheckDoublePos(fileName.GetBuffer(0),
+					GetFilePathNoName(fileFinder.GetFilePath()).GetBuffer(0),
+					hdd_nid))
+					continue;
+
+				strcpy(data.name,fileName.GetBuffer(0)	);
+				strcpy(data.path,GetFilePathNoName(fileFinder.GetFilePath()).GetBuffer(0));
+
+				data.hdd_nid=hdd_nid;
+				strcpy(data.type,fileExt.GetBuffer(0));
+				data.filesize=fileFinder.GetLength();
+
+				if(fileFinder.GetCreationTime(&cTime))
+				{
+					uli.LowPart = cTime.dwLowDateTime;  
+					uli.HighPart = cTime.dwHighDateTime;  
+					data.CreationTime=uli.QuadPart;
+				}
+				else
+					data.CreationTime=0;
+
+				if(fileFinder.GetLastWriteTime(&lTime))
+				{
+					uli.LowPart = lTime.dwLowDateTime;  
+					uli.HighPart = lTime.dwHighDateTime;  
+					data.LastWriteTime=uli.QuadPart;
+				}
+				else 
+					data.LastWriteTime=0;
+
+			}
+			if(MAINTYPE_OTHER == data.maintype )
+			{
+				strList.clear();
+				StrSplite(strList,fileName.GetBuffer(0));
+				checkStr(data,zidianList,strList); 
+				strList.clear();
+			}
+			else if( MAINTYPE_SUB == data.maintype)
+			{
+				NULL;
+			}
+			else  if(MAINTYPE_VIDEO == data.maintype )
+			{
+#if OPEN_FFMEPG
+				VideoPlay(fileFinder.GetFilePath().GetBuffer(0),
+					&data.filetime,&data.resolutionW,&data.resolutionH);
+#endif
+				strList.clear();
+				StrSplite(strList,fileName.GetBuffer(0));
+				checkStr(data,zidianList,strList); 
+				strList.clear();
+			}
+			else  if(MAINTYPE_MUSIC == data.maintype )
+			{
+#if OPEN_FFMEPG
+				AudioPlay(fileFinder.GetFilePath().GetBuffer(0),&data.filetime) ;
+#endif
+				NULL;
+			}
+			if(data.maintype >=0)
+			{
+				Filedata.push_back(data);
+			}
+		}
+	}
+
+	if(Filedata.size()>0)
+	{	
+		SQLDB.Begin();
+		list<struct FILE_ST>::iterator beglist;
+
+		for(beglist=Filedata.begin();beglist!=Filedata.end();beglist++)
+		{
+			SQLDB.File_Add(*beglist);
+		}	
+		SQLDB.Commit();
+
+	}
+
+	Filedata.clear();
+
+	fileFinder.Close();
+}
+
+
 void CheckAllDoubleFile(long long hdd_nid)
 {
 	long long doublenid;
