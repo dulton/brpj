@@ -353,7 +353,7 @@ void CColorspaceViewDlg::OnButtonLum()
 	pDc->SetViewportOrg(0, RH);
 	pDc->SetViewportExt(RW,-RH);
 	
-	int W=1000,H=1000;
+	int W=256,H=256;
 	int SX=0,SY=0;
 	
 	
@@ -384,7 +384,7 @@ void CColorspaceViewDlg::OnButtonLum()
 	m_Cache.m_MemDC.Polyline( p,4);
 #else
 	
-#define  Gmax 1000
+#define  Gmax 256
 #define  Gmin 0
 	
 	POINT p[Gmax-Gmin]={0};
@@ -397,9 +397,9 @@ void CColorspaceViewDlg::OnButtonLum()
 		
 		for(int i=Gmin;i<Gmax;i++)
 		{
-			GammaLine(2.2,((double)i)/1000.0,&y);
+			GammaLine(2.2,((double)i)/256.0,&y);
 			p[i-Gmin].x=i;
-			p[i-Gmin].y=y*1000;
+			p[i-Gmin].y=y*Gmax;
 			
 			fprintf(fp,"%d=%d %d \n",i,p[i-Gmin].x,	p[i-Gmin].y);
 		}	
