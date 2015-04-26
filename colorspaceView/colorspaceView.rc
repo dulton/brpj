@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (中国) resources
+// 中文(中华人民共和国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
@@ -27,18 +27,18 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,43 +66,41 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\colorspaceView.ico"
+IDR_MAINFRAME           ICON                    "res\\colorspaceView.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG  0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于 colorspaceView"
 FONT 9, "宋体"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "colorspaceView 1.0 版",IDC_STATIC,40,10,119,8,
-                    SS_NOPREFIX
+    LTEXT           "colorspaceView 1.0 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "版权所有 (C) 2015",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "确定",IDOK,178,7,50,14,WS_GROUP
 END
 
 IDD_COLORSPACEVIEW_DIALOG DIALOGEX 0, 0, 356, 262
-STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
-    WS_THICKFRAME
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "colorspaceView"
-FONT 9, "宋体"
+FONT 9, "宋体", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "确定",IDOK,7,7,50,14
     PUSHBUTTON      "取消",IDCANCEL,7,23,50,14
-    CONTROL         "",IDC_STATIC_GDI,"Static",SS_BLACKFRAME,93,54,132,136
+    CONTROL         "",IDC_STATIC_GDI,"Static",SS_BLACKFRAME,93,54,72,63
     PUSHBUTTON      "WhitePoint",IDC_BUTTON_WHITEPOINT,7,49,50,14
     PUSHBUTTON      "lumina",IDC_BUTTON_LUM,7,73,50,14
     PUSHBUTTON      "gamut",IDC_BUTTON_GAMUT,7,101,50,14
-    CONTROL         "",IDC_STATIC_GL,"Static",SS_BLACKFRAME,241,81,78,121
+    CONTROL         "",IDC_STATIC_GL,"Static",SS_BLACKFRAME,209,21,42,78
+    CONTROL         "",IDC_STATIC_WP,"Static",SS_BLACKFRAME,221,191,20,20
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -125,15 +123,13 @@ BEGIN
     BEGIN
         BLOCK "080404B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "colorspaceView Microsoft 基础类应用程序\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "colorspaceView\0"
-            VALUE "LegalCopyright", "版权所有 (C) 2015\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "colorspaceView.EXE\0"
-            VALUE "ProductName", "colorspaceView 应用程序\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "colorspaceView Microsoft 基础类应用程序"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "colorspaceView"
+            VALUE "LegalCopyright", "版权所有 (C) 2015"
+            VALUE "OriginalFilename", "colorspaceView.EXE"
+            VALUE "ProductName", "colorspaceView 应用程序"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -142,8 +138,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -151,7 +145,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -177,12 +171,12 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     IDS_ABOUTBOX            "关于 colorspaceView(&A)..."
 END
 
-#endif    // Chinese (中国) resources
+#endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

@@ -6,6 +6,7 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
 
+#define GL_CTRL_TEST	0
 //////////////////////////////////////////////////////////////////////
 //-	宏定义
 
@@ -26,7 +27,7 @@ class COpenGLCtrl : public CWnd
 				m_glfGridUnit;
 	COLORREF	m_clrBackgroud, m_clrGridAxse, m_clrGridLine;				//背景网格的颜色
 	int			m_nLines;
-
+	bool flag3D;
 public:
 
 	enum { MS_LBBTN = 0, MS_MBBTN, MS_RBBTN };
@@ -42,6 +43,11 @@ public:
 	COLORREF	GetBkgColor(){return m_clrBackgroud;}
 	void		SetBkgColor(COLORREF clrBkg){m_clrBackgroud = clrBkg;}
 
+	//外部使用函数指针 要在类构造的时候用
+	 void (*outInitScene)(void);  
+	 void (*outSceneView)(void);  
+	 void (*outRenderScene)(void);  
+	
 protected:
 	virtual void PreSubclassWindow();
  

@@ -61,6 +61,12 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CColorspaceViewDlg dialog
 
+void GLinit() ;
+void GLview() ;
+void GLrener() ;
+
+void GLviewWp() ;
+void GLrenerWp();
 CColorspaceViewDlg::CColorspaceViewDlg(CWnd* pParent /*=NULL*/)
 : CDialog(CColorspaceViewDlg::IDD, pParent)
 {
@@ -69,6 +75,20 @@ CColorspaceViewDlg::CColorspaceViewDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+
+	m_gl.outInitScene=GLinit;
+	m_gl.outSceneView=GLview;
+
+m_gl.outRenderScene=GLrener;
+
+
+
+m_gl_wp.outInitScene=GLinit;
+m_gl_wp.outSceneView=GLviewWp;
+
+m_gl_wp.outRenderScene=GLrenerWp;
+
 }
 
 void CColorspaceViewDlg::DoDataExchange(CDataExchange* pDX)
@@ -78,6 +98,7 @@ void CColorspaceViewDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_GL, m_gl);
 	DDX_Control(pDX, IDC_STATIC_GDI, m_gdi);
 	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDC_STATIC_WP, m_gl_wp);
 }
 
 BEGIN_MESSAGE_MAP(CColorspaceViewDlg, CDialog)
@@ -335,6 +356,14 @@ void CColorspaceViewDlg::OnSize(UINT nType, int cx, int cy)
 		gl_Rect.right = m_clientRect.right-100;
 		//必须 样式=重叠，边框=调整大小
 		GetDlgItem(IDC_STATIC_GL)->MoveWindow(gl_Rect);
+		CRect glwp_Rect;
+		glwp_Rect.top = 	m_clientRect.top+	gdi_Rect.bottom ;
+		glwp_Rect.bottom = m_clientRect.bottom;
+		glwp_Rect.left = m_clientRect.left;
+		glwp_Rect.right =(m_clientRect.right-100)/2;
+		//必须 样式=重叠，边框=调整大小
+		GetDlgItem(IDC_STATIC_WP)->MoveWindow(glwp_Rect);
+
 
 		Invalidate();
 		
@@ -433,4 +462,95 @@ void CColorspaceViewDlg::OnButtonGamut()
 {
 	// TODO: Add your control notification handler code here
 	
+}
+void GLinit() 
+{
+	// TODO: Add your control notification handler code here
+	glDisable(GL_DEPTH_TEST);
+}
+void GLview() 
+{
+	// TODO: Add your control notification handler code here
+	//
+	glOrtho(0,256,0,256,-1,1 );
+}
+void GLrener() 
+{
+	// TODO: Add your control notification handler code here
+	//绘背景色
+	glClearColor(1,1,1, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//设置场景坐标系
+	glLoadIdentity();
+
+	//设定绘制颜色
+	glColor3f(1,0,0);
+
+//	glLineWidth(1.0f);
+
+	float p[256*2]={0};
+	double y;
+
+
+
+		for(int i=0;i<256;i++)
+		{
+			GammaLine(2.2,((double)i)/256.0,&y);
+			p[i*2]=i;
+			p[i*2+1]=y*256.0;
+		}
+
+	glVertexPointer(2, GL_FLOAT, 0, p);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glDrawArrays(GL_LINE_STRIP,0,256);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+}
+void GLviewWp() 
+{
+	// TODO: Add your control notification handler code here
+	//
+	glOrtho(0.26,0.48,0.26,0.48,-1,1 );
+}
+void GLrenerWp() 
+{
+	// TODO: Add your control notification handler code here
+	//绘背景色
+	glClearColor(1,1,1, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//设置场景坐标系
+	glLoadIdentity();
+
+	//设定绘制颜色
+	glColor3f(1,0,0);
+
+	//	glLineWidth(1.0f);
+#define  Kmax 10000
+#define  Kmin 2800
+
+
+	float p[(Kmax-Kmin)*2]={0};
+	double x,y;
+
+		for(int i=Kmin;i<Kmax;i++)
+		{
+			CCT_to_CIE_xy((double)i,&x,&y);
+			p[(i-Kmin)*2]=x;
+			p[(i-Kmin)*2+1]=y;
+
+		}	
+
+	glVertexPointer(2, GL_FLOAT, 0, p);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glDrawArrays(GL_LINE_STRIP,0,10000-2800);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+
 }

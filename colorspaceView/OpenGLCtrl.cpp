@@ -26,6 +26,8 @@ COpenGLCtrl::COpenGLCtrl()
 	m_clrBackgroud			= RGB(160, 160, 160);
 	m_clrGridAxse			= RGB(0, 0, 0);
 	m_clrGridLine			= RGB(128, 128, 128);
+	//3D视角
+	flag3D=true;
 
 	//设置视点
 	m_glfViewPosX	= 0;
@@ -73,6 +75,7 @@ void COpenGLCtrl::RegisterCtrlClass()
 	AfxRegisterClass(&wndclsCtrl);
 }
 
+
 void COpenGLCtrl::SetSceneSize(GLsizei glsWidth, GLsizei glsHeight)
 {
 	if(glsHeight==0||glsWidth==0)
@@ -86,10 +89,20 @@ void COpenGLCtrl::SetSceneSize(GLsizei glsWidth, GLsizei glsHeight)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(35.0f, fRatioWH, 0.01f, 1000.0f);
+#if GL_CTRL_TEST	
+	if(flag3D)
+		gluPerspective(35.0f, fRatioWH, 0.01f, 1000.0f);
+	else
+		glOrtho(0,glsWidth, glsHeight,0,-1,1 );
+
+#else
+	outSceneView();
+#endif
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
+
 
 void COpenGLCtrl::InitOpenGL()
 {
@@ -125,11 +138,21 @@ void COpenGLCtrl::InitOpenGL()
 
 	//设置渲染环境
 	glShadeModel(GL_SMOOTH);
-	glClearColor(float(GetRValue(m_clrBackgroud)/255), float(GetGValue(m_clrBackgroud)/255), float(GetBValue(m_clrBackgroud)/255), 0.5f);
-	glClearDepth(1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glClearColor(1.0,1.0,1.0,1.0);
+#if GL_CTRL_TEST	
+	if(flag3D)
+	{
+		glClearDepth(1.0f);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	}
+	else
+		glDisable(GL_DEPTH_TEST);
+#else
+	outInitScene();
+#endif
+
 }
 
 void COpenGLCtrl::RenderScene()
@@ -216,7 +239,11 @@ void COpenGLCtrl::OnPaint()
 	//关联DC与RC
 	wglMakeCurrent(m_pDC->m_hDC, m_hRC);
 	//绘制场景
+#if GL_CTRL_TEST
 	RenderScene();
+#else
+	outRenderScene();
+#endif
 	//翻页
 	SwapBuffers(m_pDC->m_hDC);
 	//释放绘图设备

@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="colorspaceView"
 	ProjectGUID="{48BC2A63-9C85-4D66-9860-65E1A4480325}"
+	RootNamespace="colorspaceView"
 	Keyword="MFCProj"
 	>
 	<Platforms>
@@ -409,5 +410,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="colorspaceView.rc"
+		/>
 	</Globals>
 </VisualStudioProject>
