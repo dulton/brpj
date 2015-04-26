@@ -1,11 +1,13 @@
 #pragma once
 
+#if 1
+#include <GL/glut.h>
+#else 
 #include <GL/gl.h>
 #include <GL/glu.h>
-
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
-
+#endif
 #define GL_CTRL_TEST	0
 //////////////////////////////////////////////////////////////////////
 //-	∫Í∂®“Â

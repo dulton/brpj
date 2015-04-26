@@ -92,12 +92,16 @@ FONT 9, "宋体", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "确定",IDOK,7,7,50,14
     PUSHBUTTON      "取消",IDCANCEL,7,23,50,14
-    CONTROL         "",IDC_STATIC_GDI,"Static",SS_BLACKFRAME,93,54,72,63
+    CONTROL         "",IDC_STATIC_GDI,"Static",SS_BLACKFRAME,77,16,72,63
     PUSHBUTTON      "WhitePoint",IDC_BUTTON_WHITEPOINT,7,49,50,14
     PUSHBUTTON      "lumina",IDC_BUTTON_LUM,7,73,50,14
-    PUSHBUTTON      "gamut",IDC_BUTTON_GAMUT,7,101,50,14
+    PUSHBUTTON      "gamut",IDC_BUTTON_GAMUT,7,97,50,14
     CONTROL         "",IDC_STATIC_GL,"Static",SS_BLACKFRAME,209,21,42,78
-    CONTROL         "",IDC_STATIC_WP,"Static",SS_BLACKFRAME,221,191,20,20
+    CONTROL         "",IDC_STATIC_WP,"Static",SS_BLACKFRAME,93,147,20,20
+    COMBOBOX        IDC_COMBO_CIE,7,131,48,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CP,7,161,48,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_WP,7,191,48,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC_GAMUT,"Static",SS_BLACKFRAME,213,151,20,20
 END
 
 
@@ -164,6 +168,23 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_COLORSPACEVIEW_DIALOG DLGINIT
+BEGIN
+    IDC_COMBO_CIE, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_CP, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_WP, 0x403, 2, 0
+0x0031, 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

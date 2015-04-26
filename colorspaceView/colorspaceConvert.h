@@ -101,6 +101,8 @@ void CIE_XYZ_1931_to_CIE1960_uv(double X,	double Y,	double Z,	double *u,	double 
 
 void CIE1976_upvp_to_CIE1960_uv(double up,	double vp,	double *u,	double *v);
 
+void CIE_RGB_to_CIE_XYZ_1931(double R,double G,double B,double *X,double *Y,double *Z);
+void CIE_rgb_to_CIE_xyz_1931(double r,double g,double b,double *x,double *y,double *z);
 
 void GammaLine(double gamma,	double Input,	double *Output);
 

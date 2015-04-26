@@ -27,6 +27,7 @@ public:
 	COpenGLCtrl m_gl;
 	COpenGLCtrl m_gl_wp;
 
+	COpenGLCtrl m_gl_gamut;
 	//}}AFX_DATA
 	CRect m_clientRect;
 	CDCCache m_Cache;
@@ -58,6 +59,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	
+	CComboBox m_c_cie;
+	CComboBox m_c_cp;
+	CComboBox m_c_wp;
 };
 
 //{{AFX_INSERT_LOCATION}}

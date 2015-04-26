@@ -84,6 +84,29 @@ void CIE_XYZ_1931_to_CIE_RGB(double X,double Y,double Z,double *R,double *G,doub
 	(*B)=X*(0.0009209)+Y*(-0.0025498)+Z*(0.1786);
 }
 
+void CIE_rgb_to_CIE_xyz_1931(double r,double g,double b,double *x,double *y,double *z)
+{
+	double a=0.66697*r+1.1324*g+1.20063*b;
+
+	(*x)=(0.49*r+0.31*g+0.2*b)/a;
+	(*y)=(0.17697*r+0.8124*g+0.01063*b)/a;
+	(*z)=(0.01*g+0.99*b)/a;
+}
+
+void CIE_RGB_to_CIE_XYZ_1931(double R,double G,double B,double *X,double *Y,double *Z)
+{
+	(*X)=R*2.7689+G*(1.7517)+B*(1.1302);
+	(*Y)=R*(1.0002)+G*(4.5907)+B*(0.0601);
+	(*Z)=R+G*(0.0565)+B*(5.5943);
+}
+void CIE_RGB_to_CIE_XYZ_1964(double R,double G,double B,double *X,double *Y,double *Z)
+{
+	(*X)=R*0.341427+G*(0.188273)+B*(0.390202);
+	(*Y)=R*(0.138972)+G*(0.837182)+B*(0.073588);
+	(*Z)=R+G*(0.0375154)+B*(2.038878);
+}
+
+
 void CIE_XYZ_1931_to_CIE_1958_L(double X,double Y,double Z,double *L)
 {
 	(*L)=25.29*pow(Y,1.0/3.0)-18.38;

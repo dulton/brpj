@@ -67,6 +67,9 @@ void GLrener() ;
 
 void GLviewWp() ;
 void GLrenerWp();
+void GLviewGAMUT() ;
+void GLrenerGAMUT();
+
 CColorspaceViewDlg::CColorspaceViewDlg(CWnd* pParent /*=NULL*/)
 : CDialog(CColorspaceViewDlg::IDD, pParent)
 {
@@ -79,15 +82,17 @@ CColorspaceViewDlg::CColorspaceViewDlg(CWnd* pParent /*=NULL*/)
 
 	m_gl.outInitScene=GLinit;
 	m_gl.outSceneView=GLview;
-
 m_gl.outRenderScene=GLrener;
 
 
 
 m_gl_wp.outInitScene=GLinit;
 m_gl_wp.outSceneView=GLviewWp;
-
 m_gl_wp.outRenderScene=GLrenerWp;
+
+	m_gl_gamut.outInitScene=GLinit;
+m_gl_gamut.outSceneView=GLviewGAMUT;
+m_gl_gamut.outRenderScene=GLrenerGAMUT;
 
 }
 
@@ -99,6 +104,11 @@ void CColorspaceViewDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_GDI, m_gdi);
 	//}}AFX_DATA_MAP
 	DDX_Control(pDX, IDC_STATIC_WP, m_gl_wp);
+	DDX_Control(pDX, IDC_STATIC_GAMUT, m_gl_gamut);
+
+	DDX_Control(pDX, IDC_COMBO_CIE, m_c_cie);
+	DDX_Control(pDX, IDC_COMBO_CP, m_c_cp);
+	DDX_Control(pDX, IDC_COMBO_WP, m_c_wp);
 }
 
 BEGIN_MESSAGE_MAP(CColorspaceViewDlg, CDialog)
@@ -359,11 +369,18 @@ void CColorspaceViewDlg::OnSize(UINT nType, int cx, int cy)
 		CRect glwp_Rect;
 		glwp_Rect.top = 	m_clientRect.top+	gdi_Rect.bottom ;
 		glwp_Rect.bottom = m_clientRect.bottom;
-		glwp_Rect.left = m_clientRect.left;
+		glwp_Rect.left = m_clientRect.left+100 ;
 		glwp_Rect.right =(m_clientRect.right-100)/2;
 		//必须 样式=重叠，边框=调整大小
 		GetDlgItem(IDC_STATIC_WP)->MoveWindow(glwp_Rect);
 
+		CRect glgamut_Rect;
+		glgamut_Rect.top = 	m_clientRect.top+	gdi_Rect.bottom ;
+		glgamut_Rect.bottom = m_clientRect.bottom;
+		glgamut_Rect.left = m_clientRect.left+	gdi_Rect.right;
+		glgamut_Rect.right =m_clientRect.right-100;
+		//必须 样式=重叠，边框=调整大小
+		GetDlgItem(IDC_STATIC_GAMUT)->MoveWindow(glgamut_Rect);
 
 		Invalidate();
 		
@@ -509,6 +526,10 @@ void GLrener()
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 
+
+	glRasterPos2f(50,50);
+	glutBitmapCharacter(GLUT_BITMAP_8_BY_13,'0');
+
 }
 void GLviewWp() 
 {
@@ -553,4 +574,66 @@ void GLrenerWp()
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 
+}
+
+void GLviewGAMUT() 
+{
+	// TODO: Add your control notification handler code here
+	//
+	glOrtho(0,1,0,1,-1,1 );
+}
+void GLrenerGAMUT() 
+{
+	// TODO: Add your control notification handler code here
+	//绘背景色
+	glClearColor(1,1,1, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//设置场景坐标系
+	glLoadIdentity();
+
+	//设定绘制颜色
+	glColor3f(1,0,0);
+
+
+	//	glLineWidth(1.0f);
+	float p[6] ={0.1, 0.1,
+	0.10, 0.50,
+	0.50,0.50,
+	};
+
+
+	double c[9] ={1,0,0,
+	0,1,0,
+	0,0,1,
+	};
+
+
+	CIE_XYZ_1931_to_CIE_RGB(1,0,0,&c[0],&c[1],&c[2]);
+	CIE_XYZ_1931_to_CIE_RGB(0,1,0,&c[3],&c[4],&c[5]);
+	CIE_XYZ_1931_to_CIE_RGB(0,0,1,&c[6],&c[7],&c[8]);
+
+	CIE_XYZ_1931_to_CIE_RGB(0.0014,0,0.0066,&c[0],&c[1],&c[2]);
+//	CIE_XYZ_1931_to_CIE_RGB(0.27368,0.71743,0.0089,&c[3],&c[4],&c[5]);
+//	CIE_XYZ_1931_to_CIE_RGB(0.16654,0.00888,0.82458,&c[6],&c[7],&c[8]);
+
+	double x;double y;double z;
+
+CIE_rgb_to_CIE_xyz_1931(1,0,0,&x,&y,&z);
+CIE_rgb_to_CIE_xyz_1931(0,1,0,&x,&y,&z);
+CIE_rgb_to_CIE_xyz_1931(0,0,1,&x,&y,&z);
+
+	glVertexPointer(2, GL_FLOAT, 0, p);
+	glColorPointer(3,GL_DOUBLE, 0, c);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glDrawArrays(GL_TRIANGLES,0,3);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+//	glRasterPos2f(0.5,0.5);
+//	glutBitmapCharacter(GLUT_BITMAP_8_BY_13,'0');
+	
 }
