@@ -110,6 +110,10 @@ SOURCE=.\DCCache.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\OpenGLCtrl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -132,6 +136,10 @@ SOURCE=.\colorspaceViewDlg.h
 # Begin Source File
 
 SOURCE=.\DCCache.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\OpenGLCtrl.h
 # End Source File
 # Begin Source File
 

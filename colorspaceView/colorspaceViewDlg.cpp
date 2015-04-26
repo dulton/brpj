@@ -75,7 +75,8 @@ void CColorspaceViewDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CColorspaceViewDlg)
-	DDX_Control(pDX, IDC_STATIC_PIC, m_pic);
+	DDX_Control(pDX, IDC_STATIC_GL, m_gl);
+	DDX_Control(pDX, IDC_STATIC_GDI, m_gdi);
 	//}}AFX_DATA_MAP
 }
 
@@ -88,6 +89,7 @@ ON_BN_CLICKED(IDC_BUTTON_WHITEPOINT, OnButtonWhitepoint)
 ON_WM_SIZE()
 ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_BUTTON_LUM, OnButtonLum)
+	ON_BN_CLICKED(IDC_BUTTON_GAMUT, OnButtonGamut)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -217,9 +219,9 @@ void CColorspaceViewDlg::OnButtonWhitepoint()
 	// TODO: Add your control notification handler code here
 
 	CDC *pDc = NULL;
-	pDc = m_pic.GetDC();
+	pDc = m_gdi.GetDC();
 	CRect rect;
-	m_pic.GetClientRect(rect);
+	m_gdi.GetClientRect(rect);
 	
 	int RW=rect.Width();
 	int RH=rect.Height();
@@ -297,7 +299,7 @@ void CColorspaceViewDlg::OnButtonWhitepoint()
 	pDc->StretchBlt(0, 0,RW,RH, &(m_Cache.m_MemDC), 0, 0,W-SX,H-SY,SRCCOPY);
 	
 	m_Cache.FreeCache();
-	m_pic.ReleaseDC(pDc);
+	m_gdi.ReleaseDC(pDc);
 }
 
 void CColorspaceViewDlg::OnSize(UINT nType, int cx, int cy) 
@@ -318,14 +320,22 @@ void CColorspaceViewDlg::OnSize(UINT nType, int cx, int cy)
 		GetClientRect(&m_clientRect);
 		
 		
-		CRect tab_Rect;
-		tab_Rect.top = 	m_clientRect.top;
-		tab_Rect.bottom = m_clientRect.bottom;
-		tab_Rect.left = m_clientRect.left ;
-		tab_Rect.right = m_clientRect.right-100;
+		CRect gdi_Rect;
+		gdi_Rect.top = 	m_clientRect.top;
+		gdi_Rect.bottom = m_clientRect.bottom/2;
+		gdi_Rect.left = m_clientRect.left+100 ;
+		gdi_Rect.right = (m_clientRect.right-100)/2;
 		//必须 样式=重叠，边框=调整大小
-		GetDlgItem(IDC_STATIC_PIC)->MoveWindow(tab_Rect);
-		
+		GetDlgItem(IDC_STATIC_GDI)->MoveWindow(gdi_Rect);
+
+		CRect gl_Rect;
+		gl_Rect.top = 	m_clientRect.top;
+		gl_Rect.bottom = m_clientRect.bottom/2;
+		gl_Rect.left = m_clientRect.left +	gdi_Rect.right;
+		gl_Rect.right = m_clientRect.right-100;
+		//必须 样式=重叠，边框=调整大小
+		GetDlgItem(IDC_STATIC_GL)->MoveWindow(gl_Rect);
+
 		Invalidate();
 		
 	}
@@ -336,9 +346,9 @@ void CColorspaceViewDlg::OnButtonLum()
 	// TODO: Add your control notification handler code here
 	
 	CDC *pDc = NULL;
-	pDc = m_pic.GetDC();
+	pDc = m_gdi.GetDC();
 	CRect rect;
-	m_pic.GetClientRect(rect);
+	m_gdi.GetClientRect(rect);
 	
 	int RW=rect.Width();
 	int RH=rect.Height();
@@ -416,5 +426,11 @@ void CColorspaceViewDlg::OnButtonLum()
 	pDc->StretchBlt(0, 0,RW,RH, &(m_Cache.m_MemDC), 0, 0,W-SX,H-SY,SRCCOPY);
 	
 	m_Cache.FreeCache();
-	m_pic.ReleaseDC(pDc);
+	m_gdi.ReleaseDC(pDc);
+}
+
+void CColorspaceViewDlg::OnButtonGamut() 
+{
+	// TODO: Add your control notification handler code here
+	
 }

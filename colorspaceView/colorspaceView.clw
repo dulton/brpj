@@ -31,7 +31,7 @@ ImplementationFile=colorspaceViewDlg.cpp
 Filter=D
 BaseClass=CDialog
 VirtualFilter=dWC
-LastObject=IDC_STATIC_PIC
+LastObject=IDC_GL
 
 [CLS:CAboutDlg]
 Type=0
@@ -52,10 +52,12 @@ Control4=IDOK,button,1342373889
 [DLG:IDD_COLORSPACEVIEW_DIALOG]
 Type=1
 Class=CColorspaceViewDlg
-ControlCount=5
+ControlCount=7
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
-Control3=IDC_STATIC_PIC,static,1342177287
+Control3=IDC_STATIC_GDI,static,1342177287
 Control4=IDC_BUTTON_WHITEPOINT,button,1342242816
 Control5=IDC_BUTTON_LUM,button,1342242816
+Control6=IDC_BUTTON_GAMUT,button,1342242816
+Control7=IDC_STATIC_GL,static,1342177287
 

@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CColorspaceViewDlg dialog
 #include "DCCache.h"
+#include "openglctrl.h"
 
 class CColorspaceViewDlg : public CDialog
 {
@@ -21,7 +22,9 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CColorspaceViewDlg)
 	enum { IDD = IDD_COLORSPACEVIEW_DIALOG };
-	CStatic	m_pic;
+	CStatic	m_gdi;
+	COpenGLCtrl m_gl;
+	
 	//}}AFX_DATA
 	CRect m_clientRect;
 	CDCCache m_Cache;
@@ -48,6 +51,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	 afx_msg BOOL OnEraseBkgnd( CDC* pDC ); 
 	afx_msg void OnButtonLum();
+	afx_msg void OnButtonGamut() ;
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -80,7 +80,6 @@ void CDCCache::FreeCache()
 // 获取缓存指针
 unsigned char *CDCCache::GetCacheBuffer(void)
 {	
-	
 	return m_pBuffer;
 }
 // 获取缓存DC
