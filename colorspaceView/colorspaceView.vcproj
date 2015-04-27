@@ -373,6 +373,14 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\tess.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tess.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
