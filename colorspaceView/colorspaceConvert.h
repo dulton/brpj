@@ -50,13 +50,14 @@ struct WHITE_POINT_ST
 
 
 //颜色空间
-#define  COLOR_SPACE_MAX_NUM 23
+#define  COLOR_SPACE_MAX_NUM 14
 
 struct ColorSpace_ST
 {
 	//白点色温的指针
 	int W;
 	//色域空间的RGB对应的CIE1931xy值
+	//z=1-x-y
 	double Xr;
 	double Yr;
 	double Xg;
@@ -76,11 +77,43 @@ enum ColorSpace_EM
 		CS_AppleRGB=6,	
 		CS_NTSC1953_FCC_r470M=7,	
 		CS_UHDTV_r2020=8,	
-		CS_AdoobeWideRGB=9,	
+		CS_AdobeWideRGB=9,	
 		CS_ROMMRGB=10,	
 		CS_CIERGB=11,	
-		CS_ITUr601=12,	
-		
+		CS_ITUr601_625Line=12,	
+		CS_ITUr601_525Line=13,	
+};
+
+
+struct ColourMatchingFunctions_ST
+{
+	int total;
+	double step;
+};
+
+//刺激值坐标
+struct ColourMatchingFunctions_Lite_ST
+{
+	double nm;
+	double x;
+	double y;
+	double z;
+};
+
+struct ChromaticityCoordinates_ST
+{
+	int total;
+	double step;
+};
+
+
+//色度坐标
+struct ChromaticityCoordinates_Lite_ST
+{
+	double nm;
+	double x;
+	double y;
+	double z;
 };
 
 bool CCT_to_CIE_xy(double K,	double *x,	double *y);

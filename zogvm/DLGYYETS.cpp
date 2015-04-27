@@ -66,6 +66,7 @@ BOOL CDLGYYETS::OnInitDialog()
 	{
 		fclose(fp);
 		YyetsDB.OpenDB(tempstr);
+
 	}
 	else
 	{

@@ -327,6 +327,9 @@ BOOL CZogvmDlg::OnInitDialog()
 #if OPEN_FFMEPG
 	VideoInit();
 #endif
+	char title[512]="";
+	sprintf(title,"zogna video manager 1.07 Build:%s 更新地址:https://git.oschina.net/zogna/zogvm/attach_files",__DATE__);
+	SetWindowText(title);
 
 	//初始即最大化
 	ShowWindow(SW_MAXIMIZE);   

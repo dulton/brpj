@@ -19,7 +19,12 @@ CSqliteOperate::~CSqliteOperate()
 //打开数据库
 int CSqliteOperate::OpenDB(char *file)
 {
-	return sqlite3_open_v2(file, &m_pDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	char * utf8=(char *)calloc(strlen(file)*2+4,sizeof(char));
+	CHAR2UTF8(file,utf8,strlen(file));
+	int re= sqlite3_open_v2(utf8, &m_pDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	free(utf8);
+
+	return re;
 }
 
 
