@@ -50,9 +50,9 @@ struct WHITE_POINT_ST
 
 
 //颜色空间
-#define  COLOR_SPACE_MAX_NUM 14
+#define  COLOR_SPACE_MAX_NUM 15
 
-struct ColorSpace_ST
+struct ColorSpace1931_ST
 {
 	//白点色温的指针
 	int W;
@@ -66,6 +66,19 @@ struct ColorSpace_ST
 	double Yb;
 };
 
+struct ColorSpace1976_ST
+{
+	//白点色温的指针
+	int W;
+	//色域空间的RGB对应的CIE1976u'v'值
+	//z=1-x-y
+	double Upr;
+	double Vpr;
+	double Upg;
+	double Vpg;
+	double Upb;
+	double Vpb;
+};
 enum ColorSpace_EM
 {
 	CS_CIEXYZ=0,	
@@ -78,10 +91,11 @@ enum ColorSpace_EM
 		CS_NTSC1953_FCC_r470M=7,	
 		CS_UHDTV_r2020=8,	
 		CS_AdobeWideRGB=9,	
-		CS_ROMMRGB=10,	
+		CS_ROMM_ProPhotoRGB=10,	
 		CS_CIERGB=11,	
 		CS_ITUr601_625Line=12,	
 		CS_ITUr601_525Line=13,	
+		CS_DCIP3=14,	
 };
 
 

@@ -5,6 +5,7 @@
 #include "colorspaceConvert.h"
 #include "math.h"
 
+//数据来源
 struct WHITE_POINT_ST White_Point_Table[WHITE_POINT_MAX_NUM]=
 {
 	{0.44757,	0.40745,	0.45117,	0.40594,	0.25594,	0.524332,	2856},	//a
@@ -32,9 +33,9 @@ struct WHITE_POINT_ST White_Point_Table[WHITE_POINT_MAX_NUM]=
 	{0.43695,	0.40441,	0.44256,	0.39717,	NULL,	NULL,	3000},	//f12
 	{0.314,	0.351,	0.190765,	0.4798,	0.197835,	0.468326,	5900},	//dcip3 gamma2.6
 };
-
-
-struct ColorSpace_ST ColorSpace[COLOR_SPACE_MAX_NUM]=
+//数据来源
+//http://www.tftcentral.co.uk/articles/content/pointers_gamut.htm
+struct ColorSpace1931_ST ColorSpace_CIE1931[COLOR_SPACE_MAX_NUM]=
 {
 	{WP_E,1,0,0,1,0,0},	//CS_CIEXYZ
 	{WP_D65,0.64,0.33,0.3,0.6,0.15,0.06},//CS_sRGB_HDTVr709
@@ -44,16 +45,50 @@ struct ColorSpace_ST ColorSpace[COLOR_SPACE_MAX_NUM]=
 	{WP_D93,0.63,0.34,0.31,0.595,0.155,0.07},//CS_JapanNTSC
 	{WP_D65,0.625,0.34,0.28,0.595,0.155,0.07},//CS_AppleRGB
 	{WP_C,0.67,0.33,0.21,0.71,0.14,0.08},//CS_NTSC1953_FCC_r470M
-	{WP_D65,0.708,0.292,0.17,0.797,0.131,0.046},//CS_UHDTV_r2020
-	{WP_D50,0.735,0.265,0.115,0.826,0.157,0.018},//CS_AdobeWideRGB
-	{WP_D50,0.7347,0.2653,0.1596,0.8404,0.0366,0.0001},//CS_ROMMRGB
+	{WP_D65,0.70792,0.29203,0.17024,0.79652,0.13137,0.04588},//CS_UHDTV_r2020
+	{WP_D50,0.73469,0.26531,0.11416,0.82621,0.15664,0.0177},//CS_AdobeWideRGB
+	{WP_D50,0.7347,0.2653,0.1596,0.8404,0.0366,0.0001},//CS_ROMMRGB ProPhoto
 	{WP_E,0.7347,0.2653,0.2738,0.7174,0.1666,0.0089},//CS_CIERGB
 	{WP_D65,0.64,0.33,0.29,0.6,0.15,0.06},//CS_ITUr601_625Line
 	{WP_D65,0.63,0.34,0.31,0.595,0.155,0.07},//CS_ITUr601_525Line
+	{WP_Dcip3,0.68,0.32,0.265,0.69,0.15,0.06},//CS_DCIP3
+};
+//数据来源
+//http://www.tftcentral.co.uk/articles/content/pointers_gamut.htm
+struct ColorSpace1976_ST ColorSpace_CIE1976[COLOR_SPACE_MAX_NUM]=
+{
+	{WP_E,1,0,0,1,0,0},	//CS_CIEXYZ
+	{WP_D65,0.451,0.523,0.125,0.563,0.175,0.158},//CS_sRGB_HDTVr709-
+
+	{WP_D65,0.451,0.523,0.076,0.576,0.175,0.158},//CS_AdobeRGB98-
+
+	{WP_D65,0.64,0.33,0.29,0.6,0.15,0.06},//CS_PAL_SECAM_EBU_r470BG
+	{WP_D65,0.63,0.34,0.31,0.595,0.155,0.07},//CS_NTSC1987_SMPTEC
+	{WP_D93,0.63,0.34,0.31,0.595,0.155,0.07},//CS_JapanNTSC
+	{WP_D65,0.625,0.34,0.28,0.595,0.155,0.07},//CS_AppleRGB
+
+	{WP_C,0.477,0.528,0.076,0.576,0.152,0.196},//CS_NTSC1953_FCC_r470M-
+-
+	{WP_D65,0.55649,0.51651,0.05573,0.58674,0.15983,0.12558},//CS_UHDTV_r2020-
+
+	{WP_D50,0.62337,0.50650,0.036,0.58614,0.21612,0.05496},//CS_AdobeWideRGB-
 
 
+	{WP_D50,0.6234,0.5065,0.05,0.5925,0.05,0.0003},//CS_ROMMRGB ProPhoto-
+
+	{WP_E,0.7347,0.2653,0.2738,0.7174,0.1666,0.0089},//CS_CIERGB  
+	{WP_D65,0.64,0.33,0.29,0.6,0.15,0.06},//CS_ITUr601_625Line
+	{WP_D65,0.63,0.34,0.31,0.595,0.155,0.07},//CS_ITUr601_525Line
+
+	{WP_Dcip3,0.496,0.526,0.099,0.578,0.175,0.158},//CS_DCIP3-
 };
 
+//收藏！！
+//http://www.tftcentral.co.uk/articles/calibrating.htm
+//http://www.tftcentral.co.uk/reviews/spyder3elite.htm
+
+
+//数据来源
 //http://en.wikipedia.org/wiki/Planckian_locus
 bool CCT_to_CIE_xy(double K,double *x,double *y)
 {
