@@ -36,7 +36,7 @@ void CALLBACK StreamClientHikanCBFun(DISPLAY_INFO *pstDisplayInfo)
 	//在这做识别
 	//MySqlIO.LOG_AddNewSystemLog("admin","c");
 	//车牌识别
-#if OPEN_CARDETECT_CODE 	
+#if OPEN_LC_CARDETECT_CODE 	
 
 	//启用识别
 	if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
@@ -53,7 +53,7 @@ void CALLBACK StreamClientHikanCBFun(DISPLAY_INFO *pstDisplayInfo)
 		strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].cam_name,
 			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
 
-		if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetLength() >1)
+		if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetLength() >0)
 		{
 			strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].l_ipaddr,
 				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
@@ -61,11 +61,49 @@ void CALLBACK StreamClientHikanCBFun(DISPLAY_INFO *pstDisplayInfo)
 		else
 			strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].l_ipaddr,"0.0.0.0");
 
+		DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].cam_Direction=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].Direction;
+
 		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
 		DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
 			(unsigned char *)pstDisplayInfo->pBuf,pstDisplayInfo->nWidth,pstDisplayInfo->nHeight,pstDisplayInfo->nBufLen);
 
 		DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Result();
+	}
+
+#endif
+#if OPEN_HYZJ_CARDETECT_CODE 	
+
+	//启用识别
+	if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
+	{
+
+		//拷贝数值
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].m_playhandle=screenNo;
+
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].camid=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].camID;
+
+		strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].cam_name,
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
+
+		if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetLength() >0)
+		{
+			strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].l_ipaddr,
+				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+		}
+		else
+			strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].l_ipaddr,"0.0.0.0");
+
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].cam_Direction=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].Direction;
+
+		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
+	
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Start(ImageFormatYV12,\
+			(unsigned char *)pstDisplayInfo->pBuf,pstDisplayInfo->nWidth,pstDisplayInfo->nHeight,pstDisplayInfo->nBufLen);
+
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Result();
 	}
 
 #endif
@@ -98,6 +136,9 @@ void CALLBACK StreamClientHikanCBFun(DISPLAY_INFO *pstDisplayInfo)
 
 		strcpy(DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].l_ipaddr,
 			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+
+		DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].cam_Direction=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].Direction;
 
 		DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].Start(VIDEO_FORMAT_YV12,
 			(unsigned char *)pstDisplayInfo->pBuf,pstDisplayInfo->nWidth,pstDisplayInfo->nHeight,
@@ -301,7 +342,7 @@ void CStreamClientSDK::SDKInit()
 
 bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 								 char *user,char *psw,HWND hWnd,int subtype,
-								 char *Rtspurl,int RTP,int DecodeTag)
+								 char *Rtspurl,int RTP,int DecodeTag,int Direction)
 {
 	if(m_RealHandle[screenNo] >=0)
 	{
@@ -309,6 +350,8 @@ bool CStreamClientSDK::StartPlay(int screenNo,char *name,char *sip,
 	}
 	int i;
 	int transmethod;
+
+	m_direction[screenNo]=Direction;
 
 	m_RealHandle[screenNo]=StreamClient_CreateSession();
 	if(m_RealHandle[screenNo]>=0)
@@ -393,7 +436,7 @@ void CStreamClientSDK::StopPlay(int screenNo)
 
 		DB33_PlayM4_FreePort(m_lPort[screenNo]);
 	
-#if OPEN_CARDETECT_CODE 	
+#if OPEN_LC_CARDETECT_CODE 	
 		//停止识别
 		if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
 			DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Stop();
@@ -401,6 +444,14 @@ void CStreamClientSDK::StopPlay(int screenNo)
 		
 				DlgMain->DlgTabVideo.DlgScreen.CarAdd[screenNo]=0;
 #endif
+#if OPEN_HYZJ_CARDETECT_CODE 	
+				//停止识别
+				if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
+					DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Stop();
+
+				DlgMain->DlgTabVideo.DlgScreen.CarAdd[screenNo]=0;
+#endif
+
 
 #if OPEN_FACEDETECT_CODE 	
 		//停止识别

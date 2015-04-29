@@ -9,29 +9,28 @@
 #pragma comment(lib,"winmm.lib") 
 
 #define TRACK_FACE_MAX 5
-	////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 class CFaceDetect
 {
 public:
 	CFaceDetect();
 	virtual ~CFaceDetect();
 
-void errorprintf(char *str);
+	void errorprintf(char *str);
 
 
 	void SetAll();
 
-	void CleanList(void);
 
 	void Stop();
-void CFaceDetect::Start(int format,unsigned char *image,int w,int h,long widthStep,long size);
+	void Start(int format,unsigned char *image,int w,int h,long widthStep,long size);
 
-char* CFaceDetect::FaceType(int i);
-char* CFaceDetect::FaceSex(int i);
-char* CFaceDetect::FaceSexIn(int i);
-int CFaceDetect::FaceSexInt(int i);
+	char* FaceType(int i);
+	char* FaceSex(int i);
+	char* FaceSexIn(int i);
+	int FaceSexInt(int i);
 public:
-	
+
 	//线程句柄
 	HANDLE pthread;
 	//线程在用=false  线程未用=ture
@@ -73,6 +72,7 @@ public:
 	unsigned long int	camid;			//摄像头NID
 	long DBnid;					//临时人脸库
 	long RWdb_nid;				//临时瑞为库
+	int cam_Direction;
 
 	long long starttime;
 

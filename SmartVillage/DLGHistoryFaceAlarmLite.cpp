@@ -109,7 +109,7 @@ BOOL CDLGHistoryFaceAlarmLite::OnInitDialog()
 		return FALSE;
 
 	char str[260]={0};
-	m_txt="抓拍信息:\n时间:";
+	m_txt="抓拍信息:\n时间:  ";
 
 	sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",
 		tempFace.year,
@@ -122,10 +122,10 @@ BOOL CDLGHistoryFaceAlarmLite::OnInitDialog()
 	m_txt+=str;
 	m_txt+="\n设备名:";
 	m_txt+=tempFace.cameraName;
-	m_txt+="\n年龄:";
+	m_txt+="\n年龄:  ";
 	sprintf(str,"%d",tempFace.age);
 	m_txt+=str;
-	m_txt+="\n性别:";
+	m_txt+="\n性别:  ";
 	m_txt+=FaceSex(tempFace.sex);
 
 	//路径
@@ -497,7 +497,7 @@ void CDLGHistoryFaceAlarmLite::OnStnDblclickPic()
 
 	char str[260]={0};
 	CDLGpictureView dlgPicView;
-	dlgPicView.m_txt="时间:";
+	dlgPicView.m_txt="时间:  ";
 
 	sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",
 		tempFace.year,
@@ -510,10 +510,10 @@ void CDLGHistoryFaceAlarmLite::OnStnDblclickPic()
 	dlgPicView.m_txt+=str;
 	dlgPicView.m_txt+="\n设备名:";
 	dlgPicView.m_txt+=tempFace.cameraName;
-	dlgPicView.m_txt+="\n年龄:";
+	dlgPicView.m_txt+="\n年龄:  ";
 	sprintf(str,"%d",tempFace.age);
 	dlgPicView.m_txt+=str;
-	dlgPicView.m_txt+="\n性别:";
+	dlgPicView.m_txt+="\n性别:  ";
 	dlgPicView.m_txt+=FaceSex(tempFace.sex);
 
 	//标题

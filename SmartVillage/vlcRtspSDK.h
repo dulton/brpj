@@ -17,8 +17,11 @@ public:
 	virtual ~CVlcRtspSDK();
 
 	int screenNo;
+	int m_direction;
 
 	unsigned char *RGBdata;
+	unsigned char *YUVdata;
+
 	CString CapturePath;
 
 	libvlc_instance_t *m_pLibvlc_Inst;
@@ -39,7 +42,7 @@ public:
 	void Lock();
 	void UnLock();
 
-	bool StartPlay(int screenNum,char *name,HWND inhWnd,char *Rtspurl);
+	bool StartPlay(int screenNum,char *name,HWND inhWnd,char *Rtspurl,int Direction);
 	void StopPlay();
 	void Capture(char *filename);
 

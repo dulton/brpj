@@ -622,7 +622,8 @@ void CDLGnormal::StartPlay(int screenNo)
 							CameraInfo.venderID,
 							CameraInfo.Rtspurl.GetBuffer(0),
 							CameraInfo.RTP,
-							CameraInfo.DecodeTag);
+							CameraInfo.DecodeTag,
+							CameraInfo.Direction);
 		if(ret)
 		{
 			if(screenNo==DlgMain->DlgTabVideo.DlgScreen.GetCurWindId())
@@ -667,9 +668,15 @@ void CDLGnormal::CloseCarDetect(int screenNo)
 {
 	DlgMain->DlgTabVideo.DlgScreen.EnableCarDetect(screenNo,false);
 
-#if OPEN_CARDETECT_CODE
+#if OPEN_LC_CARDETECT_CODE
 
 	DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Stop();
+
+#endif
+
+#if OPEN_HYZJ_CARDETECT_CODE
+
+	DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Stop();
 
 #endif
 

@@ -16,6 +16,7 @@
 
 #include "CarDetect.h"
 #include "FaceDetect.h"
+#include "HYZJCarDetect.h"
 
 #include "myCamera.h"
 
@@ -48,6 +49,7 @@ struct DEVICE_INFO
 	CString Rtspurl;
 	int RTP;
 	int DecodeTag;
+	int Direction;
 };
 
 
@@ -86,10 +88,16 @@ public:
 		//»À¡≥µ˛º”÷µ
 	int CarAdd[MAX_DEVICE_NUM];
 
-#if OPEN_CARDETECT_CODE 
+#if OPEN_LC_CARDETECT_CODE 
 	CCarDetect	CarDetect[MAX_DEVICE_NUM];
 #endif
 
+#if OPEN_HYZJ_CARDETECT_CODE 
+	CHYZJCarDetect	HYZJCarDetect[MAX_DEVICE_NUM];
+	int HYZJCarDetect_total;
+#endif
+
+	
 #if OPEN_FACEDETECT_CODE 
 	CFaceDetect	FaceDetect[MAX_DEVICE_NUM];
 #endif
@@ -136,7 +144,7 @@ bool GetFaceDetectState(int nCuWinID);
 
 	void SwitchMultiWnd(int nSplit);
 	bool StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
-		char *user,char *psw,int subtype,int screenNo,int venderID,char *Rtspurl,int RTP,int DecodeTag);
+		char *user,char *psw,int subtype,int screenNo,int venderID,char *Rtspurl,int RTP,int DecodeTag,int Direction);
 	void StopPlay(int screenNo);
 	void Capture(char *filename);
 

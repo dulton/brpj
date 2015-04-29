@@ -24,7 +24,7 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 , m_CamRtspurl(_T(""))
 , m_longitude(_T(""))
 , m_latitude(_T(""))
-
+, m_Direction(0)
 {
 	//{{AFX_DATA_INIT(CDLGAddDevice)
 	m_CamIpAddr = _T("");
@@ -34,6 +34,7 @@ CDLGAddDevice::CDLGAddDevice(CWnd* pParent /*=NULL*/)
 
 	m_CamArea = _T("");
 	m_CamPort = 0;
+	m_SVmode = 0;
 	AreaCount = 0;
 	AreaComboCur = 0;
 
@@ -69,7 +70,8 @@ void CDLGAddDevice::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Text(pDX, IDC_EDIT_LONGI, m_longitude);
 	DDX_Text(pDX, IDC_EDIT_LATI, m_latitude);
-
+	DDX_Control(pDX, IDC_COMBO_DIRECTION, m_camDirection);
+	DDX_Control(pDX, IDC_COMBO_SVMODE, m_comSVmode);
 }
 
 
@@ -111,6 +113,10 @@ BOOL CDLGAddDevice::OnInitDialog()
 	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_DECODETAG);
 	comboctrl->SetCurSel(DecodeTagComboCur);
 
+	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_DIRECTION);
+	comboctrl->SetCurSel(m_Direction);
+	comboctrl=(CComboBox*)GetDlgItem(IDC_COMBO_SVMODE);
+	comboctrl->SetCurSel(m_SVmode);
 	OnCbnCloseupComboCamvender();
 
 	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
@@ -135,7 +141,8 @@ void CDLGAddDevice::OnOK()
 	VenderComboCur = m_camVender.GetCurSel();
 	RTPComboCur = m_CamRTP.GetCurSel();
 	DecodeTagComboCur=m_CamDecodetag.GetCurSel();
-
+	m_Direction = m_camDirection.GetCurSel();
+	m_SVmode = m_comSVmode.GetCurSel();
 
 	if(m_CamName.IsEmpty())
 	{
@@ -168,7 +175,7 @@ void CDLGAddDevice::OnOK()
 		return;
 	}
 
-#if	(!OPEN_DAHUA_SDK) 
+#if	(!OPEN_DAHUA_SDK && !OPEN_DAHUA_SDK_NEW) 
 	if(VenderComboCur ==VENDER_TYPE_DAHUA )
 	{
 		MessageBox("版本不支持 大华 摄像头",MESSAGEBOX_TITLE);

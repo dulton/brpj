@@ -146,6 +146,11 @@ BOOL CDLGSetBlackFaceEdit::OnInitDialog()
 	m_b_cancel.LoadBitmaps(IDB_CANCEL_BUTTON,IDB_CANCEL_BUTTON_MOVE,NULL,NULL);
 	m_b_cancel.SizeToContent();		//自适应图片大小
 
+	GetDlgItem(IDC_BUTTON_DELETE1)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_DELETE2)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_DELETE3)->EnableWindow(FALSE);
+	GetDlgItem(IDC_BUTTON_DELETE4)->EnableWindow(FALSE);
+
 
 	if(bModifyFlag)
 	{
@@ -154,18 +159,22 @@ BOOL CDLGSetBlackFaceEdit::OnInitDialog()
 		if(filepath[0][0] != 0)
 		{
 			bim1=pic1.LoadPicture(filepath[0]);
+			GetDlgItem(IDC_BUTTON_DELETE1)->EnableWindow(TRUE);
 		}
 		if(filepath[1][0] != 0)
 		{
 			bim2=pic2.LoadPicture(filepath[1]);
+			GetDlgItem(IDC_BUTTON_DELETE2)->EnableWindow(TRUE);
 		}
 		if(filepath[2][0] != 0)
 		{
 			bim3=pic3.LoadPicture(filepath[2]);
+			GetDlgItem(IDC_BUTTON_DELETE3)->EnableWindow(TRUE);
 		}
 		if(filepath[3][0] != 0)
 		{
 			bim4=pic4.LoadPicture(filepath[3]);
+			GetDlgItem(IDC_BUTTON_DELETE4)->EnableWindow(TRUE);
 		}
 	}
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -340,6 +349,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonFile1()
 	
 		//加载图片
 		bim1=pic1.LoadPicture(filepath[0]);
+		GetDlgItem(IDC_BUTTON_DELETE1)->EnableWindow(TRUE);
 		Invalidate();
 
 
@@ -369,7 +379,8 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonFile2()
 	
 		//加载图片
 		bim2=pic2.LoadPicture(filepath[1]);
-			Invalidate();
+		GetDlgItem(IDC_BUTTON_DELETE2)->EnableWindow(TRUE);
+		Invalidate();
 
 	
 
@@ -399,6 +410,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonFile3()
 	
 		//加载图片
 		bim3=pic3.LoadPicture(filepath[2]);
+		GetDlgItem(IDC_BUTTON_DELETE3)->EnableWindow(TRUE);
 		Invalidate();
 
 
@@ -429,6 +441,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonFile4()
 	
 		//加载图片
 		bim4=pic4.LoadPicture(filepath[3]);
+		GetDlgItem(IDC_BUTTON_DELETE4)->EnableWindow(TRUE);
 		Invalidate();
 
 
@@ -447,6 +460,11 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonFile4()
 void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete1()
 {
 	// TODO: Add your control notification handler code here
+	if(filepath[0][0] == 0)
+	{
+		return;
+	}
+
 	//警告框
 	CDLGWarnning dlgw;
 	dlgw.m_wintxt="删除人脸";					//窗口标题
@@ -477,6 +495,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete1()
 		pic1.FreePicture();
 		bim1=NULL;
 		m_pic1.SetBitmap(0);
+		GetDlgItem(IDC_BUTTON_DELETE1)->EnableWindow(FALSE);
 		UpdateData(FALSE);
 		Invalidate(TRUE);
 	}
@@ -486,6 +505,11 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete1()
 void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete2()
 {
 	// TODO: Add your control notification handler code here
+	if(filepath[1][0] == 0)
+	{
+		return;
+	}
+
 	//警告框
 	CDLGWarnning dlgw;
 	dlgw.m_wintxt="删除人脸";					//窗口标题
@@ -516,6 +540,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete2()
 		pic2.FreePicture();
 		bim2=NULL;
 		m_pic2.SetBitmap(0);
+		GetDlgItem(IDC_BUTTON_DELETE2)->EnableWindow(FALSE);
 		UpdateData(FALSE);
 		Invalidate(TRUE);
 	}
@@ -525,6 +550,10 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete2()
 void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete3()
 {
 	// TODO: Add your control notification handler code here
+	if(filepath[2][0] == 0)
+	{
+		return;
+	}
 	//警告框
 	CDLGWarnning dlgw;
 	dlgw.m_wintxt="删除人脸";					//窗口标题
@@ -555,6 +584,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete3()
 		pic3.FreePicture();
 		bim3=NULL;
 		m_pic3.SetBitmap(0);
+		GetDlgItem(IDC_BUTTON_DELETE3)->EnableWindow(FALSE);
 		UpdateData(FALSE);
 		Invalidate(TRUE);
 	}
@@ -564,6 +594,10 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete3()
 void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete4()
 {
 	// TODO: Add your control notification handler code here
+	if(filepath[3][0] == 0)
+	{
+		return;
+	}
 	//警告框
 	CDLGWarnning dlgw;
 	dlgw.m_wintxt="删除人脸";					//窗口标题
@@ -594,6 +628,7 @@ void CDLGSetBlackFaceEdit::OnBnClickedButtonDelete4()
 		pic4.FreePicture();
 		bim4=NULL;
 		m_pic4.SetBitmap(0);
+		GetDlgItem(IDC_BUTTON_DELETE4)->EnableWindow(FALSE);
 		UpdateData(FALSE);
 		Invalidate(TRUE);
 	}

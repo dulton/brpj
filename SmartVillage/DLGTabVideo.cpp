@@ -88,11 +88,13 @@ BOOL CDLGTabVideo::OnInitDialog()
 	DlgScreen.Create(IDD_SCREEN,this);
 	DlgScreen.ShowWindow(SW_SHOW);
 
+	DlgPictureFaceCap.hideflag=false;
 	DlgPictureFaceCap.TitleDrawFlag=true;
 	DlgPictureFaceCap.TitleResDef=IDB_FACE_CAP_TITLE;
 	DlgPictureFaceCap.Create(IDD_PICTURE_FACE,this);
 	DlgPictureFaceCap.ShowWindow(SW_SHOW);
 
+	DlgPictureFaceAlarm.hideflag=true;
 	DlgPictureFaceAlarm.TitleDrawFlag=true;
 	DlgPictureFaceAlarm.TitleResDef=IDB_FACE_ALARM_TITLE;
 	DlgPictureFaceAlarm.Create(IDD_PICTURE_FACE,this);
@@ -139,7 +141,7 @@ void CDLGTabVideo::AutoSize()
 	int tree_top=0;
 
 	//列表的高度
-	int list_height=150;
+	int list_height=180;
 
 	//FACE的宽度
 	int face_width=230;
@@ -148,6 +150,109 @@ void CDLGTabVideo::AutoSize()
 	//窗体边距
 	int distance=5;
 
+
+
+	//设备树
+	CRect tree_Rect;
+	tree_Rect.top = m_clientRect.top+tree_top;
+	tree_Rect.bottom = m_clientRect.bottom-distance;
+	tree_Rect.left = m_clientRect.left;
+	tree_Rect.right = m_clientRect.left+tab_width;
+	//必须 样式=重叠，边框=调整大小
+	//	m_TabMain.MoveWindow(tab_Rect);
+
+	DlgDeviceTree.MoveWindow(tree_Rect);
+
+	//列表
+	CRect list_Rect;
+	list_Rect.top = m_clientRect.bottom-distance-list_height/* + 5*/;
+	list_Rect.bottom = m_clientRect.bottom-distance/* - 10*/;
+	list_Rect.left = tree_Rect.right+distance/* + 10*/;
+	list_Rect.right = m_clientRect.right-distance-face_width;
+	//必须 样式=重叠，边框=调整大小
+	m_ListCar.MoveWindow(list_Rect);
+
+	//分屏
+	CRect screen_Rect;
+	screen_Rect.top = m_clientRect.top/* + 5*/;
+	screen_Rect.bottom = list_Rect.top -distance/* - 10*/;
+	screen_Rect.left = tree_Rect.right +distance/* + 10*/;
+	screen_Rect.right = list_Rect.right;
+	//必须 样式=重叠，边框=调整大小
+	DlgScreen.MoveWindow(screen_Rect);
+
+
+	DlgDeviceTree.AutoSize();
+	DlgScreen.AutoSize();
+
+
+	//分隔条
+	CRect rcSplit;
+
+	rcSplit.top = screen_Rect.bottom;
+	rcSplit.bottom = list_Rect.top;
+	rcSplit.left = list_Rect.left;
+	rcSplit.right =  list_Rect.right;
+	//	GetDlgItem(IDC_SPLITTER)->MoveWindow(rcSplit);
+	m_wndSplitter.MoveWindow(rcSplit);
+
+
+	//人脸
+	CRect facecap_Rect;
+	facecap_Rect.top = m_clientRect.top;
+	facecap_Rect.bottom =	facecap_Rect.top + face_height;
+	facecap_Rect.left = list_Rect.right+2 ;
+	facecap_Rect.right = m_clientRect.right;
+	//必须 样式=重叠，边框=调整大小
+	DlgPictureFaceCap.MoveWindow(facecap_Rect);
+	DlgPictureFaceCap.AutoSize();
+
+	//人脸
+	CRect facealarm_Rect;
+	facealarm_Rect.top = facecap_Rect.bottom ;
+	facealarm_Rect.bottom =	m_clientRect.bottom-distance;
+	facealarm_Rect.left = list_Rect.right+2 ;
+	facealarm_Rect.right = m_clientRect.right;
+	//必须 样式=重叠，边框=调整大小
+	DlgPictureFaceAlarm.MoveWindow(facealarm_Rect);
+	DlgPictureFaceAlarm.AutoSize();
+
+	Invalidate();
+}
+
+void CDLGTabVideo::HideSize()
+{
+	CRect rc(0, 0, 0, 0);
+	GetClientRect(&m_clientRect);
+	//	GetParent()->GetClientRect(&rc);
+	//	((CTabCtrl*)GetParent())->AdjustRect(FALSE, &rc);
+	//	MoveWindow(rc);
+
+
+	//切换栏宽度=LOGO图片的宽度
+	int tab_width=220;
+	//LOGO图片的高度
+	//int button_top=130;
+	//int button_width=192;
+	//tab高度
+	//int tab_top=163;
+
+	//LOGO图片的高度
+	int button_top=0;
+	int button_width=192;
+	//tab高度
+	int tree_top=0;
+
+	//列表的高度
+	int list_height=180;
+
+
+	//窗体边距
+	int distance=5;
+
+	//FACE的宽度
+	int face_width=230;
+	int face_height=m_clientRect.Height()-distance-28;
 
 
 	//设备树
@@ -274,42 +379,44 @@ void CDLGTabVideo::TabMainInit(void)
 void CDLGTabVideo::ListMainInit(void)
 {
 	m_ListCar.SetBkColor(RGB(248,248,248));
-#if ALLTAB_DETECT_CAR_MODE
 
-	m_ListCar.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 40);
+	//默认图片
+
+	int bmpw=96,bmph=20;
+	defaultbitmap.LoadBitmap(IDB_DEFAULT_LIST);    
+
+	//默认图像大小，如果要列变宽点。也设大点
+	m_ListImg.Init(&m_ListCar, bmpw, bmph, &defaultbitmap);
+
+	m_ListCar.InsertColumn(0, _T("车牌图片"), LVCFMT_LEFT, bmpw);//-----
 	m_ListCar.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
 	m_ListCar.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 140);
 	m_ListCar.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
-	m_ListCar.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
-	m_ListCar.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
-	m_ListCar.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_ListCar.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
-	m_ListCar.InsertColumn(8, _T("车牌类型"), LVCFMT_LEFT, 100);
-	m_ListCar.InsertColumn(9, _T("车身颜色"), LVCFMT_LEFT, 60);
-	m_ListCar.InsertColumn(10, _T("黑名单"), LVCFMT_LEFT, 50);
-	m_ListCar.InsertColumn(11, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(12, _T("服务器模式"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(13, _T("nid"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(14, _T("blackid"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(4, _T("序号") , LVCFMT_LEFT, 40);
+	m_ListCar.InsertColumn(5, _T("车牌号"), LVCFMT_LEFT, 70);
+	m_ListCar.InsertColumn(6, _T("置信度"), LVCFMT_LEFT, 50);
+	m_ListCar.InsertColumn(7, _T("行驶方向"), LVCFMT_LEFT, 70);
+	m_ListCar.InsertColumn(8, _T("车牌颜色"), LVCFMT_LEFT, 70);
+#if ALLTAB_DETECT_CAR_MODE
+	m_ListCar.InsertColumn(9, _T("车牌类型"), LVCFMT_LEFT, 90);
+	m_ListCar.InsertColumn(10, _T("车身颜色"), LVCFMT_LEFT, 60);
+	m_ListCar.InsertColumn(11, _T("黑名单"), LVCFMT_LEFT, 50);
+	m_ListCar.InsertColumn(12, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(13, _T("服务器模式"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(14, _T("nid"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(15, _T("blackid"), LVCFMT_LEFT, 0);
 #else
 
-	m_ListCar.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 40);
-	m_ListCar.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_ListCar.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 200);
-	m_ListCar.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
-	m_ListCar.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 60);
-	m_ListCar.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
-	m_ListCar.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_ListCar.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
-	m_ListCar.InsertColumn(8, _T("黑名单"), LVCFMT_LEFT, 50);
-	m_ListCar.InsertColumn(9, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(10, _T("服务器模式"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(11, _T("nid"), LVCFMT_LEFT, 0);
-	m_ListCar.InsertColumn(12, _T("blackid"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(9, _T("黑名单"), LVCFMT_LEFT, 50);
+	m_ListCar.InsertColumn(10, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(11, _T("服务器模式"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(12, _T("nid"), LVCFMT_LEFT, 0);
+	m_ListCar.InsertColumn(13, _T("blackid"), LVCFMT_LEFT, 0);
 
 #endif
-	m_ListCar.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
-
+	//m_ListCar.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+	//序号和图片颠倒
+	m_ListImg.SwapColumns(0, 4);
 	
 
 	m_ListCarTotal=0;
@@ -325,12 +432,12 @@ void CDLGTabVideo::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	//本地
 #if ALLTAB_DETECT_CAR_MODE
 	//汽车
-	m_ListCar.GetItemText(pNMIA->iItem,13,str,260);
-	m_ListCar.GetItemText(pNMIA->iItem,14,blackstr,260);
+	m_ListCar.GetItemText(pNMIA->iItem,14,str,260);
+	m_ListCar.GetItemText(pNMIA->iItem,15,blackstr,260);
 #else
 	//电动车
-	m_ListCar.GetItemText(pNMIA->iItem,11,str,260);
-	m_ListCar.GetItemText(pNMIA->iItem,12,blackstr,260);
+	m_ListCar.GetItemText(pNMIA->iItem,12,str,260);
+	m_ListCar.GetItemText(pNMIA->iItem,13,blackstr,260);
 #endif
 
 	struct BLACK_DATA_ST blackdata={0};
@@ -442,10 +549,10 @@ void CDLGTabVideo::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
 
 #if ALLTAB_DETECT_CAR_MODE
 			//汽车
-			m_ListCar.GetItemText(nItem,10,str,260);
+			m_ListCar.GetItemText(nItem,11,str,260);
 #else
 			//电动车
-			m_ListCar.GetItemText(nItem,8,str,260);
+			m_ListCar.GetItemText(nItem,9,str,260);
 #endif
 			lplvcd->clrTextBk=RGB(248,248,248);
 			if(NULL!=strstr(str,"是"))
@@ -500,6 +607,6 @@ void CDLGTabVideo::OnMaxMinInfo(NMHDR* pNMHDR, LRESULT* pResult)
 	if (IDC_SPLITTER == pNMHDR->idFrom)
 	{
 		pNewMaxMinPos->lMin = rcScreen.top + 300;
-		pNewMaxMinPos->lMax = rcList.bottom - 155;
+		pNewMaxMinPos->lMax = rcList.bottom -180;
 	}
 }

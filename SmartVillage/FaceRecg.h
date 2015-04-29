@@ -22,7 +22,7 @@ struct  UNCMP_FACE_INFO_ST
 	int threshold;			//最小相似度阀值
 	int maxcount;			//最大匹配数
 	int dbTotal;			//设置布控数量
-	long db_nid[MAX_FACE_DB_NUM];		//设置布控库ID
+	long db_nid[RW_MAX_FACE_DB_NUM];		//设置布控库ID
 	char cameraName[64];	//摄像头名称
 	char sip[32];			//摄像头IP
 };

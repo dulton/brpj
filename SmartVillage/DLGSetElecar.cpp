@@ -74,6 +74,7 @@ BOOL CDLGSetElecar::OnInitDialog()
 	((CButton*)GetDlgItem(IDC_CHECK_OUTPUT_RECT))->SetCheck(CarSet.RedRect);
 	((CButton*)GetDlgItem(IDC_CHECK_DESKEW))->SetCheck(CarSet.Deskew);
 	((CButton*)GetDlgItem(IDC_CHECK_CAR_COLOR))->SetCheck(CarSet.CarColor);
+	((CButton*)GetDlgItem(IDC_CHECK_NIGHT))->SetCheck(CarSet.Night);
 
 	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
 	m_b_ok.SizeToContent();		//自适应图片大小
@@ -93,6 +94,7 @@ void CDLGSetElecar::OnOK()
 	CarSet.RedRect = ((CButton*)GetDlgItem(IDC_CHECK_OUTPUT_RECT))->GetCheck();
 	CarSet.Deskew = ((CButton*)GetDlgItem(IDC_CHECK_DESKEW))->GetCheck();
 	CarSet.CarColor = ((CButton*)GetDlgItem(IDC_CHECK_CAR_COLOR))->GetCheck();
+	CarSet.Night = ((CButton*)GetDlgItem(IDC_CHECK_NIGHT))->GetCheck();
 	CarSet.JPGquality = m_JPGquality;
 	CarSet.MaxWidth = m_MaxWidth;
 	CarSet.MinWidth = m_MinWidth;
@@ -109,6 +111,7 @@ void CDLGSetElecar::ReadOldConfig(struct CarSetStruct OldCarSet)
 	CarSet.RedRect = OldCarSet.RedRect;
 	CarSet.Deskew = OldCarSet.Deskew;
 	CarSet.CarColor = OldCarSet.CarColor;
+	CarSet.Night = OldCarSet.Night;
 	m_JPGquality = OldCarSet.JPGquality;	
 	m_MaxWidth = OldCarSet.MaxWidth;
 	m_MinWidth = OldCarSet.MinWidth;

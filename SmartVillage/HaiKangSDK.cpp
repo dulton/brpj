@@ -44,7 +44,7 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 	//在这做识别
 	
 	//车牌识别
-#if OPEN_CARDETECT_CODE 	
+#if OPEN_LC_CARDETECT_CODE 	
 
 	//启用识别
 	if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
@@ -61,6 +61,10 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 		
 		strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].l_ipaddr,
 			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+
+		DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].cam_Direction=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].Direction;
+	
 		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
 		DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Start(LC_VIDEO_FORMAT_YV12,\
 			(unsigned char *)pBuf,nWidth,nHeight,nSize);
@@ -69,7 +73,37 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 	}
 	
 #endif
+	//车牌识别
+#if OPEN_HYZJ_CARDETECT_CODE 	
 
+	//启用识别
+	if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
+	{
+		//拷贝数值
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].m_playhandle=screenNo;
+
+
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].camid=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].camID;
+
+		strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].cam_name,
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].name.GetBuffer(0));
+
+		strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].l_ipaddr,
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].cam_Direction=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].Direction;
+
+		//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
+		
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Start(ImageFormatYV12,\
+			(unsigned char *)pBuf,nWidth,nHeight,nSize);
+
+		DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Result();
+	}
+
+#endif
 
 
 #if OPEN_FACEDETECT_CODE
@@ -99,6 +133,9 @@ void CALLBACK RemoteDisplayCBFun(long nPort,char * pBuf,long nSize,long nWidth,l
 
 		strcpy(DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].l_ipaddr,
 			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].ip.GetBuffer(0));
+
+		DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].cam_Direction=
+			DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].Direction;
 
 		DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].Start(VIDEO_FORMAT_YV12,
 			(unsigned char *)pBuf,nWidth,nHeight,nWidth*3,nSize);
@@ -235,7 +272,7 @@ void CHaikangSDK::SDKInit()
 }
 
 bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,
-							char *user,char *psw,HWND hWnd,int subtype)
+							char *user,char *psw,HWND hWnd,int subtype,int Direction)
 {
 	if(m_LoginHandle[screenNo] != -1)
 	{
@@ -243,6 +280,7 @@ bool CHaikangSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int chan
 	}
 	//---------------------------------------
 	// 注册设备
+	m_direction[screenNo]=Direction;
 	NET_DVR_DEVICEINFO_V30 struDeviceInfo;
 	m_LoginHandle[screenNo] = NET_DVR_Login_V30(sip, nPort, user, psw, &struDeviceInfo);
 	if (m_LoginHandle[screenNo] < 0)
@@ -301,11 +339,18 @@ void CHaikangSDK::StopPlay(int screenNo)
 	m_LoginHandle[screenNo] = -1;
 	m_lPort[screenNo]=-1;
 
-#if OPEN_CARDETECT_CODE 	
+#if OPEN_LC_CARDETECT_CODE 	
 	//停止识别
 	if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
 		DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Stop();
 	
+		DlgMain->DlgTabVideo.DlgScreen.CarAdd[screenNo]=0;
+#endif
+#if OPEN_HYZJ_CARDETECT_CODE 	
+		//停止识别
+		if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Stop();
+
 		DlgMain->DlgTabVideo.DlgScreen.CarAdd[screenNo]=0;
 #endif
 

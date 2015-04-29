@@ -38,7 +38,7 @@ public:
 
 	HTREEITEM BlackRootitem;						//本指针
 	HTREEITEM TempRootitem;						//本指针
-	DBLIST dblist[MAX_AREA];
+	DBLIST dblist[MAX_AREA_ADD_CAM];
 	int dbtotal;
 	list<struct FACE_DB_ST> BlackDBList;
 	list<struct FACE_TEMP_DB_ST> TempDBList;

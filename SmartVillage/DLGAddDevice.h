@@ -75,6 +75,12 @@ public:
 	CString m_longitude;
 	CString m_latitude;
 	
+
+	CComboBox m_camDirection;
+	CComboBox m_comSVmode;
+	int m_Direction;
+	int m_SVmode;
+
 };
 
 //{{AFX_INSERT_LOCATION}}

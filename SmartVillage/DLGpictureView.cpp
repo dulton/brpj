@@ -332,7 +332,7 @@ void CDLGpictureView::OnSize(UINT nType, int cx, int cy)
 	int bmp_width=200;
 
 	int button_width=80;
-	int button_height=30;
+	int button_height=24;
 
 	m_clientRect.top+=distance+button_height;
 	m_clientRect.bottom-=distance;
@@ -383,7 +383,7 @@ void CDLGpictureView::OnSize(UINT nType, int cx, int cy)
 	download_small_Rect.bottom=m_clientRect.bottom;
 
 	download_small_Rect.left = m_clientRect.right-button_width-distance;
-	download_small_Rect.right = m_clientRect.right;
+	download_small_Rect.right =download_small_Rect.left+button_width ;
 	GetDlgItem(IDC_BUTTON_DOWNLOAD_SMALL)->MoveWindow(download_small_Rect);
 
 

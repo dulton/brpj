@@ -200,9 +200,17 @@ int CFaceRecg::RWFaceRecg_UnInit(void)
 		FaceProcess_UnInit(common_handle);
 		common_handle=0;
 	}
+	if(faceMngHandle)
+	{
+		RecoFaceMng_DestroyDBHandle(faceMngHandle);
+		faceMngHandle=0;
+	}
+	if(tempMngHandle)
+	{
+		RecoFaceMng_DestroyDBHandle(tempMngHandle);
+		tempMngHandle=0;
+	}
 
-	RecoFaceMng_DestroyDBHandle(faceMngHandle);
-	RecoFaceMng_DestroyDBHandle(tempMngHandle);
 	RecoFaceMng_UnInit();
 	return 0;
 }
@@ -231,12 +239,12 @@ int CFaceRecg::StopRecgThread(void)
 	if(m_bThreadWork)
 	{
 		m_bThreadWork = false;
-		Sleep(1000);
+		Sleep(3000);
 
 		TerminateThread(m_pThreadRecognize,0);
 		m_pThreadRecognize=NULL;
 
-		Sleep(1000);
+		Sleep(3000);
 
 		return 1;
 	}

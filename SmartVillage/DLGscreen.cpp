@@ -50,6 +50,9 @@ CDLGscreen::CDLGscreen(CWnd* pParent /*=NULL*/)
 
 	}
 
+#if OPEN_HYZJ_CARDETECT_CODE 
+	HYZJCarDetect_total=0;
+#endif
 
 }
 
@@ -106,7 +109,7 @@ BOOL CDLGscreen::OnInitDialog()
 		m_videoInfo[i].psw = "";
 		m_videoInfo[i].recordPath = "";
 		m_videoInfo[i].enableCarDetect = false;
-m_videoInfo[i].enableFaceDetect= false;
+		m_videoInfo[i].enableFaceDetect= false;
 		m_videoInfo[i].playHandle = -1;
 	}
 	//定时1s
@@ -238,6 +241,8 @@ void CDLGscreen::GetCurWindCamInfo(int nCuWinID,struct DEVICE_INFO &Info)
 	Info.Rtspurl = m_videoInfo[nCuWinID].Rtspurl;
 	Info.RTP = m_videoInfo[nCuWinID].RTP;
 	Info.DecodeTag = m_videoInfo[nCuWinID].DecodeTag;
+	Info.Direction = m_videoInfo[nCuWinID].Direction;
+	
 }
 
 //开启/关闭车牌识别
@@ -285,7 +290,7 @@ bool CDLGscreen::GetRecordState(int nCuWinID)
 //开始播放
 bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int channel,
 						   char *user,char *psw,int screenNo,int subtype,int venderID,
-						   char *Rtspurl,int RTP,int DecodeTag)
+						   char *Rtspurl,int RTP,int DecodeTag,int Direction)
 {
 	CWnd* pWnd = m_screenPannel.GetPage(screenNo);
 	if (!pWnd)
@@ -333,7 +338,9 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 	FaceAdd[screenNo]=0;
 	CarAdd[screenNo]=0;
 
-	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, channel, user, psw, pWnd->m_hWnd, subtype,Rtspurl,RTP,DecodeTag);
+	bool ret = m_video.StartPlay(venderID,screenNo,name, ip, port, 
+		channel, user, psw, pWnd->m_hWnd, subtype,Rtspurl,RTP,DecodeTag,Direction);
+
 	if(ret)
 	{
 		m_videoInfo[screenNo].subtype = subtype;		//主码流
@@ -351,8 +358,9 @@ bool CDLGscreen::StartPlay(int id,char *area,char *name,char *ip,int port,int ch
 		m_videoInfo[screenNo].Rtspurl = Rtspurl;
 		m_videoInfo[screenNo].RTP = RTP;
 		m_videoInfo[screenNo].DecodeTag = DecodeTag;
+		m_videoInfo[screenNo].Direction = Direction;
 
-
+		DlgMain->DlgTabVideo.DlgDeviceTree.ChangeTreeItemIcon(id,true);
 //服务器不能更新图标
 		DlgMain->DlgTabVideo.DlgNormal.UpdateNormalWnd();
 
@@ -379,17 +387,27 @@ void CDLGscreen::StopPlay(int screenNo)
 		m_videoInfo[screenNo].isplay = false;
 		m_video.StopPlay(m_videoInfo[screenNo].venderID,screenNo);
 		DlgMain->ShowCameraMessage(m_videoInfo[screenNo].name.GetBuffer(0),"连接停止",FALSE);
+		DlgMain->DlgTabVideo.DlgDeviceTree.ChangeTreeItemIcon(m_videoInfo[screenNo].camID,false);
 	}
 
 
 
-#if OPEN_CARDETECT_CODE 
+#if OPEN_LC_CARDETECT_CODE 
 	//停止识别
 	if(false == m_videoInfo[screenNo].enableCarDetect)
 		CarDetect[screenNo].Stop();
 	
 		CarAdd[screenNo]=0;
 #endif
+
+#if OPEN_HYZJ_CARDETECT_CODE 
+		//停止识别
+		if(false == m_videoInfo[screenNo].enableCarDetect)
+			HYZJCarDetect[screenNo].Stop();
+
+		CarAdd[screenNo]=0;
+#endif
+
 #if OPEN_FACEDETECT_CODE 	
 	//停止识别
 	if(false == m_videoInfo[screenNo].enableFaceDetect)
@@ -542,13 +560,23 @@ void CDLGscreen::OnTimer(UINT nIDEvent)
 	if(nIDEvent == RECORD_TIMER)
 	{
 		RecordTimerEvent();
-#if OPEN_CARDETECT_CODE
+#if OPEN_LC_CARDETECT_CODE
 		for(int i=0;i<MAX_DEVICE_NUM;i++)
 		{
 			if(CarDetect[i].JumpJPG)
 			{
 				ShellExecute(DlgMain->DlgTabVideo.m_hWnd,NULL,CarDetect[i].JumpJPGpath,NULL,NULL,SW_NORMAL);
 				CarDetect[i].JumpJPG=false;
+			}
+		}
+#endif
+#if OPEN_HYZJ_CARDETECT_CODE
+		for(int i=0;i<MAX_DEVICE_NUM;i++)
+		{
+			if(HYZJCarDetect[i].JumpJPG)
+			{
+				ShellExecute(DlgMain->DlgTabVideo.m_hWnd,NULL,HYZJCarDetect[i].JumpJPGpath,NULL,NULL,SW_NORMAL);
+				HYZJCarDetect[i].JumpJPG=false;
 			}
 		}
 #endif

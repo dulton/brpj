@@ -71,7 +71,7 @@ void Libvlc_Video_Display_Callback(void *opaque, void *picture)
 
 
 	//车牌识别
-#if OPEN_CARDETECT_CODE 	
+#if OPEN_LC_CARDETECT_CODE 	
 
 	//启用识别
 	if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].enableCarDetect)
@@ -90,13 +90,16 @@ void Libvlc_Video_Display_Callback(void *opaque, void *picture)
 			strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[pDlg->screenNo].cam_name,
 				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].name.GetBuffer(0));
 
-			if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].ip.GetLength() >1)
+			if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].ip.GetLength() >0)
 			{
 				strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[pDlg->screenNo].l_ipaddr,
 					DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].ip.GetBuffer(0));
 			}
 			else
 				strcpy(DlgMain->DlgTabVideo.DlgScreen.CarDetect[pDlg->screenNo].l_ipaddr,"0.0.0.0");
+
+			DlgMain->DlgTabVideo.DlgScreen.CarDetect[pDlg->screenNo].cam_Direction=
+				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].Direction;
 
 			//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
 			DlgMain->DlgTabVideo.DlgScreen.CarDetect[pDlg->screenNo].Start(LC_VIDEO_FORMAT_BGR24,
@@ -107,7 +110,56 @@ void Libvlc_Video_Display_Callback(void *opaque, void *picture)
 	}
 
 #endif
+	//车牌识别
+#if OPEN_HYZJ_CARDETECT_CODE 	
 
+	//启用识别
+	if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].enableCarDetect)
+	{
+		DlgMain->DlgTabVideo.DlgScreen.CarAdd[pDlg->screenNo]++;
+		if(0==DlgMain->DlgTabVideo.DlgScreen.CarAdd[pDlg->screenNo]%CAR_JUMP_NUM)
+		{
+			DlgMain->DlgTabVideo.DlgScreen.CarAdd[pDlg->screenNo]=0;
+
+			//拷贝数值
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].m_playhandle=pDlg->screenNo;
+
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].camid=
+				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].camID;
+
+			strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].cam_name,
+				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].name.GetBuffer(0));
+
+			if(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].ip.GetLength() >0)
+			{
+				strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].l_ipaddr,
+					DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].ip.GetBuffer(0));
+			}
+			else
+				strcpy(DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].l_ipaddr,"0.0.0.0");
+
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].cam_Direction=
+				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].Direction;
+
+			//颜色LC_VIDEO_FORMAT_YV12 与颜色LC_VIDEO_FORMAT_I420 相反
+			//ImageFormatBGR
+#if 0
+			unsigned long yuvlen=pDlg->Width*pDlg->Height*3;
+			RGB2YUV((unsigned char *)picture,pDlg->Width,pDlg->Height,pDlg->YUVdata,&yuvlen) ;
+
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].Start(ImageFormatYUV420,
+				pDlg->YUVdata,pDlg->Width,pDlg->Height,yuvlen);
+#else
+
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].Start(ImageFormatBGR,
+				(unsigned char *)picture,pDlg->Width,pDlg->Height,pDlg->Width*pDlg->Height*3);
+#endif
+
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[pDlg->screenNo].Result();
+		}
+	}
+
+#endif
 
 #if OPEN_FACEDETECT_CODE
 	//启用识别
@@ -132,6 +184,9 @@ void Libvlc_Video_Display_Callback(void *opaque, void *picture)
 			strcpy(DlgMain->DlgTabVideo.DlgScreen.FaceDetect[pDlg->screenNo].l_ipaddr,
 				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].ip.GetBuffer(0));
 
+			DlgMain->DlgTabVideo.DlgScreen.FaceDetect[pDlg->screenNo].cam_Direction=
+				DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].Direction;
+
 			DlgMain->DlgTabVideo.DlgScreen.FaceDetect[pDlg->screenNo].Start(VIDEO_FORMAT_RGB888,
 				(unsigned char *)picture,pDlg->Width,pDlg->Height,pDlg->Width*3,pDlg->Width*pDlg->Height*3);
 
@@ -141,7 +196,16 @@ void Libvlc_Video_Display_Callback(void *opaque, void *picture)
 
 #endif
 
+#if (TEST_DEBUG && DEAD_WHILE)
 
+	libvlc_time_t end=libvlc_media_player_get_length( pDlg->m_pLibvlc_Mp);
+	libvlc_time_t cur=	libvlc_media_player_get_time( pDlg->m_pLibvlc_Mp);
+
+	if(( end-cur)<=100)
+	{
+		libvlc_media_player_set_time(pDlg->m_pLibvlc_Mp,0);
+	}
+#endif
 
 }
 
@@ -153,6 +217,7 @@ unsigned Libvlc_Video_Format_Callback(void **opaque, char *chroma,  unsigned *wi
 	{
 		// 改变解码格式
 		strcpy(chroma, "RV24"); // "RGBA"  //在vlc_fourcc.h中定义
+		//strcpy(chroma, "J420"); // "RGBA"  //在vlc_fourcc.h中定义
 		*pitches = *width * pDlg->m_nBitCount/8; // 每行的像素
 		*lines = *height; // 行数
 		pDlg->Width = *width;
@@ -165,11 +230,10 @@ unsigned Libvlc_Video_Format_Callback(void **opaque, char *chroma,  unsigned *wi
 		DlgMain->ShowCameraMessage(DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[pDlg->screenNo].name.GetBuffer(0),
 			"连接成功，格式获取成功",FALSE);
 	}
-	return 1;
+	return (*pitches)*(*lines);
 }
 void Libvlc_Video_Cleanup_Callback(void *opaque)
-{// 停止播放后，可以清理内存
-
+{
 }
 
 CVlcRtspSDK::CVlcRtspSDK()
@@ -189,6 +253,7 @@ CVlcRtspSDK::CVlcRtspSDK()
 	Height=0;
 
 	RGBdata=(unsigned char*)calloc(VIDEO_WIDTH*VIDEO_HEIGHT*3,sizeof(unsigned char));
+	YUVdata=(unsigned char*)calloc(VIDEO_WIDTH*VIDEO_HEIGHT*3,sizeof(unsigned char));
 	// 创建备份缓存
 	//m_DC_Cache.CreateCache(Width, Height, m_nBitCount);
 
@@ -210,7 +275,11 @@ CVlcRtspSDK::~CVlcRtspSDK()
 		free(RGBdata);
 		RGBdata = NULL;
 	}
-
+	if (YUVdata != NULL)
+	{
+		free(YUVdata);
+		YUVdata = NULL;
+	}
 
 	DeleteCriticalSection(&lockflag);
 
@@ -224,11 +293,13 @@ void CVlcRtspSDK::UnLock()
 	LeaveCriticalSection(&lockflag);
 }
 
-bool CVlcRtspSDK::StartPlay(int screenNum,char *name,HWND inhWnd,char *Rtspurl)
+bool CVlcRtspSDK::StartPlay(int screenNum,char *name,HWND inhWnd,char *Rtspurl,int Direction)
 {
-	screenNo=screenNum;
-
 	StopPlay();
+
+	screenNo=screenNum;
+	m_direction=Direction;
+
 	hWnd=inhWnd;
 	hDC   =   ::GetDC(hWnd); 
 	pDc   =   CDC::FromHandle(hDC);   
@@ -252,13 +323,13 @@ bool CVlcRtspSDK::StartPlay(int screenNum,char *name,HWND inhWnd,char *Rtspurl)
 		eRet = YuanRtsp.JudgeCorrect();
 		if (eRet != E_RTSP_SUCCESS)
 		{
-			DlgMain->ShowCameraMessage(name,"RTSP连接失败",FALSE);
+			DlgMain->ShowCameraMessage(name,"RTSP连接失败 socket不通",FALSE);
 			return false;
 		}
 	}
 	else
 	{
-		DlgMain->ShowCameraMessage(name,"RTSP连接失败",FALSE);
+		DlgMain->ShowCameraMessage(name,"RTSP连接失败 socket不通",FALSE);
 		return false;
 	}
 #endif
@@ -295,7 +366,6 @@ bool CVlcRtspSDK::StartPlay(int screenNum,char *name,HWND inhWnd,char *Rtspurl)
 		return false;
 	}
 
-
 	return true;
 }
 
@@ -303,8 +373,10 @@ void CVlcRtspSDK::StopPlay()
 {
 	if (m_pLibvlc_Mp != NULL)
 	{
+
 		libvlc_media_player_stop(m_pLibvlc_Mp);
 		libvlc_media_player_release(m_pLibvlc_Mp);
+
 		m_pLibvlc_Mp = NULL;
 		m_pLibvlc_m=NULL;
 
@@ -312,14 +384,20 @@ void CVlcRtspSDK::StopPlay()
 
 	if(screenNo>=0)
 	{
-#if OPEN_CARDETECT_CODE 	
+#if OPEN_LC_CARDETECT_CODE 	
 		//停止识别
 		if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
 			DlgMain->DlgTabVideo.DlgScreen.CarDetect[screenNo].Stop();
 	
 		DlgMain->DlgTabVideo.DlgScreen.CarAdd[screenNo]=0;
 #endif
+#if OPEN_HYZJ_CARDETECT_CODE 	
+		//停止识别
+		if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableCarDetect)
+			DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].Stop();
 
+		DlgMain->DlgTabVideo.DlgScreen.CarAdd[screenNo]=0;
+#endif
 #if OPEN_FACEDETECT_CODE 	
 		//停止识别
 		if(false == DlgMain->DlgTabVideo.DlgScreen.m_videoInfo[screenNo].enableFaceDetect)
@@ -328,16 +406,18 @@ void CVlcRtspSDK::StopPlay()
 		DlgMain->DlgTabVideo.DlgScreen.FaceAdd[screenNo]=0;
 	
 #endif
+		screenNo=-1;
 	}
+
+
+	m_DC_Cache.FreeCache();
+	Width=0;
+	Height=0;
 	if(hWnd!=NULL)
 	{
 		::ReleaseDC(hWnd,hDC);//必须和GetDC配对
 		hWnd=NULL;
 	}
-
-	m_DC_Cache.FreeCache();
-	Width=0;
-	Height=0;
 
 }
 

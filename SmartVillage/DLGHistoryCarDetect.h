@@ -5,7 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 // DLGHistoryCarDetect.h : header file
-//
+#include "DLGTabPic.h"
 // CDLGHistoryVideo dialog
 #include <vector>
 #include <list>
@@ -13,6 +13,8 @@ using namespace::std;
 
 #include "YRSVMySQL.h"
 #include "afxwin.h"
+
+#include "YuanListShowImg.h"
 
 #define HISTORY_DETECT_FLAG_CAR 1
 #define HISTORY_DETECT_FLAG_CARALARM 2
@@ -68,6 +70,9 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDLGHistoryCarDetect)
 	enum { IDD = IDD_HISTORY_CARDETECT };
+	CYuanListShowImg m_ListImg;
+	CBitmap    defaultbitmap;  
+
 	CListCtrl	m_List;
 	CString	m_ip;
 	CString	m_name;
@@ -100,10 +105,13 @@ bool filterIP(char *str);
 	//用来存放SQL语句的函数
 	char SqlStr[1024];
 
+
+
 	BOOL OnInitDialog();
 	//屏蔽操作
 	void OnOK();
-
+	CDLGTabPic DlgTabPic;
+	
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDLGHistoryCarDetect)
@@ -135,6 +143,8 @@ public:
 	CBitmapButton m_next_button;
 	CBitmapButton m_last_button;
 	CBitmapButton m_jump_button;
+	afx_msg void OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 
 //{{AFX_INSERT_LOCATION}}

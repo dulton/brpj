@@ -1,15 +1,4 @@
-
-/***********************************************************************************
-//说明 :大华SDK
-//时间 :2013-03-29 11:39:00
-***********************************************************************************/
-
-#ifndef _DAHUA_SDK_
-#define _DAHUA_SDK_
-
-
-#if	OPEN_DAHUA_SDK
-
+#pragma once
 
 #include <afx.h>
 
@@ -79,16 +68,17 @@
 #define MSG_ERROR_LISTEN			"Start Listen Error"
 #define MSG_DEVICE_DISCONNECT		"device disconnect"
 
-#include"dahuaSDK/dhnetsdk.h"
-#pragma comment( lib, "dahuaSDK/dhnetsdk.lib")
+#include"dahuaSDKNew/dhnetsdk.h"
+#pragma comment( lib, "dahuaSDKNew/dhnetsdk.lib")
 
-class CDahuaSDK
+class CDahuaSDKNew
 {
 public:
-	CDahuaSDK();
-	virtual ~CDahuaSDK();
-	long m_RealHandle[MAX_DEVICE_NUM];
-	long m_LoginHandle[MAX_DEVICE_NUM];
+	CDahuaSDKNew(void);
+	~CDahuaSDKNew(void);
+
+	int m_RealHandle[MAX_DEVICE_NUM];
+	LLONG m_LoginHandle[MAX_DEVICE_NUM];
 	int m_direction[MAX_DEVICE_NUM];
 	BOOL m_bPTZCtrl;
 	long m_ptzRealHandle;
@@ -108,11 +98,4 @@ public:
 	int StartRecord(int screenNo,char *filename);
 	int StopRecord(int screenNo);
 	int GetHandleWindID(int RealHandle);
-
 };
-
-#endif
-
-
-
-#endif

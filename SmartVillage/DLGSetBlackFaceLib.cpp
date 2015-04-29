@@ -222,7 +222,7 @@ void CDLGSetBlackFaceLib::OnButtonBlackAdd()
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
-	if(facedbNum > MAX_FACE_DB_NUM)
+	if(facedbNum > RW_MAX_FACE_DB_NUM)
 	{
 		AfxMessageBox("添加布控库失败：超过最大的人脸布控库数");
 		return;

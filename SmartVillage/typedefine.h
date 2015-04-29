@@ -29,16 +29,16 @@ typedef int                 BOOL;
 
 
 //#include <json/json.h>
-//#include <curl/curl.h>
-#include <tinyxml.h>
-#include <tinystr.h>
+#include <curl/curl.h>
+//#include <tinyxml.h>
+//#include <tinystr.h>
 
 
 //#pragma comment(lib,"./jsoncpp-src-0.5.0/build/vs71/debug/lib_json/json_vc71_libmtd.lib")
-//#pragma comment(lib,"./curl-7.32.0/vs/vc8/lib/Debug/vc8libcurl.lib")
-#ifdef _DEBUG
-#pragma comment(lib,"./tinyxmlSTLvc6-UTF8/Debug/tinyxmlSTLvc6.lib")
-#endif
+#pragma comment(lib,"./curl-7.32.0/vs/vc8/lib/Debug/vc8libcurl.lib")
+//#ifdef _DEBUG
+//#pragma comment(lib,"./tinyxmlSTLvc6-UTF8/Debug/tinyxmlSTLvc6.lib")
+//#endif
 
 #ifdef NDEBUG
 #pragma comment(lib,"./tinyxmlSTLvc6-UTF8/Release/tinyxmlSTLvc6.lib")

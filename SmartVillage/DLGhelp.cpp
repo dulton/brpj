@@ -74,10 +74,13 @@ BOOL CDLGhelp::OnInitDialog()
 	sprintf(tempstr,"最大支持%d路设备\n",MAX_CAMERA);
 	modeflag+=tempstr;
 
-	if(OPEN_CARDETECT_CODE)
-		modeflag+="支持车牌识别 ";
-	else
+	if(OPEN_LC_CARDETECT_CODE)
+		modeflag+="支持LC车牌识别 ";
+	else if(OPEN_HYZJ_CARDETECT_CODE)
+		modeflag+="支持HY车牌识别 ";
+	else 
 		modeflag+="不支持车牌识别 ";
+
 
 	if(OPEN_FACEDETECT_CODE)
 		modeflag+="支持人脸识别 ";
@@ -91,8 +94,10 @@ BOOL CDLGhelp::OnInitDialog()
 		modeflag+="电动车 ";
 
 	if(OPEN_DAHUA_SDK)
-		modeflag+="支持大华 ";
-
+		modeflag+="支持旧版大华 ";
+	if(OPEN_DAHUA_SDK_NEW)
+		modeflag+="支持新版大华 ";
+		
 	if(OPEN_HAIKANG_SDK)
 		modeflag+="支持海康 ";
 

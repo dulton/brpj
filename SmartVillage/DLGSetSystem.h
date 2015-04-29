@@ -104,6 +104,9 @@ public:
 	afx_msg void OnBnClickedButtonBlackfaceDir();
 	CString m_path_faceblack;
 	CBitmapButton m_b_faceblack;
+	BOOL m_c_jingao;
+	CString m_e_jingao_ipport;
+	afx_msg void OnBnClickedCheckJingao();
 };
 
 //{{AFX_INSERT_LOCATION}}

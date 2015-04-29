@@ -41,4 +41,6 @@ public:
 	afx_msg void OnCancel();
 	afx_msg void OnPaint();
 			
+	CString m_txt;
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

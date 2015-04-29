@@ -39,7 +39,7 @@ public:
 	CImageList  imagelist;
 
 	//}}AFX_DATA
-	IPLIST iplist[MAX_AREA];
+	IPLIST iplist[MAX_CAMERA];
 	int iptotal;
 
 
@@ -53,6 +53,7 @@ public:
 	bool kakouADDdevice(long ncamera,char *name,char *longitude,char *latitude);
 	bool kakouDeldevice(long ncamera);
 	bool kakouDelArea(long areaid);
+	void ChangeTreeItemIcon(long ncamera,bool isPlay);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

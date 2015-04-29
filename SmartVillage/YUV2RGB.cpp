@@ -238,6 +238,69 @@ bool YV12toRGB24UD(unsigned char* pYV12, unsigned char* pRGB24, int iWidth, int 
 	return true;
 }
 
+//
+bool  RGB2YUV(LPBYTE RgbBuf,UINT nWidth,UINT nHeight,LPBYTE yuvBuf,unsigned long *len)  
+{  
+	int i, j;  
+	unsigned char*bufY, *bufU, *bufV, *bufRGB,*bufYuv;  
+	memset(yuvBuf,0,(unsigned int )*len);  
+	bufY = yuvBuf;  
+	bufV = yuvBuf + nWidth * nHeight;  
+	bufU = bufV + (nWidth * nHeight* 1/4);  
+	*len = 0;   
+	unsigned char y, u, v, r, g, b,testu,testv;  
+	unsigned int ylen = nWidth * nHeight;  
+	unsigned int ulen = (nWidth * nHeight)/4;  
+	unsigned int vlen = (nWidth * nHeight)/4;   
+	for (j = 0; j<nHeight;j++)  
+	{  
+		//bufRGB = RgbBuf + nWidth * (nHeight - 1 - j) * 3 ;  
+		bufRGB = RgbBuf + nWidth * (  j) * 3 ;  
+		for (i = 0;i<nWidth;i++)  
+		{  
+			int pos = nWidth * i + j;  
+			r = *(bufRGB++);  
+			g = *(bufRGB++);  
+			b = *(bufRGB++);  
+			y = (unsigned char)( ( 66 * r + 129 * g +  25 * b + 128) >> 8) + 16  ;            
+			u = (unsigned char)( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128 ;            
+			v = (unsigned char)( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128 ;  
+			*(bufY++) = max( 0, min(y, 255 ));  
+			if (j%2==0&&i%2 ==0)  
+			{  
+				if (u>255)  
+				{  
+					u=255;  
+				}  
+				if (u<0)  
+				{  
+					u = 0;  
+				}  
+				*(bufU++) =u;  
+				//存u分量  
+			}  
+			else  
+			{  
+				//存v分量  
+				if (i%2==0)  
+				{  
+					if (v>255)  
+					{  
+						v = 255;  
+					}  
+					if (v<0)  
+					{  
+						v = 0;  
+					}  
+					*(bufV++) =v;  
+				}  
+			}  
+		}  
+	}  
+	*len = nWidth * nHeight+(nWidth * nHeight)/2;  
+	return true;  
+}   
+
 //测试写入BMP文件
 void ZOGDramBMP(char *path,unsigned char *buffer, int w, int h)
 {
@@ -471,6 +534,7 @@ int   jpegQuality       JPEG压缩质量[1-100]
 char* jpegFileName      JPEG文件保存的名称 
 int   isNeedReversal    是否需要翻转
 int   isResizeImage     是否需要缩放图像的尺寸
+int RGBflag; 1为RGB 0为BGR
 return:
 成功返回0值,异常返回其它整数;
 Update:
@@ -478,7 +542,7 @@ Author         Date              Ver      Remark
 Shimingjie     2005/01/06        1.0      Create         
 ************************************************************************/
 int CompressRGBToJPEG(unsigned char *lpImageRGB,int originalWidth,int originalHeight,
-					  int jpegQuality,char* jpegFileName,int isNeedReversal,int isResizeImage)
+					  int RGBflag,int jpegQuality,char* jpegFileName,int isNeedReversal,int isResizeImage)
 {
 	int res = 0;
 	int jpegImageWidth;
@@ -520,7 +584,10 @@ int CompressRGBToJPEG(unsigned char *lpImageRGB,int originalWidth,int originalHe
 		jcprops.DIBHeight        = -originalHeight;
 	}
 	jcprops.DIBBytes         = lpImageRGB;
-	jcprops.DIBColor         = IJL_BGR;
+	if(RGBflag)
+		jcprops.DIBColor         = IJL_RGB;
+	else
+		jcprops.DIBColor         = IJL_BGR;
 	jcprops.DIBChannels      = 3;
 	jcprops.DIBPadBytes      = IJL_DIB_PAD_BYTES(jcprops.DIBWidth,3);
 
@@ -887,4 +954,61 @@ void BGRA32toRGB24(
 			RGB24data[n+2]=RGB32data[m];
 		}
 	}
+}
+
+
+/*
+*裁剪图片
+*src 图片rgb数据
+*w 图片宽
+*h 图片高
+*x1,y1 裁剪左上角
+*x2,y2 裁剪右下角
+*dst 外部需要出入开辟空间的buf
+*nCutWidth 裁剪的宽
+*nCutHeight 裁剪的高
+*nBitCount 图片通道值
+*返回裁剪后的数据大小
+*/
+int CutImage(unsigned char *src, int w, int h,
+			 int x1, int y1, int x2, int y2,
+			 unsigned char *dst, int &nCutWidth, int &nCutHeight, int nBitCount)
+{
+	//	int nCutHeight, nCutWidth;
+	nCutWidth = x2 - x1 ;
+	if(y2>=h)
+		nCutHeight = h - y1-1 ;
+	else
+		nCutHeight = y2 - y1 ;
+
+	if (src == NULL || nCutHeight > h || 
+		nCutHeight <= 0 || nCutWidth > w || nCutWidth <= 0)
+		return 0;
+	int m = 0;
+	m = nCutWidth % 16;
+	if (m != 0)
+	{// 判断裁剪的宽凑成16的倍数是否大于原始图片的宽
+		if (nCutWidth + m < w)
+			nCutWidth += 16-m;
+		else
+			nCutWidth -= m;
+	}
+
+	// 用循环进行裁剪
+	int i, j;
+	unsigned char *pTemp = src + y1*w*nBitCount + x1*nBitCount;
+	unsigned char *p = NULL;
+	p = dst;
+	for (i = 0; i < nCutHeight; i++)
+	{
+		for (j = 0; j < nCutWidth*nBitCount; j += nBitCount)
+		{
+			*(p++) = pTemp[j];
+			*(p++) = pTemp[j+1];
+			*(p++) = pTemp[j+2];
+		}
+		// 偏移一行
+		pTemp += w*nBitCount;
+	}
+	return (nCutWidth*nCutHeight*nBitCount);
 }

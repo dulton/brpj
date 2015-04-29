@@ -7,6 +7,7 @@ using namespace::std;
 
 #include "YRSVMySQL.h"
 #include "afxwin.h"
+#include "YuanListShowImg.h"
 
 #define TAB_CAR_FLAG_CAR 0
 #define TAB_CAR_FLAG_CARALARM 1
@@ -23,7 +24,8 @@ class CDLGTabCar : public CDialog
 public:
 	CDLGTabCar(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CDLGTabCar();
-
+	CYuanListShowImg m_ListImg;
+	CBitmap    defaultbitmap;  
 	CListCtrl	m_List;
 	CString	m_ip;
 	CString	m_name;
@@ -43,8 +45,7 @@ public:
 
 	CRect printf_Rect;
 
-	//是否显示缩略图界面
-	bool PicdisplayFlag;
+	
 
 	list<struct HISTORY_CarDetect_ST> list_history_CarDetect;
 

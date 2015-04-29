@@ -16,7 +16,7 @@
 ////////////////lynn/////////////////
 #include "SplitterControl.h"
 // CDLGTabVideo dialog
-
+#include "YuanListShowImg.h"
 
 class CDLGTabVideo : public CDialog
 {
@@ -31,12 +31,15 @@ public:
 // Dialog Data
 	enum { IDD = IDD_TAB_VIDEO };
 
+	CYuanListShowImg m_ListImg;
+	CBitmap    defaultbitmap;  
 
 	CListCtrl	m_ListCar;
 
 	//}}AFX_DATA
 
 
+void CDLGTabVideo::HideSize();
 
 	//·ÖÆÁµÄÆÁÄ»
 	CDLGscreen DlgScreen;

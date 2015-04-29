@@ -433,10 +433,10 @@ bool CYRSVMySQL::DEVICE_AddNewCamera(long &ncamera,IPLIST CamInfo)
 	filterstring(CamInfo.latitude);
 
 	char strsql[1024] = {0};
-	_stprintf(strsql,_T("insert into tb_device values(NULL,'%s','%s',%d,'%s','%s',%d,%d,%d,'%s',%d,%d,%d,'%s','%s')"),\
+	_stprintf(strsql,_T("insert into tb_device values(NULL,'%s','%s',%d,'%s','%s',%d,%d,%d,'%s',%d,%d,%d,'%s','%s',%d,%d)"),\
 						CamInfo.name,CamInfo.ip,CamInfo.port,CamInfo.user,CamInfo.psw,
 						CamInfo.areaID,CamInfo.venderID,CamInfo.channel,CamInfo.Rtspurl,CamInfo.RTP,
-						CamInfo.DecodeTag,CamInfo.userID,CamInfo.longitude,CamInfo.latitude);
+						CamInfo.DecodeTag,CamInfo.userID,CamInfo.longitude,CamInfo.latitude,CamInfo.direction,CamInfo.svmode);
 	if(mysql_query( &myConnection, strsql) != 0)
 	{
 		LOG_AddNewMysqlLog(DlgLogin.CurrentUser.user,mysql_error(&myConnection));
@@ -508,6 +508,8 @@ bool CYRSVMySQL::DEVICE_ReadCameraInfo(long areaID,vector<IPLIST>& CameraList)
 			CamInfo.userID = VarSaveNumber(row[12]);
 			VarSaveString(CamInfo.longitude,row[13]);
 			VarSaveString(CamInfo.latitude,row[14]);
+			CamInfo.direction = VarSaveNumber(row[15]);
+			CamInfo.svmode = VarSaveNumber(row[16]);
 
 			CameraList.push_back(CamInfo);
 		}
@@ -587,10 +589,10 @@ bool CYRSVMySQL::DEVICE_UpdateCameraInfo(IPLIST CamInfo)
 	char strsql[1024] = {0};
 	_stprintf(strsql,_T("update tb_device set SCAMERANAME='%s',SIPSERVER='%s',NPORT=%d,SUSER='%s',SPWD='%s',\
 											NORGID=%d,NVENDERID=%d,CHANNEL=%d,RTSPURL='%s',RTPMODE=%d,\
-											DECODETAG=%d,USERID=%d,LONGITUDE='%s',LATITUDE='%s'where NCAMERA=%d"),
+											DECODETAG=%d,USERID=%d,LONGITUDE='%s',LATITUDE='%s',NDIRECTION=%d,NSVMODE=%d where NCAMERA=%d"),
 											CamInfo.name,CamInfo.ip,CamInfo.port,CamInfo.user,CamInfo.psw,
 											CamInfo.areaID,CamInfo.venderID,CamInfo.channel,CamInfo.Rtspurl,CamInfo.RTP,
-											CamInfo.DecodeTag,CamInfo.userID,CamInfo.longitude,CamInfo.latitude,CamInfo.ncamera);
+											CamInfo.DecodeTag,CamInfo.userID,CamInfo.longitude,CamInfo.latitude,CamInfo.direction,CamInfo.svmode,CamInfo.ncamera);
 	if(mysql_query( &myConnection, strsql) != 0)
 	{
 		LOG_AddNewMysqlLog(DlgLogin.CurrentUser.user,mysql_error(&myConnection));
@@ -723,6 +725,8 @@ bool CYRSVMySQL::DEVICE_ReadCameraInfoFromCamID(long ncamera,IPLIST &CamInfo)
 			CamInfo.userID = VarSaveNumber(row[12]);
 			VarSaveString(CamInfo.longitude,row[13]);
 			VarSaveString(CamInfo.latitude,row[14]);
+			CamInfo.direction = VarSaveNumber(row[15]);
+			CamInfo.svmode = VarSaveNumber(row[16]);
 
 			mysql_free_result(res);
 			IOwriteLock=false;
@@ -3155,6 +3159,7 @@ bool CYRSVMySQL::DEVICE_SetTable_Read(long ncamera,struct DEVICE_SET_ST &CamSet)
 			{
 				CamSet.car.mask[i] = tempstr[i] - '0';
 			}
+			CamSet.car.night = VarSaveNumber(row[29]);
 
 			mysql_free_result(res);
 			IOwriteLock=false;
@@ -3183,14 +3188,14 @@ bool CYRSVMySQL::DEVICE_SetTable_Update(struct DEVICE_SET_ST CamSet)
 												NTIMEOUT=%d,NSCALE=%f,NVIDEOTS=%d,NTHRESHOLD=%d,NMAXCOUNT=%d,\
 												NRWDBTOTAL=%d,SRWDBSTR='%s',NWIDTH=%d,NHIGHT=%d,NREDRECT=%d,\
 												NDESKEW=%d,NJPGQUALITY=%d,NMINWIDTH=%d,NMAXWIDTH=%d,NLEFT=%d,NRIGHT=%d,\
-												NTOP=%d,NBOTTOM=%d,SDEFAULTCHAR='%s',NRELIABILITY=%d,NCARCOLOR=%d,NMASK='%s'\
+												NTOP=%d,NBOTTOM=%d,SDEFAULTCHAR='%s',NRELIABILITY=%d,NCARCOLOR=%d,NMASK='%s',NNIGHT=%d\
 												 where nid = %d"),
 						CamSet.ncamera,CamSet.svmode,CamSet.face.minface,CamSet.face.maxface,CamSet.face.frontface_ts,CamSet.face.sideface_ts,
 						CamSet.face.time_out,CamSet.face.scale_ratio,CamSet.face.video_ts,CamSet.face.threshold,CamSet.face.maxcount,
 						CamSet.face.dbTotal,tempstr,CamSet.width,CamSet.hight,CamSet.car.redrect,
 						CamSet.car.deskew,CamSet.car.jpgquailty,CamSet.car.minwidth,CamSet.car.maxwidth,CamSet.car.left,CamSet.car.right,
 						CamSet.car.top,CamSet.car.bottom,CamSet.car.defaultchar,CamSet.car.reliability,CamSet.car.carlor,
-						tempMask,CamSet.nid);
+						tempMask,CamSet.car.night,CamSet.nid);
 
 	if(mysql_query( &myConnection, strsql) != 0)
 	{

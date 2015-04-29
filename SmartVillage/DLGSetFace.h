@@ -20,7 +20,7 @@ struct  DEVICE_SET_FACE_LITE_ST face;
 	void InitList(void);
 
 	int dbTotal;			//设置布控数量
-	long db_nid[MAX_FACE_DB_NUM];		//设置布控库ID
+	long db_nid[RW_MAX_FACE_DB_NUM];		//设置布控库ID
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

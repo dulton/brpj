@@ -69,7 +69,11 @@ enum DEVICE_DECODETAG_ENUM
 
 
 //摄像头开启
-#define OPEN_DAHUA_SDK 1
+//-----------------------------------
+//大华的SDK只能开启其中一个
+#define OPEN_DAHUA_SDK 0
+#define OPEN_DAHUA_SDK_NEW 1
+//-----------------------------------
 #define OPEN_HAIKANG_SDK 1
 
 #define DB33_PLAYCTRL
@@ -85,7 +89,12 @@ enum DEVICE_DECODETAG_ENUM
 //当 SystemTransform.dll 冲突 使用StreamClientSDK的覆盖HAIKANSDK的
 ////////////////////////////////////////////////////////////
 //测试模式 
-#define TEST_DEBUG 0
+#define TEST_DEBUG 1
+//测试 死循环版本 。停止时会卡死。
+#define DEAD_WHILE 0
+//发布版 程序启动 自动开启播放=1
+#define AUTO_OPENALL (!TEST_DEBUG)
+
 
 //必须汽车模式 该版本不支持电动车
 //汽车模式 1 电动车模式 0
@@ -95,21 +104,33 @@ enum DEVICE_DECODETAG_ENUM
 //C.到RES文件夹里 将 YiRongCarDetectAIO.ico 文件用对应的图标替换掉
 #define ALLTAB_DETECT_CAR_MODE 1
 
-//开启车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
-#define OPEN_CARDETECT_CODE 0
+//-----------------------------------
+//车牌识别的SDK只能开启其中一个
+//开启郎驰车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
+#define OPEN_LC_CARDETECT_CODE 1
+
+//开启火眼臻睛车牌识别代码=1 关闭=0  关闭就可以不用KEY也可以DEBUG
+#define OPEN_HYZJ_CARDETECT_CODE 0
+//-----------------------------------
 
 //开启录像代码 1 关闭录像代码 0
 #define OPEN_RECORD 0
 
 //开启人脸识别代码
 #define OPEN_FACEDETECT_CODE 0
-//人脸识别 几帧检测一次
-#define FACE_JUMP_NUM 5
-#define CAR_JUMP_NUM 5
-//////////////////////////////////////////////////////
 
+//人脸识别 几帧检测一次
+//设为2就是不跳了！不要设成0
+#define FACE_JUMP_NUM 5
+//设为2就是不跳了！不要设成0
+#define CAR_JUMP_NUM 3
+//开启上传到京奥服务的接口
+#define JING_AO_UPLOAD 1
+//////////////////////////////////////////////////////
+//使用新库设为1 旧库为0
 #if 1
 
+//新库
 #include "recolibC\\recoCommon.h"
 #include "recolibC\\recoFaceMng.h"
 #include "recolibC\\recoVideoAnalyse.h"
@@ -124,6 +145,7 @@ enum DEVICE_DECODETAG_ENUM
 
 #else
 
+//旧库
 #include "recolibA\\recoCommon.h"
 #include "recolibA\\recoFaceMng.h"
 #include "recolibA\\recoVideoAnalyse.h"
@@ -137,7 +159,6 @@ enum DEVICE_DECODETAG_ENUM
 #endif
 
 #endif
-
 
 
 typedef struct
@@ -156,12 +177,14 @@ typedef struct
 #define MESSAGEBOX_TITLE "福建亿榕小区出入口管理系统"
 
 
+//最多增加区域+摄像头的数量
+#define MAX_AREA_ADD_CAM 16
 //最多增加区域
-#define MAX_AREA 512
+#define MAX_AREA 4
 
 //最大显示多少个摄像头窗口
 #define MAX_DEVICE_NUM 16
-//最大播放路数
+//最大播放路数 以及增加多少摄像头
 #define MAX_CAMERA 4
 
 //亚安的RTSP地址 rtsp://10.142.50.249:554/0/888888:888888/main

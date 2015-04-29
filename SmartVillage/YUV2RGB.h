@@ -10,6 +10,7 @@ bool I420_to_RGB24(unsigned char* pI420, unsigned char* pRGB24,int iWidth, int i
 
 bool YV12toRGB24UD(unsigned char* pYV12, unsigned char* pRGB24, int iWidth, int iHeight,unsigned char *RGBW);
 
+bool  RGB2YUV(LPBYTE RgbBuf,UINT nWidth,UINT nHeight,LPBYTE yuvBuf,unsigned long *len) ;
 
 void YUV4202RGB(unsigned char *yuv_image,unsigned char* rgb_image,int iWidth, int iHeight);
 void YV122RGB(unsigned char *yuv_image,unsigned char* rgb_image,int iWidth, int iHeight);
@@ -41,7 +42,7 @@ Update:
   Shimingjie     2005/01/06        1.0      Create         
 ************************************************************************/
 int CompressRGBToJPEG(unsigned char *lpImageRGB,int originalWidth,int originalHeight,
-					  int jpegQuality,char* jpegFileName,int isNeedReversal,int isResizeImage);
+					   int RGBflag,int jpegQuality,char* jpegFileName,int isNeedReversal,int isResizeImage);
 
 int CompressRGBAToJPEG(unsigned char *lpImageRGB,int originalWidth,int originalHeight,
 					   int jpegQuality,char* jpegFileName,int isNeedReversal,int isResizeImage);
@@ -79,5 +80,9 @@ void BGRA32toRGB24(
 				  int h,
 				  int RGB32wstep,
 				  int RGB24wstep);
+
+int CutImage(unsigned char *src, int w, int h,
+			 int x1, int y1, int x2, int y2,
+			 unsigned char *dst, int &nCutWidth, int &nCutHeight, int nBitCount);
 
 #endif

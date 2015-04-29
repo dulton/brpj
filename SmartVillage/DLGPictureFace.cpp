@@ -23,11 +23,13 @@ extern CDLGSetSystem DlgSetSystem;
 IMPLEMENT_DYNAMIC(CDLGPictureFace, CDialog)
 
 CDLGPictureFace::CDLGPictureFace(CWnd* pParent /*=NULL*/)
-	: CDialog(CDLGPictureFace::IDD, pParent)
+: CDialog(CDLGPictureFace::IDD, pParent)
 {
 	DlgPictureLite=NULL;
 	DlgPLiteTotal=0;
 	TitleDrawFlag=false;
+	hidemode=false;
+	hideflag=false;
 }
 
 CDLGPictureFace::~CDLGPictureFace()
@@ -45,15 +47,19 @@ CDLGPictureFace::~CDLGPictureFace()
 void CDLGPictureFace::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BUTTON_CLEAN, m_b_clean);
+	DDX_Control(pDX, IDC_BUTTON_HIDE, m_b_hide);
 }
 
 
 BEGIN_MESSAGE_MAP(CDLGPictureFace, CDialog)
 	ON_BN_CLICKED(IDOK, &CDLGPictureFace::OnOk)
 	ON_BN_CLICKED(IDCANCEL, &CDLGPictureFace::OnCancel)
-		ON_WM_PAINT()
+	ON_WM_PAINT()
 	ON_MESSAGE(WM_ADDFACE_MESSAGE,OnAddMessage)
 	ON_MESSAGE(WM_CLEANFACE_MESSAGE,OnCleanMessage)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAN, &CDLGPictureFace::OnBnClickedButtonClean)
+	ON_BN_CLICKED(IDC_BUTTON_HIDE, &CDLGPictureFace::OnBnClickedButtonHide)
 END_MESSAGE_MAP()
 
 
@@ -66,12 +72,26 @@ BOOL CDLGPictureFace::OnInitDialog()
 	GetDlgItem(IDC_STATIC_WIN)->GetWindowRect(&localRect);
 
 	ScreenToClient(&localRect);
-	
-	if(TitleDrawFlag)
-		GetDlgItem(IDC_STATIC_TITLE)->ShowWindow(SW_SHOW);
-	else
-		GetDlgItem(IDC_STATIC_TITLE)->ShowWindow(SW_HIDE);
 
+
+	if(TitleDrawFlag)
+	{
+		GetDlgItem(IDC_STATIC_TITLE)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_CLEAN)->ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		GetDlgItem(IDC_STATIC_TITLE)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_BUTTON_CLEAN)->ShowWindow(SW_HIDE);
+	}
+
+	if(hideflag)
+		GetDlgItem(IDC_BUTTON_HIDE)->ShowWindow(SW_SHOW);
+	else
+		GetDlgItem(IDC_BUTTON_HIDE)->ShowWindow(SW_HIDE);
+
+	m_b_clean.LoadBitmaps(IDB_FACE_CLEAN,IDB_FACE_CLEAN_PRESS,NULL,NULL);
+	m_b_hide.LoadBitmaps(IDB_FACE_HIDE_DOWN,IDB_FACE_HIDE_DOWN_PRESS,NULL,NULL);
 
 	m_list.Create(NULL,NULL,WS_VISIBLE|WS_TABSTOP | WS_CHILD ,localRect,this,IDC_STATIC_WIN);
 
@@ -88,15 +108,56 @@ void CDLGPictureFace::AutoSize()
 
 	if(TitleDrawFlag)
 	{
+		int cleanw=18;
 		int h=28;
-		//分屏
-		CRect titleRect;
-		titleRect.top = rc.top;
-		titleRect.bottom = rc.top+h;
-		titleRect.left =  rc.left;
-		titleRect.right = rc.right;
+		if(hideflag)
+		{
+			//分屏
+			CRect hideRect;
+			hideRect.top = rc.top;
+			hideRect.bottom = rc.top+h;
+			hideRect.left = rc.left;
+			hideRect.right = rc.left+cleanw;
 
-		GetDlgItem(IDC_STATIC_TITLE)->MoveWindow(titleRect);
+			GetDlgItem(IDC_BUTTON_HIDE)->MoveWindow(hideRect);
+
+			//分屏
+			CRect titleRect;
+			titleRect.top = rc.top;
+			titleRect.bottom = rc.top+h;
+			titleRect.left =  rc.left+cleanw;
+			titleRect.right = rc.right-cleanw;
+
+			GetDlgItem(IDC_STATIC_TITLE)->MoveWindow(titleRect);
+
+			//分屏
+			CRect cleanRect;
+			cleanRect.top = rc.top;
+			cleanRect.bottom = rc.top+h;
+			cleanRect.left =  titleRect.right;
+			cleanRect.right = rc.right;
+
+			GetDlgItem(IDC_BUTTON_CLEAN)->MoveWindow(cleanRect);
+		}
+		else
+		{
+			//分屏
+			CRect titleRect;
+			titleRect.top = rc.top;
+			titleRect.bottom = rc.top+h;
+			titleRect.left =  rc.left;
+			titleRect.right = rc.right-cleanw;
+
+			GetDlgItem(IDC_STATIC_TITLE)->MoveWindow(titleRect);
+			//分屏
+			CRect cleanRect;
+			cleanRect.top = rc.top;
+			cleanRect.bottom = rc.top+h;
+			cleanRect.left =  titleRect.right;
+			cleanRect.right = rc.right;
+
+			GetDlgItem(IDC_BUTTON_CLEAN)->MoveWindow(cleanRect);
+		}
 
 		//分屏
 		CRect Rect;
@@ -123,7 +184,7 @@ void CDLGPictureFace::AutoSize()
 		MoveList(Rect);
 
 	}
-	
+
 	Invalidate();
 }
 
@@ -213,7 +274,7 @@ void CDLGPictureFace::InitList(void)
 
 	CleanList();
 
-/*
+	/*
 	//读数据库获取总数
 	list_photo.clear();
 	MySqlIO.PHOTO_ReadAllPhotoInfoWithCaseID(list_photo,Casenid);
@@ -232,31 +293,31 @@ void CDLGPictureFace::InitList(void)
 
 	//添加LIST
 	for(i=0,beglist=list_photo.begin();
-		i<DlgPLiteTotal && beglist!=list_photo.end();
-		i++,beglist++)
+	i<DlgPLiteTotal && beglist!=list_photo.end();
+	i++,beglist++)
 	{
-		DlgPictureLite[i]=new CDLGPictureLite;
-		//拷贝数据
-		DlgPictureLite[i]->Casenid=Casenid;
-		DlgPictureLite[i]->data=beglist;
-		//创建界面
-		DlgPictureLite[i]->Create(IDD_CASE_REGISTER_RESEARCH_LITE,&m_list);
-		DlgPictureLite[i]->ShowWindow(SW_SHOW);
-		if(0==i)
-		{
-			//只执行一次
-			DlgPictureLite[i]->GetWindowRect(&rect);
-			Liteheight=rect.Height();
-			Litewidth=rect.Width();
-		}
+	DlgPictureLite[i]=new CDLGPictureLite;
+	//拷贝数据
+	DlgPictureLite[i]->Casenid=Casenid;
+	DlgPictureLite[i]->data=beglist;
+	//创建界面
+	DlgPictureLite[i]->Create(IDD_CASE_REGISTER_RESEARCH_LITE,&m_list);
+	DlgPictureLite[i]->ShowWindow(SW_SHOW);
+	if(0==i)
+	{
+	//只执行一次
+	DlgPictureLite[i]->GetWindowRect(&rect);
+	Liteheight=rect.Height();
+	Litewidth=rect.Width();
+	}
 	}
 	*/
 
 	DlgPLiteTotal=9;
 
 	DlgPictureLite =(CDLGPictureLite **)calloc(DlgPLiteTotal,sizeof(CDLGPictureLite *));
-			Liteheight=133+60+5;
-			Litewidth=100+6;
+	Liteheight=133+60+5;
+	Litewidth=100+6;
 
 	CRect rect;
 
@@ -267,16 +328,16 @@ void CDLGPictureFace::InitList(void)
 	{
 		DlgPictureLite[i]=new CDLGPictureLite;
 		//拷贝数据
-		
+
 		//创建界面
 		DlgPictureLite[i]->Create(IDD_PICTURE_LITE,&m_list);
 		DlgPictureLite[i]->ShowWindow(SW_SHOW);
 		if(0==i)
 		{
 			//只执行一次
-		//	DlgPictureLite[i]->GetWindowRect(&rect);
-		//	Liteheight=rect.Height();
-		//	Litewidth=rect.Width();
+			//	DlgPictureLite[i]->GetWindowRect(&rect);
+			//	Liteheight=rect.Height();
+			//	Litewidth=rect.Width();
 			//设置人脸窗口大小
 			Liteheight=133+60+5;
 			Litewidth=100+6;
@@ -314,24 +375,24 @@ void CDLGPictureFace::DisplayCapList(list<struct FACE_CAPTURE_ST> &faceList,int 
 
 	int i;
 
-			Liteheight=133+60+5;
-			Litewidth=100+6;
+	Liteheight=133+60+5;
+	Litewidth=100+6;
 	char str[256]={0};
 	CRect rect;
 
 	DlgPLiteTotal=faceList.size();
 	if(faceList.size()<=0)
-			return ;
+		return ;
 	DlgPictureLite =(CDLGPictureLite **)calloc(DlgPLiteTotal,sizeof(CDLGPictureLite *));
 
 	list<struct FACE_CAPTURE_ST>::iterator beglist;
 
 	for(i=0,beglist=faceList.begin();beglist!=faceList.end();i++,beglist++)
-	//添加LIST
+		//添加LIST
 	{
 		DlgPictureLite[i]=new CDLGPictureLite;
 		//拷贝数据
-		
+
 		//创建界面
 		DlgPictureLite[i]->Create(IDD_PICTURE_LITE,&m_list);
 		DlgPictureLite[i]->ShowWindow(SW_SHOW);
@@ -353,16 +414,16 @@ void CDLGPictureFace::DisplayCapList(list<struct FACE_CAPTURE_ST> &faceList,int 
 		DlgPictureLite[i]->capnid=beglist->nid;
 
 		DlgPictureLite[i]->BlackFlag=AlarmFlag;
-	
+
 
 		DlgPictureLite[i]->LoadPic();
 
 		if(0==i)
 		{
 			//只执行一次
-		//	DlgPictureLite[i]->GetWindowRect(&rect);
-		//	Liteheight=rect.Height();
-		//	Litewidth=rect.Width();
+			//	DlgPictureLite[i]->GetWindowRect(&rect);
+			//	Liteheight=rect.Height();
+			//	Litewidth=rect.Width();
 			//设置人脸窗口大小
 			Liteheight=133+60+5;
 			Litewidth=100+6;
@@ -389,14 +450,14 @@ void CDLGPictureFace::DisplayRecgTEMPList(list<struct TEMP_CMP_RESULT_ST> &faceL
 
 	int i;
 
-			Liteheight=133+60+5;
-			Litewidth=100+6;
+	Liteheight=133+60+5;
+	Litewidth=100+6;
 	char str[256]={0};
 	CRect rect;
 
 	DlgPLiteTotal=faceList.size();
 	if(faceList.size() <=0)
-			return ; 
+		return ; 
 	DlgPictureLite =(CDLGPictureLite **)calloc(DlgPLiteTotal,sizeof(CDLGPictureLite *));
 
 	list<struct TEMP_CMP_RESULT_ST>::iterator beglist;
@@ -470,14 +531,14 @@ void CDLGPictureFace::DisplayRecgBLACKList(list<struct BLACK_CMP_RESULT_ST> &fac
 
 	int i;
 
-				Liteheight=133+60+5;
-			Litewidth=100+6;
+	Liteheight=133+60+5;
+	Litewidth=100+6;
 	char str[256]={0};
 	CRect rect;
 
 	DlgPLiteTotal=faceList.size();
 	if(faceList.size() <=0)
-			return ; 
+		return ; 
 	DlgPictureLite =(CDLGPictureLite **)calloc(DlgPLiteTotal,sizeof(CDLGPictureLite *));
 
 	list<struct BLACK_CMP_RESULT_ST>::iterator beglist;
@@ -536,7 +597,7 @@ void CDLGPictureFace::DisplayRecgBLACKList(list<struct BLACK_CMP_RESULT_ST> &fac
 
 void CDLGPictureFace::DisplayAlarmLiteList(list<struct FACE_ALARM_VIEW_ST> &faceList,int AlarmFlag) 
 {
-	
+
 	//设置LIST
 	CRect localRect;
 	GetDlgItem(IDC_STATIC_WIN)->GetWindowRect(&localRect);
@@ -544,14 +605,14 @@ void CDLGPictureFace::DisplayAlarmLiteList(list<struct FACE_ALARM_VIEW_ST> &face
 	ScreenToClient(&localRect);
 
 	int i;
-			Liteheight=133+60+5;
-			Litewidth=100+6;
+	Liteheight=133+60+5;
+	Litewidth=100+6;
 	char str[256]={0};
 	CRect rect;
 
 	DlgPLiteTotal=faceList.size();
 	if(faceList.size() <=0)
-			return ; 
+		return ; 
 	DlgPictureLite =(CDLGPictureLite **)calloc(DlgPLiteTotal,sizeof(CDLGPictureLite *));
 
 	list<struct FACE_ALARM_VIEW_ST>::iterator beglist;
@@ -606,7 +667,7 @@ void CDLGPictureFace::DisplayAlarmLiteList(list<struct FACE_ALARM_VIEW_ST> &face
 		//LITE框
 		MoveListWin(localRect);
 	}
-	
+
 }
 void CDLGPictureFace::MoveList(CRect Rect) 
 {
@@ -633,7 +694,7 @@ void CDLGPictureFace::MoveListScroll(CRect Rect)
 {
 	int w,h;
 	int CountHeight;
-	
+
 	w=(Rect.Width()-15)/Litewidth;
 	if(w>1)
 	{
@@ -700,8 +761,8 @@ void CDLGPictureFace::AddCapList(struct FACE_CAPTURE_ST facedata,int AlarmFlag)
 
 	ScreenToClient(&localRect);
 
-			Liteheight=133+60+5;
-			Litewidth=100+6;
+	Liteheight=133+60+5;
+	Litewidth=100+6;
 	char str[256]={0};
 	CRect rect;
 
@@ -766,7 +827,12 @@ LRESULT CDLGPictureFace::OnAddMessage(WPARAM wParam,LPARAM lParam)
 	struct FACE_CAPTURE_ST *facedata=(struct FACE_CAPTURE_ST *)lParam;
 	int *a=(int*)wParam;
 
+	//报警时窗口正常化
+	if( TitleDrawFlag && hideflag && FLAG_FACE_ALARM == (*a))
+		HideNormal();
+
 	AddCapList(*facedata,*a);
+
 	return 0;
 }
 
@@ -774,4 +840,42 @@ LRESULT CDLGPictureFace::OnCleanMessage(WPARAM wParam,LPARAM lParam)
 {
 	CleanList();
 	return 0;
+}
+void CDLGPictureFace::OnBnClickedButtonClean()
+{
+	// TODO: Add your control notification handler code here
+	CleanList();
+}
+
+void CDLGPictureFace::OnBnClickedButtonHide()
+{
+	// TODO: Add your control notification handler code here
+	if( !TitleDrawFlag || !hideflag)
+		return ;
+
+	if(hidemode)
+	{
+		m_b_hide.LoadBitmaps(IDB_FACE_HIDE_DOWN,IDB_FACE_HIDE_DOWN_PRESS,NULL,NULL);
+		DlgMain->DlgTabVideo.AutoSize();
+	}
+	else
+	{
+		m_b_hide.LoadBitmaps(IDB_FACE_HIDE_UP,IDB_FACE_HIDE_UP_PRESS,NULL,NULL);
+		DlgMain->DlgTabVideo.HideSize();
+	}
+	
+	hidemode=!hidemode;
+	m_b_hide.Invalidate();
+}
+void CDLGPictureFace::HideNormal()
+{
+	// TODO: Add your control notification handler code here
+	if( !TitleDrawFlag || !hideflag)
+		return ;
+
+	m_b_hide.LoadBitmaps(IDB_FACE_HIDE_DOWN,IDB_FACE_HIDE_DOWN_PRESS,NULL,NULL);
+	DlgMain->DlgTabVideo.AutoSize();
+
+	hidemode=false;
+	m_b_hide.Invalidate();
 }

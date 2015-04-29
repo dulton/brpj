@@ -5,7 +5,7 @@
 #include "SmartVillage.h"
 #include "SmartVillageDlg.h"
 
-
+#include "WzdSplash.h"
 
 #include "DLGLogin.h"
 CDLGLogin DlgLogin;
@@ -91,6 +91,10 @@ BOOL CSmartVillageApp::InitInstance()
 	//读系统配置表
 	DlgSetSystem.Read2Dlg();
 
+	CWzdSplash wndSplash;                 //创建启动窗口类的实例
+	wndSplash.Create(IDB_SPLASH);
+	wndSplash.CenterWindow();
+	wndSplash.UpdateWindow();          //send WM_PAINT
 
 	// Standard initialization
 	// If you are not using these features and wish to reduce the size
@@ -102,6 +106,7 @@ BOOL CSmartVillageApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+
 
 	////////////////lynn/////////////////
 	////////////////lynn/////////////////
@@ -137,7 +142,6 @@ BOOL CSmartVillageApp::InitInstance()
 	{
 		//MessageBox("连接数据库成功");
 	}
-
 #if OPEN_FACEDETECT_CODE
 	//初始化人脸模型
 	SetCurrentDirectory(CurrentDir);
@@ -149,6 +153,9 @@ BOOL CSmartVillageApp::InitInstance()
 		dlgw.DoModal();
 	}
 #endif
+
+	wndSplash.DestroyWindow();//销毁初始画面窗口
+
 	////////////////lynn/////////////////
 
 	LPWSTR *szArglist = NULL;  

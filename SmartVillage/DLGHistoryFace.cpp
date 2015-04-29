@@ -74,6 +74,7 @@ BOOL CDLGHistoryFace::OnInitDialog()
 	DlgFaceSreachLite.ShowWindow(SW_SHOW);
 
 	DlgPictureFace.TitleDrawFlag=false;
+		DlgPictureFace.hideflag=false;
 	DlgPictureFace.Create(IDD_PICTURE_FACE,this);
 	DlgPictureFace.ShowWindow(SW_SHOW);
 

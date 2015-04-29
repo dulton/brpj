@@ -269,7 +269,7 @@ void CDLGPictureLite::OnStnDblclickStaticPic()
 			return ;
 
 		CDLGpictureView dlgPicView;
-		dlgPicView.m_txt="时间:";
+		dlgPicView.m_txt="时间:  ";
 
 		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",
 			tempFace.year,
@@ -282,10 +282,10 @@ void CDLGPictureLite::OnStnDblclickStaticPic()
 		dlgPicView.m_txt+=str;
 		dlgPicView.m_txt+="\n设备名:";
 		dlgPicView.m_txt+=tempFace.cameraName;
-		dlgPicView.m_txt+="\n年龄:";
+		dlgPicView.m_txt+="\n年龄:  ";
 		sprintf(str,"%d",tempFace.age);
 		dlgPicView.m_txt+=str;
-		dlgPicView.m_txt+="\n性别:";
+		dlgPicView.m_txt+="\n性别:  ";
 		dlgPicView.m_txt+=FaceSex(tempFace.sex);
 
 		//标题
@@ -340,7 +340,7 @@ void CDLGPictureLite::OnStnDblclickStaticPic()
 		dlgPicView.m_txt="布控库名称:";
 		dlgPicView.m_txt+=tempFace.dbname;
 
-		dlgPicView.m_txt+="\n姓名:";
+		dlgPicView.m_txt+="\n姓名:      ";
 		dlgPicView.m_txt+=tempFace.name;
 
 		sprintf(str,"%04d-%02d-%02d",
@@ -348,30 +348,30 @@ void CDLGPictureLite::OnStnDblclickStaticPic()
 			tempFace.mon,
 			tempFace.day);
 
-		dlgPicView.m_txt+="\n出生日期:";
+		dlgPicView.m_txt+="\n出生日期:  ";
 		dlgPicView.m_txt+=str;
 
-		dlgPicView.m_txt+="\n性别:";
+		dlgPicView.m_txt+="\n性别:      ";
 		dlgPicView.m_txt+=FaceSex(tempFace.sex);
 
-		dlgPicView.m_txt+="\n电话:";
+		dlgPicView.m_txt+="\n电话:      ";
 		dlgPicView.m_txt+=tempFace.phone;
 
-		dlgPicView.m_txt+="\n证件类型:";
+		dlgPicView.m_txt+="\n证件类型:  ";
 		dlgPicView.m_txt+=CardType(tempFace.cardtype);
 
-		dlgPicView.m_txt+="\n证件号:";
+		dlgPicView.m_txt+="\n证件号:    ";
 		dlgPicView.m_txt+=tempFace.cardNO;
 
-		dlgPicView.m_txt+="\n籍贯:";
+		dlgPicView.m_txt+="\n籍贯:      ";
 		dlgPicView.m_txt+=STR_NATIVE[tempFace.native];
 		
-		dlgPicView.m_txt+="\n地址:";
+		dlgPicView.m_txt+="\n地址:      ";
 		dlgPicView.m_txt+=tempFace.address;
 
 		sprintf(str,"%d",tempFace.similarity);
 
-		dlgPicView.m_txt+="\n相似度:";
+		dlgPicView.m_txt+="\n相似度:  ";
 		dlgPicView.m_txt+=str;
 
 		//标题

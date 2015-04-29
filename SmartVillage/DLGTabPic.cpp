@@ -24,6 +24,7 @@ IMPLEMENT_DYNAMIC(CDLGTabPic, CDialog)
 
 CDLGTabPic::CDLGTabPic(CWnd* pParent /*=NULL*/)
 	: CDialog(CDLGTabPic::IDD, pParent)
+	, m_txt(_T(""))
 {
 	bim=NULL;
 	bimsmall=NULL;
@@ -38,6 +39,7 @@ void CDLGTabPic::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PIC, m_pic);
 	DDX_Control(pDX, IDC_PIC_SMALL, m_pic_small);
+	DDX_Text(pDX, IDC_STATIC_TXT, m_txt);
 }
 
 
@@ -46,6 +48,7 @@ BEGIN_MESSAGE_MAP(CDLGTabPic, CDialog)
 	ON_BN_CLICKED(IDCANCEL, &CDLGTabPic::OnCancel)
 
 	ON_WM_PAINT()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -53,7 +56,7 @@ BOOL CDLGTabPic::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-
+	GetDlgItem(IDC_PIC_SMALL)->ShowWindow(SW_HIDE);
 
 	//放在最后
 	AutoSize();
@@ -69,24 +72,31 @@ void CDLGTabPic::AutoSize()
 	//	((CTabCtrl*)GetParent())->AdjustRect(FALSE, &rc);
 	//	MoveWindow(rc);
 
-
-	//小图片
-	CRect pic_small_Rect;
-	pic_small_Rect.top=rc.top;
-	pic_small_Rect.bottom=rc.top+200;
-	pic_small_Rect.left = rc.left;
-	pic_small_Rect.right = pic_small_Rect.left+200;
-	GetDlgItem(IDC_PIC_SMALL)->MoveWindow(pic_small_Rect);
-
 	//图片
 	CRect pic_Rect;
-	pic_Rect.top=pic_small_Rect.bottom+20;
-	pic_Rect.bottom=rc.bottom;
-
+	pic_Rect.top=rc.top;
+	pic_Rect.bottom=rc.top+rc.Width()/16*10;
 	pic_Rect.left = rc.left;
 	pic_Rect.right = rc.right;
 	GetDlgItem(IDC_PIC)->MoveWindow(pic_Rect);
 
+	CRect txt_Rect;
+	txt_Rect.top=	pic_Rect.bottom+5;
+	txt_Rect.bottom=txt_Rect.top+100;
+	txt_Rect.left = rc.left ;
+	txt_Rect.right = rc.left+ rc.Width()/2;
+	GetDlgItem(IDC_STATIC_TXT)->MoveWindow(txt_Rect);
+
+	//小图片
+	CRect pic_small_Rect;
+	pic_small_Rect.top=	pic_Rect.bottom+5;
+	pic_small_Rect.bottom=pic_small_Rect.top+100;
+	pic_small_Rect.left = txt_Rect.right;
+	pic_small_Rect.right = rc.right;
+	GetDlgItem(IDC_PIC_SMALL)->MoveWindow(pic_small_Rect);
+
+
+	//TXT	
 
 
 	Invalidate();
@@ -217,6 +227,23 @@ void CDLGTabPic::OnPaint()
 		m_pic_small.ReleaseDC(pDCsmall);
 	}
 
-
+	GetDlgItem(IDC_STATIC_TXT)->SetWindowText(m_txt);
 	CDialog::OnPaint();
+}
+
+//静态文本控件 透明
+HBRUSH CDLGTabPic::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+{
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+	if(nCtlColor==CTLCOLOR_STATIC)
+	{
+		pDC->SetBkMode(TRANSPARENT); // 设置透明背景
+		// TODO: Change any attributes of the DC here
+		pDC->SetTextColor(RGB(0, 0, 0)); // 设置文本颜色
+		// TODO: Return a non-NULL brush if the parent's handler should not be called
+		hbr=(HBRUSH)GetStockObject(HOLLOW_BRUSH); // 返回透明画刷	
+		// TODO: Return a different brush if the default is not desired
+	}
+
+	return hbr;
 }

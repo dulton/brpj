@@ -54,6 +54,8 @@ void CDLGshortcut::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 	DDX_Control(pDX, IDC_BUTTON_AUTOADJUST, m_adjust);
 	DDX_Control(pDX, IDC_BUTTON_FACE, m_face);
+	DDX_Control(pDX, IDC_BUTTON_CAR_CLEAR, m_btnCarClear);
+	DDX_Control(pDX, IDC_BUTTON_STOP_ALL, m_btnStopAll);
 }
 
 
@@ -71,6 +73,8 @@ BEGIN_MESSAGE_MAP(CDLGshortcut, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON_AUTOADJUST, &CDLGshortcut::OnBnClickedButtonAutoadjust)
 	ON_BN_CLICKED(IDC_BUTTON_FACE, &CDLGshortcut::OnBnClickedButtonFace)
+	ON_BN_CLICKED(IDC_BUTTON_CAR_CLEAR, &CDLGshortcut::OnBnClickedButtonCarClear)
+	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CDLGshortcut::OnBnClickedButtonStopAll)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -88,6 +92,14 @@ BOOL CDLGshortcut::OnInitDialog()
 	//抓图按钮图片
 	m_Capbmp.LoadBitmaps(IDB_CAPBMP_OPEN,IDB_CAPBMP_MOVE,NULL,NULL);
 	m_Capbmp.SizeToContent();		//自适应图片大小
+
+	m_btnStopAll.LoadBitmaps(IDB_CAPBMP_OPEN,IDB_CAPBMP_MOVE,NULL,NULL);
+
+	m_btnCarClear.LoadBitmaps(IDB_CAR_CLEAR,IDB_CAR_CLEAR_PRESS,NULL,NULL);
+	m_btnCarClear.SizeToContent();
+
+	m_btnStopAll.LoadBitmaps(IDB_STOP_ALL,IDB_STOP_ALL_PRESS,NULL,NULL);
+	m_btnStopAll.SizeToContent();
 
 	 AdjustBMP();
 	 m_adjust.SizeToContent();		//自适应图片大小
@@ -121,8 +133,9 @@ BOOL CDLGshortcut::OnInitDialog()
 	m_ToolTip.AddTool(&m_Capbmp,"立即截图");  
 	m_ToolTip.AddTool(&m_Car,"启动/关闭车牌识别");  
 	m_ToolTip.AddTool(&m_adjust,"自动调整");  
-	m_ToolTip.AddTool(&m_face,"启动/关闭人脸识别");  
-
+	m_ToolTip.AddTool(&m_face,"启动/关闭人脸识别"); 
+	m_ToolTip.AddTool(&m_btnCarClear,"清空当前车牌记录");
+	m_ToolTip.AddTool(&m_btnStopAll,"停止全部");
 
 	//放在最后
 	AutoSize();
@@ -166,6 +179,10 @@ void CDLGshortcut::AutoSize()
 
 	Rect.left = Rect.right+g;
 	Rect.right = Rect.left+w;
+	m_btnStopAll.MoveWindow(Rect);
+
+	Rect.left = Rect.right+g;
+	Rect.right = Rect.left+w;
 	m_preview.MoveWindow(Rect);
 
 	Rect.left = Rect.right+g;
@@ -180,6 +197,9 @@ void CDLGshortcut::AutoSize()
 	Rect.right = Rect.left+w;
 	m_Capbmp.MoveWindow(Rect);
 
+	Rect.left = rc.right - 10 - w;
+	Rect.right = rc.right - 10;
+	m_btnCarClear.MoveWindow(Rect);
 
 	Invalidate();
 }
@@ -308,9 +328,9 @@ void CDLGshortcut::PreviewBMP()
 {
 	//设置按钮图片
 	if(true==PreviewEnable)
-		m_preview.LoadBitmaps(IDB_PREVIEW_OPEN,NULL,NULL,NULL);
+		m_preview.LoadBitmaps(IDB_STOP_PLAY,NULL,NULL,NULL);
 	else
-		m_preview.LoadBitmaps(IDB_PREVIEW_CLOSE,NULL,NULL,NULL);
+		m_preview.LoadBitmaps(IDB_START_PLAY,NULL,NULL,NULL);
 	
 	m_preview.Invalidate();
 }
@@ -387,6 +407,20 @@ void CDLGshortcut::OnBnClickedButtonAutoadjust()
 
 }
 
+void CDLGshortcut::OnBnClickedButtonCarClear()
+{
+	// TODO: Add your control notification handler code here
+	DlgMain->DlgTabVideo.m_ListImg.ClearImageList();
+	DlgMain->DlgTabVideo.m_ListCar.DeleteAllItems();
+	DlgMain->DlgTabVideo.m_ListCarTotal=0;
+}
+
+void CDLGshortcut::OnBnClickedButtonStopAll()
+{
+	// TODO: Add your control notification handler code here
+	DlgMain->DlgTabVideo.DlgNormal.OnButtonClosePreviewAll();
+}
+
 
 void CDLGshortcut::OnPaint() 
 {
@@ -415,5 +449,6 @@ void CDLGshortcut::OnPaint()
 
 	CDialog::OnPaint();
 }
+
 
 

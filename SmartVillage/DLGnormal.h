@@ -75,6 +75,8 @@ void OnButtonOpenFaceDetect() ;
 	afx_msg void OnButtonOpenPreview();
 	afx_msg void OnButtonOpenCarDetect();
 
+	afx_msg void OnButtonClosePreviewAll();
+
 
 	afx_msg void OnButtonCapbmp();
 	afx_msg void OnButtonOpenRecord();
@@ -98,7 +100,6 @@ protected:
 	afx_msg void OnButtonOpenchannel();
 
 	afx_msg void OnButtonOpenPreviewAll();
-	afx_msg void OnButtonClosePreviewAll();
 
 	afx_msg void OnButtonOpenCarDetectAll();
 	afx_msg void OnButtonCloseCarDetectAll();

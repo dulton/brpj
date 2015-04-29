@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <list>
+#include "afxwin.h"
 using namespace::std;
 class CDLGPictureFace : public CDialog
 {
@@ -21,21 +22,22 @@ public:
 	BOOL	OnInitDialog();
 	void AutoSize();
 
+	bool hideflag;
+	bool hidemode;
+void HideNormal();
 
 	//可以显示图片的标记
 	bool TitleDrawFlag;
 	int TitleResDef;
-	
-
 
 	CContainerWnd m_list;
-void CleanList(void) ;
+	void CleanList(void) ;
 
 	void InitList(void);
 	void MoveList(CRect Rect);
 	void MoveListScroll(CRect Rect);
 	void MoveListWin(CRect Rect);
-	
+
 
 	int DlgPLiteTotal;
 
@@ -43,16 +45,16 @@ void CleanList(void) ;
 	int Litewidth;
 	CDLGPictureLite	**DlgPictureLite;
 
-void DisplayCapList(list<struct FACE_CAPTURE_ST> &faceList,int AlarmFlag);
-void DisplayAlarmLiteList(list<struct FACE_ALARM_VIEW_ST> &faceList,int AlarmFlag) ;
+	void DisplayCapList(list<struct FACE_CAPTURE_ST> &faceList,int AlarmFlag);
+	void DisplayAlarmLiteList(list<struct FACE_ALARM_VIEW_ST> &faceList,int AlarmFlag) ;
 
-void DisplayRecgTEMPList(list<struct TEMP_CMP_RESULT_ST> &faceList,int AlarmFlag) ;
-void CDLGPictureFace::DisplayRecgBLACKList(list<struct BLACK_CMP_RESULT_ST> &faceList,int AlarmFlag) ;
+	void DisplayRecgTEMPList(list<struct TEMP_CMP_RESULT_ST> &faceList,int AlarmFlag) ;
+	void CDLGPictureFace::DisplayRecgBLACKList(list<struct BLACK_CMP_RESULT_ST> &faceList,int AlarmFlag) ;
 
-void AddCapList(struct FACE_CAPTURE_ST facedata,int AlarmFlag) ;
-char* FaceSex(int i);
+	void AddCapList(struct FACE_CAPTURE_ST facedata,int AlarmFlag) ;
+	char* FaceSex(int i);
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_PICTURE_FACE };
 
 protected:
@@ -65,4 +67,8 @@ public:
 	afx_msg void OnPaint();
 	afx_msg LRESULT OnAddMessage(WPARAM wParam,LPARAM lParam);
 	afx_msg LRESULT OnCleanMessage(WPARAM wParam,LPARAM lParam);
+	CBitmapButton m_b_clean;
+	CBitmapButton m_b_hide;
+	afx_msg void OnBnClickedButtonClean();
+	afx_msg void OnBnClickedButtonHide();
 };

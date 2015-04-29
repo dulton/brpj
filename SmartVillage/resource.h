@@ -286,18 +286,40 @@
 #define IDB_FACE_LIST_TITLE             475
 #define IDB_BITMAP4                     477
 #define IDB_PIC_FACE_BACK               477
+#define IDB_BITMAP1                     479
+#define IDB_SPLASH                      479
+#define IDI_TREE_CAM_PLAY               487
+#define IDB_CAR_CLEAR                   491
+#define IDB_CAR_CLEAR_PRESS             492
+#define IDB_START_PLAY                  493
+#define IDB_STOP_PLAY                   494
+#define IDB_STOP_ALL                    495
+#define IDB_BITMAP5                     496
+#define IDB_STOP_ALL_PRESS              496
+#define IDB_FACE_CLEAN                  498
+#define IDB_FACE_CLEAN_PRESS            499
+#define IDB_FACE_HIDE_UP_PRESS          500
+#define IDB_FACE_HIDE_DOWN_PRESS        501
+#define IDB_FACE_HIDE_DOWN              502
+#define IDB_FACE_HIDE_UP                503
+#define IDB_BITMAP7                     504
+#define IDB_DEFAULT_LIST                504
 #define IDC_TAB_MAIN                    1000
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON_UPDATE               1001
 #define IDC_BUTTON_FLUSH                1001
 #define IDC_B_CAR                       1001
+#define IDC_BUTTON_CAR_CLEAR            1001
+#define IDC_BUTTON_CLEAN                1001
 #define IDC_LIST_CAR                    1002
 #define IDC_B_FACE                      1002
+#define IDC_BUTTON_HIDE                 1002
 #define IDC_BUTTON_FULL_SCREEN          1003
 #define IDC_B_VIDEO                     1003
 #define IDC_BUTTON2                     1004
 #define IDC_BUTTON_DOWNLOAD             1004
 #define IDC_BUTTON_DOWNLOAD_BMP         1004
+#define IDC_BUTTON_STOP_ALL             1004
 #define IDC_BUTTON_STOP                 1005
 #define IDC_BUTTON_DOWNLOAD_SMALL       1005
 #define IDC_BUTTON_CLOSE_PREVIEW_ALL    1006
@@ -424,6 +446,7 @@
 #define IDC_EDIT_ALARM_WAV              1124
 #define IDC_BUTTON_ALARM_WAV            1125
 #define IDC_EDIT_TIME                   1126
+#define IDC_CHECK_JINGAO                1126
 #define IDC_EDIT_RECORD_DIR             1127
 #define IDC_BUTTON_RECORD_DIR           1128
 #define IDC_COMBO_RECORDFULL            1129
@@ -504,6 +527,7 @@
 #define IDC_CHECK30                     1283
 #define IDC_CHECK31                     1284
 #define IDC_CHECK32                     1285
+#define IDC_CHECK_NIGHT                 1285
 #define IDC_CHECK_DESKEW                1286
 #define IDC_CHECK_CAR_COLOR             1287
 #define IDC_CHECK_OUTPUT_RECT           1288
@@ -547,6 +571,7 @@
 #define IDC_COMBO_JIGUAN                1329
 #define IDC_COMBO3                      1330
 #define IDC_COMBO_CARDTYPE              1330
+#define IDC_COMBO_SVMODE                1330
 #define IDC_COMBO_PLATETYPE             1331
 #define IDC_COMBO_SEX                   1331
 #define IDC_COMBO_ENDWEEK               1332
@@ -615,6 +640,8 @@
 #define IDC_PIC2                        1406
 #define IDC_STATIC_CAP                  1407
 #define IDC_PIC3                        1407
+#define IDC_STATIC_ALARM2               1407
+#define IDC_STATIC_JINGAO               1407
 #define IDC_STATIC_PLAY                 1408
 #define IDC_PIC4                        1408
 #define IDC_STATIC_SET                  1409
@@ -658,6 +685,7 @@
 #define IDC_EDIT_SIDE_TS                1438
 #define IDC_BUTTON_DELETE2              1439
 #define IDC_EDIT_TIME_OUT               1439
+#define IDC_EDIT_JINGAO_IPPORT          1439
 #define IDC_BUTTON_DELETE3              1440
 #define IDC_EDIT_SCALE                  1440
 #define IDC_BUTTON_DELETE4              1441
@@ -722,9 +750,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        478
+#define _APS_NEXT_RESOURCE_VALUE        505
 #define _APS_NEXT_COMMAND_VALUE         32838
-#define _APS_NEXT_CONTROL_VALUE         1439
+#define _APS_NEXT_CONTROL_VALUE         1440
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

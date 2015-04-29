@@ -3,6 +3,7 @@
 #define _MY_CAMERA_
 
 #include "DahuaSDK.h"
+#include "DahuaSDKNew.h"
 #include "HaiKangSDK.h"
 #include "StreamClientSDK.h"
 #include "vlcRtspSDK.h"
@@ -22,6 +23,10 @@ public:
 	CDahuaSDK     m_dahua;
 #endif
 
+#if	OPEN_DAHUA_SDK_NEW
+	CDahuaSDKNew     m_dahua;
+#endif
+
 #if OPEN_HAIKANG_SDK
 	CHaikangSDK   m_haikang;
 #endif
@@ -38,7 +43,7 @@ public:
 
 	void SDKInit();
 	bool StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,int channel,
-					char *user,char *psw,HWND hWnd,int subtype,char *Rtspurl,int RTP,int DecodeTag);
+					char *user,char *psw,HWND hWnd,int subtype,char *Rtspurl,int RTP,int DecodeTag,int Direction);
 	void StopPlay(int venderID,int screenNo);
 	void Capture(int venderID,int screenNo,char *filename);
 	void PtzControl(int venderID, int screenNo, int type, BOOL dwStop, int param);

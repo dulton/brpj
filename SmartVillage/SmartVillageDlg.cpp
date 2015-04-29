@@ -272,6 +272,39 @@ BOOL CSmartVillageDlg::OnInitDialog()
 
 	FaceInit();
 
+#if AUTO_OPENALL
+	//全部初始化完成，自动连接摄像头进行识别
+	for(int i=0;i<DlgTabVideo.DlgDeviceTree.iptotal;i++)
+	{
+		DlgTabVideo.DlgScreen.StartPlay(
+			DlgTabVideo.DlgDeviceTree.iplist[i].ncamera,
+			DlgTabVideo.DlgDeviceTree.iplist[i].area,
+			DlgTabVideo.DlgDeviceTree.iplist[i].name,
+			DlgTabVideo.DlgDeviceTree.iplist[i].ip,
+			DlgTabVideo.DlgDeviceTree.iplist[i].port,
+			DlgTabVideo.DlgDeviceTree.iplist[i].channel,//20140718
+			DlgTabVideo.DlgDeviceTree.iplist[i].user,
+			DlgTabVideo.DlgDeviceTree.iplist[i].psw,
+			i,
+			0,
+			DlgTabVideo.DlgDeviceTree.iplist[i].venderID,
+			DlgTabVideo.DlgDeviceTree.iplist[i].Rtspurl,
+			DlgTabVideo.DlgDeviceTree.iplist[i].RTP,
+			DlgTabVideo.DlgDeviceTree.iplist[i].DecodeTag,
+			DlgTabVideo.DlgDeviceTree.iplist[i].direction);
+
+		if(DlgTabVideo.DlgDeviceTree.iplist[i].svmode == 0)
+		{
+			DlgTabVideo.DlgNormal.OpenCarDetect(i);
+		}
+		else if(DlgTabVideo.DlgDeviceTree.iplist[i].svmode == 1)
+		{
+			DlgTabVideo.DlgNormal.OpenFaceDetect(i);
+		}
+		Sleep(100);
+	}
+#endif
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

@@ -172,14 +172,17 @@ RecoCommonHandle common_handle = NULL;
 
 int CFaceMng::RWFaceMng_UnInit(void)
 {	
-	
 	if(common_handle)
-{
-	FaceProcess_UnInit(common_handle);
-	common_handle=0;
-}
+	{
+		FaceProcess_UnInit(common_handle);
+		common_handle=0;
+	}
+	if(faceMngHandle)
+	{
+		RecoFaceMng_DestroyDBHandle(faceMngHandle);
+		faceMngHandle=NULL;
+	}
 
-	RecoFaceMng_DestroyDBHandle(faceMngHandle);
 	RecoFaceMng_UnInit();
 	return 0;
 }

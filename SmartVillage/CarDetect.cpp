@@ -18,8 +18,10 @@ extern CYRSVMySQL MySqlIO;
 #include "DLGLogin.h"
 extern CDLGLogin DlgLogin;
 
+#include "JingAoUpload.h"
 
-#if OPEN_CARDETECT_CODE
+
+#if OPEN_LC_CARDETECT_CODE
 
 CCarDetect::CCarDetect()
 {
@@ -80,6 +82,7 @@ CCarDetect::CCarDetect()
 	l_ipaddr[0]=0;	
 
 	JumpJPG=false;
+	cam_Direction=0;
 }
 
 CCarDetect::~CCarDetect()
@@ -261,6 +264,81 @@ void CCarDetect::LimitMessageBox(void)
 }
 
 //开始画面
+void CCarDetect::StartPIC(int format,unsigned char *image,int w,int h,int size)
+{
+		CarSet.Width=w;
+		CarSet.Hight=h;
+	//第一次
+	if(-1==State)
+	{
+		if(LC_PLATE_SUCCESS!=lc_plate_analysis_create(&CarHandle,	\
+			LC_PLATE_PROC_WAIT_PIC,CarSet.Width,CarSet.Hight,NULL,NULL))
+		{	
+			State=0;
+			LimitMessageBox();
+			errorprintf("当前车牌识别无法开启。线程数达到最大");
+			return ;
+		}
+		else
+			State=1;
+
+		errorprintf("识别创建成功");
+
+		if(LC_PLATE_SUCCESS!=lc_plate_set_video_format(CarHandle,format))
+			return ;
+
+		struct DEVICE_SET_ST CamSet={0};
+
+		MySqlIO.DEVICE_SetTable_Read(camid,CamSet);
+
+		//后面从数据库读取，以及保存。车牌识别CPP文件也要加读取
+		CarSet.CarColor=CamSet.car.carlor;
+		CarSet.Deskew=CamSet.car.deskew;
+		CarSet.RedRect=CamSet.car.redrect;
+		CarSet.JPGquality=CamSet.car.jpgquailty;
+		CarSet.MinWidth=CamSet.car.minwidth;
+		CarSet.MaxWidth=CamSet.car.maxwidth;
+		CarSet.RangeRate.x0=CamSet.car.left;
+		CarSet.RangeRate.x1=CamSet.car.right;
+		CarSet.RangeRate.y0=CamSet.car.top;
+		CarSet.RangeRate.y1=CamSet.car.bottom;
+		strcpy(CarSet.DefaultChar,CamSet.car.defaultchar);
+		CarSet.Reliability=CamSet.car.reliability;
+		memcpy(CarSet.Mask,CamSet.car.mask,CAR_MASK_MAX);
+
+		CarSet.Width=w;
+		CarSet.Hight=h;
+
+		SetRedRect();
+		SetRange();
+		SetDeskew();
+		SetMinMaxWidth();
+		SetMask();
+		SetDefaultChar();
+		SetReliability();
+		SetJPGquality();
+		SetCarColor();
+
+		/*
+		lc_plate_set_OSD_scale(CarHandle,1.0);
+		lc_plate_set_OSD_position(CarHandle,0,0);
+		lc_plate_set_OSD_flag(CarHandle,1);
+		*/
+		if(LC_PLATE_SUCCESS!=lc_plate_analysis(&CarHandle,image,w,h,size))
+			return ;
+	}
+	else if(1==State)//N次以后
+	{
+		CarSet.Width=w;
+		CarSet.Hight=h;
+
+		if(LC_PLATE_SUCCESS!=lc_plate_analysis(&CarHandle,image,w,h,size))
+			return ;
+	}
+
+	//如果创建失败就不做任何事
+}
+//开始画面
 void CCarDetect::Start(int format,unsigned char *image,int w,int h,int size)
 {
 		CarSet.Width=w;
@@ -335,7 +413,6 @@ void CCarDetect::Start(int format,unsigned char *image,int w,int h,int size)
 
 	//如果创建失败就不做任何事
 }
-
 /*
 任意车牌颜色
 蓝牌
@@ -381,6 +458,36 @@ default:return "未知";
 }
 }
 */
+
+char* CCarDetect::CarColor2JingAo(uint8_t i)
+{
+	switch(i)
+	{
+	case 0:return "2";
+	case 1:return "1";
+	case 2:return "0";
+	case 3:return "0";
+	case 4:return "3";
+	default:return "5";
+	}
+}
+
+char* CCarDetect::CarType2JingAo(uint8_t i)
+{
+
+#if ALLTAB_DETECT_CAR_MODE
+	switch(i)
+	{
+	case 1:return "H00";
+	case 2:return "K00";
+	default:return "ZZZ";
+	}
+#else
+	return "M00";
+#endif
+
+}
+
 char* CCarDetect::CarDirection(uint8_t i)
 {
 	switch(i)
@@ -510,7 +617,7 @@ int CCarDetect::Result()
 
 	char str[ZOG_MAX_PATH_STR]={0};
 	char pathstr[ZOG_MAX_PATH_STR]={0};
-	char timestr[100]={0};
+	char timestr[64]={0};
 	char dirstr[ZOG_MAX_PATH_STR]={0};
 
 	char pathSmallstr[ZOG_MAX_PATH_STR]={0};
@@ -519,12 +626,13 @@ int CCarDetect::Result()
 	struct HISTORY_CarDetect_ST carInfo={0};
 	int nItem;
 
-
 	long nid,blackid;
 	char Timeformat[32]={0};
 	FILE *fp;
 	bool isBlack=false;
 
+	char jsonstr[2048];
+	int resoap;
 
 	re=lc_plate_get_plate_number(CarHandle,&tempCartotal);
 
@@ -533,11 +641,13 @@ int CCarDetect::Result()
 		PicFlag=true;
 		CarTotal=tempCartotal;
 
-		for(i=0;i<CarTotal;i++)
+		//for(i=0;i<CarTotal;i++)
+		for(i=0;i<1;i++)
 		{
 			lc_plate_get_plate_name(CarHandle,i,&CarInfo[i].Str);
 
-			//lc_plate_get_plate_color_id(CarHandle,i,&CarInfo[i].ColorId);
+			lc_plate_get_plate_color_id(CarHandle,i,&CarInfo[i].ColorId);
+
 			lc_plate_get_plate_color_name(CarHandle,i,&CarInfo[i].PlateColor);
 
 			lc_plate_get_plate_reliability(CarHandle,i,&CarInfo[i].Reliability);
@@ -546,7 +656,8 @@ int CCarDetect::Result()
 
 			lc_plate_get_plate_position(CarHandle,i,&CarInfo[i].CarRect);
 
-			//	lc_plate_get_plate_type_id(CarHandle,i,&CarInfo[i].Type);
+			lc_plate_get_plate_type_id(CarHandle,i,&CarInfo[i].PlateTypeID);
+
 			lc_plate_get_plate_type_name(CarHandle,i,&CarInfo[i].PlateType);
 
 			//车身颜色
@@ -584,12 +695,12 @@ int CCarDetect::Result()
 
 			CreateDirectory(dirstr, NULL);
 
-			sprintf(dirstr,"%s\\%04d-%02d-%02d\\%d",
+			sprintf(dirstr,"%s\\%04d-%02d-%02d\\%d_%s",
 				DlgSetSystem.path_CarDetect.GetBuffer(0),
 				nowtime.GetYear(),
 				nowtime.GetMonth(),
 				nowtime.GetDay(),
-				camid);
+				camid,cam_name);
 
 			CreateDirectory(dirstr, NULL);
 			////////////////////////
@@ -601,16 +712,18 @@ int CCarDetect::Result()
 
 			CreateDirectory(dirSmallstr, NULL);
 
-			sprintf(dirSmallstr,"%s\\%04d-%02d-%02d\\%d",
+			sprintf(dirSmallstr,"%s\\%04d-%02d-%02d\\%d_%s",
 				DlgSetSystem.path_CarDetect_Small.GetBuffer(0),
 				nowtime.GetYear(),
 				nowtime.GetMonth(),
 				nowtime.GetDay(),
-				camid);
+				camid,cam_name);
 
 			CreateDirectory(dirSmallstr, NULL);
 			/////////////////
-			for(i=0;i<CarTotal;i++)
+		
+			//for(i=0;i<CarTotal;i++)
+			for(i=0;i<1;i++)
 			{
 				if(strlen(CarInfo[i].Str) <7)
 					continue;
@@ -712,30 +825,40 @@ int CCarDetect::Result()
 				if(tempadd)
 				{
 					//插入列表
-					if(DlgMain->DlgTabVideo.m_ListCarTotal >=200)
+					if(DlgMain->DlgTabVideo.m_ListCarTotal >=LC_MAX_CAR_LIST_NUM)
 					{
 						CleanList();
 					}
 
-					(DlgMain->DlgTabVideo.m_ListCarTotal)++;
-					sprintf(str,"%d",DlgMain->DlgTabVideo.m_ListCarTotal);
-					nItem = DlgMain->DlgTabVideo.m_ListCar.InsertItem(0,str);
+					//插图片
+					if(JpgSmall[0]!=0)
+						DlgMain->DlgTabVideo.m_ListImg.AddImg(pathSmallstr);
+					else
+						DlgMain->DlgTabVideo.m_ListImg.AddImg("");
+
+					nItem =DlgMain->DlgTabVideo.m_ListImg.InsertItem(
+						0, DlgMain->DlgTabVideo.m_ListCarTotal);
 
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,1,Timeformat);
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,2,cam_name);
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,3,l_ipaddr);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,4,CarInfo[i].Str);
+
+					(DlgMain->DlgTabVideo.m_ListCarTotal)++;
+					sprintf(str,"%d",DlgMain->DlgTabVideo.m_ListCarTotal);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,4,str);
+
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,5,CarInfo[i].Str);
 
 					sprintf(str,"%d",CarInfo[i].Reliability);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,5,str);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,6,str);
 
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,6,CarDirection(CarInfo[i].Direction));
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,7,	CarInfo[i].PlateColor);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,8,	CarInfo[i].PlateType);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,9,	CarInfo[i].CarColor);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,7,CarDirection(CarInfo[i].Direction));
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,8,	CarInfo[i].PlateColor);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,9,	CarInfo[i].PlateType);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,10,	CarInfo[i].CarColor);
 					if( isBlack)
 					{
-						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,10,	"是");
+						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,11,	"是");
 						if(DlgSetSystem.m_check_alarmpic)
 						{
 							//	ShellExecute(DlgMain->m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
@@ -747,14 +870,14 @@ int CCarDetect::Result()
 							PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
 					}
 					else
-						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,10,	"否");
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,11,	pathstr);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,12,	"否");
+						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,11,	"否");
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,12,	pathstr);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,13,	"否");
 
 					sprintf(str,"%d",nid);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,13,	str);
-					sprintf(str,"%d",blackid);
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,14,	str);
+					sprintf(str,"%d",blackid);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,15,	str);
 
 				}
 				else
@@ -762,7 +885,9 @@ int CCarDetect::Result()
 					errorprintf("数据库错误:识别结果插入错误");
 					DlgMain->ShowRuntimeMessage("数据库错误:识别结果插入错误",1);
 				}
+
 #else
+/*
 				//电动车
 
 				//输出照片
@@ -797,30 +922,40 @@ int CCarDetect::Result()
 				if(tempadd)
 				{
 					//插入列表
-					if(DlgMain->DlgTabVideo.m_ListCarTotal >=200)
+					if(DlgMain->DlgTabVideo.m_ListCarTotal >=MAX_CAR_LIST_NUM)
 					{
 						CleanList();
 					}
+					//插图片
+					if(JpgSmall[0]!=0)
+						DlgMain->DlgTabVideo.m_ListImg.AddImg(pathSmallstr);
+					else
+						DlgMain->DlgTabVideo.m_ListImg.AddImg("");
 
-					(DlgMain->DlgTabVideo.m_ListCarTotal)++;
-					sprintf(str,"%d",DlgMain->DlgTabVideo.m_ListCarTotal);
-					nItem = DlgMain->DlgTabVideo.m_ListCar.InsertItem(0,str);
+					nItem =DlgMain->DlgTabVideo.m_ListImg.InsertItem(
+						0, DlgMain->DlgTabVideo.m_ListCarTotal);
+
 
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,1,Timeformat);
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,2,cam_name);
 					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,3,l_ipaddr);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,4,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5]);
+
+					(DlgMain->DlgTabVideo.m_ListCarTotal)++;
+					sprintf(str,"%d",DlgMain->DlgTabVideo.m_ListCarTotal);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,4,str);
+
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,5,&CarInfo[i].Str[strlen(CarInfo[i].Str)-5]);
 
 					sprintf(str,"%d",CarInfo[i].Reliability);
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,5,str);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,6,str);
 
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,6,CarDirection(CarInfo[i].Direction));
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,7,CarDirection(CarInfo[i].Direction));
 
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,7,"绿牌");
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,8,"绿牌");
 
 					if( isBlack)
 					{
-						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,8,	"是");
+						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,9,	"是");
 						if(DlgSetSystem.m_check_alarmpic)
 						{
 							//	ShellExecute(DlgMain->DlgTabVideo.m_hWnd,NULL,pathstr,NULL,NULL,SW_NORMAL);
@@ -832,11 +967,11 @@ int CCarDetect::Result()
 							PlaySound(DlgSetSystem.m_path_alarmwav,NULL,SND_FILENAME | SND_ASYNC);
 					}
 					else
-						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,8,	"否");
+						DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,9,	"否");
 
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,9,	pathstr);
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,10,	pathstr);
 
-					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,10,	"否");
+					DlgMain->DlgTabVideo.m_ListCar.SetItemText(nItem,11,	"否");
 
 				}
 				else
@@ -844,8 +979,59 @@ int CCarDetect::Result()
 					errorprintf("数据库错误:识别结果插入错误");
 					DlgMain->ShowRuntimeMessage("数据库错误:识别结果插入错误",1);
 				}
+*/
 
 #endif
+
+#if JING_AO_UPLOAD
+
+				if(DlgSetSystem.m_c_jingao)
+				{
+					//小照片
+					sprintf(pathSmallstr,"%d %s %d %s %d.jpg",	
+						nid,
+						timestr,camid,l_ipaddr,
+						JpgSmallSize);
+
+					//大照片
+					sprintf(pathstr,"%d %s %d %s %d.jpg",	
+						nid,
+						timestr,camid,l_ipaddr,
+						JpgSize);
+
+					sprintf(jsonstr,"{id:\"%d\",captureDeviceIP:\"%s\",\
+									captureDeviceMAC:\"00-00-00-00-00-00\",captureTime:\"%s\",\
+									licensePlateNumber:\"%s\",licensePlateColor:\"%s\",\
+									vehicleType:\"%s\",throughDirection:\"%d\",geographicalPosition:\"%s\"}",
+									nid,l_ipaddr,Timeformat,carInfo.plate,
+									CarColor2JingAo(CarInfo[i].ColorId),CarType2JingAo(CarInfo[i].PlateTypeID),
+									cam_Direction,cam_name);
+
+					resoap=JingAoUpload(DlgSetSystem.m_e_jingao_ipport.GetBuffer(0),
+						"/capture-data-interface/vehicle",
+						"baseInfo","licensePlatePicture","panoramicPicture",
+						pathSmallstr,carInfo.smallpath,
+						pathstr,carInfo.path,
+						jsonstr);
+
+					if(0!=resoap)
+					{
+						sprintf(jsonstr,"CAR JingAoUpload error %d",resoap);
+						MySqlIO.LOG_AddNewSystemLog(DlgLogin.CurrentUser.user,jsonstr);
+					}
+					else
+					{
+						char *pjsonstr=strstr(jsonstr,"result:\"0\"");
+						if(NULL==pjsonstr)
+						{
+							MySqlIO.LOG_AddNewSystemLog(DlgLogin.CurrentUser.user,jsonstr);
+						}
+					}
+				}
+#endif
+
+
+
 
 				/**********************平台END*********************************/
 			}//FOR END
@@ -861,7 +1047,7 @@ int CCarDetect::Result()
 
 void CCarDetect::CleanList(void)
 {
-
+	DlgMain->DlgTabVideo.m_ListImg.ClearImageList();
 	DlgMain->DlgTabVideo.m_ListCar.DeleteAllItems();
 	DlgMain->DlgTabVideo.m_ListCarTotal=0;
 

@@ -21,6 +21,8 @@ extern CDLGLogin DlgLogin;
 #include "YUV2RGB.h"
 #include "ijl.h"
 
+#include "JingAoUpload.h"
+
 extern TCHAR CurrentDir[ZOG_MAX_PATH_STR];
 
 
@@ -56,13 +58,15 @@ CFaceDetect::CFaceDetect()
 	rgbLock=false;
 	newFlag=false;
 
+	cam_Direction=0;
+
 	for(int i=0;i<TRACK_FACE_MAX;i++ )
 	{
 		track_list[i] =-1;
 	}
 	track_p=0;
 	outthread=false;
-		starttime=0;
+	starttime=0;
 	//RWrecoimage.imagedata = (unsigned char *)calloc(VIDEO_WIDTH*VIDEO_HEIGHT*3,sizeof(unsigned char));
 }
 
@@ -185,7 +189,7 @@ DWORD WINAPI FaceDetect_ThreadPROC(LPVOID lpParameter)
 {
 
 	char pathstr[ZOG_MAX_PATH_STR]={0};
-	char timestr[100]={0};
+	char timestr[64]={0};
 	char dirstr[ZOG_MAX_PATH_STR]={0};
 
 	char pathSmallstr[ZOG_MAX_PATH_STR]={0};
@@ -201,6 +205,9 @@ DWORD WINAPI FaceDetect_ThreadPROC(LPVOID lpParameter)
 	int i,j;
 	long capnid;
 	unsigned char *RGBdataP=NULL;
+
+	char jsonstr[2048];
+	int resoap;
 
 	CFaceDetect *p = (CFaceDetect*)lpParameter;
 	p->ThreadFlag=TRUE;
@@ -358,12 +365,12 @@ DWORD WINAPI FaceDetect_ThreadPROC(LPVOID lpParameter)
 
 				CreateDirectory(dirstr, NULL);
 
-				sprintf(dirstr,"%s\\%04d-%02d-%02d\\%d",
+				sprintf(dirstr,"%s\\%04d-%02d-%02d\\%d_%s",
 					DlgSetSystem.path_FaceDetect.GetBuffer(0),
 					nowtime.GetYear(),
 					nowtime.GetMonth(),
 					nowtime.GetDay(),
-					p->camid);
+					p->camid,p->cam_name);
 				CreateDirectory(dirstr, NULL);
 				////////////////////////
 				sprintf(dirSmallstr,"%s\\%04d-%02d-%02d",
@@ -374,12 +381,12 @@ DWORD WINAPI FaceDetect_ThreadPROC(LPVOID lpParameter)
 
 				CreateDirectory(dirSmallstr, NULL);
 
-				sprintf(dirSmallstr,"%s\\%04d-%02d-%02d\\%d",
+				sprintf(dirSmallstr,"%s\\%04d-%02d-%02d\\%d_%s",
 					DlgSetSystem.path_FaceDetect_Small.GetBuffer(0),
 					nowtime.GetYear(),
 					nowtime.GetMonth(),
 					nowtime.GetDay(),
-					p->camid);
+					p->camid,p->cam_name);
 
 				CreateDirectory(dirSmallstr, NULL);
 
@@ -432,7 +439,8 @@ DWORD WINAPI FaceDetect_ThreadPROC(LPVOID lpParameter)
 					fp=fopen("d:\\111111.txt","ab");
 					if(fp)
 					{
-						fprintf(fp,"%d,%d,%d= %d=%d %d %d %d\n",regflag,personID,faceID,	 p->RWdb_nid,smallRGBw,smallRGBh,smallRGBwstep,smallRGBsize);
+						fprintf(fp,"%d,%d,%d= %d=%d %d %d %d\n",regflag,personID,faceID,	
+							p->RWdb_nid,smallRGBw,smallRGBh,smallRGBwstep,smallRGBsize);
 						fclose(fp);
 					}
 #endif
@@ -478,6 +486,60 @@ DWORD WINAPI FaceDetect_ThreadPROC(LPVOID lpParameter)
 				j=FLAG_FAC_CAP;
 				DlgMain->DlgTabVideo.DlgPictureFaceCap.SendMessage(WM_ADDFACE_MESSAGE,(WPARAM)(&j),(LPARAM)&tempFace);
 				//DlgMain->DlgTabVideo.DlgPictureFaceCap.AddCapList(tempFace,FLAG_FAC_CAP);
+
+#if JING_AO_UPLOAD
+
+				if(DlgSetSystem.m_c_jingao)
+				{
+					//小照片
+					sprintf(pathSmallstr,"%d %s %d %s %d.jpg",	
+						tempFace.nid,
+						timestr,p->camid,p->l_ipaddr,
+						tempFace.facesize);
+
+					//大照片
+					sprintf(pathstr,"%d %s %d %s %d.jpg",	
+						tempFace.nid,
+						timestr,p->camid,p->l_ipaddr,
+						tempFace.size);
+					//顺序不能提前
+					sprintf(timestr,"%04d-%02d-%02d %02d:%02d:%02d",
+						nowtime.GetYear(),
+						nowtime.GetMonth(),
+						nowtime.GetDay(),
+						nowtime.GetHour(),
+						nowtime.GetMinute(),
+						nowtime.GetSecond());
+
+					sprintf(jsonstr,"{id:\"%d\",captureDeviceIP:\"%s\",captureDeviceMAC:\"00-00-00-00-00-00\",\
+									captureTime:\"%s\",throughDirection:\"%d\",\
+									geographicalPosition:\"%s\"}",
+									tempFace.nid,tempFace.sip,timestr,p->cam_Direction,tempFace.cameraName);
+
+					resoap=JingAoUpload(DlgSetSystem.m_e_jingao_ipport.GetBuffer(0),
+						"/capture-data-interface/face",
+						"baseInfo","facePicture","panoramicPicture",
+						pathSmallstr,tempFace.face,
+						pathstr,tempFace.file,
+						jsonstr);
+
+					if(0!=resoap)
+					{
+						sprintf(jsonstr,"FACE JingAoUpload error %d",resoap);
+						MySqlIO.LOG_AddNewSystemLog(DlgLogin.CurrentUser.user,jsonstr);
+					}
+					else
+					{
+						char *pjsonstr=strstr(jsonstr,"result:\"0\"");
+						if(NULL==pjsonstr)
+						{
+							MySqlIO.LOG_AddNewSystemLog(DlgLogin.CurrentUser.user,jsonstr);
+						}
+					}
+				}
+
+#endif
+
 #endif
 			}
 
@@ -617,13 +679,6 @@ void CFaceDetect::Start(int format,unsigned char *image,int w,int h,long widthSt
 }
 
 
-void CFaceDetect::CleanList(void)
-{
-
-	DlgMain->DlgTabVideo.m_ListCar.DeleteAllItems();
-	DlgMain->DlgTabVideo.m_ListCarTotal=0;
-
-}
 
 
 //停止画面

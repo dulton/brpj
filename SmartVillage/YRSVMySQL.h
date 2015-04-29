@@ -14,7 +14,7 @@
 using namespace::std;
 
 
-#define MAX_FACE_DB_NUM 32
+#define RW_MAX_FACE_DB_NUM 32
 #define RCT_MAX_STR_SIZE 256
 //车的省份
 #define CAR_MASK_MAX 31
@@ -184,6 +184,8 @@ typedef struct
 	char longitude[32]; //经度
 	char latitude[32];	//纬度
 	long userID;					//USER表NID
+	long direction;		//出入方向：0-进，1-出
+	long svmode;		//智能分析模式 0=车牌识别，1=人脸识别
 }IPLIST;
 
 struct  DEVICE_SET_CAR_LITE_ST
@@ -201,6 +203,7 @@ struct  DEVICE_SET_CAR_LITE_ST
 	int reliability;	//汉字置信度NRELIABILITY
 	int carlor;				//车身颜色识别
 	unsigned char mask[CAR_MASK_MAX];	//出现较多的省份
+	int night;			//夜间增加
 };
 
 struct  DEVICE_SET_FACE_LITE_ST
@@ -221,7 +224,7 @@ struct  DEVICE_SET_FACE_LITE_ST
 	int maxcount;			//最大匹配数		10
 
 	int dbTotal;			//设置布控数量
-	long db_nid[MAX_FACE_DB_NUM];		//设置布控库ID
+	long db_nid[RW_MAX_FACE_DB_NUM];		//设置布控库ID
 
 };
 
@@ -500,7 +503,6 @@ public:
 	bool DEVICE_JudgeCamera(long ncamera);										//判断设备是否存在
 	bool DEVICE_GetCameraWithAreaID(long AreaID,list<long> &ncameraList);		//获取某个区域下的所有摄像机ID
 	bool DEVICE_ReadCameraInfoFromCamID(long ncamera,IPLIST &CamInfo);			//根据nid获取摄像机信息
-	bool DEVICE_ReadCameraInfoFromCarDetectID(long CarDetectID,IPLIST &CameraInfo);	//不用
 
 	/**************************用户表*******************************/
 	bool USER_UserNameJudge(long &nid,char *userName);					//判断用户名是否存在

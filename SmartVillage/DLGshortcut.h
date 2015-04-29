@@ -89,7 +89,10 @@ public:
 	afx_msg void OnBnClickedButtonAutoadjust();
 	CBitmapButton m_adjust;
 	CBitmapButton m_face;
-
+	CBitmapButton m_btnCarClear;
+	CBitmapButton m_btnStopAll;
+	afx_msg void OnBnClickedButtonCarClear();
+	afx_msg void OnBnClickedButtonStopAll();
 };
 
 //{{AFX_INSERT_LOCATION}}

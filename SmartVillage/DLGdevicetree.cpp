@@ -89,6 +89,7 @@ BOOL CDLGdevicetree::OnInitDialog()
 	imagelist.Create(16, 16, ILC_COLOR8|ILC_MASK, 0, 4);    
 	imagelist.Add(AfxGetApp()->LoadIcon(IDI_TREE_AREA));        // ico图标
 	imagelist.Add(AfxGetApp()->LoadIcon(IDI_TREE_CAM));
+	imagelist.Add(AfxGetApp()->LoadIcon(IDI_TREE_CAM_PLAY));
 	m_DeviceTree.SetImageList(&imagelist, TVSIL_NORMAL);  // 建立 imagelist 与 tree的映射关系
 
 #if OPEN_FACEDETECT_CODE
@@ -198,6 +199,12 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 		return ;
 	}
 
+	if(iptotal == MAX_CAMERA)
+	{
+		MessageBox("超过到最大的摄像头数，无法继续添加",MESSAGEBOX_TITLE);
+		return ;
+	}
+
 	// TODO: Add your command handler code here
 	HTREEITEM Item = m_DeviceTree.GetRootItem();
 	int count = 0;
@@ -255,6 +262,8 @@ void CDLGdevicetree::OnMenuitemAdddevice()
 			tempCamInfo.DecodeTag= DlgAddDevice.DecodeTagComboCur;
 			strcpy(tempCamInfo.longitude, DlgAddDevice.m_longitude);
 			strcpy(tempCamInfo.latitude,DlgAddDevice .m_latitude);
+			tempCamInfo.direction = DlgAddDevice.m_Direction;
+			tempCamInfo.svmode = DlgAddDevice.m_SVmode;
 			tempCamInfo.userID= DlgLogin.CurrentUser.nid;
 
 		
@@ -318,8 +327,20 @@ void CDLGdevicetree::OnMenuitemUpdate()
 		MySqlIO.DEVICE_ReadCameraInfo(OrgName[i].nid,CameraList);
 		if(CameraList.size() <=0)
 			continue ; 
+
+		if(iptotal == MAX_CAMERA)
+		{
+			MessageBox("超过最多的摄像头数限制，超过不部分将不显示",MESSAGEBOX_TITLE);
+			break;
+		}
+
 		for(int j=0;j<CameraList.size();j++)
 		{
+			if(iptotal == MAX_CAMERA)
+			{
+				MessageBox("超过最多的摄像头数限制，超过不部分将不显示",MESSAGEBOX_TITLE);
+				break;
+			}
 
 			strcpy(iplist[iptotal].area , CameraList[j].area);
 			iplist[iptotal].ncamera = CameraList[j].ncamera;
@@ -336,6 +357,8 @@ void CDLGdevicetree::OnMenuitemUpdate()
 			iplist[iptotal].DecodeTag= CameraList[j].DecodeTag;
 			strcpy(iplist[iptotal].longitude, CameraList[j].longitude);
 			strcpy(iplist[iptotal].latitude,CameraList[j].latitude);
+			iplist[iptotal].direction = CameraList[j].direction;
+			iplist[iptotal].svmode = CameraList[j].svmode;
 			iplist[iptotal].userID= CameraList[j].userID;
 		
 			childItem = m_DeviceTree.InsertItem(iplist[iptotal].name,1,1,hItem);		//添加设备节点
@@ -371,7 +394,7 @@ void CDLGdevicetree::OnMenuitemEdit()
 	}
 	else														//编辑设备
 	{
-		for(int i=0;i<MAX_AREA;i++)
+		for(int i=0;i<MAX_CAMERA;i++)							//150427
 		{
 			if(iplist[i].item == m_selectItem)
 			{
@@ -398,6 +421,8 @@ void CDLGdevicetree::OnMenuitemEdit()
 				DlgAddDevice.DecodeTagComboCur= iplist[i].DecodeTag;
 				DlgAddDevice.m_longitude= iplist[i].longitude;
 				DlgAddDevice.m_latitude= iplist[i].latitude;
+				DlgAddDevice.m_Direction = iplist[i].direction;
+				DlgAddDevice.m_SVmode = iplist[i].svmode;
 
 				for(int k=0;k<MAX_DEVICE_NUM;k++)
 				{
@@ -449,6 +474,8 @@ void CDLGdevicetree::OnMenuitemEdit()
 					tempCamInfo.DecodeTag= DlgAddDevice.DecodeTagComboCur;
 					strcpy(tempCamInfo.longitude, DlgAddDevice.m_longitude);
 					strcpy(tempCamInfo.latitude,DlgAddDevice .m_latitude);
+					tempCamInfo.direction = DlgAddDevice.m_Direction;
+					tempCamInfo.svmode = DlgAddDevice.m_SVmode;
 					tempCamInfo.userID= 	 iplist[i].userID;
 
 					//做其他事
@@ -492,7 +519,8 @@ void CDLGdevicetree::OnMenuitemEdit()
 									iplist[i].venderID,
 									iplist[i].Rtspurl,
 									iplist[i].RTP,
-									iplist[i].DecodeTag);
+									iplist[i].DecodeTag,
+									iplist[i].direction);
 
 								//恢复状态
 								if(beforeCarDetect)
@@ -523,7 +551,7 @@ void CDLGdevicetree::OnMenuitemDeleteDevice()
 
 	// TODO: Add your command handler code here
 	int i;
-	for(i=0;i<MAX_AREA;i++)
+	for(i=0;i<MAX_CAMERA;i++)						//150427
 	{
 		if(iplist[i].item == m_selectItem)
 		{
@@ -531,7 +559,7 @@ void CDLGdevicetree::OnMenuitemDeleteDevice()
 		}
 	}
 
-	if(i==MAX_AREA)
+	if(i==MAX_CAMERA)								//150427
 	{
 		OnMenuitemUpdate();
 		return ;
@@ -667,7 +695,7 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 		if(m_DeviceTree.GetParentItem(m_selectItem) != NULL)
 		{
 			int ItemCount = 0;
-			for(int i=0;i<MAX_AREA;i++)
+			for(int i=0;i<MAX_CAMERA;i++)						//150427
 			{
 				if(iplist[i].item == m_selectItem)
 				{
@@ -716,8 +744,18 @@ void CDLGdevicetree::OnDblclkTreeDevice(NMHDR* pNMHDR, LRESULT* pResult)
 				iplist[ItemCount].venderID,
 				iplist[ItemCount].Rtspurl,
 				iplist[ItemCount].RTP,
-				iplist[ItemCount].DecodeTag);
+				iplist[ItemCount].DecodeTag,
+				iplist[ItemCount].direction);
 
+			//双击播放自动运行所设置的识别模式
+			if(iplist[ItemCount].svmode == 0)
+			{
+				DlgMain->DlgTabVideo.DlgNormal.OpenCarDetect(screenNo);
+			}
+			else if(iplist[ItemCount].svmode == 1)
+			{
+				DlgMain->DlgTabVideo.DlgNormal.OpenFaceDetect(screenNo);
+			}
 		}
 	}
 
@@ -740,7 +778,7 @@ void CDLGdevicetree::OnMenuitemSetCar()
 	}
 
 	int i;
-	for(i=0;i<MAX_AREA;i++)
+	for(i=0;i<MAX_CAMERA;i++)					//150427
 	{
 		if(iplist[i].item == m_selectItem)
 		{
@@ -748,7 +786,7 @@ void CDLGdevicetree::OnMenuitemSetCar()
 		}
 	}
 
-	if(i==MAX_AREA)
+	if(i==MAX_CAMERA)							//150427
 	{
 		OnMenuitemUpdate();
 		return ;
@@ -776,6 +814,7 @@ void CDLGdevicetree::OnMenuitemSetCar()
 	CarSet.RangeRate.x1=CamSet.car.right;
 	CarSet.RangeRate.y0=CamSet.car.top;
 	CarSet.RangeRate.y1=CamSet.car.bottom;
+	CarSet.Night = CamSet.car.night;
 	strcpy(CarSet.DefaultChar,CamSet.car.defaultchar);
 	CarSet.Reliability=CamSet.car.reliability;
 	memcpy(CarSet.Mask,CamSet.car.mask,CAR_MASK_MAX);
@@ -796,6 +835,7 @@ void CDLGdevicetree::OnMenuitemSetCar()
 		CamSet.car.bottom=	DlgSetCar.CarSet.RangeRate.y1;
 		strcpy(CamSet.car.defaultchar,DlgSetCar.CarSet.DefaultChar);
 		CamSet.car.reliability=	DlgSetCar.CarSet.Reliability;
+		CamSet.car.night = DlgSetCar.CarSet.Night;
 		memcpy(CamSet.car.mask,DlgSetCar.CarSet.Mask,CAR_MASK_MAX);
 
 		MySqlIO.DEVICE_SetTable_Update(CamSet);
@@ -812,7 +852,7 @@ void CDLGdevicetree::OnMenuitemSetFace()
 		return ;
 	}
 	int i;
-	for(i=0;i<MAX_AREA;i++)
+	for(i=0;i<MAX_CAMERA;i++)						//150427
 	{
 		if(iplist[i].item == m_selectItem)
 		{
@@ -820,7 +860,7 @@ void CDLGdevicetree::OnMenuitemSetFace()
 		}
 	}
 
-	if(i==MAX_AREA)
+	if(i==MAX_CAMERA)								//150427
 	{
 		OnMenuitemUpdate();
 		return ;
@@ -880,17 +920,19 @@ void CDLGdevicetree::OnMenuitemAddarea()
 		MessageBox("无 设备管理 权限，请联系管理员",MESSAGEBOX_TITLE);
 		return ;
 	}
+
+	if(	DlgAddDevice.AreaCount >= MAX_AREA)
+	{
+		MessageBox("超过最大的区域数量限制",MESSAGEBOX_TITLE);
+		return;
+	}
+
 	CDLGAddArea DlgAddArea;
 	int nResponse=DlgAddArea.DoModal();
 	if (nResponse == IDOK)
 	{
 		if(DlgAddArea.m_AddArea.IsEmpty())
 			return ;
-		if(	DlgAddDevice.AreaCount >= MAX_AREA)
-		{
-			MessageBox("超过最大的区域数量限制",MESSAGEBOX_TITLE);
-			return;
-		}
 
 		long nid = 0;
 		MySqlIO.DEVICE_GetAreaID(nid,DlgAddArea.m_AddArea.GetBuffer(0));
@@ -952,4 +994,20 @@ void CDLGdevicetree::OnMenuitemModifyarea()
 	}
 	else
 		return ;
+}
+
+void CDLGdevicetree::ChangeTreeItemIcon(long ncamera,bool isPlay)
+{
+	int i;
+	for(i=0;i<MAX_CAMERA;i++)
+	{
+		if(iplist[i].ncamera == ncamera)
+		{
+			break;
+		}
+	}
+	if(isPlay)
+		m_DeviceTree.SetItemImage(iplist[i].item,2,2);
+	else
+		m_DeviceTree.SetItemImage(iplist[i].item,1,1);
 }

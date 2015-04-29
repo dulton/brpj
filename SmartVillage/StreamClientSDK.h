@@ -25,13 +25,14 @@ public:
 	long m_lPort[MAX_DEVICE_NUM];
 	BOOL m_bPTZCtrl;
 
+	int m_direction[MAX_DEVICE_NUM];
 
 	CString CapturePath[MAX_DEVICE_NUM];
 
 	void SDKInit();
 	bool StartPlay(int screenNo,char *name,char *sip,
 							char *user,char *psw,HWND hWnd,int subtype,
-							char *Rtspurl,int RTP,int DecodeTag);
+							char *Rtspurl,int RTP,int DecodeTag,int Direction);
 	void StopPlay(int screenNo);
 	void Capture(int screenNo,char *filename);
 	void PtzControl(LONG lRealHandle, int type, BOOL dwStop, int param);

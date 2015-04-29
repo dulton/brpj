@@ -1,9 +1,9 @@
 
 #include "stdafx.h"
 
-#if	OPEN_DAHUA_SDK
+#if	OPEN_DAHUA_SDK_NEW
 
-#include "DahuaSDK.h"
+#include "DahuaSDKNew.h"
 //////////////////////////////////
 #include "CarDetect.h"
 #include "FaceDetect.h"
@@ -22,7 +22,7 @@ extern CDLGSetSystem DlgSetSystem;
 
 
 //分析成功=1 分析失败=0
-int zogSize2WH(long int size,int *w,int *h)
+int zogSize2WH_New(long int size,int *w,int *h)
 {
 	switch(size*2/3)
 	{
@@ -80,18 +80,18 @@ int zogSize2WH(long int size,int *w,int *h)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall DisConnectFunc(LONG lLoginID, char *pchDVRIP, LONG nDVRPort, DWORD dwUser)
+void __stdcall DisConnectFunc_New(LONG lLoginID, char *pchDVRIP, LONG nDVRPort, DWORD dwUser)
 {
 	DlgMain->ShowCameraMessage(pchDVRIP,"掉线",0);
 }
-void __stdcall AutoConnectFunc(LONG lLoginID,char *pchDVRIP,LONG nDVRPort,DWORD dwUser)
+void __stdcall AutoConnectFunc_New(LONG lLoginID,char *pchDVRIP,LONG nDVRPort,DWORD dwUser)
 {
 	DlgMain->ShowCameraMessage(pchDVRIP,"重连成功",0);
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall SubDisConnectFunc(EM_INTERFACE_TYPE emInterfaceType, BOOL bOnline, LONG lOperateHandle, LONG lLoginID, DWORD dwUser)
+void __stdcall SubDisConnectFunc_New(EM_INTERFACE_TYPE emInterfaceType, BOOL bOnline, LONG lOperateHandle, LONG lLoginID, DWORD dwUser)
 {
 	switch(emInterfaceType)
 	{
@@ -109,9 +109,10 @@ void __stdcall SubDisConnectFunc(EM_INTERFACE_TYPE emInterfaceType, BOOL bOnline
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuffer,DWORD dwBufSize, LONG lParam, DWORD dwUser)
+void __stdcall RealDataCallBackEx_New(LONG lRealHandle, DWORD dwDataType, BYTE *pBuffer,DWORD dwBufSize, LONG lParam, DWORD dwUser)
 {
 	BOOL bInput=FALSE;
+	int screenNo = 0;
 	if(0 != lRealHandle)
 	{
 		/*
@@ -133,7 +134,6 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 			break;
 		case 2:
 			//yuv 数据
-			int screenNo;
 			screenNo = DlgMain->DlgTabVideo.DlgScreen.m_video.m_dahua.GetHandleWindID(lRealHandle);
 			if((screenNo == -1)||(screenNo > 15))
 			{
@@ -147,7 +147,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 			//车牌识别
 #if OPEN_LC_CARDETECT_CODE 	
 	
-			if(zogSize2WH(dwBufSize,&w,&h))
+			if(zogSize2WH_New(dwBufSize,&w,&h))
 			{
 
 				//拷贝数值
@@ -176,7 +176,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 
 #if OPEN_HYZJ_CARDETECT_CODE 	
 
-			if(zogSize2WH(dwBufSize,&w,&h))
+			if(zogSize2WH_New(dwBufSize,&w,&h))
 			{
 				//拷贝数值
 				DlgMain->DlgTabVideo.DlgScreen.HYZJCarDetect[screenNo].m_playhandle=screenNo;
@@ -219,7 +219,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 				ftime=nowtime.GetTime();
 
 				//	YUV2RGB((unsigned char *)pBuf, 	DlgMain->DlgTabVideo.DlgScreen.RGBdata[screenNo], 	nWidth,nHeight);
-				if(zogSize2WH(dwBufSize,&w,&h))
+				if(zogSize2WH_New(dwBufSize,&w,&h))
 				{
 					//拷贝数值
 					DlgMain->DlgTabVideo.DlgScreen.FaceDetect[screenNo].m_playhandle=screenNo;
@@ -261,7 +261,7 @@ void __stdcall RealDataCallBackEx(LONG lRealHandle, DWORD dwDataType, BYTE *pBuf
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-CDahuaSDK::CDahuaSDK()
+CDahuaSDKNew::CDahuaSDKNew()
 {
 	m_bPTZCtrl = FALSE;
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
@@ -272,7 +272,7 @@ CDahuaSDK::CDahuaSDK()
 	SDKInit();
 }
 
-CDahuaSDK::~CDahuaSDK()
+CDahuaSDKNew::~CDahuaSDKNew()
 {
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
@@ -284,17 +284,18 @@ CDahuaSDK::~CDahuaSDK()
 	CLIENT_Cleanup();
 }
 
-void CDahuaSDK::SDKInit()
+void CDahuaSDKNew::SDKInit()
 {
-	CLIENT_Init(DisConnectFunc, 0);
-	CLIENT_SetSubconnCallBack(SubDisConnectFunc, 0);
-	CLIENT_SetAutoReconnect(AutoConnectFunc,0);
+	CLIENT_Init(DisConnectFunc_New, 0);
+	CLIENT_SetSubconnCallBack(SubDisConnectFunc_New, 0);
+	CLIENT_SetAutoReconnect(AutoConnectFunc_New,0);
 	CLIENT_SetConnectTime(10000, 10);
 }
 
-bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,char *user,char *psw,
+bool CDahuaSDKNew::StartPlay(int screenNo,char *name,char *sip,int nPort,int channel,char *user,char *psw,
 						  HWND hWnd,int subtype,int Direction)
 {
+#if 0
 	StopPlay(screenNo);
 
 	NET_DEVICEINFO stDevInfo = {0};
@@ -318,10 +319,12 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channe
 		{
 			//开启预览
 			m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID, hWnd, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
+			CLIENT_MakeKeyFrame(m_LoginHandle[screenNo], 0, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
 		}
 		else
 		{	
 			m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], nChannelID,(HWND)-1, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
+			CLIENT_MakeKeyFrame(m_LoginHandle[screenNo], 0, (DH_RealPlayType)(DH_RType_Realplay_0 + subtype));
 		}
 
 		if (m_RealHandle[screenNo] == -1)
@@ -330,7 +333,7 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channe
 		}
 
 		// 设置回调函数处理数据
-		CLIENT_SetRealDataCallBackEx(m_RealHandle[screenNo], RealDataCallBackEx, 0, 0x00000006);
+		CLIENT_SetRealDataCallBackEx(m_RealHandle[screenNo], RealDataCallBackEx_New, 0, 0x00000004);
 		
 		DlgMain->ShowCameraMessage(name,"连接成功",FALSE);
 		return true;
@@ -341,9 +344,32 @@ bool CDahuaSDK::StartPlay(int screenNo,char *name,char *sip,int nPort,int channe
 		GetConnectError(name,nError,0);
 	}
 	return false;
+#endif
+
+	NET_DEVICEINFO stDevInfo = {0};
+	int nError = 0;
+	//LLONG lLoginHandle = 0;
+	//int nChannelID = 0; // 预览通道号
+
+	m_direction[screenNo]=Direction;
+	
+	m_LoginHandle[screenNo] = CLIENT_Login(sip, nPort, user, psw, &stDevInfo, &nError);
+	if (m_LoginHandle[screenNo] != 0)
+	{
+		m_RealHandle[screenNo] = CLIENT_RealPlayEx(m_LoginHandle[screenNo], channel, hWnd/*m_playWnd[screenNo].m_hWnd*/, DH_RType_Realplay_0);
+		CLIENT_MakeKeyFrame(m_LoginHandle[screenNo], channel, DH_RType_Realplay_0);
+		if(m_RealHandle[screenNo])
+		{
+			BYTE bVideo[4];
+			BOOL nRet = CLIENT_ClientGetVideoEffect(m_RealHandle[screenNo], &bVideo[0],&bVideo[1],&bVideo[2],&bVideo[3]);
+
+			BOOL cbRec = CLIENT_SetRealDataCallBackEx(m_RealHandle[screenNo], RealDataCallBackEx_New, NULL, 0x00000004);
+		}
+	}
+	return true;
 }
 
-void CDahuaSDK::StopPlay(int screenNo)
+void CDahuaSDKNew::StopPlay(int screenNo)
 {
 	if(m_RealHandle[screenNo] != -1)
 	{
@@ -384,7 +410,7 @@ void CDahuaSDK::StopPlay(int screenNo)
 	}
 }
 
-bool CDahuaSDK::PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd)
+bool CDahuaSDKNew::PtzStartPlay(char *sip,int nPort,int channel,char *user,char *psw,HWND hWnd)
 {
 	NET_DEVICEINFO stDevInfo = {0};
 	int nError = 0;
@@ -408,7 +434,7 @@ bool CDahuaSDK::PtzStartPlay(char *sip,int nPort,int channel,char *user,char *ps
 	return false;
 }
 
-void CDahuaSDK::PtzStopPlay()
+void CDahuaSDKNew::PtzStopPlay()
 {
 	if(m_ptzRealHandle != 0)
 	{
@@ -424,7 +450,7 @@ void CDahuaSDK::PtzStopPlay()
 	}
 }
 
-void CDahuaSDK::PtzControl(long lLoginID, int type, BOOL dwStop, int param)
+void CDahuaSDKNew::PtzControl(long lLoginID, int type, BOOL dwStop, int param)
 {
 	BOOL ret;
 	if (dwStop)
@@ -482,7 +508,7 @@ exitPTZCtrl:
 	return;
 }
 
-void CDahuaSDK::Capture(long screenNo,char *filename)
+void CDahuaSDKNew::Capture(long screenNo,char *filename)
 {
 	BOOL ret = CLIENT_CapturePicture(m_RealHandle[screenNo], filename);
 	if(!ret)
@@ -492,7 +518,7 @@ void CDahuaSDK::Capture(long screenNo,char *filename)
 	}
 }
 
-int CDahuaSDK::StartRecord(int screenNo,char *filename)
+int CDahuaSDKNew::StartRecord(int screenNo,char *filename)
 {
 	int iRet;
 	iRet = CLIENT_SaveRealData(m_RealHandle[screenNo],filename);
@@ -507,7 +533,7 @@ int CDahuaSDK::StartRecord(int screenNo,char *filename)
 	}
 }
 
-int CDahuaSDK::StopRecord(int screenNo)
+int CDahuaSDKNew::StopRecord(int screenNo)
 {
 	int iRet;
 	iRet = CLIENT_StopSaveRealData(m_RealHandle[screenNo]);
@@ -523,7 +549,7 @@ int CDahuaSDK::StopRecord(int screenNo)
 }
 
 //根据播放句柄获取窗口ID
-int CDahuaSDK::GetHandleWindID(int RealHandle)
+int CDahuaSDKNew::GetHandleWindID(int RealHandle)
 {
 	for(int i=0;i<MAX_DEVICE_NUM;i++)
 	{
@@ -535,7 +561,7 @@ int CDahuaSDK::GetHandleWindID(int RealHandle)
 	return -1;
 }
 
-char *CDahuaSDK::RuntimeMessage(void)
+char *CDahuaSDKNew::RuntimeMessage(void)
 {
 	DWORD dwError = CLIENT_GetLastError();
 	switch(dwError)
@@ -696,7 +722,7 @@ char *CDahuaSDK::RuntimeMessage(void)
 //连接失败的类型
 //flag ---- 1:弹窗
 //			0:打印消息
-void CDahuaSDK::GetConnectError(char *name,int error,int flag)
+void CDahuaSDKNew::GetConnectError(char *name,int error,int flag)
 {
 	//根据返回值不同判断错误类型
 	switch(error) {

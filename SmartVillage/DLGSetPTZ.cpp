@@ -128,6 +128,17 @@ BOOL CDLGSetPTZ::OnInitDialog()
 			break;
 #endif
 
+#if	OPEN_DAHUA_SDK_NEW
+		case VENDER_TYPE_DAHUA:		//大华
+			DlgMain->DlgTabVideo.DlgScreen.m_video.m_dahua.PtzStartPlay(curCamInfo.ip.GetBuffer(0),\
+																curCamInfo.port,\
+																curCamInfo.channel,\
+																curCamInfo.user.GetBuffer(0),\
+																curCamInfo.psw.GetBuffer(0),\
+																m_video.m_hWnd);
+			break;
+#endif
+
 
 #if OPEN_STREAM_CLIENT_SDK
 	case VENDER_TYPE_STREAM:
@@ -324,6 +335,12 @@ void CDLGSetPTZ::OnDestroy()
 			break;
 #endif
 #if	OPEN_DAHUA_SDK
+		case VENDER_TYPE_DAHUA:		//大华
+			DlgMain->DlgTabVideo.DlgScreen.m_video.m_dahua.PtzStopPlay();
+			break;
+#endif
+
+#if	OPEN_DAHUA_SDK_NEW
 		case VENDER_TYPE_DAHUA:		//大华
 			DlgMain->DlgTabVideo.DlgScreen.m_video.m_dahua.PtzStopPlay();
 			break;

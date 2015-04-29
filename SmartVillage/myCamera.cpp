@@ -21,14 +21,14 @@ void CMyCamera::SDKInit()
 
 bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPort,int channel,
 						  char *user,char *psw,HWND hWnd,int subtype,
-						  char *Rtspurl,int RTP,int DecodeTag)
+						  char *Rtspurl,int RTP,int DecodeTag,int Direction)
 {
 	bool ret = false;
 	switch(venderID)
 	{
 #if OPEN_HAIKANG_SDK
 		case VENDER_TYPE_HAIKANG:
-			ret = m_haikang.StartPlay(screenNo,name, sip, nPort, channel, user, psw, hWnd, subtype);
+			ret = m_haikang.StartPlay(screenNo,name, sip, nPort, channel, user, psw, hWnd, subtype,Direction);
 			if(ret)
 			{
 				m_LoginHandle[screenNo] = m_haikang.m_LoginHandle[screenNo];
@@ -38,7 +38,18 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 #endif
 #if	OPEN_DAHUA_SDK
 		case VENDER_TYPE_DAHUA:
-			ret = m_dahua.StartPlay(screenNo,name, sip, nPort, channel, user, psw, hWnd, subtype);
+			ret = m_dahua.StartPlay(screenNo,name, sip, nPort, channel, user, psw, hWnd, subtype,Direction);
+			if(ret)
+			{
+				m_LoginHandle[screenNo] = m_dahua.m_LoginHandle[screenNo];
+				m_RealHandle[screenNo] = m_dahua.m_RealHandle[screenNo];
+			}
+			break;
+#endif
+
+#if	OPEN_DAHUA_SDK_NEW
+		case VENDER_TYPE_DAHUA:
+			ret = m_dahua.StartPlay(screenNo,name, sip, nPort, channel, user, psw, hWnd, subtype,Direction);
 			if(ret)
 			{
 				m_LoginHandle[screenNo] = m_dahua.m_LoginHandle[screenNo];
@@ -49,7 +60,7 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 
 #if OPEN_STREAM_CLIENT_SDK
 		case VENDER_TYPE_STREAM:
-			ret = m_StreamClient.StartPlay(screenNo,name, sip, user, psw, hWnd, subtype,Rtspurl, RTP,DecodeTag);
+			ret = m_StreamClient.StartPlay(screenNo,name, sip, user, psw, hWnd, subtype,Rtspurl, RTP,DecodeTag,Direction);
 			if(ret)
 			{
 				m_LoginHandle[screenNo] =m_StreamClient.m_lPort[screenNo];
@@ -60,7 +71,7 @@ bool CMyCamera::StartPlay(int venderID,int screenNo,char *name,char *sip,int nPo
 
 #if OPEN_VLC_RTSP_SDK
 		case VENDER_TYPE_VLC_RTSP:
-			ret = m_VlcRtsp[screenNo].StartPlay(screenNo,name, hWnd,Rtspurl);
+			ret = m_VlcRtsp[screenNo].StartPlay(screenNo,name, hWnd,Rtspurl,Direction);
 			if(ret)
 			{
 				m_LoginHandle[screenNo] =screenNo;
@@ -84,6 +95,12 @@ void CMyCamera::StopPlay(int venderID,int screenNo)
 			break;
 #endif
 #if	OPEN_DAHUA_SDK
+		case VENDER_TYPE_DAHUA:
+			m_dahua.StopPlay(screenNo);
+			break;
+#endif
+
+#if	OPEN_DAHUA_SDK_NEW
 		case VENDER_TYPE_DAHUA:
 			m_dahua.StopPlay(screenNo);
 			break;
@@ -123,6 +140,12 @@ void CMyCamera::Capture(int venderID,int screenNo,char *filename)
 			break;
 #endif
 
+#if	OPEN_DAHUA_SDK_NEW
+		case VENDER_TYPE_DAHUA:
+			m_dahua.Capture(screenNo,filename);
+			break;
+#endif
+
 #if OPEN_STREAM_CLIENT_SDK
 		case VENDER_TYPE_STREAM:
 			m_StreamClient.Capture(screenNo,filename);
@@ -149,6 +172,12 @@ void CMyCamera::PtzControl(int venderID, int screenNo, int type, BOOL dwStop, in
 			break;
 #endif
 #if	OPEN_DAHUA_SDK
+		case VENDER_TYPE_DAHUA:
+			m_dahua.PtzControl(m_LoginHandle[screenNo],type,dwStop,param);
+			break;
+#endif
+
+#if	OPEN_DAHUA_SDK_NEW
 		case VENDER_TYPE_DAHUA:
 			m_dahua.PtzControl(m_LoginHandle[screenNo],type,dwStop,param);
 			break;
@@ -181,6 +210,12 @@ int CMyCamera::StartRecord(int venderID,int screenNo,char *filename)
 			break;
 #endif
 
+#if	OPEN_DAHUA_SDK_NEW
+		case VENDER_TYPE_DAHUA:
+			iRet = m_dahua.StartRecord(screenNo,filename);
+			break;
+#endif
+
 #if OPEN_STREAM_CLIENT_SDK
 		case VENDER_TYPE_STREAM:
 			iRet = m_StreamClient.StartRecord(screenNo,filename);
@@ -202,6 +237,12 @@ void CMyCamera::StopRecord(int venderID,int screenNo)
 			break;
 #endif
 #if	OPEN_DAHUA_SDK
+		case VENDER_TYPE_DAHUA:
+			m_dahua.StopRecord(screenNo);
+			break;
+#endif
+
+#if	OPEN_DAHUA_SDK_NEW
 		case VENDER_TYPE_DAHUA:
 			m_dahua.StopRecord(screenNo);
 			break;

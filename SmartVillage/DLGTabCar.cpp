@@ -24,7 +24,7 @@ extern CDLGSetSystem DlgSetSystem;
 IMPLEMENT_DYNAMIC(CDLGTabCar, CDialog)
 
 CDLGTabCar::CDLGTabCar(CWnd* pParent /*=NULL*/)
-	: CDialog(CDLGTabCar::IDD, pParent)
+: CDialog(CDLGTabCar::IDD, pParent)
 
 {
 	m_ip = _T("");
@@ -59,7 +59,6 @@ CDLGTabCar::CDLGTabCar(CWnd* pParent /*=NULL*/)
 	ListTotal=0;
 	ListNow=0;
 
-	PicdisplayFlag=false;
 }
 
 CDLGTabCar::~CDLGTabCar()
@@ -117,51 +116,55 @@ END_MESSAGE_MAP()
 BOOL CDLGTabCar::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+	//默认图片
+
+	int bmpw=96,bmph=20;
+	defaultbitmap.LoadBitmap(IDB_DEFAULT_LIST);    
+
+	//默认图像大小，如果要列变宽点。也设大点
+	m_ListImg.Init(&m_List, bmpw, bmph, &defaultbitmap);
+
+	m_List.InsertColumn(0, _T("车牌图片"), LVCFMT_LEFT, bmpw);//-----
+	m_List.InsertColumn(1, _T("序号") , LVCFMT_LEFT, 60);
+	m_List.InsertColumn(2, _T("车牌号"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(3, _T("时间" ), LVCFMT_LEFT, 140);
+	m_List.InsertColumn(4, _T("摄像头名称" ), LVCFMT_LEFT, 190);
+	m_List.InsertColumn(5, _T("IP地址"), LVCFMT_LEFT, 100);
+	m_List.InsertColumn(6, _T("置信度"), LVCFMT_LEFT, 50);
+	m_List.InsertColumn(7, _T("行驶方向"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(8, _T("车牌颜色"), LVCFMT_LEFT, 70);
 
 #if ALLTAB_DETECT_CAR_MODE
-	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_List.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 180);
-	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
-	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
-	m_List.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(8, _T("车牌类型"), LVCFMT_LEFT, 100);
-	m_List.InsertColumn(9, _T("车身颜色"), LVCFMT_LEFT, 60);
-	m_List.InsertColumn(10, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(11, _T("nid"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(12, _T("小图路径"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(13, _T("失主姓名"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(14, _T("品牌"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(15, _T("失主电话"), LVCFMT_LEFT, 100);
+	m_List.InsertColumn(9, _T("车牌类型"), LVCFMT_LEFT, 100);
+	m_List.InsertColumn(10, _T("车身颜色"), LVCFMT_LEFT, 60);
+	m_List.InsertColumn(11, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(12, _T("nid"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(13, _T("小图路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(14, _T("失主姓名"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(15, _T("品牌"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(16, _T("失主电话"), LVCFMT_LEFT, 90);
 
 	GetDlgItem(IDC_COMBO_PLATETYPE)->ShowWindow(TRUE);
 	GetDlgItem(IDC_COMBO_PLATECOLOR)->ShowWindow(TRUE);
 	GetDlgItem(IDC_COMBO_CARCOLOR)->ShowWindow(TRUE);
 
 #else
-	m_List.InsertColumn(0, _T("序号") , LVCFMT_LEFT, 60);
-	m_List.InsertColumn(1, _T("时间" ), LVCFMT_LEFT, 140);
-	m_List.InsertColumn(2, _T("摄像头名称" ), LVCFMT_LEFT, 190);
-	m_List.InsertColumn(3, _T("IP地址"), LVCFMT_LEFT, 100);
-	m_List.InsertColumn(4, _T("车牌号"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(5, _T("置信度"), LVCFMT_LEFT, 50);
-	m_List.InsertColumn(6, _T("行驶方向"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(7, _T("车牌颜色"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(8, _T("图片路径"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(9, _T("nid"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(10, _T("小图路径"), LVCFMT_LEFT, 0);
-	m_List.InsertColumn(11, _T("失主姓名"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(12, _T("品牌"), LVCFMT_LEFT, 70);
-	m_List.InsertColumn(13, _T("失主电话"), LVCFMT_LEFT, 100);
+	m_List.InsertColumn(9, _T("图片路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(10, _T("nid"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(11, _T("小图路径"), LVCFMT_LEFT, 0);
+	m_List.InsertColumn(12, _T("失主姓名"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(13, _T("品牌"), LVCFMT_LEFT, 70);
+	m_List.InsertColumn(14, _T("失主电话"), LVCFMT_LEFT, 100);
 	//屏蔽车牌类型 车牌颜色 车身颜色
 	GetDlgItem(IDC_COMBO_PLATETYPE)->ShowWindow(FALSE);
 	GetDlgItem(IDC_COMBO_PLATECOLOR)->ShowWindow(FALSE);
 	GetDlgItem(IDC_COMBO_CARCOLOR)->ShowWindow(FALSE);
 #endif
 
-	m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+	//序号和图片颠倒
+	m_ListImg.SwapColumns(0, 1);
+
+	//m_List.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
 	CHeaderCtrl* pHeaderCtrl = (CHeaderCtrl*)m_List.GetHeaderCtrl();
 	pHeaderCtrl->EnableWindow(FALSE);
@@ -202,22 +205,13 @@ void CDLGTabCar::AutoSize()
 	//	GetParent()->GetClientRect(&rc);
 	//	((CTabCtrl*)GetParent())->AdjustRect(FALSE, &rc);
 	//	MoveWindow(rc);
-	
-	if(rc.Width()<1280 )
-	{
-		DlgTabPic.ShowWindow(SW_HIDE);
-		PicdisplayFlag=false;
-	}
-	else
-	{
-		DlgTabPic.ShowWindow(SW_SHOW);
-		PicdisplayFlag=true;
-	}
-	
+
+
 	int buttonh=25;
 	int buttonbmpw=24,buttonbmph=18,buttongap=10;
 	int toph=100;
 
+	int PicDisplayw=550;
 
 	rc.top+=5;
 	rc.bottom-=5;
@@ -229,33 +223,22 @@ void CDLGTabCar::AutoSize()
 	list_Rect.top = rc.top+toph ;
 	list_Rect.bottom = rc.bottom-buttonh;
 
-	if(PicdisplayFlag)
-	{
-		list_Rect.left = rc.left;
-		list_Rect.right = 1000;
-	}
-	else
-	{
-		list_Rect.left = rc.left;
-		list_Rect.right = rc.right;
-	}
+
+	list_Rect.left = rc.left;
+	list_Rect.right = rc.right-PicDisplayw-10;
+
 	//必须 样式=重叠，边框=调整大小
 	m_List.MoveWindow(list_Rect);
 
 
-	if(PicdisplayFlag)
-	{
-		CRect pic_Rect;
-		pic_Rect.top = rc.top+10 ;
-		pic_Rect.bottom = rc.bottom;
-		pic_Rect.left = list_Rect.right+10;
-		pic_Rect.right = rc.right;
+	CRect pic_Rect;
+	pic_Rect.top = rc.top+toph ;
+	pic_Rect.bottom = rc.bottom-buttonh;
+	pic_Rect.left = list_Rect.right+10;
+	pic_Rect.right = rc.right;
 
-		DlgTabPic.MoveWindow(pic_Rect);
-		DlgTabPic.AutoSize();
-
-	}
-
+	DlgTabPic.MoveWindow(pic_Rect);
+	DlgTabPic.AutoSize();
 
 	CRect b_Rect;
 
@@ -284,7 +267,7 @@ void CDLGTabCar::AutoSize()
 	b_Rect.left = b_Rect.right+buttongap;
 	b_Rect.right = b_Rect.left+buttonbmpw;
 	m_last_button.MoveWindow(b_Rect);
-//////////////
+	//////////////
 
 	b_Rect.top = list_Rect.bottom+8 ;
 	b_Rect.left = b_Rect.right+buttongap*3;
@@ -306,10 +289,6 @@ void CDLGTabCar::AutoSize()
 	b_Rect.left = b_Rect.right;
 	b_Rect.right = b_Rect.left+20;
 	GetDlgItem(IDC_STATIC_YE)->MoveWindow(b_Rect);
-
-
-
-
 
 	Invalidate();
 }
@@ -392,7 +371,7 @@ void CDLGTabCar::OnButtonSearch()
 			m_StartHour.GetHour(),
 			m_StartHour.GetMinute(),
 			m_StartHour.GetSecond());
-		
+
 		COleDateTime cetime(
 			m_EndMon.GetYear(),
 			m_EndMon.GetMonth(),
@@ -400,7 +379,7 @@ void CDLGTabCar::OnButtonSearch()
 			m_EndHour.GetHour(),
 			m_EndHour.GetMinute(),
 			m_EndHour.GetSecond());
-		
+
 		if(cstime>cetime)
 		{
 			MessageBox("起始时间 不得大于 结束时间");
@@ -414,7 +393,7 @@ void CDLGTabCar::OnButtonSearch()
 	}
 
 #if ALLTAB_DETECT_CAR_MODE
-//汽车
+	//汽车
 	if(m_platecolor >0)
 	{
 		searchFlag |= 0x20;
@@ -469,7 +448,7 @@ void CDLGTabCar::OnButtonSearch()
 	}
 
 #else
-//电动车
+	//电动车
 	ListTotal=0;
 
 	switch(m_lib)
@@ -510,8 +489,9 @@ void CDLGTabCar::OnButtonSearch()
 void CDLGTabCar::DisplayerList(void)
 {
 	list_history_CarDetect.clear();
+	m_ListImg.ClearImageList();
 	m_List.DeleteAllItems();
-	
+
 
 	if(0==ListTotal)
 	{
@@ -530,7 +510,7 @@ void CDLGTabCar::DisplayerList(void)
 
 	//查询数据库
 #if ALLTAB_DETECT_CAR_MODE
-//汽车
+	//汽车
 	switch(m_lib)
 	{
 	case TAB_CAR_FLAG_CAR :
@@ -545,7 +525,7 @@ void CDLGTabCar::DisplayerList(void)
 	}
 
 #else
-//电动车
+	//电动车
 	switch(m_lib)
 	{
 	case TAB_CAR_FLAG_CAR :
@@ -565,15 +545,22 @@ void CDLGTabCar::DisplayerList(void)
 	char str[128]={0};
 	int i=0;
 
-	list<struct HISTORY_CarDetect_ST>::iterator beglist;
-	
+	list<struct HISTORY_CarDetect_ST>::reverse_iterator beglist;
+
 	struct BLACK_DATA_ST blackdata;
 
-	for(beglist=list_history_CarDetect.begin();beglist!=list_history_CarDetect.end();beglist++)
+	for(beglist=list_history_CarDetect.rbegin();beglist!=list_history_CarDetect.rend();beglist++)
 	{
-		sprintf(str,"%07d",ListNow+1+i);
-		nItem = m_List.InsertItem(0,str);
+		//插图片
+		m_ListImg.AddImg(beglist->smallpath);
+
+		nItem =m_ListImg.InsertItem(i, i);
+
+		sprintf(str,"%07d",ListNow+list_history_CarDetect.size()-i);
 		i++;
+		m_List.SetItemText(nItem,1,str);
+
+		m_List.SetItemText(nItem,2,beglist->plate);
 
 		sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
 			beglist->year,
@@ -582,55 +569,54 @@ void CDLGTabCar::DisplayerList(void)
 			beglist->hour,
 			beglist->min,
 			beglist->sec);
-		m_List.SetItemText(nItem,1,str);
+		m_List.SetItemText(nItem,3,str);
 
-		m_List.SetItemText(nItem,2,beglist->name);
-		m_List.SetItemText(nItem,3,beglist->ip);
-		m_List.SetItemText(nItem,4,beglist->plate);
-	
+		m_List.SetItemText(nItem,4,beglist->name);
+		m_List.SetItemText(nItem,5,beglist->ip);
+
 		sprintf(str,"%d",beglist->reliability);
-		m_List.SetItemText(nItem,5,str);
+		m_List.SetItemText(nItem,6,str);
 
-		m_List.SetItemText(nItem,6,beglist->direction);
+		m_List.SetItemText(nItem,7,beglist->direction);
 
 #if ALLTAB_DETECT_CAR_MODE
-//汽车
-		m_List.SetItemText(nItem,7,beglist->platecolor);
-		m_List.SetItemText(nItem,8,beglist->platetype);
-		m_List.SetItemText(nItem,9,beglist->carcolor);
-		m_List.SetItemText(nItem,10,beglist->path);
-	
+		//汽车
+		m_List.SetItemText(nItem,8,beglist->platecolor);
+		m_List.SetItemText(nItem,9,beglist->platetype);
+		m_List.SetItemText(nItem,10,beglist->carcolor);
+		m_List.SetItemText(nItem,11,beglist->path);
+
 		sprintf(str,"%d",beglist->nid);
-		m_List.SetItemText(nItem,11,str);
+		m_List.SetItemText(nItem,12,str);
 
-		m_List.SetItemText(nItem,12,beglist->smallpath);
+		m_List.SetItemText(nItem,13,beglist->smallpath);
 
-	if(  TAB_CAR_FLAG_CARALARM ==m_lib)
-	{
-		if(MySqlIO.CAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+		if(  TAB_CAR_FLAG_CARALARM ==m_lib)
 		{
-				m_List.SetItemText(nItem,13,blackdata.name);
-				m_List.SetItemText(nItem,14,blackdata.brand);
-				m_List.SetItemText(nItem,15,blackdata.Phone);
+			if(MySqlIO.CAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+			{
+				m_List.SetItemText(nItem,14,blackdata.name);
+				m_List.SetItemText(nItem,15,blackdata.brand);
+				m_List.SetItemText(nItem,16,blackdata.Phone);
+			}
 		}
-	}
 #else
-//电动车
-		m_List.SetItemText(nItem,7,beglist->platecolor);
-		m_List.SetItemText(nItem,8,beglist->path);
-	
+		//电动车
+		m_List.SetItemText(nItem,8,beglist->platecolor);
+		m_List.SetItemText(nItem,9,beglist->path);
+
 		sprintf(str,"%d",beglist->nid);
-		m_List.SetItemText(nItem,9,str);
-		
-		m_List.SetItemText(nItem,10,beglist->smallpath);
+		m_List.SetItemText(nItem,10,str);
+
+		m_List.SetItemText(nItem,11,beglist->smallpath);
 
 		if( TAB_CAR_FLAG_CARALARM ==m_lib)
 		{
 			if(MySqlIO.ELECAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
 			{
-				m_List.SetItemText(nItem,11,blackdata.name);
-				m_List.SetItemText(nItem,12,blackdata.brand);
-				m_List.SetItemText(nItem,13,blackdata.Phone);
+				m_List.SetItemText(nItem,12,blackdata.name);
+				m_List.SetItemText(nItem,13,blackdata.brand);
+				m_List.SetItemText(nItem,14,blackdata.Phone);
 			}
 		}
 #endif
@@ -733,10 +719,10 @@ void CDLGTabCar::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	//本地
 #if ALLTAB_DETECT_CAR_MODE
 	//汽车
-	m_List.GetItemText(pNMIA->iItem,11,str,260);
+	m_List.GetItemText(pNMIA->iItem,12,str,260);
 #else
 	//电动车
-	m_List.GetItemText(pNMIA->iItem,9,str,260);
+	m_List.GetItemText(pNMIA->iItem,10,str,260);
 #endif
 
 	struct BLACK_DATA_ST blackdata;
@@ -752,7 +738,7 @@ void CDLGTabCar::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		if(beglist->nid == nid)
 		{
-			dlgPicView.m_txt="时间:";
+			dlgPicView.m_txt="时间:    ";
 
 			sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
 				beglist->year,
@@ -765,13 +751,13 @@ void CDLGTabCar::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 			dlgPicView.m_txt+=str;
 			dlgPicView.m_txt+="\n设备名称:";
 			dlgPicView.m_txt+=beglist->name;
-			dlgPicView.m_txt+="\n设备IP:";
+			dlgPicView.m_txt+="\n设备IP:  ";
 			dlgPicView.m_txt+=beglist->ip;
 
-			dlgPicView.m_txt+="\n车牌号:";
+			dlgPicView.m_txt+="\n车牌号:  ";
 			dlgPicView.m_txt+=beglist->plate;
 
-			dlgPicView.m_txt+="\n方向:";
+			dlgPicView.m_txt+="\n方向:    ";
 			dlgPicView.m_txt+=beglist->direction;
 
 			dlgPicView.m_txt+="\n车牌颜色:";
@@ -791,9 +777,9 @@ void CDLGTabCar::OnLvnItemActivateList(NMHDR *pNMHDR, LRESULT *pResult)
 				{
 					dlgPicView.m_txt+="\n失主姓名:";
 					dlgPicView.m_txt+=blackdata.name;
-					dlgPicView.m_txt+="\n品牌:";
+					dlgPicView.m_txt+="\n品牌:    ";
 					dlgPicView.m_txt+=blackdata.brand;
-					dlgPicView.m_txt+="\n车牌号:";
+					dlgPicView.m_txt+="\n车牌号:  ";
 					dlgPicView.m_txt+=blackdata.plate;
 					dlgPicView.m_txt+="\n失主电话:";
 					dlgPicView.m_txt+=blackdata.Phone;
@@ -891,30 +877,88 @@ HBRUSH CDLGTabCar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 //单击LIST
 void CDLGTabCar::OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult)
 {
-//	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<NMITEMACTIVATE>(pNMHDR);
+	//	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<NMITEMACTIVATE>(pNMHDR);
 	// TODO: Add your control notification handler code here
 
 	NM_LISTVIEW* pNMIA = (NM_LISTVIEW*)pNMHDR;    
+     
 
 	if(pNMIA->iItem != -1)      
-	{             
-			if(PicdisplayFlag)
-			{
-	char str[ZOG_MAX_PATH_STR]={0};
-	char smallstr[ZOG_MAX_PATH_STR]={0};
-				//本地
+	{      
+		char str[ZOG_MAX_PATH_STR]={0};
+
+		//本地
 #if ALLTAB_DETECT_CAR_MODE
-				//汽车
-				m_List.GetItemText(pNMIA->iItem,10,str,ZOG_MAX_PATH_STR);
-				m_List.GetItemText(pNMIA->iItem,12,smallstr,ZOG_MAX_PATH_STR);
-				
+		//汽车
+		m_List.GetItemText(pNMIA->iItem,12,str,260);
 #else
-				//电动车
-				m_List.GetItemText(pNMIA->iItem,8,str,ZOG_MAX_PATH_STR);
-				m_List.GetItemText(pNMIA->iItem,10,smallstr,ZOG_MAX_PATH_STR);
+		//电动车
+		m_List.GetItemText(pNMIA->iItem,10,str,260);
 #endif
 
-				char *p=strrchr(str,'\\');
+		struct BLACK_DATA_ST blackdata;
+		DlgTabPic.m_txt="";
+
+		long nid=atoi(str);
+
+		list<struct HISTORY_CarDetect_ST>::iterator beglist;
+
+		for(beglist=list_history_CarDetect.begin();beglist!=list_history_CarDetect.end();beglist++)
+		{
+			if(beglist->nid == nid)
+			{
+				DlgTabPic.m_txt="时间:    ";
+
+				sprintf(str,"%04d-%02d-%02d %02d:%02d:%02d",		
+					beglist->year,
+					beglist->mon,
+					beglist->day,
+					beglist->hour,
+					beglist->min,
+					beglist->sec);
+
+				DlgTabPic.m_txt+=str;
+				DlgTabPic.m_txt+="\n设备名称:";
+				DlgTabPic.m_txt+=beglist->name;
+				DlgTabPic.m_txt+="\n设备IP:  ";
+				DlgTabPic.m_txt+=beglist->ip;
+
+				DlgTabPic.m_txt+="\n车牌号:  ";
+				DlgTabPic.m_txt+=beglist->plate;
+
+				DlgTabPic.m_txt+="\n方向:    ";
+				DlgTabPic.m_txt+=beglist->direction;
+
+				DlgTabPic.m_txt+="\n车牌颜色:";
+				DlgTabPic.m_txt+=beglist->platecolor;
+
+#if ALLTAB_DETECT_CAR_MODE
+
+				DlgTabPic.m_txt+="\n车牌类型:";
+				DlgTabPic.m_txt+=beglist->platetype;
+
+				DlgTabPic.m_txt+="\n车辆颜色:";
+				DlgTabPic.m_txt+=beglist->carcolor;
+#endif
+				if(  TAB_CAR_FLAG_CARALARM ==m_lib)
+				{
+					if(MySqlIO.CAR_BlackTable_ReadOneWithNid(beglist->blackid,blackdata))
+					{
+						DlgTabPic.m_txt+="\n失主姓名:";
+						DlgTabPic.m_txt+=blackdata.name;
+						DlgTabPic.m_txt+="\n品牌:    ";
+						DlgTabPic.m_txt+=blackdata.brand;
+						DlgTabPic.m_txt+="\n车牌号:  ";
+						DlgTabPic.m_txt+=blackdata.plate;
+						DlgTabPic.m_txt+="\n失主电话:";
+						DlgTabPic.m_txt+=blackdata.Phone;
+						DlgTabPic.m_txt+="\n其他信息:";
+						DlgTabPic.m_txt+=blackdata.other;
+					}
+				}
+
+				//路径
+				char *p=strrchr(beglist->path,'\\');
 				if(p!=NULL)
 					p++;
 				else
@@ -924,13 +968,15 @@ void CDLGTabCar::OnNMClickList(NMHDR *pNMHDR, LRESULT *pResult)
 					return ;
 				}
 
-				DlgTabPic.srcfile=str;
-				DlgTabPic.srcsmallfile=smallstr;
+				DlgTabPic.srcfile=beglist->path;
+				DlgTabPic.srcsmallfile=beglist->smallpath;
 				DlgTabPic.Load();
 				DlgTabPic.Invalidate();
+				break;
 			}
+		}
 
-	}         
+	}      
 
 	*pResult = 0;
 }

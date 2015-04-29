@@ -21,6 +21,8 @@ CDLGSetSystem::CDLGSetSystem(CWnd* pParent /*=NULL*/)
 	, m_display_preview(TRUE)
 
 	, m_path_faceblack(_T(""))
+	, m_c_jingao(FALSE)
+	, m_e_jingao_ipport(_T("192.168.1.1:8080"))
 {
 	//{{AFX_DATA_INIT(CDLGSetSystem)
 	m_check_alarmpic = TRUE;
@@ -59,35 +61,35 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_ALARM_PIC, m_check_alarmpic);
 	DDX_Check(pDX, IDC_CHECK_ALARM_WAV, m_check_alarmwav);
 	//DDX_Check(pDX, IDC_CHECK_FTP, m_check_ftp);
-//	DDX_CBIndex(pDX, IDC_COMBO_RECORDFULL, m_recordfull);
+	//	DDX_CBIndex(pDX, IDC_COMBO_RECORDFULL, m_recordfull);
 	DDX_Text(pDX, IDC_EDIT_ALARM_WAV, m_path_alarmwav);
 	DDV_MaxChars(pDX, m_path_alarmwav, 260);
 	DDX_Text(pDX, IDC_EDIT_CAPBMP_DIR, m_path_capbmp);
 	DDV_MaxChars(pDX, m_path_capbmp, 260);
 	DDX_Text(pDX, IDC_EDIT_CARDETECT_DIR, m_path_Detect);
 	DDV_MaxChars(pDX, m_path_Detect, 260);
-//	DDX_Text(pDX, IDC_EDIT_RECORD_DIR, m_path_record);
-//	DDV_MaxChars(pDX, m_path_record, 260);
-//	DDX_Text(pDX, IDC_EDIT_TIME, m_record_cuttime);
-//	DDV_MinMaxInt(pDX, m_record_cuttime, 1, 60);
-//	DDX_Text(pDX, IDC_EDIT_FTP_IPADDR, m_ftp_ip);
-//	DDV_MaxChars(pDX, m_ftp_ip, 32);
-//	DDX_Text(pDX, IDC_EDIT_FTP_PORT, m_ftp_port);
-//	DDV_MaxChars(pDX, m_ftp_port, 32);
-//	DDX_Text(pDX, IDC_EDIT_FTP_PSW, m_ftp_psw);
-//	DDV_MaxChars(pDX, m_ftp_psw, 32);
-//	DDX_Text(pDX, IDC_EDIT_FTP_USER, m_ftp_user);
-//	DDV_MaxChars(pDX, m_ftp_user, 32);
+	//	DDX_Text(pDX, IDC_EDIT_RECORD_DIR, m_path_record);
+	//	DDV_MaxChars(pDX, m_path_record, 260);
+	//	DDX_Text(pDX, IDC_EDIT_TIME, m_record_cuttime);
+	//	DDV_MinMaxInt(pDX, m_record_cuttime, 1, 60);
+	//	DDX_Text(pDX, IDC_EDIT_FTP_IPADDR, m_ftp_ip);
+	//	DDV_MaxChars(pDX, m_ftp_ip, 32);
+	//	DDX_Text(pDX, IDC_EDIT_FTP_PORT, m_ftp_port);
+	//	DDV_MaxChars(pDX, m_ftp_port, 32);
+	//	DDX_Text(pDX, IDC_EDIT_FTP_PSW, m_ftp_psw);
+	//	DDV_MaxChars(pDX, m_ftp_psw, 32);
+	//	DDX_Text(pDX, IDC_EDIT_FTP_USER, m_ftp_user);
+	//	DDV_MaxChars(pDX, m_ftp_user, 32);
 
-//	DDX_Text(pDX, IDC_EDIT_DAHUA_PATH, m_path_dahua);
-//	DDV_MaxChars(pDX, m_path_dahua, 260);
-//	DDX_Text(pDX, IDC_EDIT_HAIKANG_PATH, m_path_haikang);
-//	DDV_MaxChars(pDX, m_path_haikang, 260);
+	//	DDX_Text(pDX, IDC_EDIT_DAHUA_PATH, m_path_dahua);
+	//	DDV_MaxChars(pDX, m_path_dahua, 260);
+	//	DDX_Text(pDX, IDC_EDIT_HAIKANG_PATH, m_path_haikang);
+	//	DDV_MaxChars(pDX, m_path_haikang, 260);
 
-//	DDX_Text(pDX, IDC_EDIT_FTP_PATH, m_ftp_path);
-//	DDV_MaxChars(pDX, m_ftp_path, 260);
-//	DDX_Text(pDX, IDC_EDIT_TOMCAT_DIR, m_tomcat_dir);
-//	DDX_Text(pDX, IDC_EDIT_TOMCAT_URL, m_tomcat_url);
+	//	DDX_Text(pDX, IDC_EDIT_FTP_PATH, m_ftp_path);
+	//	DDV_MaxChars(pDX, m_ftp_path, 260);
+	//	DDX_Text(pDX, IDC_EDIT_TOMCAT_DIR, m_tomcat_dir);
+	//	DDX_Text(pDX, IDC_EDIT_TOMCAT_URL, m_tomcat_url);
 	//}}AFX_DATA_MAP
 	DDX_Check(pDX, IDC_DISPLAY_PREVIEW, m_display_preview);
 
@@ -96,16 +98,19 @@ void CDLGSetSystem::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDCANCEL, m_b_cancel);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_WAV, m_b_alarmwav);
 	DDX_Control(pDX, IDC_BUTTON_CARDETECT_DIR, m_b_CarDetectdir);
-//	DDX_Control(pDX, IDC_BUTTON_RECORD_DIR, m_b_recorddir);
+	//	DDX_Control(pDX, IDC_BUTTON_RECORD_DIR, m_b_recorddir);
 	DDX_Control(pDX, IDC_BUTTON_CAPBMP_DIR, m_b_cambmpdir);
-//	DDX_Control(pDX, IDC_BUTTON_HAIKANG_PATH, m_b_haikangpath);
-//	DDX_Control(pDX, IDC_BUTTON_DAHUA_PATH, m_b_dahuapath);
+	//	DDX_Control(pDX, IDC_BUTTON_HAIKANG_PATH, m_b_haikangpath);
+	//	DDX_Control(pDX, IDC_BUTTON_DAHUA_PATH, m_b_dahuapath);
 
-//	DDX_Control(pDX, IDC_BUTTON_TOMCAT_DIR, m_b_tomcatdir);
+	//	DDX_Control(pDX, IDC_BUTTON_TOMCAT_DIR, m_b_tomcatdir);
 
 	DDX_Text(pDX, IDC_EDIT_BLACKFACE_DIR, m_path_faceblack);
 	DDV_MaxChars(pDX, m_path_faceblack, 260);
 	DDX_Control(pDX, IDC_BUTTON_BLACKFACE_DIR, m_b_faceblack);
+	DDX_Check(pDX, IDC_CHECK_JINGAO, m_c_jingao);
+	DDX_Text(pDX, IDC_EDIT_JINGAO_IPPORT, m_e_jingao_ipport);
+	DDV_MaxChars(pDX, m_e_jingao_ipport, 32);
 }
 
 
@@ -123,6 +128,7 @@ BEGIN_MESSAGE_MAP(CDLGSetSystem, CDialog)
 	ON_WM_CTLCOLOR()
 	ON_WM_PAINT()
 	ON_BN_CLICKED(IDC_BUTTON_BLACKFACE_DIR, &CDLGSetSystem::OnBnClickedButtonBlackfaceDir)
+	ON_BN_CLICKED(IDC_CHECK_JINGAO, &CDLGSetSystem::OnBnClickedCheckJingao)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -135,9 +141,7 @@ BOOL CDLGSetSystem::OnInitDialog()
 	UpdateData(FALSE);
 
 
-
-
-
+	OnBnClickedCheckJingao();
 
 
 	m_b_ok.LoadBitmaps(IDB_OK_BUTTON,IDB_OK_BUTTON_MOVE,NULL,NULL);
@@ -431,7 +435,11 @@ void CDLGSetSystem::readini(char *path)
 	char	kakou_psw_ext[ZOG_MAX_PATH_STR] = ""; 
 	char	myip[ZOG_MAX_PATH_STR] = ""; 
 
+	int check_jingao;
+	char	jingao_ipport[ZOG_MAX_NAME_STR]="";
+
 	char path_faceblack[ZOG_MAX_PATH_STR]="";
+
 
 	int check_displaypreview;
 
@@ -492,22 +500,29 @@ void CDLGSetSystem::readini(char *path)
 	if(GetPrivateProfileString("Black", "PathFaceBlack", "", path_faceblack, ZOG_MAX_PATH_STR, path))
 		m_path_faceblack=path_faceblack;
 
+	if(GetPrivateProfileStruct("JingAo", "CheckUp", &check_jingao, sizeof(int), path))
+		m_c_jingao=check_jingao;
+
+	if(GetPrivateProfileString("JingAo", "IpPort", "", jingao_ipport, ZOG_MAX_PATH_STR, path))
+		m_e_jingao_ipport=jingao_ipport;
+
+
 	CreateDirectory(m_path_capbmp, NULL);
 	CreateDirectory(m_path_Detect, NULL);
 //	CreateDirectory(m_path_record, NULL);
 	CreateDirectory(m_path_faceblack, NULL);
 
-		path_CarDetect.Format("%s\\Car",m_path_Detect.GetBuffer(0));
-		CreateDirectory(path_CarDetect, NULL);
+	path_CarDetect.Format("%s\\Car",m_path_Detect.GetBuffer(0));
+	CreateDirectory(path_CarDetect, NULL);
 
-		path_CarDetect_Small.Format("%s\\CarSmall",m_path_Detect.GetBuffer(0));
-		CreateDirectory(path_CarDetect_Small, NULL);
+	path_CarDetect_Small.Format("%s\\CarSmall",m_path_Detect.GetBuffer(0));
+	CreateDirectory(path_CarDetect_Small, NULL);
 
-		path_FaceDetect.Format("%s\\Face",m_path_Detect.GetBuffer(0));
-		CreateDirectory(path_FaceDetect, NULL);
+	path_FaceDetect.Format("%s\\Face",m_path_Detect.GetBuffer(0));
+	CreateDirectory(path_FaceDetect, NULL);
 
-		path_FaceDetect_Small.Format("%s\\FaceSmall",m_path_Detect.GetBuffer(0));
-		CreateDirectory(path_FaceDetect_Small, NULL);
+	path_FaceDetect_Small.Format("%s\\FaceSmall",m_path_Detect.GetBuffer(0));
+	CreateDirectory(path_FaceDetect_Small, NULL);
 
 
 }
@@ -547,6 +562,9 @@ void CDLGSetSystem::writeini(char *path)
 	WritePrivateProfileStruct("View", "CheckDisplayPreview", &m_display_preview, sizeof(int), path);
 
 	WritePrivateProfileString("Black", "PathFaceBlack", m_path_faceblack.GetBuffer(0),path);
+
+	WritePrivateProfileStruct("JingAo", "CheckUp", &m_c_jingao, sizeof(int), path);
+	WritePrivateProfileString("JingAo", "IpPort",  m_e_jingao_ipport.GetBuffer(0), path);
 
 }
 
@@ -652,6 +670,14 @@ HBRUSH CDLGSetSystem::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		// ·µ»Ø±³¾°É«µÄ»­Ë¢
 		return m_BgBrush;
 	}
+	if (pWnd->GetDlgCtrlID() == IDC_STATIC_JINGAO)
+	{
+		// ±³¾°É«Í¸Ã÷
+		pDC->SetBkMode(TRANSPARENT);
+
+		// ·µ»Ø±³¾°É«µÄ»­Ë¢
+		return m_BgBrush;
+	}
 	
 
 	if(nCtlColor==CTLCOLOR_STATIC)
@@ -692,5 +718,19 @@ void CDLGSetSystem::OnBnClickedButtonBlackfaceDir()
 		GetDlgItem(IDC_EDIT_BLACKFACE_DIR)->GetWindowRect(t_Rect);
 		ScreenToClient(t_Rect);
 		InvalidateRect(t_Rect,TRUE);
+	}
+}
+
+void CDLGSetSystem::OnBnClickedCheckJingao()
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	if(m_c_jingao)
+	{
+		GetDlgItem(IDC_EDIT_JINGAO_IPPORT)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_EDIT_JINGAO_IPPORT)->EnableWindow(FALSE);
 	}
 }

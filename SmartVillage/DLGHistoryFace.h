@@ -28,7 +28,7 @@ public:
 	CImageList  imagelist;
 
 	HTREEITEM rootitem;						//±æ÷∏’Î
-	DBLIST dblist[MAX_AREA];
+	DBLIST dblist[MAX_AREA_ADD_CAM];
 	int dbtotal;
 
 void CDLGHistoryFace::BulidTree(void);

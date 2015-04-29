@@ -7,6 +7,7 @@
 #include "mmsystem.h"
 #pragma comment(lib,"winmm.lib") 
 
+#define LC_MAX_CAR_LIST_NUM 100
 
 #if ALLTAB_DETECT_CAR_MODE
 //汽车
@@ -19,7 +20,7 @@
 #include "elecarSDK\\lc_plate_analysis.h"
 
 #endif
-#if OPEN_CARDETECT_CODE
+#if OPEN_LC_CARDETECT_CODE
 
 #if ALLTAB_DETECT_CAR_MODE
 //汽车
@@ -61,6 +62,10 @@ typedef struct
 	char *PlateType;
 	//车身颜色
 	char *CarColor;
+	
+	uint8_t ColorId;
+
+	uint8_t PlateTypeID;
 /*
 	unsigned char *SmallJpg;
 	int SmallJpgSize;
@@ -101,6 +106,8 @@ struct CarSetStruct
 	int Reliability;
 	//车身颜色识别标志，0:不识别，1:识别
 	int CarColor;
+	//夜间模式
+	int Night;
 };
 
 	////////////////////////////////////////////////////////
@@ -126,6 +133,7 @@ public:
 
 	void Stop();
 	void Start(int format,unsigned char *image,int w,int h,int size);
+	void StartPIC(int format,unsigned char *image,int w,int h,int size);
 	int Result();
 	char* CarColor(uint8_t i);
 	char* CarType(uint8_t i);
@@ -156,6 +164,10 @@ public:
 							  char *CarColor,
 							  unsigned char *FileBuf,
 							  unsigned long int FileSize);
+
+	char* CCarDetect::CarColor2JingAo(uint8_t i);
+	char* CCarDetect::CarType2JingAo(uint8_t i);
+
 public:
 	Plate_handle CarHandle;
 	//句柄申请是否成功 1=成功。 0为失败 -1为未申请
@@ -178,7 +190,8 @@ public:
 	char	cam_name[256];	//摄像头名称
 	char	l_ipaddr[64];	//IP地址
 	unsigned long int	camid;			//摄像头NID
-
+	
+	int cam_Direction;
 
 
 	bool JumpJPG;	//弹出图片 外部调用。防止亚安画面无法显示
