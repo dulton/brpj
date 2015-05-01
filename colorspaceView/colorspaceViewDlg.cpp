@@ -16,6 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 extern struct ChromaticityCoordinates_ST CIE1964_X10_CC;
 extern struct ColorSpace1931_ST ColorSpace_CIE1931[COLOR_SPACE_MAX_NUM];
+extern struct WHITE_POINT_ST White_Point_Table[WHITE_POINT_MAX_NUM];
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -600,46 +601,68 @@ void GLrenerGAMUT()
 	//设定绘制颜色
 	glColor3f(1,0,0);
 
-#if 0
-	//	glLineWidth(1.0f);
-	float p[6] ={0.1, 0.1,
-		0.10, 0.50,
-		0.50,0.50,
-	};
+#if 1
+	int jump=1;
+	float *xy=(float *)calloc((CIE1964_X10_CC.total/jump+1+2)*2,sizeof(float));
+	double *rgb=(double *)calloc((CIE1964_X10_CC.total/jump+1+2)*3,sizeof(double));
+	double r,g,b;
+	struct ChromaticityCoordinates_Lite_ST *datap=(struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data;
+
+	int i=0,j=0;
 
 
-	double c[9] ={1,0,0,
-		0,1,0,
-		0,0,1,
-	};
+xy[i*2]=White_Point_Table[WP_E].x2;
+xy[i*2+1]=White_Point_Table[WP_E].y2;
+
+rgb[i*3]=0.95;
+rgb[i*3+1]=0.95;
+rgb[i*3+2]=0.95;
+
+	for( i=1,j=0;j<CIE1964_X10_CC.total;i++,j+=jump)
+	{
+
+		xy[i*2]=datap[j].x;
+		xy[i*2+1]=datap[j].y;
 
 
-	CIE_XYZ_1931_to_CIE_RGB(1,0,0,&c[0],&c[1],&c[2]);
-	CIE_XYZ_1931_to_CIE_RGB(0,1,0,&c[3],&c[4],&c[5]);
-	CIE_XYZ_1931_to_CIE_RGB(0,0,1,&c[6],&c[7],&c[8]);
+		ChromaticityCoordinates_to_RGB(ColorSpace_CIE1931[CS_sRGB_HDTVr709],
+			datap[j].x,datap[j].y,datap[j].z,&r,&g,&b);
+		norm_RGB(&r,&g,&b);
+		rgb[i*3]=r;
+		rgb[i*3+1]=g;
+		rgb[i*3+2]=b;
 
-	CIE_XYZ_1931_to_CIE_RGB(0.0014,0,0.0066,&c[0],&c[1],&c[2]);
-	//	CIE_XYZ_1931_to_CIE_RGB(0.27368,0.71743,0.0089,&c[3],&c[4],&c[5]);
-	//	CIE_XYZ_1931_to_CIE_RGB(0.16654,0.00888,0.82458,&c[6],&c[7],&c[8]);
+	}
 
-	double x;double y;double z;
+	xy[i*2]=datap[0].x;
+	xy[i*2+1]=datap[0].y;
 
-	CIE_rgb_to_CIE_xyz_1931(1,0,0,&x,&y,&z);
-	CIE_rgb_to_CIE_xyz_1931(0,1,0,&x,&y,&z);
-	CIE_rgb_to_CIE_xyz_1931(0,0,1,&x,&y,&z);
+	ChromaticityCoordinates_to_RGB(ColorSpace_CIE1931[CS_sRGB_HDTVr709],
+		datap[0].x,datap[0].y,datap[0].z,&r,&g,&b);
+	norm_RGB(&r,&g,&b);
+	rgb[i*3]=r;
+	rgb[i*3+1]=g;
+	rgb[i*3+2]=b;
 
-	glVertexPointer(2, GL_FLOAT, 0, p);
-	glColorPointer(3,GL_DOUBLE, 0, c);
+	glVertexPointer(2, GL_FLOAT, 0, xy);
+	glColorPointer(3,GL_DOUBLE, 0, rgb);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glDrawArrays(GL_TRIANGLES,0,3);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDrawArrays(GL_TRIANGLE_FAN,0,i+1);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 
 	//	glRasterPos2f(0.5,0.5);
 	//	glutBitmapCharacter(GLUT_BITMAP_8_BY_13,'0');
+
+	free(xy);
+	xy=NULL;
+	free(rgb);
+	rgb=NULL;
+
+
 
 #else
 	/*
@@ -649,7 +672,7 @@ void GLrenerGAMUT()
 	};
 	*/
 	int jump=5;
-	double **p=(double **)calloc(CIE1964_X10_CC.total/jump,sizeof(double *));
+	double **p=(double **)calloc(CIE1964_X10_CC.total/jump+1,sizeof(double *));
 
 	struct ChromaticityCoordinates_Lite_ST *datap=(struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data;
 
