@@ -14,7 +14,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-extern struct ChromaticityCoordinates_Lite_ST CIE1964_X10_CC[471];
+extern struct ChromaticityCoordinates_ST CIE1964_X10_CC;
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -648,21 +648,21 @@ void GLrenerGAMUT()
 	};
 	*/
 
-	double **p=(double **)calloc(471,sizeof(double *));
-	for(int i=0;i<471;i++)
+	double **p=(double **)calloc(CIE1964_X10_CC.total,sizeof(double *));
+	for(int i=0;i<CIE1964_X10_CC.total;i++)
 	{
 		p[i]=(double *)calloc(5,sizeof(double));
-		p[i][0]=CIE1964_X10_CC[i].x;
-		p[i][1]=CIE1964_X10_CC[i].y;
+		p[i][0]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].x;
+		p[i][1]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].y;
 
-		p[i][2]=CIE1964_X10_CC[i].x;
-		p[i][3]=CIE1964_X10_CC[i].y;
-		p[i][4]=CIE1964_X10_CC[i].z;
+		p[i][2]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].x;
+		p[i][3]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].y;
+		p[i][4]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].z;
 	
 	}
 
 
-Tessdraw(p,471);
+Tessdraw(p,CIE1964_X10_CC.total);
 
 #endif
 

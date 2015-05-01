@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "colorspaceConvert.h"
 
-struct ColourMatchingFunctions_Lite_ST CIE2012_X2_CMF[4401]=
+
+
+struct ColourMatchingFunctions_Lite_ST CIE2012_X2_CMF_DATA[4401]=
 {
 	
 		{390.0,3.769647E-03,4.146161E-04,1.847260E-02},
@@ -4408,7 +4410,7 @@ struct ColourMatchingFunctions_Lite_ST CIE2012_X2_CMF[4401]=
 	
 };
 
-struct ColourMatchingFunctions_Lite_ST CIE2012_X10_CMF[4401]=
+struct ColourMatchingFunctions_Lite_ST CIE2012_X10_CMF_DATA[4401]=
 {
 	
 	
@@ -8814,4 +8816,14 @@ struct ColourMatchingFunctions_Lite_ST CIE2012_X10_CMF[4401]=
 		{829.9,1.588323E-06,6.381835E-07,0.000000E+00},
 		{830.0,1.579199E-06,6.345380E-07,0.000000E+00},
 	
+};
+
+struct ColourMatchingFunctions_ST CIE2012_X2_CMF=
+{
+	4401,0.1,CIE2012_X2_CMF_DATA
+};
+
+struct ColourMatchingFunctions_ST CIE2012_X10_CMF=
+{
+	4401,0.1,CIE2012_X10_CMF_DATA
 };

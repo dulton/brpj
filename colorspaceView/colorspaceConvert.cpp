@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "colorspaceConvert.h"
-#include "math.h"
 
 //数据来源
 //http://en.wikipedia.org/wiki/Standard_illuminant
@@ -141,6 +140,7 @@ void CIE_XYZ_1931_to_CIE_RGB(double X,double Y,double Z,double *R,double *G,doub
 	(*G)=X*(-0.091169)+Y*(0.25253)+Z*(0.015708);
 	(*B)=X*(0.0009209)+Y*(-0.0025498)+Z*(0.1786);
 }
+
 //配色函数（刺激值）转换公式
 //显示色彩工程学http://wenku.baidu.com/link?url=60xVPEkNJunahc1AF_EG5boUuOaPAgo6OResKYdSV2F7u1dZtLlbg-GLPHbyq0kZZLqRrD2-wM7Fq7-ANpZqTHkrWMmCYkpTIxb-rDeGc8O
 //https://en.wikipedia.org/wiki/CIE_1931_color_space
@@ -207,6 +207,7 @@ void CIE_xy_1931_to_CIE1976_upvp(double x,double y,double *up,double *vp)
 	 (*up)=4*x/a;
 	 (*vp)=9*y/a;
 }
+
 //https://en.wikipedia.org/wiki/CIELUV 
 void CIE_XYZ_1931_to_CIE1976_upvp(double X,double Y,double Z,double *up,double *vp)
 {
@@ -227,14 +228,18 @@ void CIE1976_upvp_to_CIE_xy_1931(double up,double vp,double *x,double *y)
 
 void CIE_xy_1931_to_CIE1960_uv(double x,double y,double *u,double *v)
 {
-	(*u)=4*x/(-2*x+12*y+3);
-	(*v)=6*y/(-2*x+12*y+3);
+	double a=(-2*x+12*y+3);
+
+	(*u)=4*x/a;
+	(*v)=6*y/a;
 }
 
 void CIE_XYZ_1931_to_CIE1960_uv(double X,double Y,double Z,double *u,double *v)
 {
-	(*u)=4*X/(X+15*Y+3*Z);
-	(*v)=6*Y/(X+15*Y+3*Z);
+	double a=(X+15*Y+3*Z);
+
+	(*u)=4*X/a;
+	(*v)=6*Y/a;
 }
 
 void CIE1976_upvp_to_CIE1960_uv(double up,double vp,double *u,double *v)
@@ -245,7 +250,7 @@ void CIE1976_upvp_to_CIE1960_uv(double up,double vp,double *u,double *v)
 
 void GammaLine(double gamma,double Input,double *Output)
 {
-	//2.222 = 1.0/0.45
+	// 2.222 = 1.0/0.45
 	(*Output)=pow(Input,gamma);
 }
 
@@ -276,19 +281,21 @@ void gamma_correct(	double gamma, double *c)
 #endif
 }
 
-void gamma_correct_rgb(	double gamma,  double *r, double *g, double *b)
+//http://www.fourmilab.ch/documents/specrend/
+void gamma_correct_RGB(	double gamma,  double *r, double *g, double *b)
 {
 	gamma_correct(gamma, r);
 	gamma_correct(gamma, g);
 	gamma_correct(gamma, b);
 }
+
 /*  	    	    	    NORM_RGB
 
 Normalise RGB components so the most intense (unless all
 are zero) has a value of 1.
-
+//http://www.fourmilab.ch/documents/specrend/
 */
-void norm_rgb(double *r, double *g, double *b)
+void norm_RGB(double *r, double *g, double *b)
 {
 #define Max(a, b)   (((a) > (b)) ? (a) : (b))
 	double greatest = Max(*r, Max(*g, *b));
@@ -308,10 +315,10 @@ accessible from the given triple of primaries.  Desaturate
 it by adding white, equal quantities of R, G, and B, enough
 to make RGB all positive.  The function returns 1 if the
 components were modified, zero otherwise.
-
+//http://www.fourmilab.ch/documents/specrend/
 */
 
-int constrain_rgb(double *r, double *g, double *b)
+int constrain_RGB(double *r, double *g, double *b)
 {
 	double w;
 
@@ -347,10 +354,10 @@ Caller can use constrain_rgb() to desaturate an
 outside-gamut colour to the closest representation within
 the available gamut and/or norm_rgb to normalise the RGB
 components so the largest nonzero component has value 1.
-
+//http://www.fourmilab.ch/documents/specrend/
 */
 
-void xyz_to_rgb(struct colourSystem *cs,
+void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
 				double xc, double yc, double zc,
 				double *r, double *g, double *b)
 {
@@ -359,11 +366,11 @@ void xyz_to_rgb(struct colourSystem *cs,
 	double rx, ry, rz, gx, gy, gz, bx, by, bz;
 	double rw, gw, bw;
 
-	xr = cs->xRed;    yr = cs->yRed;    zr = 1 - (xr + yr);
-	xg = cs->xGreen;  yg = cs->yGreen;  zg = 1 - (xg + yg);
-	xb = cs->xBlue;   yb = cs->yBlue;   zb = 1 - (xb + yb);
+	xr = cs.Xr;    yr = cs.Yr;    zr = 1 - (xr + yr);
+	xg = cs.Xg;  yg = cs.Yg;  zg = 1 - (xg + yg);
+	xb =cs.Xb;   yb = cs.Yb;   zb = 1 - (xb + yb);
 
-	xw = cs->xWhite;  yw = cs->yWhite;  zw = 1 - (xw + yw);
+	xw = White_Point_Table[cs.W].x2;  yw = White_Point_Table[cs.W].y2;  zw = 1 - (xw + yw);
 
 	/* xyz -> rgb matrix, before scaling to white. */
 
@@ -393,7 +400,7 @@ void xyz_to_rgb(struct colourSystem *cs,
 
 //http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
 //支持传入 RGB Lab 
-public static double delta_E ( double a1,double b1,double c1,
+ double delta_E ( double a1,double b1,double c1,
 							  double a2,double b2,double c2)
 {
 	double delta_a = a1-a2;
@@ -405,7 +412,8 @@ public static double delta_E ( double a1,double b1,double c1,
 }
 
 //支持传入  Lab 
-public static double delta_E_1994 ( double L1,double a1,double b1,
+// http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
+ double delta_E_1994 ( double L1,double a1,double b1,
 								   double L2,double a2,double b2 )
 {
 	double C1;
@@ -475,13 +483,13 @@ public static double delta_E_1994 ( double L1,double a1,double b1,
 		delta_C_ab * delta_C_ab + 
 		delta_H_ab * delta_H_ab ) );
 }
-#define RAD2DEG(xX) (180.0f/M_PI * (xX))
-#define DEG2RAD(xX) (M_PI/180.0f * (xX))
+
 //http://en.wikipedia.org/wiki/Color_difference
-public static double delta_E_2000 (  double L1,double a1,double b1,
+//http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
+ double delta_E_2000 (  double L1,double a1,double b1,
 								   double L2,double a2,double b2)
 {
-	double c = pow ( 25, 7 );
+	double c = pow ( 25.0, 7 );
 	double CIE_1_a_squared = a1 * a1;
 	double CIE_1_b_squared = b1 * b1;
 	double CIE_2_a_squared = a2 * a2;
@@ -520,11 +528,11 @@ public static double delta_E_2000 (  double L1,double a1,double b1,
 
 	xNN = ( 1.0 + xGX ) * a1;
 	xC1 = sqrt ( xNN * xNN + CIE_1_b_squared );
-	xH1 = CieLab2Hue ( xNN, b1 );
+	xH1 = CIE_Lab2Hue_Only_H ( xNN, b1 );
 
 	xNN = ( 1.0 + xGX ) * a2;
 	xC2 = sqrt ( xNN * xNN + CIE_2_b_squared );
-	xH2 = CieLab2Hue ( xNN, b2 );
+	xH2 = CIE_Lab2Hue_Only_H ( xNN, b2 );
 
 	xDL = L2- L1;
 	xDC = xC2 - xC1;
@@ -535,7 +543,7 @@ public static double delta_E_2000 (  double L1,double a1,double b1,
 	else 
 	{
 		t = xH2 - xH1;
-		xNN = round ( t, 12 );
+		xNN = math_round ( t, 12 );
 		if ( abs ( xNN ) <= 180 ) 
 		{
 			xDH = t;
@@ -553,8 +561,7 @@ public static double delta_E_2000 (  double L1,double a1,double b1,
 		}
 	}
 	xDH = 2.0 * sqrt ( xC1 * xC2 ) * 
-		sin ( DEG2RAD ( 
-		xDH / 2.0 ) );
+		sin ( DEG2RAD ( xDH / 2.0 ) );
 	xLX = ( L2-L1) / 2.0;
 	xCY = ( xC1 + xC2 ) / 2.0;
 	t = xH1 + xH2;
@@ -564,7 +571,7 @@ public static double delta_E_2000 (  double L1,double a1,double b1,
 	}
 	else 
 	{
-		xNN = abs ( round ( ( xH1 - xH2 ), 12 ) );
+		xNN = abs ( math_round ( ( xH1 - xH2 ), 12 ) );
 		if ( xNN > 180 ) 
 		{
 			if ( t < 360.0 ) 
@@ -614,11 +621,14 @@ public static double delta_E_2000 (  double L1,double a1,double b1,
 
 	return ( E00 );
 }
+
+//http://en.wikipedia.org/wiki/Color_difference
+//http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
+ // 仅供DELTA 2000使用
 /// <summary>
 /// helper function to return the CIE-H° value
 /// </summary>
-private static double CieLab2Hue( double a,
-								 double b )
+double CIE_Lab2Hue_Only_H( double a,double b )
 {
 	double  bias = 0.0;
 
@@ -653,6 +663,33 @@ private static double CieLab2Hue( double a,
 
 	return ( DEG2RAD(atan ( b / a ) ) + bias );
 }        
+
+
+
+
+double math_round(double val, int places) 
+{
+	double t;
+	double f = pow(10.0, (double) places);
+	double x = val * f;
+
+	if (x >= 0.0) {
+		t = ceil(x);
+		if ((t - x) > 0.50000000001) {
+			t -= 1.0;
+		}
+	} else {
+		t = ceil(-x);
+		if ((t + x) > 0.50000000001) {
+			t -= 1.0;
+		}
+		t = -t; 
+	}
+	x = t / f;
+
+	return (x) ? x : t;
+}
+
 /*
 int main(int argc, char* argv[])
 {

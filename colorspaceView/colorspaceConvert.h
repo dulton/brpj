@@ -1,6 +1,12 @@
 #ifndef __COLOR_SPACE_CONVERT_H__
 #define __COLOR_SPACE_CONVERT_H__
 
+#include "math.h"
+
+#define CS_M_PI       3.14159265358979323846
+
+#define RAD2DEG(xX) (180.0f/CS_M_PI * (xX))
+#define DEG2RAD(xX) (CS_M_PI/180.0f * (xX))
 
 //白点定义
 #define  WHITE_POINT_MAX_NUM 24
@@ -98,11 +104,12 @@ enum ColorSpace_EM
 		CS_DCIP3=14,	
 };
 
-
+//刺激值坐标
 struct ColourMatchingFunctions_ST
 {
 	int total;
 	double step;
+	void  *data;
 };
 
 //刺激值坐标
@@ -113,11 +120,12 @@ struct ColourMatchingFunctions_Lite_ST
 	double y;
 	double z;
 };
-
+//色度坐标
 struct ChromaticityCoordinates_ST
 {
 	int total;
 	double step;
+	void  *data;
 };
 
 
@@ -129,18 +137,25 @@ struct ChromaticityCoordinates_Lite_ST
 	double y;
 	double z;
 };
-
+////-----------------------------------------------------------
+//数学
+double math_round(double val, int places) ;
+////-----------------------------------------------------------
+//与配置无关的转换公式
 bool CCT_to_CIE_xy(double K,	double *x,	double *y);
 
 void CIE_XYZ_1931_to_CIE_xy(double X,	double Y,	double Z,	double *x,	double *y,	double *z);
 void CIE_XYZ_1931_to_CIE_RGB(double X,	double Y,	double Z,	double *R,	double *G,	double *B);
 
+void CIE_RGB_to_CIE_XYZ_1931(double R,double G,double B,double *X,double *Y,double *Z);
+void CIE_RGB_to_CIE_xyz_1931(double r,double g,double b,double *x,double *y,double *z);
 
 void CIE_XYZ_1931_to_CIE_1958_L(double X,	double Y,	double Z,	double *L);
 void CIE_Y_Yn1931_to_CIE_L(double Y,	double Yn,	double *L);
 
-
+void CIE1976_upvp_to_CIE_xy_1931(double up,double vp,double *x,double *y);
 void CIE_xy_1931_to_CIE1976_upvp(double x,	double y,	double *up,	double *vp);
+
 void CIE_XYZ_1931_to_CIE1976_upvp(double X,	double Y,	double Z,	double *up,	double *vp);
 
 void CIE_xy_1931_to_CIE1960_uv(double x,	double y,	double *u,	double *v);
@@ -148,9 +163,30 @@ void CIE_XYZ_1931_to_CIE1960_uv(double X,	double Y,	double Z,	double *u,	double 
 
 void CIE1976_upvp_to_CIE1960_uv(double up,	double vp,	double *u,	double *v);
 
-void CIE_RGB_to_CIE_XYZ_1931(double R,double G,double B,double *X,double *Y,double *Z);
-void CIE_rgb_to_CIE_xyz_1931(double r,double g,double b,double *x,double *y,double *z);
 
 void GammaLine(double gamma,	double Input,	double *Output);
+////------------------------------------------------------------
+// 用来画色度图
+void gamma_correct(	double gamma, double *c);
+void gamma_correct_RGB(	double gamma,  double *r, double *g, double *b);
+void norm_RGB(double *r, double *g, double *b);
+int constrain_RGB(double *r, double *g, double *b);
+//与配置有关
+void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
+				double xc, double yc, double zc,
+				double *r, double *g, double *b);
+////-----------------------------------------------------------
+//算各种DELTA 与配置无关
+//一般传入Lab值
+double delta_E ( double a1,double b1,double c1,
+							  double a2,double b2,double c2);
 
+double delta_E_1994 ( double L1,double a1,double b1,
+								   double L2,double a2,double b2 );
+double delta_E_2000 (  double L1,double a1,double b1,
+								   double L2,double a2,double b2);
+
+ // 仅供DELTA 2000使用 算H度								 
+ double CIE_Lab2Hue_Only_H( double a, double b );
 #endif
+

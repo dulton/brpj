@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "colorspaceConvert.h"
 
-struct ChromaticityCoordinates_Lite_ST CIE2012_X2_CC[4401]=
+
+struct ChromaticityCoordinates_Lite_ST CIE2012_X2_CC_DATA[4401]=
 {
 	
 		{390.0,0.16638,0.01830,0.81532},
@@ -4408,7 +4409,7 @@ struct ChromaticityCoordinates_Lite_ST CIE2012_X2_CC[4401]=
 	
 };
 
-struct ChromaticityCoordinates_Lite_ST CIE2012_X10_CC[4401]=
+struct ChromaticityCoordinates_Lite_ST CIE2012_X10_CC_DATA[4401]=
 {
 	
 		{390.0,0.17842,0.02464,0.79694},
@@ -8813,4 +8814,14 @@ struct ChromaticityCoordinates_Lite_ST CIE2012_X10_CC[4401]=
 		{829.9,0.71337,0.28663,0.00000},
 		{830.0,0.71336,0.28664,0.00000},
 	
+};
+
+struct ChromaticityCoordinates_ST CIE2012_X2_CC=
+{
+	4401,0.1,CIE2012_X2_CC_DATA	
+};
+
+struct ChromaticityCoordinates_ST CIE2012_X10_CC=
+{
+	4401,0.1,CIE2012_X10_CC_DATA	
 };

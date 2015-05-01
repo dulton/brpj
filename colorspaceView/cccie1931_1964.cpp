@@ -2,7 +2,7 @@
 #include "colorspaceConvert.h"
 
 
-struct ChromaticityCoordinates_Lite_ST CIE1931_X2_CC[471]=
+struct ChromaticityCoordinates_Lite_ST CIE1931_X2_CC_DATA[471]=
 {
 	
 		{360, 0.175560, 0.005294, 0.819146},
@@ -480,7 +480,7 @@ struct ChromaticityCoordinates_Lite_ST CIE1931_X2_CC[471]=
 };
 
 
-struct ChromaticityCoordinates_Lite_ST CIE1964_X10_CC[471]=
+struct ChromaticityCoordinates_Lite_ST CIE1964_X10_CC_DATA[471]=
 {
 		
 		{360, 0.182218, 0.019978, 0.797804},
@@ -955,4 +955,13 @@ struct ChromaticityCoordinates_Lite_ST CIE1964_X10_CC[471]=
 		{829, 0.711619, 0.288381, 0.000000},
 		{830, 0.711523, 0.288477, 0.000000},
 	
+};
+struct ChromaticityCoordinates_ST CIE1931_X2_CC=
+{
+	471,1,CIE1931_X2_CC_DATA	
+};
+
+struct ChromaticityCoordinates_ST CIE1964_X10_CC=
+{
+	471,1,CIE1964_X10_CC_DATA	
 };
