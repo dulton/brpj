@@ -7,6 +7,16 @@ double CubicRoot(double n)
 	return pow(n, 1.0 / 3.0);
 }
 
+double PivotXyz(double n)
+{
+	return n > Epsilon ? CubicRoot(n) : (Kappa * n + 16) / 116;
+}
+
+//会把RGB扩大到1-100之间
+double PivotRgb(double n)
+{
+	return (n > 0.04045 ? pow((n + 0.055) / 1.055, 2.4) : n / 12.92) * 100.0;
+}
 double GetDenominator(double x,double y,double z)
 {
 	return x+ 15.0 * y + 3.0 *z;
@@ -23,13 +33,19 @@ bool BasicallyEqualTo3( double a, double b, double precision)
 {
 	return abs(a - b) <= precision;
 }
+double Max(double a, double b)
+{
+	return a > b ? a : b;
+}
+
+double Min(double a, double b)
+{
+	return a < b ? a : b;
+}
+
 ////////////////----------------------------------------------------
 
-//会把RGB扩大到1-100之间
-double PivotRgb(double n)
-{
-	return (n > 0.04045 ? pow((n + 0.055) / 1.055, 2.4) : n / 12.92) * 100.0;
-}
+
 //http://colormine.org/
 //XyzConverter.cs
 //XYZ最大值如下
@@ -161,4 +177,257 @@ void LUV_to_XYZ(double L,double U,double V,
 	(*z) = (*x) * a + b;
 }
 
+//////////////////////////////
+void RGB_to_Lch(double r,double g,double b,
+				double *L,double *C,double *H)
+{
+	double L2,A,B;
 
+	RGB_to_Lab(r,g,b,&L2,&A,&B);
+	Lab_to_Lch(L2,A,B,L,C,H);
+
+}
+
+void Lab_to_Lch(double L1,double A,double B,
+				double *L2,double *C,double *H)
+{
+	double h = atan2(B, A);
+
+	// convert from radians to degrees
+	if (h > 0)
+	{
+		h = RAD2DEG(h);
+	}
+	else
+	{
+		h = 360 - RAD2DEG(abs(h)) ;
+	}
+
+	if (h < 0)
+	{
+		h += 360.0;
+	}
+	else if (h >= 360)
+	{
+		h -= 360.0;
+	}
+	(*L2)=L1;
+	(*C) = sqrt(A * A + B * B);
+	(*H) = h;
+}
+
+void Lch_to_RGB(double L,double C,double H,
+				double *r,double *g,double *b)
+{
+	double L2,A,B;
+
+	Lch_to_Lab(L,C,H,&L2,&A,&B);
+	Lab_to_RGB( L2, A, B,r,g,b);
+}
+
+void Lch_to_Lab(double L1,double C,double H,
+				double *L2,double *A,double *B)
+{
+	double hRadians =DEG2RAD(H) ;
+
+	(*L2)=L1;
+	(*A) = cos(hRadians) * C;
+	(*B) = sin(hRadians) * C;
+}
+
+void RGB_to_Lab(double r,double g,double b,
+				double *L,double *A,double *B)
+{
+	double X,Y,Z ;
+	RGB_to_XYZ(r,g,b,&X,&Y,&Z);
+	XYZ_to_Lab(X,Y,Z,L,A,B);
+
+}
+
+void XYZ_to_Lab(double X,double Y,double Z,
+				double *L,double *A,double *B)
+{
+	double x = PivotXyz(X /WhiteRefY);
+	double y = PivotXyz(Y /WhiteRefY);
+	double z = PivotXyz(Z /WhiteRefZ);
+
+	(*L) = Max(0, 116 * y - 16);
+	(*A) = 500 * (x - y);
+	(*B) = 200 * (y - z);
+}
+
+void Lab_to_RGB(double L,double A,double B,
+				double *r,double *g,double *b)
+{
+	double X,Y,Z ;
+
+	Lab_to_XYZ(L,A,B,&X,&Y,&Z);
+	XYZ_to_RGB(X,Y,Z,r,g,b);
+}
+void Lab_to_XYZ(double L,double A,double B,
+				double *X,double *Y,double *Z)
+{
+	double y = (L + 16.0) / 116.0;
+	double x = A / 500.0 + y;
+	double z = y - B / 200.0;
+
+	double x3 = x * x * x;
+	double z3 = z * z * z;
+
+	(*X) = WhiteRefX * (x3 > Epsilon ? x3 : (x - 16.0 / 116.0) / 7.787);
+	(*Y) = WhiteRefY * (L > (Kappa * Epsilon) ? pow(((L + 16.0) / 116.0), 3) : L / Kappa);
+	(*Z) = WhiteRefZ * (z3 > Epsilon ? z3 : (z - 16.0 / 116.0) / 7.787);
+
+}
+
+void RGB_to_HunterLab(double r,double g,double b,
+					  double *L,double *A,double *B)
+{
+	double X,Y,Z ;
+
+	RGB_to_XYZ(r,g,b,&X,&Y,&Z);
+	XYZ_to_HunterLab(X,Y,Z,L,A,B);
+}
+
+void XYZ_to_HunterLab(double X,double Y,double Z,
+					  double *L,double *A,double *B)
+{
+	(*L) = 10.0 * sqrt(Y);
+	(*A) = Y != 0 ? 17.5 * (((1.02 * X) - Y) / sqrt(Y)) : 0;
+	(*B) = Y != 0 ? 7.0 * ((Y - (.847 * Z)) / sqrt(Y)) : 0;
+}
+
+void HunterLab_to_RGB(double L,double A,double B,
+					  double *r,double *g,double *b)
+{
+	double X,Y,Z ;
+
+	HunterLab_to_XYZ(L,A,B,&X,&Y,&Z);
+	XYZ_to_RGB(X,Y,Z,r,g,b);
+}
+
+void HunterLab_to_XYZ(double L,double A,double B,
+					  double *X,double *Y,double *Z)
+{
+	double x = (A / 17.5) * (L / 10.0);
+	double itemL_10 = L / 10.0;
+	double y = itemL_10 * itemL_10;
+	double z = B / 7.0 * L / 10.0;
+
+	(*X) = (x + y) / 1.02;
+	(*Y) = y;
+	(*Z) = -(z - y) / 0.847;
+}
+
+// Code lovingly copied from StackOverflow (and tweaked a bit)
+// Question/Answer: http://stackoverflow.com/questions/359612/how-to-change-rgb-color-to-hsv/1626175#1626175
+// Submitter: Greg http://stackoverflow.com/users/12971/greg
+// License: http://creativecommons.org/licenses/by-sa/3.0/
+void HSV_to_RGB(double H,double S,double V,
+				double *R,double *G,double *B)
+{
+	long range = (long)(floor(H / 60.0)) % 6;
+	double f =H / 60.0 - floor(H / 60.0);
+
+	double v = V * 255.0;
+	double p = v * (1 -S);
+	double q = v * (1 - f * S);
+	double t = v * (1 - (1 - f) *S);
+
+	switch (range)
+	{
+	case 0:
+		return Any_to_RGB(v, t, p,R,G,B);
+	case 1:
+		return Any_to_RGB(q, v, p,R,G,B);
+	case 2:
+		return Any_to_RGB(p, v, t,R,G,B);
+	case 3:
+		return Any_to_RGB(p, q, v,R,G,B);
+	case 4:
+		return Any_to_RGB(t, p, v,R,G,B);
+	}
+	return Any_to_RGB(v, p, q,R,G,B);
+}
+
+void Any_to_RGB(double a, double b, double c,
+				double *R,double *G,double *B)
+{
+	(*R)=a;
+	(*G)=b;
+	(*B)=c;
+}
+
+//RGB 在0-1.0 之间
+void HSL_to_RGB(double H,double S,double L,
+				double *R,double *G,double *B)
+{
+	double rangedH = H / 360.0;
+
+	double s = S / 100.0;
+	double L1= L / 100.0;
+
+	if (!BasicallyEqualTo(L1,0))
+	{
+		if (BasicallyEqualTo(s,0))
+		{
+			(*R) = (*G) = (*B) = L1;
+		}
+		else
+		{
+			double temp2 = (L1 < 0.5) ? L1 * (1.0 + s) : L1 + s - (L1 * s);
+			double temp1 = 2.0 * L1 - temp2;
+
+			(*R) = GetColorComponent(temp1, temp2, rangedH + 1.0 / 3.0);
+			(*G)= GetColorComponent(temp1, temp2, rangedH);
+			(*B) = GetColorComponent(temp1, temp2, rangedH - 1.0 / 3.0);
+		}
+	}
+
+}
+
+double GetColorComponent(double temp1, double temp2, double temp3)
+{
+	temp3 = MoveIntoRange(temp3);
+	if (temp3 < 1.0 / 6.0)
+	{
+		return temp1 + (temp2 - temp1) * 6.0 * temp3;
+	}
+
+	if (temp3 < 0.5)
+	{
+		return temp2;
+	}
+
+	if (temp3 < 2.0 / 3.0)
+	{
+		return temp1 + ((temp2 - temp1) * ((2.0 / 3.0) - temp3) * 6.0);
+	}
+
+	return temp1;
+}
+
+double MoveIntoRange(double temp3)
+{
+	if (temp3 < 0.0) return temp3 + 1.0;
+	if (temp3 > 1.0) return temp3 - 1.0;
+	return temp3;
+}
+
+//RGB 在0-1.0 之间
+//CMY在0-1.0 之间
+void RGB_to_CMY(double R,double G,double B,
+				double *C,double *M,double *Y)
+{
+	(*C) = 1 - R ;
+	(*M) = 1 - G;
+	(*Y) = 1 - B;
+}
+
+void CMY_to_RGB(double C,double M,double Y,
+				double *R,double *G,double *B)
+{
+	(*R) = 1 - C;
+	(*G) = 1 -M;
+	(*B) = 1 - Y;
+}
