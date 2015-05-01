@@ -3,13 +3,12 @@
 
 #include "math.h"
 
+#if 0
 #define CS_M_PI       3.14159265358979323846
 
 #define RAD2DEG(xX) (180.0f/CS_M_PI * (xX))
 #define DEG2RAD(xX) (CS_M_PI/180.0f * (xX))
-
-#define DistanceDivided(x,y) (((x)/(y))*((x)/(y)))
-
+#endif
 
 //白点定义
 #define  WHITE_POINT_MAX_NUM 24
@@ -142,7 +141,7 @@ struct ChromaticityCoordinates_Lite_ST
 };
 ////-----------------------------------------------------------
 //数学
-double math_round(double val, int places) ;
+
 ////-----------------------------------------------------------
 //与配置无关的转换公式
 bool CCT_to_CIE_xy(double K,	double *x,	double *y);
@@ -182,27 +181,7 @@ void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
 double CCT_spectrum(double CCT,double wavelength);
 void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 					 double *x, double *y, double *z);
-////-----------------------------------------------------------
-//算各种DELTA 与配置无关
-//一般传入Lab值
-double delta_E_1976 (double a1,double b1,double c1,
-					 double a2,double b2,double c2);
-double delta_E_1994 (double L1,double a1,double b1,
-					 double L2,double a2,double b2);
-double delta_E_2000 (double L1,double a1,double b1,
-					 double L2,double a2,double b2);
-// 仅供DELTA 2000使用 算H度								 
-double CIE_Lab2Hue_Only_H(double a, double b );
 
-double delta_E_1984_CMC_IC (double L1,double a1,double b1,
-							double L2,double a2,double b2,
-							double lightness,double chroma);
 
-double delta_E_2000_method2(double L1,double a1,double b1,
-							double L2,double a2,double b2);
-
-double delta_E_1994_method2(double KL,double K1,double K2,
-							double L1,double a1,double b1,
-							double L2,double a2,double b2);
 #endif
 

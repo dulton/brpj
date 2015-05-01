@@ -232,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\colorCvt.cpp"
+				>
+			</File>
+			<File
 				RelativePath="colorspaceConvert.cpp"
 				>
 				<FileConfiguration
@@ -332,6 +336,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\deltaE.cpp"
+				>
+			</File>
+			<File
 				RelativePath="OpenGLCtrl.cpp"
 				>
 				<FileConfiguration
@@ -387,6 +395,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\colorCvt.h"
+				>
+			</File>
+			<File
 				RelativePath="colorspaceConvert.h"
 				>
 			</File>
@@ -400,6 +412,10 @@
 			</File>
 			<File
 				RelativePath="DCCache.h"
+				>
+			</File>
+			<File
+				RelativePath=".\deltaE.h"
 				>
 			</File>
 			<File

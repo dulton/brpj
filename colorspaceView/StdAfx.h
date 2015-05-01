@@ -21,6 +21,11 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 
+#define CS_M_PI       3.14159265358979323846
+
+#define RAD2DEG(xX) (180.0f/CS_M_PI * (xX))
+#define DEG2RAD(xX) (CS_M_PI/180.0f * (xX))
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
