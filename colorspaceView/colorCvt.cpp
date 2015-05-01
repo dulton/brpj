@@ -2,6 +2,17 @@
 #include "colorCvt.h"
 
 //http://colormine.org/
+double CubicRoot(double n)
+{
+	return pow(n, 1.0 / 3.0);
+}
+
+double GetDenominator(double x,double y,double z)
+{
+	return x+ 15.0 * y + 3.0 *z;
+}
+
+//http://colormine.org/
 //浮点判断是否相等
 bool BasicallyEqualTo( double a, double b)
 {
@@ -91,9 +102,63 @@ void Yxy_to_RGB(double Y1,double X,double Y2,
 }
 
 void Yxy_to_XYZ(double Y1,double X,double Y2,
-					double *x,double *y,double *z)
+				double *x,double *y,double *z)
 {
 	(*x)= X * (Y1 / Y2);
 	(*y) = Y1;
 	(*z)= (1.0 - X - Y2) * (Y1 / Y2);
 }
+
+void RGB_to_LUV(double R,double G,double B,
+				double *L,double *U,double *V)
+{
+	double x,y,z;
+
+	RGB_to_XYZ(R,G,B,&x,&y,&z);
+	XYZ_to_LUV(x,y,z,L,U,V);
+}
+
+void XYZ_to_LUV(double x,double y,double z,
+				double *L,double *U,double *V)
+{
+	double Y = y / WhiteRefY;
+	(*L) = Y>Epsilon ? 116.0 * CubicRoot(Y) - 16.0 : Kappa * Y;
+
+	double targetDenominator = GetDenominator(x,y,z);
+	double referenceDenominator = GetDenominator(WhiteRefX,WhiteRefY,WhiteRefZ);
+	// ReSharper disable CompareOfFloatsByEqualityOperator
+	double xTarget = targetDenominator == 0 ? 0 : ((4.0 * x / targetDenominator) - (4.0 * WhiteRefX/ referenceDenominator));
+	double yTarget = targetDenominator == 0 ? 0 : ((9.0 * y / targetDenominator) - (9.0 * WhiteRefY/ referenceDenominator));
+	// ReSharper restore CompareOfFloatsByEqualityOperator
+
+	(*U) = 13.0 * (*L) * xTarget;
+	(*V) = 13.0 * (*L)* yTarget;
+}
+
+void LUV_to_RGB(double L,double U,double V,
+				double *R,double *G,double *B)
+{
+	double x,y,z;
+
+	LUV_to_XYZ(L,U,V,&x,&y,&z);
+	XYZ_to_RGB(x*100,y*100,z*100,R,G,B);
+}
+
+void LUV_to_XYZ(double L,double U,double V,
+				double *x,double *y,double *z)
+{
+	const double c = -1.0 / 3.0;
+	double uPrime = (4.0 * WhiteRefX) / GetDenominator(WhiteRefX,WhiteRefY,WhiteRefZ);
+	double vPrime = (9.0 * WhiteRefY) / GetDenominator(WhiteRefX,WhiteRefY,WhiteRefZ);
+	double a = (1.0 / 3.0) * ((52.0 * L) / (U+ 13 * L * uPrime) - 1.0);
+	double imteL_16_116 = (L+ 16.0) / 116.0;
+	(*y) = L> Kappa * Epsilon
+		? imteL_16_116 * imteL_16_116 * imteL_16_116
+		: L / Kappa;
+	double b = -5.0 * (*y);
+	double d = (*y) * ((39.0 *L) / (V + 13.0 *L * vPrime) - 5.0);
+	(*x) = (d - b) / (a - c);
+	(*z) = (*x) * a + b;
+}
+
+
