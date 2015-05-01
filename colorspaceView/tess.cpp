@@ -38,7 +38,7 @@ void CALLBACK combineCallback(GLdouble coords[3],
    //vertex[2] = coords[2];
    for (i = 2; i < 5; i++)
       vertex[i] = weight[0] * vertex_data[0][i] 
-                  + weight[1] * vertex_data[1][i] ;
+                  + weight[1] * vertex_data[1][i];
    *dataOut = vertex;
 }
 

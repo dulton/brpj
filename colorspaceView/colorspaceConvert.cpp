@@ -6,6 +6,7 @@
 #include "math.h"
 
 //数据来源
+//http://en.wikipedia.org/wiki/Standard_illuminant
 struct WHITE_POINT_ST White_Point_Table[WHITE_POINT_MAX_NUM]=
 {
 	{0.44757,	0.40745,	0.45117,	0.40594,	0.25594,	0.524332,	2856},	//a
@@ -68,7 +69,7 @@ struct ColorSpace1976_ST ColorSpace_CIE1976[COLOR_SPACE_MAX_NUM]=
 	{WP_D65,0.625,0.34,0.28,0.595,0.155,0.07},//CS_AppleRGB
 
 	{WP_C,0.477,0.528,0.076,0.576,0.152,0.196},//CS_NTSC1953_FCC_r470M-
--
+
 	{WP_D65,0.55649,0.51651,0.05573,0.58674,0.15983,0.12558},//CS_UHDTV_r2020-
 
 	{WP_D50,0.62337,0.50650,0.036,0.58614,0.21612,0.05496},//CS_AdobeWideRGB-
@@ -125,6 +126,8 @@ bool CCT_to_CIE_xy(double K,double *x,double *y)
 }
 
 //色彩空间转色度
+//http://wenku.baidu.com/link?url=60xVPEkNJunahc1AF_EG5boUuOaPAgo6OResKYdSV2F7u1dZtLlbg-GLPHbyq0kZZLqRrD2-wM7Fq7-ANpZqTHkrWMmCYkpTIxb-rDeGc8O
+//https://en.wikipedia.org/wiki/CIE_1931_color_space
 void CIE_XYZ_1931_to_CIE_xy(double X,double Y,double Z,double *x,double *y,double *z)
 {
 	(*x)=X/(X+Y+Z);
@@ -138,21 +141,33 @@ void CIE_XYZ_1931_to_CIE_RGB(double X,double Y,double Z,double *R,double *G,doub
 	(*G)=X*(-0.091169)+Y*(0.25253)+Z*(0.015708);
 	(*B)=X*(0.0009209)+Y*(-0.0025498)+Z*(0.1786);
 }
+//配色函数（刺激值）转换公式
+//显示色彩工程学http://wenku.baidu.com/link?url=60xVPEkNJunahc1AF_EG5boUuOaPAgo6OResKYdSV2F7u1dZtLlbg-GLPHbyq0kZZLqRrD2-wM7Fq7-ANpZqTHkrWMmCYkpTIxb-rDeGc8O
+//https://en.wikipedia.org/wiki/CIE_1931_color_space
+void CIE_RGB_to_CIE_XYZ_1931(double R,double G,double B,double *X,double *Y,double *Z)
+{
+#if 0
+	(*X)=R*2.7689+G*(1.7517)+B*(1.1302);
+	(*Y)=R*(1.0002)+G*(4.5907)+B*(0.0601);
+	(*Z)=G*(0.0565)+B*(5.5943);
+#else
+	double a=0.17697;
 
-void CIE_rgb_to_CIE_xyz_1931(double r,double g,double b,double *x,double *y,double *z)
+	(*X)=R*0.49/a+G*0.31/a+B*0.2/a;
+	(*Y)=R*0.17697/a+G*0.8124/a+B*0.1063/a;
+	(*Z)=G*0.01/a+B*0.99/a;
+
+#endif
+}
+
+
+void CIE_RGB_to_CIE_xyz_1931(double r,double g,double b,double *x,double *y,double *z)
 {
 	double a=0.66697*r+1.1324*g+1.20063*b;
 
 	(*x)=(0.49*r+0.31*g+0.2*b)/a;
 	(*y)=(0.17697*r+0.8124*g+0.01063*b)/a;
 	(*z)=(0.01*g+0.99*b)/a;
-}
-
-void CIE_RGB_to_CIE_XYZ_1931(double R,double G,double B,double *X,double *Y,double *Z)
-{
-	(*X)=R*2.7689+G*(1.7517)+B*(1.1302);
-	(*Y)=R*(1.0002)+G*(4.5907)+B*(0.0601);
-	(*Z)=R+G*(0.0565)+B*(5.5943);
 }
 void CIE_RGB_to_CIE_XYZ_1964(double R,double G,double B,double *X,double *Y,double *Z)
 {
@@ -184,17 +199,31 @@ void CIE_Y_Yn1931_to_CIE_L(double Y,double Yn,double *L)
 }
 
 
+//https://en.wikipedia.org/wiki/CIELUV 
 void CIE_xy_1931_to_CIE1976_upvp(double x,double y,double *up,double *vp)
 {
-	 (*up)=4*x/(-2*x+12*y+3);
-	 (*vp)=9*y/(-2*x+12*y+3);
-}
+	double a=(-2*x+12*y+3);
 
+	 (*up)=4*x/a;
+	 (*vp)=9*y/a;
+}
+//https://en.wikipedia.org/wiki/CIELUV 
 void CIE_XYZ_1931_to_CIE1976_upvp(double X,double Y,double Z,double *up,double *vp)
 {
-	(*up)=4*X/(X+15*Y+3*Z);
-	(*vp)=9*Y/(X+15*Y+3*Z);
+	double a=(X+15*Y+3*Z);
+
+	(*up)=4*X/a;
+	(*vp)=9*Y/a;
 }
+//https://en.wikipedia.org/wiki/CIELUV 
+void CIE1976_upvp_to_CIE_xy_1931(double up,double vp,double *x,double *y)
+{
+	double a=(6*up-16*vp+12);
+
+	(*x)=9*up/a;
+	(*y)=4*vp/a;
+}
+
 
 void CIE_xy_1931_to_CIE1960_uv(double x,double y,double *u,double *v)
 {
@@ -216,8 +245,414 @@ void CIE1976_upvp_to_CIE1960_uv(double up,double vp,double *u,double *v)
 
 void GammaLine(double gamma,double Input,double *Output)
 {
+	//2.222 = 1.0/0.45
 	(*Output)=pow(Input,gamma);
 }
+
+//http://www.fourmilab.ch/documents/specrend/
+void gamma_correct(	double gamma, double *c)
+{
+
+#if 0
+	if (gamma == GAMMA_REC709) 
+	{
+		/* Rec. 709 gamma correction. */
+		double cc = 0.018;
+
+		if (*c < cc) 
+		{
+			*c *= ((1.099 * pow(cc, 0.45)) - 0.099) / cc;
+		} else 
+		{
+			*c = (1.099 * pow(*c, 0.45)) - 0.099;
+		}
+	}
+	else 
+#else
+	{
+		/* Nonlinear colour = (Linear colour)^(1/gamma) */
+		*c = pow(*c, 1.0 / gamma);
+	}
+#endif
+}
+
+void gamma_correct_rgb(	double gamma,  double *r, double *g, double *b)
+{
+	gamma_correct(gamma, r);
+	gamma_correct(gamma, g);
+	gamma_correct(gamma, b);
+}
+/*  	    	    	    NORM_RGB
+
+Normalise RGB components so the most intense (unless all
+are zero) has a value of 1.
+
+*/
+void norm_rgb(double *r, double *g, double *b)
+{
+#define Max(a, b)   (((a) > (b)) ? (a) : (b))
+	double greatest = Max(*r, Max(*g, *b));
+
+	if (greatest > 0) {
+		*r /= greatest;
+		*g /= greatest;
+		*b /= greatest;
+	}
+#undef Max
+}
+/*                          CONSTRAIN_RGB
+
+If the requested RGB shade contains a negative weight for
+one of the primaries, it lies outside the colour gamut 
+accessible from the given triple of primaries.  Desaturate
+it by adding white, equal quantities of R, G, and B, enough
+to make RGB all positive.  The function returns 1 if the
+components were modified, zero otherwise.
+
+*/
+
+int constrain_rgb(double *r, double *g, double *b)
+{
+	double w;
+
+	/* Amount of white needed is w = - min(0, *r, *g, *b) */
+
+	w = (0 < *r) ? 0 : *r;
+	w = (w < *g) ? w : *g;
+	w = (w < *b) ? w : *b;
+	w = -w;
+
+	/* Add just enough white to make r, g, b all positive. */
+
+	if (w > 0) {
+		*r += w;  *g += w; *b += w;
+		return 1;                     /* Colour modified to fit RGB gamut */
+	}
+
+	return 0;                         /* Colour within RGB gamut */
+}
+
+/*                             XYZ_TO_RGB
+
+Given an additive tricolour system CS, defined by the CIE x
+and y chromaticities of its three primaries (z is derived
+trivially as 1-(x+y)), and a desired chromaticity (XC, YC,
+ZC) in CIE space, determine the contribution of each
+primary in a linear combination which sums to the desired
+chromaticity.  If the  requested chromaticity falls outside
+the Maxwell  triangle (colour gamut) formed by the three
+primaries, one of the r, g, or b weights will be negative. 
+
+Caller can use constrain_rgb() to desaturate an
+outside-gamut colour to the closest representation within
+the available gamut and/or norm_rgb to normalise the RGB
+components so the largest nonzero component has value 1.
+
+*/
+
+void xyz_to_rgb(struct colourSystem *cs,
+				double xc, double yc, double zc,
+				double *r, double *g, double *b)
+{
+	double xr, yr, zr, xg, yg, zg, xb, yb, zb;
+	double xw, yw, zw;
+	double rx, ry, rz, gx, gy, gz, bx, by, bz;
+	double rw, gw, bw;
+
+	xr = cs->xRed;    yr = cs->yRed;    zr = 1 - (xr + yr);
+	xg = cs->xGreen;  yg = cs->yGreen;  zg = 1 - (xg + yg);
+	xb = cs->xBlue;   yb = cs->yBlue;   zb = 1 - (xb + yb);
+
+	xw = cs->xWhite;  yw = cs->yWhite;  zw = 1 - (xw + yw);
+
+	/* xyz -> rgb matrix, before scaling to white. */
+
+	rx = (yg * zb) - (yb * zg);  ry = (xb * zg) - (xg * zb);  rz = (xg * yb) - (xb * yg);
+	gx = (yb * zr) - (yr * zb);  gy = (xr * zb) - (xb * zr);  gz = (xb * yr) - (xr * yb);
+	bx = (yr * zg) - (yg * zr);  by = (xg * zr) - (xr * zg);  bz = (xr * yg) - (xg * yr);
+
+	/* White scaling factors.
+	Dividing by yw scales the white luminance to unity, as conventional. */
+
+	rw = ((rx * xw) + (ry * yw) + (rz * zw)) / yw;
+	gw = ((gx * xw) + (gy * yw) + (gz * zw)) / yw;
+	bw = ((bx * xw) + (by * yw) + (bz * zw)) / yw;
+
+	/* xyz -> rgb matrix, correctly scaled to white. */
+
+	rx = rx / rw;  ry = ry / rw;  rz = rz / rw;
+	gx = gx / gw;  gy = gy / gw;  gz = gz / gw;
+	bx = bx / bw;  by = by / bw;  bz = bz / bw;
+
+	/* rgb of the desired point */
+
+	*r = (rx * xc) + (ry * yc) + (rz * zc);
+	*g = (gx * xc) + (gy * yc) + (gz * zc);
+	*b = (bx * xc) + (by * yc) + (bz * zc);
+}
+
+//http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
+//支持传入 RGB Lab 
+public static double delta_E ( double a1,double b1,double c1,
+							  double a2,double b2,double c2)
+{
+	double delta_a = a1-a2;
+	double delta_b = b1-b2;
+	double delta_c = c1-c2;
+
+	// Eudlidean distance
+	return sqrt ( delta_a*delta_a + delta_b*delta_b + delta_c*delta_c);
+}
+
+//支持传入  Lab 
+public static double delta_E_1994 ( double L1,double a1,double b1,
+								   double L2,double a2,double b2 )
+{
+	double C1;
+	double C2;
+	double CIE_1_a_squared = a1 * a1;
+	double CIE_1_b_squared = b1 * b1;
+	double CIE_2_a_squared = a2 * a2;
+	double CIE_2_b_squared = b2 * b2;
+	double delta_a;
+	double delta_a_squared;
+	double delta_b;
+	double delta_b_squared;
+	double delta_C_ab;
+	double delta_C_ab_divisor;
+	double delta_C_ab_squared;
+	double delta_E_Lab;
+	double delta_H_ab;
+	double delta_H_ab_divisor;
+	double delta_L;
+	double delta_L_squared;
+	double K_1;
+	double K_2 ;
+
+	delta_L = L1 - L2;
+	delta_L_squared = delta_L * delta_L;
+
+	delta_a = a1 - a2;
+	delta_a_squared = delta_a * delta_a;
+
+	delta_b = b1 - b2;
+	delta_b_squared = delta_b * delta_b;
+
+	delta_E_Lab = sqrt ( delta_L_squared +
+		delta_a_squared +
+		delta_b_squared );
+
+	C1 = sqrt ( CIE_1_a_squared + CIE_1_b_squared );
+	C2 = sqrt ( CIE_2_a_squared + CIE_2_b_squared );
+	delta_C_ab = C1 - C2;
+	delta_C_ab_squared = delta_C_ab * delta_C_ab;
+
+
+	if ( ( delta_a_squared + delta_b_squared ) >= 
+		delta_C_ab_squared )
+	{                       // avoid imaginary delta_H_ab
+		delta_H_ab = sqrt ( delta_a_squared + 
+			delta_b_squared -
+			delta_C_ab_squared );
+	}
+	else
+	{
+		delta_H_ab = 0.0;
+	}
+	// weighting factors for 
+	// graphic arts
+	// K_L = 1.0;               // => no delta_L division
+	K_1 = 0.045;
+	K_2 = 0.015;
+
+	delta_C_ab_divisor = 1.0 + ( K_1 * C1 );
+	delta_H_ab_divisor = 1.0 + ( K_2 * C1 );
+
+	delta_C_ab /= delta_C_ab_divisor;
+	delta_H_ab /= delta_H_ab_divisor;
+
+	return ( sqrt ( delta_L_squared + 
+		delta_C_ab * delta_C_ab + 
+		delta_H_ab * delta_H_ab ) );
+}
+#define RAD2DEG(xX) (180.0f/M_PI * (xX))
+#define DEG2RAD(xX) (M_PI/180.0f * (xX))
+//http://en.wikipedia.org/wiki/Color_difference
+public static double delta_E_2000 (  double L1,double a1,double b1,
+								   double L2,double a2,double b2)
+{
+	double c = pow ( 25, 7 );
+	double CIE_1_a_squared = a1 * a1;
+	double CIE_1_b_squared = b1 * b1;
+	double CIE_2_a_squared = a2 * a2;
+	double CIE_2_b_squared = b2 * b2;
+	double E00;
+	double t;
+	double weighting_factor_C = 1.0;
+	double weighting_factor_H = 1.0;
+	double weighting_factor_L = 1.0;
+	double xC1;
+	double xC2;
+	double xCX;
+	double xCY;
+	double xDC;
+	double xDH;
+	double xDL;
+	double xGX;
+	double xH1;
+	double xH2;
+	double xHX;
+	double xLX;
+	double xNN;
+	double xPH;
+	double xRC;
+	double xRT;
+	double xSC;
+	double xSH;
+	double xSL;
+	double xTX;
+
+	xC1 = sqrt( CIE_1_a_squared + CIE_1_b_squared );
+	xC2 = sqrt( CIE_2_a_squared + CIE_2_b_squared );
+	xCX = ( xC1 + xC2 ) / 2.0;
+	t = pow ( xCX, 7 );
+	xGX = 0.5 * ( 1.0 - sqrt ( t / ( t + c ) ) );
+
+	xNN = ( 1.0 + xGX ) * a1;
+	xC1 = sqrt ( xNN * xNN + CIE_1_b_squared );
+	xH1 = CieLab2Hue ( xNN, b1 );
+
+	xNN = ( 1.0 + xGX ) * a2;
+	xC2 = sqrt ( xNN * xNN + CIE_2_b_squared );
+	xH2 = CieLab2Hue ( xNN, b2 );
+
+	xDL = L2- L1;
+	xDC = xC2 - xC1;
+	if ( ( xC1 * xC2 ) == 0 ) 
+	{
+		xDH = 0.0;
+	}
+	else 
+	{
+		t = xH2 - xH1;
+		xNN = round ( t, 12 );
+		if ( abs ( xNN ) <= 180 ) 
+		{
+			xDH = t;
+		}
+		else 
+		{
+			if ( xNN > 180 ) 
+			{
+				xDH = t - 360.0;
+			}
+			else
+			{
+				xDH = t + 360.0;
+			}
+		}
+	}
+	xDH = 2.0 * sqrt ( xC1 * xC2 ) * 
+		sin ( DEG2RAD ( 
+		xDH / 2.0 ) );
+	xLX = ( L2-L1) / 2.0;
+	xCY = ( xC1 + xC2 ) / 2.0;
+	t = xH1 + xH2;
+	if ( ( xC1 *  xC2 ) == 0 ) 
+	{
+		xHX = t;
+	}
+	else 
+	{
+		xNN = abs ( round ( ( xH1 - xH2 ), 12 ) );
+		if ( xNN > 180 ) 
+		{
+			if ( t < 360.0 ) 
+			{
+				xHX = t + 360.0;
+			}
+			else
+			{
+				xHX = t - 360.0;
+			}
+		}
+		else 
+		{
+			xHX = t;
+		}
+		xHX /= 2;
+	}
+	xTX = 1.0 - 0.17 * cos ( DEG2RAD ( 
+		xHX - 30.0 ) ) + 
+		0.24 * cos ( DEG2RAD ( 
+		2.0 * xHX ) ) + 
+		0.32 * cos ( DEG2RAD ( 
+		3.0 * xHX + 6.0 ) ) - 
+		0.20 * cos ( DEG2RAD ( 
+		4.0 * xHX - 63.0 ) );
+	t = ( xHX  - 275.0 ) / 25.0;
+	xPH = 30.0 * exp ( - ( t * t ) );
+
+	t = pow ( xCY, 7 );
+	xRC = 2.0 * sqrt ( t / ( t + c ) );
+	t = xLX - 50.0;
+	xSL = 1.0 + ( 0.015 * ( t * t ) ) /
+		sqrt ( 20.0 + ( t * t ) );
+	xSC = 1.0 + 0.045 * xCY;
+	xSH = 1.0 + 0.015 * xCY * xTX;
+	xRT = - sin ( DEG2RAD ( 
+		2.0 * xPH ) ) * xRC;
+
+	xDL /= ( weighting_factor_L * xSL );
+	xDC /= ( weighting_factor_C * xSC );
+	xDH /= ( weighting_factor_H * xSH );
+
+	E00 = sqrt ( ( xDL * xDL ) + 
+		( xDC * xDC ) + 
+		( xDH * xDH ) + 
+		( xRT * xDC * xDH ) );
+
+	return ( E00 );
+}
+/// <summary>
+/// helper function to return the CIE-H° value
+/// </summary>
+private static double CieLab2Hue( double a,
+								 double b )
+{
+	double  bias = 0.0;
+
+	if ( ( a >= 0.0 ) && ( b == 0.0 ) ) 
+	{
+		return 0.0;
+	}
+	if ( ( a < 0.0 ) && ( b == 0.0 ) ) 
+	{
+		return 180.0;
+	}
+	if ( ( a == 0.0 ) && ( b > 0.0 ) ) 
+	{
+		return 90.0;
+	}
+	if ( ( a == 0.0 ) && ( b < 0.0 ) ) 
+	{
+		return 270.0;
+	}
+	if ( ( a > 0.0 ) && ( b > 0.0 ) ) 
+	{
+		bias = 0.0;
+	}
+	if ( a < 0.0 ) 
+	{
+		bias = 180.0;
+	}
+	if ( ( a > 0.0 ) && ( b < 0.0 ) )
+	{
+		bias = 360.0;
+	}
+
+	return ( DEG2RAD(atan ( b / a ) ) + bias );
+}        
 /*
 int main(int argc, char* argv[])
 {
