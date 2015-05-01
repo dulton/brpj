@@ -15,6 +15,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 extern struct ChromaticityCoordinates_ST CIE1964_X10_CC;
+extern struct ColorSpace1931_ST ColorSpace_CIE1931[COLOR_SPACE_MAX_NUM];
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -647,22 +648,43 @@ void GLrenerGAMUT()
 		0.50,0.50,0,0,1,
 	};
 	*/
+	int jump=5;
+	double **p=(double **)calloc(CIE1964_X10_CC.total/jump,sizeof(double *));
 
-	double **p=(double **)calloc(CIE1964_X10_CC.total,sizeof(double *));
-	for(int i=0;i<CIE1964_X10_CC.total;i++)
+	struct ChromaticityCoordinates_Lite_ST *datap=(struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data;
+
+	for(int i=0,j=0;j<CIE1964_X10_CC.total;i++,j+=jump)
 	{
 		p[i]=(double *)calloc(5,sizeof(double));
-		p[i][0]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].x;
-		p[i][1]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].y;
 
-		p[i][2]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].x;
-		p[i][3]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].y;
-		p[i][4]=((struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data)[i].z;
 	
+#if 0
+		p[i][0]=datap[j].x;
+		p[i][1]=datap[j].y;
+#else
+		double up,vp;
+		CIE_xy_1931_to_CIE1976_upvp(datap[j].x,datap[j].y,&up,&vp);
+		p[i][0]=up;
+		p[i][1]=vp;
+#endif
+
+#if 0
+	//	p[i][2]=datap[j].x;
+	//	p[i][3]=datap[j].y;
+	//	p[i][4]=datap[j].z;
+
+#else
+		double r,g,b;
+		ChromaticityCoordinates_to_RGB(ColorSpace_CIE1931[CS_sRGB_HDTVr709],
+			datap[j].x,datap[j].y,datap[j].z,&r,&g,&b);
+		norm_RGB(&r,&g,&b);
+		p[i][2]=r;
+		p[i][3]=g;
+		p[i][4]=b;
+#endif
 	}
 
-
-Tessdraw(p,CIE1964_X10_CC.total);
+Tessdraw(p,CIE1964_X10_CC.total/jump);
 
 #endif
 

@@ -175,6 +175,10 @@ int constrain_RGB(double *r, double *g, double *b);
 void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
 				double xc, double yc, double zc,
 				double *r, double *g, double *b);
+
+double CCT_spectrum(double CCT,double wavelength);
+void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
+					 double *x, double *y, double *z);
 ////-----------------------------------------------------------
 //算各种DELTA 与配置无关
 //一般传入Lab值

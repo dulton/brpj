@@ -397,6 +397,63 @@ void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
 	*g = (gx * xc) + (gy * yc) + (gz * zc);
 	*b = (bx * xc) + (by * yc) + (bz * zc);
 }
+//波长 色温转亮度公式  用于刺激色转色度
+//http://www.fourmilab.ch/documents/specrend/
+double CCT_spectrum(double CCT,double wavelength)
+{
+	double wlm = wavelength * 1e-9;   /* Wavelength in meters */
+
+	return (3.74183e-16 * pow(wlm, -5.0)) /
+		(exp(1.4388e-2 / (wlm * CCT)) - 1.0);
+}
+/*                          SPECTRUM_TO_XYZ
+
+Calculate the CIE X, Y, and Z coordinates corresponding to
+a light source with spectral distribution given by  the
+function SPEC_INTENS, which is called with a series of
+wavelengths between 380 and 780 nm (the argument is 
+expressed in meters), which returns emittance at  that
+wavelength in arbitrary units.  The chromaticity
+coordinates of the spectrum are returned in the x, y, and z
+arguments which respect the identity:
+
+x + y + z = 1.
+*/
+//刺激色转色度
+//http://www.fourmilab.ch/documents/specrend/
+void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
+					 double *x, double *y, double *z)
+{
+	int i;
+	double wavelength, X = 0, Y = 0, Z = 0, XYZ;
+	double Me;
+	/* CIE colour matching functions xBar, yBar, and zBar for
+	wavelengths from 380 through 780 nanometers, every 5
+	nanometers.  For a wavelength lambda in this range:
+
+	cie_colour_match[(lambda - 380) / 5][0] = xBar
+	cie_colour_match[(lambda - 380) / 5][1] = yBar
+	cie_colour_match[(lambda - 380) / 5][2] = zBar
+
+	To save memory, this table can be declared as floats
+	rather than doubles; (IEEE) float has enough 
+	significant bits to represent the values. It's declared
+	as a double here to avoid warnings about "conversion
+	between floating-point types" from certain persnickety
+	compilers. */
+	struct ColourMatchingFunctions_Lite_ST *datap=(struct ColourMatchingFunctions_Lite_ST *)cmf->data;
+	for (i = 0,	wavelength= datap[0].nm ; i < cmf->total; i++, wavelength += cmf->step) 
+	{
+		Me = CCT_spectrum(CCT,wavelength);
+		X += Me * datap[i].x;
+		Y += Me * datap[i].y;
+		Z += Me * datap[i].z;
+	}
+	XYZ = (X + Y + Z);
+	(*x) = X / XYZ;
+	(*y) = Y / XYZ;
+	(*z) = Z / XYZ;
+}
 
 //http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
 //支持传入 RGB Lab 
