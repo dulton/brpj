@@ -94,7 +94,7 @@ bool CCT_to_CIE_xy(double K,double *x,double *y)
 {
 	if(K<1667 || K>25000)
 		return false;
-	
+
 	if(K>=1667 && K<4000)
 	{
 		(*x)=-266123900.0/(K*K*K)-234358.0/(K*K)+877.6956/K+0.17991;
@@ -204,8 +204,8 @@ void CIE_xy_1931_to_CIE1976_upvp(double x,double y,double *up,double *vp)
 {
 	double a=(-2*x+12*y+3);
 
-	 (*up)=4*x/a;
-	 (*vp)=9*y/a;
+	(*up)=4*x/a;
+	(*vp)=9*y/a;
 }
 
 //https://en.wikipedia.org/wiki/CIELUV 
@@ -358,8 +358,8 @@ components so the largest nonzero component has value 1.
 */
 
 void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
-				double xc, double yc, double zc,
-				double *r, double *g, double *b)
+									double xc, double yc, double zc,
+									double *r, double *g, double *b)
 {
 	double xr, yr, zr, xg, yg, zg, xb, yb, zb;
 	double xw, yw, zw;
@@ -457,8 +457,8 @@ void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 
 //http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
 //支持传入 RGB Lab 
- double delta_E ( double a1,double b1,double c1,
-							  double a2,double b2,double c2)
+double delta_E_1976 ( double a1,double b1,double c1,
+					 double a2,double b2,double c2)
 {
 	double delta_a = a1-a2;
 	double delta_b = b1-b2;
@@ -470,8 +470,8 @@ void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 
 //支持传入  Lab 
 // http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
- double delta_E_1994 ( double L1,double a1,double b1,
-								   double L2,double a2,double b2 )
+double delta_E_1994 ( double L1,double a1,double b1,
+					 double L2,double a2,double b2 )
 {
 	double C1;
 	double C2;
@@ -529,7 +529,10 @@ void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 	// K_L = 1.0;               // => no delta_L division
 	K_1 = 0.045;
 	K_2 = 0.015;
-
+	//.Textiles:
+	//    K_L = 2.0;
+	K_1 = .048;
+	K_2 = .014;
 	delta_C_ab_divisor = 1.0 + ( K_1 * C1 );
 	delta_H_ab_divisor = 1.0 + ( K_2 * C1 );
 
@@ -543,8 +546,8 @@ void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 
 //http://en.wikipedia.org/wiki/Color_difference
 //http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
- double delta_E_2000 (  double L1,double a1,double b1,
-								   double L2,double a2,double b2)
+double delta_E_2000 (  double L1,double a1,double b1,
+					 double L2,double a2,double b2)
 {
 	double c = pow ( 25.0, 7 );
 	double CIE_1_a_squared = a1 * a1;
@@ -681,7 +684,7 @@ void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 
 //http://en.wikipedia.org/wiki/Color_difference
 //http://www.codeproject.com/Articles/243610/The-Known-Colors-Palette-Tool-Revised
- // 仅供DELTA 2000使用
+// 仅供DELTA 2000使用
 /// <summary>
 /// helper function to return the CIE-H° value
 /// </summary>
@@ -721,7 +724,209 @@ double CIE_Lab2Hue_Only_H( double a,double b )
 	return ( DEG2RAD(atan ( b / a ) ) + bias );
 }        
 
+// http://colormine.org/
+/// <summary>
+/// Calculates the CMC l:c (1984) delta-e value: http://en.wikipedia.org/wiki/Color_difference#CMC_l:c_.281984.29
+/// </summary>
+/// <param name="colorA"></param>
+/// <param name="colorB"></param>
+/// <returns></returns>
+double delta_E_1984_CMC_IC (double L1,double a1,double b1,
+							double L2,double a2,double b2,
+							double lightness=2.0,double chroma=1.0)
+{
 
+	double deltaL = L1 - L2;
+	double h = atan2(b1, a1);
+
+	double c1 = sqrt(a1 * a1 + b1 * b1);
+	double c2 = sqrt(a2 * a2 + b2 * b2);
+	double deltaC = c1 - c2;
+
+	double deltaH = sqrt(
+		(a1 - a2) * (a1 - a2) +
+		(b1 - b2) * (b1 - b2) - 
+		deltaC * deltaC);
+
+	double c1_4 = c1 * c1;
+	c1_4 *= c1_4;
+	double t = 164 <= h || h >= 345
+		? .56 + abs(.2 * cos(h + 168.0))
+		: .36 + abs(.4 * cos(h + 35.0));
+	double f = sqrt(c1_4 / (c1_4 + 1900.0));
+
+	double sL = L1 < 16 ? .511 : (.040975 * L1) / (1.0 + .01765 * L1);
+	double sC = (.0638 * c1) / (1 + .0131 * c1) + .638;
+	double sH = sC * (f * t + 1 - f);
+
+	double differences = DistanceDivided(deltaL, lightness * sL) +
+		DistanceDivided(deltaC, chroma * sC) +
+		DistanceDivided(deltaH, sH);
+
+	return sqrt(differences);
+}
+
+
+// http://colormine.org/
+double delta_E_2000_method2(double L1,double a1,double b1,
+							double L2,double a2,double b2)
+{
+	//Set weighting factors to 1
+	double k_L = 1.0;
+	double k_C = 1.0;
+	double k_H = 1.0;
+
+	//Calculate Cprime1, Cprime2, Cabbar
+	double c_star_1_ab = sqrt(a1 * a1 + b1 * b1);
+	double c_star_2_ab = sqrt(a2 * a2 + b2 * b2);
+	double c_star_average_ab = (c_star_1_ab + c_star_2_ab) / 2;
+
+	double c_star_average_ab_pot7 = c_star_average_ab * c_star_average_ab * c_star_average_ab;
+	c_star_average_ab_pot7 *= c_star_average_ab_pot7 * c_star_average_ab;
+
+	double G = 0.5 * (1 - sqrt(c_star_average_ab_pot7 / (c_star_average_ab_pot7 + 6103515625))); //25^7
+	double a1_prime = (1 + G) * a1;
+	double a2_prime = (1 + G) * a2;
+
+	double C_prime_1 = sqrt(a1_prime * a1_prime + b1 * b1);
+	double C_prime_2 = sqrt(a2_prime * a2_prime + b2 * b2);
+	//Angles in Degree.
+	double h_prime_1 = (long)((atan2(b1, a1_prime) * 180.0 / CS_M_PI) + 360) % 360;
+	double h_prime_2 = (long)((atan2(b2, a2_prime) * 180.0 / CS_M_PI) + 360) % 360;
+
+	double delta_L_prime = L2 - L1;
+	double delta_C_prime = C_prime_2 - C_prime_1;
+
+	double h_bar = abs(h_prime_1 - h_prime_2);
+	double delta_h_prime;
+	if (C_prime_1 * C_prime_2 == 0) delta_h_prime = 0;
+	else
+	{
+		if (h_bar <= 180.0)
+		{
+			delta_h_prime = h_prime_2 - h_prime_1;
+		}
+		else if (h_bar > 180.0 && h_prime_2 <= h_prime_1)
+		{
+			delta_h_prime = h_prime_2 - h_prime_1 + 360.0;
+		}
+		else
+		{
+			delta_h_prime = h_prime_2 - h_prime_1 - 360.0;
+		}
+	}
+	double delta_H_prime = 2 * sqrt(C_prime_1 * C_prime_2) * sin(delta_h_prime * CS_M_PI / 360.0);
+
+	// Calculate CIEDE2000
+	double L_prime_average = (L1 + L2) / 2.0;
+	double C_prime_average = (C_prime_1 + C_prime_2) / 2.0;
+
+	//Calculate h_prime_average
+
+	double h_prime_average;
+	if (C_prime_1 * C_prime_2 == 0) h_prime_average = 0;
+	else
+	{
+		if (h_bar <= 180.0)
+		{
+			h_prime_average = (h_prime_1 + h_prime_2) / 2;
+		}
+		else if (h_bar > 180.0 && (h_prime_1 + h_prime_2) < 360.0)
+		{
+			h_prime_average = (h_prime_1 + h_prime_2 + 360.0) / 2;
+		}
+		else
+		{
+			h_prime_average = (h_prime_1 + h_prime_2 - 360.0) / 2;
+		}
+	}
+	double L_prime_average_minus_50_square = (L_prime_average - 50);
+	L_prime_average_minus_50_square *= L_prime_average_minus_50_square;
+
+	double S_L = 1 + ((.015 * L_prime_average_minus_50_square) / sqrt(20 + L_prime_average_minus_50_square));
+	double S_C = 1 + .045 * C_prime_average;
+	double T = 1
+		- .17 * cos(DEG2RAD(h_prime_average - 30))
+		+ .24 * cos(DEG2RAD(h_prime_average * 2))
+		+ .32 * cos(DEG2RAD(h_prime_average * 3 + 6))
+		- .2 * cos(DEG2RAD(h_prime_average * 4 - 63));
+	double S_H = 1 + .015 * T * C_prime_average;
+	double h_prime_average_minus_275_div_25_square = (h_prime_average - 275) / (25);
+	h_prime_average_minus_275_div_25_square *= h_prime_average_minus_275_div_25_square;
+	double delta_theta = 30 * exp(-h_prime_average_minus_275_div_25_square);
+
+	double C_prime_average_pot_7 = C_prime_average * C_prime_average * C_prime_average;
+	C_prime_average_pot_7 *= C_prime_average_pot_7 * C_prime_average;
+	double R_C = 2 * sqrt(C_prime_average_pot_7 / (C_prime_average_pot_7 + 6103515625));
+
+	double R_T = -sin(DEG2RAD(2 * delta_theta)) * R_C;
+
+	double delta_L_prime_div_k_L_S_L = delta_L_prime / (S_L * k_L);
+	double delta_C_prime_div_k_C_S_C = delta_C_prime / (S_C * k_C);
+	double delta_H_prime_div_k_H_S_H = delta_H_prime / (S_H * k_H);
+
+	double CIEDE2000 = sqrt(
+		delta_L_prime_div_k_L_S_L * delta_L_prime_div_k_L_S_L
+		+ delta_C_prime_div_k_C_S_C * delta_C_prime_div_k_C_S_C
+		+ delta_H_prime_div_k_H_S_H * delta_H_prime_div_k_H_S_H
+		+ R_T * delta_C_prime_div_k_C_S_C * delta_H_prime_div_k_H_S_H
+		);
+
+	return CIEDE2000;
+}
+
+// http://colormine.org/
+/// <summary>
+/// Compare colors using the Cie94 algorithm. The first color (a) will be used as the reference color.
+/// </summary>
+/// <param name="a">Reference color</param>
+/// <param name="b">Comparison color</param>
+/// <returns></returns>
+
+//
+
+
+enum delta_E_1994_EM
+{
+	deltaE_1994_ModeEM_GraphicArts=0,
+	deltaE_1994_ModeEM_Textiles=1,	
+};
+
+double  delta_E_1994_Mode[2][3]=
+{
+	//GraphicArts	 KL,K1,K2
+	{1,0.045,0.015},
+	//Textiles KL,K1,K2
+	{2,0.048,0.014},	
+};     
+double delta_E_1994_method2(double KL,double K1,double K2,
+							double L1,double a1,double b1,
+							double L2,double a2,double b2)
+{
+	double deltaL = L1 - L2;
+	double deltaA = a1 - a2;
+	double deltaB = b1 - b2;
+
+	double c1 = sqrt(a1 * a1 + b1 * b1);
+	double c2 = sqrt(a2 * a2 + b2 * b2);
+	double deltaC = c1 - c2;
+
+	double deltaH = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC;
+	deltaH = deltaH < 0 ? 0 : sqrt(deltaH);
+
+	const double sl = 1.0;
+	const double kc = 1.0;
+	const double kh = 1.0;
+
+	double sc = 1.0 + K1 * c1;
+	double sh = 1.0 + K2 * c1;
+
+	double deltaLKlsl = deltaL / (KL * sl);
+	double deltaCkcsc = deltaC / (kc * sc);
+	double deltaHkhsh = deltaH / (kh * sh);
+	double i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
+	return i < 0 ? 0 : sqrt(i);
+}
 
 
 double math_round(double val, int places) 
@@ -750,20 +955,20 @@ double math_round(double val, int places)
 /*
 int main(int argc, char* argv[])
 {
-	double X;double Y;double Z;
-	double x;double y;double z;
+double X;double Y;double Z;
+double x;double y;double z;
 double up;double vp;
 double u;double v;
 double L;
 double L2;
 #if 1
-	X=0.366;
-	Y=0.309;
-	Z=0.587;
+X=0.366;
+Y=0.309;
+Z=0.587;
 #else
-	X=47.816;
-	Y=49.299;
-	Z=56.179;
+X=47.816;
+Y=49.299;
+Z=56.179;
 #endif
 
 CIE_XYZ_1931_to_CIE_xyz(X,Y,Z,&x,&y,&z);
@@ -777,7 +982,7 @@ CIE_Y_Yn1931_to_CIE_L(Y,104.5,&L2);
 printf("%f,%f,%f %f %f %f %f %f %f\n",x,y,z,u,v,up,vp,L,L2);
 
 
-	return 0;
+return 0;
 }
 
 */

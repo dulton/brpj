@@ -15,6 +15,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 extern struct ChromaticityCoordinates_ST CIE1964_X10_CC;
+extern struct ChromaticityCoordinates_ST CIE1931_X2_CC;
+
 extern struct ColorSpace1931_ST ColorSpace_CIE1931[COLOR_SPACE_MAX_NUM];
 extern struct WHITE_POINT_ST White_Point_Table[WHITE_POINT_MAX_NUM];
 /////////////////////////////////////////////////////////////////////////////
@@ -587,7 +589,6 @@ void GLviewGAMUT()
 	glOrtho(0,1,0,1,-1,1 );
 }
 
-extern  struct ChromaticityCoordinates_Lite_ST CIE1931_X2_CC[471];
 void GLrenerGAMUT() 
 {
 	// TODO: Add your control notification handler code here
@@ -602,11 +603,11 @@ void GLrenerGAMUT()
 	glColor3f(1,0,0);
 
 #if 1
-	int jump=1;
-	float *xy=(float *)calloc((CIE1964_X10_CC.total/jump+1+2)*2,sizeof(float));
-	double *rgb=(double *)calloc((CIE1964_X10_CC.total/jump+1+2)*3,sizeof(double));
+	int jump=5;
+	float *xy=(float *)calloc((CIE1931_X2_CC.total/jump+1+2)*2,sizeof(float));
+	double *rgb=(double *)calloc((CIE1931_X2_CC.total/jump+1+2)*3,sizeof(double));
 	double r,g,b;
-	struct ChromaticityCoordinates_Lite_ST *datap=(struct ChromaticityCoordinates_Lite_ST *) CIE1964_X10_CC.data;
+	struct ChromaticityCoordinates_Lite_ST *datap=(struct ChromaticityCoordinates_Lite_ST *) CIE1931_X2_CC.data;
 
 	int i=0,j=0;
 
@@ -618,7 +619,8 @@ rgb[i*3]=0.95;
 rgb[i*3+1]=0.95;
 rgb[i*3+2]=0.95;
 
-	for( i=1,j=0;j<CIE1964_X10_CC.total;i++,j+=jump)
+
+	for( i=1,j=0;j<CIE1931_X2_CC.total;i++,j+=jump)
 	{
 
 		xy[i*2]=datap[j].x;
@@ -631,7 +633,7 @@ rgb[i*3+2]=0.95;
 		rgb[i*3]=r;
 		rgb[i*3+1]=g;
 		rgb[i*3+2]=b;
-
+	
 	}
 
 	xy[i*2]=datap[0].x;
@@ -643,6 +645,7 @@ rgb[i*3+2]=0.95;
 	rgb[i*3]=r;
 	rgb[i*3+1]=g;
 	rgb[i*3+2]=b;
+
 
 	glVertexPointer(2, GL_FLOAT, 0, xy);
 	glColorPointer(3,GL_DOUBLE, 0, rgb);

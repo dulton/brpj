@@ -8,35 +8,38 @@
 #define RAD2DEG(xX) (180.0f/CS_M_PI * (xX))
 #define DEG2RAD(xX) (CS_M_PI/180.0f * (xX))
 
+#define DistanceDivided(x,y) (((x)/(y))*((x)/(y)))
+
+
 //白点定义
 #define  WHITE_POINT_MAX_NUM 24
 
 enum WHITE_POINT_EM
 {
-		WP_A=0,	
-		WP_B=1,	
-		WP_C=2,	
-		WP_E=3,		
-		WP_D32=4,	
-		WP_D50=5,	
-		WP_D55=6,		
-		WP_D56=7,	
-		WP_D65=8,	
-		WP_D75=9,	
-		WP_D93=10,	
-		WP_F1=11,	
-		WP_F2=12,	
-		WP_F3=13,	
-		WP_F4=14,	
-		WP_F5=15,	
-		WP_F6=16,		
-		WP_F7=17,	
-		WP_F8=18,	
-		WP_F9=19,		
-		WP_F10=20,	
-		WP_F11=21,	
-		WP_F12=22,	
-		WP_Dcip3=23,	
+	WP_A=0,	
+	WP_B=1,	
+	WP_C=2,	
+	WP_E=3,		
+	WP_D32=4,	
+	WP_D50=5,	
+	WP_D55=6,		
+	WP_D56=7,	
+	WP_D65=8,	
+	WP_D75=9,	
+	WP_D93=10,	
+	WP_F1=11,	
+	WP_F2=12,	
+	WP_F3=13,	
+	WP_F4=14,	
+	WP_F5=15,	
+	WP_F6=16,		
+	WP_F7=17,	
+	WP_F8=18,	
+	WP_F9=19,		
+	WP_F10=20,	
+	WP_F11=21,	
+	WP_F12=22,	
+	WP_Dcip3=23,	
 };
 
 struct WHITE_POINT_ST
@@ -88,20 +91,20 @@ struct ColorSpace1976_ST
 enum ColorSpace_EM
 {
 	CS_CIEXYZ=0,	
-		CS_sRGB_HDTVr709=1,	
-		CS_AdobeRGB98=2,	
-		CS_PAL_SECAM_EBU_r470BG=3,	
-		CS_NTSC1987_SMPTEC=4,	
-		CS_JapanNTSC=5,	
-		CS_AppleRGB=6,	
-		CS_NTSC1953_FCC_r470M=7,	
-		CS_UHDTV_r2020=8,	
-		CS_AdobeWideRGB=9,	
-		CS_ROMM_ProPhotoRGB=10,	
-		CS_CIERGB=11,	
-		CS_ITUr601_625Line=12,	
-		CS_ITUr601_525Line=13,	
-		CS_DCIP3=14,	
+	CS_sRGB_HDTVr709=1,	
+	CS_AdobeRGB98=2,	
+	CS_PAL_SECAM_EBU_r470BG=3,	
+	CS_NTSC1987_SMPTEC=4,	
+	CS_JapanNTSC=5,	
+	CS_AppleRGB=6,	
+	CS_NTSC1953_FCC_r470M=7,	
+	CS_UHDTV_r2020=8,	
+	CS_AdobeWideRGB=9,	
+	CS_ROMM_ProPhotoRGB=10,	
+	CS_CIERGB=11,	
+	CS_ITUr601_625Line=12,	
+	CS_ITUr601_525Line=13,	
+	CS_DCIP3=14,	
 };
 
 //刺激值坐标
@@ -173,8 +176,8 @@ void norm_RGB(double *r, double *g, double *b);
 int constrain_RGB(double *r, double *g, double *b);
 //与配置有关
 void ChromaticityCoordinates_to_RGB(struct ColorSpace1931_ST cs,
-				double xc, double yc, double zc,
-				double *r, double *g, double *b);
+									double xc, double yc, double zc,
+									double *r, double *g, double *b);
 
 double CCT_spectrum(double CCT,double wavelength);
 void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
@@ -182,15 +185,24 @@ void spectrum_to_xyz(double CCT,struct ColourMatchingFunctions_ST *cmf,
 ////-----------------------------------------------------------
 //算各种DELTA 与配置无关
 //一般传入Lab值
-double delta_E ( double a1,double b1,double c1,
-							  double a2,double b2,double c2);
+double delta_E_1976 (double a1,double b1,double c1,
+					 double a2,double b2,double c2);
+double delta_E_1994 (double L1,double a1,double b1,
+					 double L2,double a2,double b2);
+double delta_E_2000 (double L1,double a1,double b1,
+					 double L2,double a2,double b2);
+// 仅供DELTA 2000使用 算H度								 
+double CIE_Lab2Hue_Only_H(double a, double b );
 
-double delta_E_1994 ( double L1,double a1,double b1,
-								   double L2,double a2,double b2 );
-double delta_E_2000 (  double L1,double a1,double b1,
-								   double L2,double a2,double b2);
+double delta_E_1984_CMC_IC (double L1,double a1,double b1,
+							double L2,double a2,double b2,
+							double lightness,double chroma);
 
- // 仅供DELTA 2000使用 算H度								 
- double CIE_Lab2Hue_Only_H( double a, double b );
+double delta_E_2000_method2(double L1,double a1,double b1,
+							double L2,double a2,double b2);
+
+double delta_E_1994_method2(double KL,double K1,double K2,
+							double L1,double a1,double b1,
+							double L2,double a2,double b2);
 #endif
 
