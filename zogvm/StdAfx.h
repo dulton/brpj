@@ -20,6 +20,8 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+
+
 #define PAGE_MAX_NUM 100
 #define OPEN_FFMEPG 0
 

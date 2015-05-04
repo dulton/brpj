@@ -41,5 +41,6 @@ void CheckAllDoubleFile(long long hdd_nid);
 void CheckAllIsFile(long long hdd_nid);
 void GetEd2kUrl(char* path,char *name,char *dst);
 
+char* ConvertString(char * strText);
 
 #endif

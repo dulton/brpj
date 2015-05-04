@@ -66,24 +66,15 @@ BOOL CZogvmApp::InitInstance()
 	GetCurrentDirectory(MAX_PATH, CurrentDir);
 
 
-	FILE* fp=fopen("zogvm.db","rb");
-	if(fp)
-	{
-		fclose(fp);
-		SQLDB.OpenDB("zogvm.db");
-	}
-	else
-	{
-
-		SQLDB.OpenDB("zogvm.db");
-		SQLDB.ZiDian_CreateTable();
-		SQLDB.Type_CreateTable();
-		SQLDB.Type_AddAll();
-		SQLDB.Hdd_CreateTable();
-		SQLDB.File_CreateTable();
-		SQLDB.File_CreateView();
-		SQLDB.Double_CreateTable();
-	}
+	SQLDB.OpenDB("zogvm.db");
+	SQLDB.ZiDian_CreateTable();
+	SQLDB.Type_CreateTable();
+	SQLDB.Type_AddAll();
+	SQLDB.Hdd_CreateTable();
+	SQLDB.File_CreateTable();
+	SQLDB.File_CreateView();
+	SQLDB.Double_CreateTable();
+	
 
 	SQLDB.Begin();
 	SQLDB.File_SetNoFlagAll();

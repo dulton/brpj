@@ -137,7 +137,7 @@ DWORD WINAPI AddEd2kThreadPROC(LPVOID lpParameter)
 
 		if(i>=200)
 		{
-			sprintf(str,"导入到%d个,本次导入%d个",j,pDlg->ed2kList.size());
+			sprintf(str,ConvertString("导入到%d个,本次导入%d个"),j,pDlg->ed2kList.size());
 			pDlg->GetDlgItem(IDC_STATIC_INFO)->SetWindowText(str);
 
 			pDlg->INDB.Begin();
@@ -173,7 +173,7 @@ DWORD WINAPI AddEd2kThreadPROC(LPVOID lpParameter)
 THREADEXIT:
 	if(NULL!=fp)
 		fclose(fp);
-	pDlg->GetDlgItem(IDC_STATIC_INFO)->SetWindowText("完成");
+	pDlg->GetDlgItem(IDC_STATIC_INFO)->SetWindowText(ConvertString("完成"));
 	pDlg->ed2kList.clear();
 	pDlg->INDB.CloseDB();
 	pDlg->GetDlgItem(IDOK)->EnableWindow(TRUE);
@@ -187,14 +187,14 @@ void CDLGAddEd2k::OnOK()
 	
 	if(m_e_db.IsEmpty() || m_e_txt.IsEmpty())
 	{
-		MessageBox("路径不能为空");
+		MessageBox(ConvertString("路径不能为空"));
 		return ;
 	}
 	breakflag=false;
 
 	GetDlgItem(IDOK)->EnableWindow(FALSE);
 	CreateThread(NULL,0,AddEd2kThreadPROC,this,0,NULL);
-	GetDlgItem(IDC_STATIC_INFO)->SetWindowText("开始");
+	GetDlgItem(IDC_STATIC_INFO)->SetWindowText(ConvertString("开始"));
 
 	//CDialog::OnOK();
 }

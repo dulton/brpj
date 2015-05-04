@@ -3,6 +3,7 @@
 
 #include "rhashinclude\rhash.h"
 extern CSqliteOperate SQLDB;
+extern TCHAR CurrentDir[MAX_PATH];
 
 #if OPEN_FFMEPG
 #ifdef __cplusplus
@@ -735,5 +736,26 @@ void GetEd2kUrl(char* path,char *name,char *dst)
 
 //	rhash_file(RHASH_SHA1,filepath, digest);
 //	rhash_print_bytes(output, digest, rhash_get_digest_size(RHASH_SHA1 ),RHPR_HEX);
+
+}
+
+char ConvertStringStr[260];
+
+char* ConvertString(char * strText)
+{
+	
+	memset(ConvertStringStr,0,260);
+	
+	CString  strIniPath= CurrentDir;
+	strIniPath +="//langchn.ini";
+
+	GetPrivateProfileString("String",strText,"",ConvertStringStr,260, strIniPath);//"./langchn.ini"
+
+	if(ConvertStringStr[0]==0)
+	{
+		return strText;
+	}
+	else
+		return ConvertStringStr;
 
 }

@@ -70,16 +70,16 @@ BOOL CDLGYYETS::OnInitDialog()
 	}
 	else
 	{
-		MessageBox("yyets数据库未找到","错误");
+		MessageBox(ConvertString("数据库未找到"),"error");
 		return FALSE;
 	}
 
-	m_list.InsertColumn(0, _T("序列号") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(1, _T("片名") , LVCFMT_LEFT, 600);
-	m_list.InsertColumn(2, _T("容量") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(3, _T("磁力链接") , LVCFMT_LEFT, 200);
-	m_list.InsertColumn(4, _T("电驴链接") , LVCFMT_LEFT, 200);
-	m_list.InsertColumn(5, _T("网盘链接") , LVCFMT_LEFT, 200);
+	m_list.InsertColumn(0, ConvertString("序列号") , LVCFMT_LEFT, 70);
+	m_list.InsertColumn(1, ConvertString("片名") , LVCFMT_LEFT, 600);
+	m_list.InsertColumn(2, ConvertString("容量") , LVCFMT_LEFT, 70);
+	m_list.InsertColumn(3, ConvertString("磁力链接") , LVCFMT_LEFT, 200);
+	m_list.InsertColumn(4, ConvertString("电驴链接") , LVCFMT_LEFT, 200);
+	m_list.InsertColumn(5, ConvertString("网盘链接") , LVCFMT_LEFT, 200);
 
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -125,7 +125,7 @@ void CDLGYYETS::OnSize(UINT nType, int cx, int cy)
 	b_Rect.bottom =	b_Rect.top+buttonbmph;
 
 	b_Rect.left = list_Rect.left+10;
-	b_Rect.right = b_Rect.left+200;
+	b_Rect.right = b_Rect.left+300;
 	GetDlgItem(IDC_STATIC_INFO)->MoveWindow(b_Rect);
 
 	printf_Rect=b_Rect;
@@ -362,13 +362,13 @@ void CDLGYYETS::DisplayerList()
 	
 	if(ListTotal%PAGE_MAX_NUM)
 	{
-		sprintf(str,"共%d条 %d/%d页 每页%d条",
+		sprintf(str,ConvertString("共%d条 %d/%d页 每页%d条"),
 			ListTotal,
 			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM+1,PAGE_MAX_NUM);
 	}
 	else
 	{
-		sprintf(str,"共%d条 %d/%d页 每页%d条",
+		sprintf(str,ConvertString("共%d条 %d/%d页 每页%d条"),
 			ListTotal,
 			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM,PAGE_MAX_NUM);
 	}
@@ -447,7 +447,7 @@ void CDLGYYETS::OnButtonJump()
 		DisplayerList();
 	}
 	else
-		MessageBox("不在页面范围");
+		MessageBox(ConvertString("不在页面范围"));
 
 }
 

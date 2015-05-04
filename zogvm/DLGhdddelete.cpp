@@ -43,13 +43,13 @@ BOOL CDLGhdddelete::OnInitDialog()
 	CDialog::OnInitDialog();
 
 
-	m_list.InsertColumn(0, _T("磁盘序列号") , LVCFMT_LEFT, 80);
-	m_list.InsertColumn(1, _T("分区") , LVCFMT_LEFT, 40);
-	m_list.InsertColumn(2, _T("标签") , LVCFMT_LEFT, 150);
-	m_list.InsertColumn(3, _T("总空间") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(4, _T("剩余空间") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(5, _T("是否接驳") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(6, _T("nid") , LVCFMT_LEFT, 0);
+	m_list.InsertColumn(0, ConvertString("磁盘序列号") , LVCFMT_LEFT, 90);
+	m_list.InsertColumn(1, ConvertString("分区") , LVCFMT_LEFT, 40);
+	m_list.InsertColumn(2, ConvertString("标签") , LVCFMT_LEFT, 150);
+	m_list.InsertColumn(3, ConvertString("总空间") , LVCFMT_LEFT, 75);
+	m_list.InsertColumn(4, ConvertString("剩余空间") , LVCFMT_LEFT, 70);
+	m_list.InsertColumn(5, ConvertString("是否接驳") , LVCFMT_LEFT, 60);
+	m_list.InsertColumn(6, ConvertString("nid") , LVCFMT_LEFT, 0);
 
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -84,9 +84,9 @@ void CDLGhdddelete::DisplayerList()
 		m_list.SetItemText(i,4,str);
 
 		if(beglist->insertflag)
-			m_list.SetItemText(i,5,"接入<--");
+			m_list.SetItemText(i,5,ConvertString("接入<--"));
 		else
-			m_list.SetItemText(i,5,"脱机-->");
+			m_list.SetItemText(i,5,ConvertString("脱机-->"));
 
 		sprintf(str,"%d",beglist->hdd_nid);
 		m_list.SetItemText(i,6,str);
@@ -118,7 +118,7 @@ void CDLGhdddelete::OnOK()
 	}
 		SQLDB.Commit();
 
-	MessageBox("删除完毕",NULL);
+	MessageBox(ConvertString("删除完毕"),NULL);
 
 	hddList.clear();
 	SQLDB.Hdd_Read(hddList);
@@ -153,7 +153,7 @@ void CDLGhdddelete::OnBnClickedButtonDeleteDouble()
 	SQLDB.File_CleanDouble2Zero();
 	SQLDB.Commit();
 
-	MessageBox("删除完毕",NULL);
+	MessageBox(ConvertString("删除完毕"),NULL);
 }
 
 

@@ -21,7 +21,7 @@ CDLGViewEd2k::CDLGViewEd2k(CWnd* pParent /*=NULL*/)
 	ListNow=0;
 	sprintf(libpath[EXTERN_ED2K_NGC],"%s\\externdb\\ngc.db",CurrentDir);
 	sprintf(libpath[EXTERN_ED2K_NHK],"%s\\externdb\\nhk.db",CurrentDir);
-	strcpy(libname[EXTERN_ED2K_NGC],"台湾版DC和NGC");
+	strcpy(libname[EXTERN_ED2K_NGC],ConvertString("台湾版DC和NGC"));
 	strcpy(libname[EXTERN_ED2K_NHK],"NHK");
 	
 
@@ -82,17 +82,17 @@ BOOL CDLGViewEd2k::OnInitDialog()
 
 	if(0==combo_total)
 	{
-		MessageBox("数据库未找到","错误");
+		MessageBox(ConvertString("数据库未找到"),"error");
 		return FALSE;
 	}
 
 	m_c_lib.SetCurSel(0);
 	ed2kDB.OpenDB(libpath[combo_index[0]]);
 
-	m_list.InsertColumn(0, _T("序列号") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(1, _T("片名") , LVCFMT_LEFT, 600);
-	m_list.InsertColumn(2, _T("容量") , LVCFMT_LEFT, 70);
-	m_list.InsertColumn(3, _T("电驴链接") , LVCFMT_LEFT, 200);
+	m_list.InsertColumn(0, ConvertString("序列号") , LVCFMT_LEFT, 70);
+	m_list.InsertColumn(1, ConvertString("片名") , LVCFMT_LEFT, 600);
+	m_list.InsertColumn(2, ConvertString("容量") , LVCFMT_LEFT, 70);
+	m_list.InsertColumn(3, ConvertString("电驴链接") , LVCFMT_LEFT, 200);
 
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -138,7 +138,7 @@ void CDLGViewEd2k::OnSize(UINT nType, int cx, int cy)
 	b_Rect.bottom =	b_Rect.top+buttonbmph;
 
 	b_Rect.left = list_Rect.left+10;
-	b_Rect.right = b_Rect.left+200;
+	b_Rect.right = b_Rect.left+300;
 	GetDlgItem(IDC_STATIC_INFO)->MoveWindow(b_Rect);
 
 	printf_Rect=b_Rect;
@@ -316,13 +316,13 @@ void CDLGViewEd2k::DisplayerList()
 
 	if(ListTotal%PAGE_MAX_NUM)
 	{
-		sprintf(str,"共%d条 %d/%d页 每页%d条",
+		sprintf(str,ConvertString("共%d条 %d/%d页 每页%d条"),
 			ListTotal,
 			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM+1,PAGE_MAX_NUM);
 	}
 	else
 	{
-		sprintf(str,"共%d条 %d/%d页 每页%d条",
+		sprintf(str,ConvertString("共%d条 %d/%d页 每页%d条"),
 			ListTotal,
 			ListNow/PAGE_MAX_NUM+1,ListTotal/PAGE_MAX_NUM,PAGE_MAX_NUM);
 	}
@@ -401,7 +401,7 @@ void CDLGViewEd2k::OnButtonJump()
 		DisplayerList();
 	}
 	else
-		MessageBox("不在页面范围");
+		MessageBox(ConvertString("不在页面范围"));
 
 }
 

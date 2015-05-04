@@ -27,8 +27,9 @@ list<struct FILE_VIEW_ST> outputList;
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-	long long 	aaaa;
-		long long  bbbb;
+	
+long long 	aaaa;
+long long  bbbb;
 /////////////////////////////////////////////////////////////////////////////
 // CZogvmDlg dialog
 
@@ -133,7 +134,7 @@ DWORD WINAPI BuildThreadPROC(LPVOID lpParameter)
 	{
 		if(beglist->insertflag && beglist->enable)
 		{
-			sprintf(tempstr,"%s %s ：建目录中..",beglist->serno,beglist->mark);
+			sprintf(tempstr,ConvertString("%s %s ：建目录中.."),beglist->serno,beglist->mark);
 			pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 
 			//建目录
@@ -142,7 +143,7 @@ DWORD WINAPI BuildThreadPROC(LPVOID lpParameter)
 			//缺少 关联 IDX代码
 			SQLDB.File_CleanIDX(beglist->hdd_nid);
 
-			sprintf(tempstr,"%s %s ：判断文件是否存在..",beglist->serno,beglist->mark);
+			sprintf(tempstr,ConvertString("%s %s ：判断文件是否存在.."),beglist->serno,beglist->mark);
 			pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 			//查看文件是否存在
 			CheckAllIsFile(beglist->hdd_nid);
@@ -154,7 +155,7 @@ DWORD WINAPI BuildThreadPROC(LPVOID lpParameter)
 	{
 		if(beglist->insertflag && beglist->enable)
 		{
-			sprintf(tempstr,"%s %s ：判断重复文件..",beglist->serno,beglist->mark);
+			sprintf(tempstr,ConvertString("%s %s ：判断重复文件.."),beglist->serno,beglist->mark);
 			pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 			//查看重复文件
 			CheckAllDoubleFile(beglist->hdd_nid);
@@ -162,7 +163,7 @@ DWORD WINAPI BuildThreadPROC(LPVOID lpParameter)
 	}
 
 	bbbb=GetTickCount()-aaaa;
-	sprintf(tempstr,"全部扫描完毕~么么哒 耗时%I64u分钟",bbbb/60000);
+	sprintf(tempstr,ConvertString("全部扫描完毕~么么哒 耗时%I64u分钟"),bbbb/60000);
 	pZogvmDlg->GetDlgItem(IDC_STATIC_MSG)->SetWindowText(tempstr);
 	pZogvmDlg->GetDlgItem(IDC_BUTTON_BUILD)->EnableWindow(TRUE);
 	
@@ -297,27 +298,27 @@ BOOL CZogvmDlg::OnInitDialog()
  //m_NullIcon.Add(AfxGetApp()->LoadIcon(IDI_NULL));
  //m_list.SetImageList(&m_NullIcon,LVSIL_SMALL);  
 
-	m_list.InsertColumn(0, _T("硬盘序列号") , LVCFMT_LEFT, 80);
-	m_list.InsertColumn(1, _T("标签") , LVCFMT_LEFT, 80);
-	m_list.InsertColumn(2, _T("分区") , LVCFMT_LEFT, 40);
-	m_list.InsertColumn(3, _T("序号") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(4, _T("路径") , LVCFMT_LEFT, 200);
-	m_list.InsertColumn(5, _T("文件名") , LVCFMT_LEFT, 300);
-	m_list.InsertColumn(6, _T("类型") , LVCFMT_LEFT, 40);
-	m_list.InsertColumn(7, _T("后缀") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(8, _T("创建时间") , LVCFMT_LEFT, 130);
-	m_list.InsertColumn(9, _T("修改时间") , LVCFMT_LEFT,130);
-	m_list.InsertColumn(10, _T("文件大小") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(11, _T("分辨率") , LVCFMT_LEFT, 0);
-	m_list.InsertColumn(12, _T("播放长度") , LVCFMT_LEFT, 0);
-	m_list.InsertColumn(13, _T("硬盘接驳") , LVCFMT_LEFT, 60);
-	m_list.InsertColumn(14, _T("3D") , LVCFMT_LEFT,30);
-	m_list.InsertColumn(15, _T("画质") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(16, _T("分辨率") , LVCFMT_LEFT, 50);
-	m_list.InsertColumn(17, _T("压制组") , LVCFMT_LEFT, 80);
-	m_list.InsertColumn(18, _T("年代") , LVCFMT_LEFT, 40);
-	m_list.InsertColumn(19, _T("效验值") , LVCFMT_LEFT, 0);
-	m_list.InsertColumn(20, _T("重复ID") , LVCFMT_LEFT, 50);
+	m_list.InsertColumn(0, ConvertString("磁盘序列号") , LVCFMT_LEFT, 90);
+	m_list.InsertColumn(1, ConvertString("标签") , LVCFMT_LEFT, 80);
+	m_list.InsertColumn(2, ConvertString("分区") , LVCFMT_LEFT, 40);
+	m_list.InsertColumn(3, ConvertString("序号") , LVCFMT_LEFT, 50);
+	m_list.InsertColumn(4, ConvertString("路径") , LVCFMT_LEFT, 200);
+	m_list.InsertColumn(5, ConvertString("文件名") , LVCFMT_LEFT, 300);
+	m_list.InsertColumn(6, ConvertString("类型") , LVCFMT_LEFT, 40);
+	m_list.InsertColumn(7, ConvertString("后缀") , LVCFMT_LEFT, 50);
+	m_list.InsertColumn(8, ConvertString("创建时间") , LVCFMT_LEFT, 130);
+	m_list.InsertColumn(9, ConvertString("修改时间") , LVCFMT_LEFT,130);
+	m_list.InsertColumn(10, ConvertString("文件大小") , LVCFMT_LEFT, 60);
+	m_list.InsertColumn(11, ConvertString("分辨率") , LVCFMT_LEFT, 0);
+	m_list.InsertColumn(12, ConvertString("播放长度") , LVCFMT_LEFT, 0);
+	m_list.InsertColumn(13, ConvertString("硬盘接驳") , LVCFMT_LEFT, 60);
+	m_list.InsertColumn(14, ConvertString("3D") , LVCFMT_LEFT,30);
+	m_list.InsertColumn(15, ConvertString("画质") , LVCFMT_LEFT, 50);
+	m_list.InsertColumn(16, ConvertString("分辨率") , LVCFMT_LEFT, 50);
+	m_list.InsertColumn(17, ConvertString("压制组") , LVCFMT_LEFT, 80);
+	m_list.InsertColumn(18, ConvertString("年代") , LVCFMT_LEFT, 40);
+	m_list.InsertColumn(19, ConvertString("效验值") , LVCFMT_LEFT, 0);
+	m_list.InsertColumn(20, ConvertString("重复ID") , LVCFMT_LEFT, 50);
 	//带复选框 LVS_EX_CHECKBOXES 带图标 LVS_EX_SUBITEMIMAGES
 	m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_SUBITEMIMAGES);
 
@@ -763,7 +764,7 @@ void CZogvmDlg::OnSize(UINT nType, int cx, int cy)
 	b_Rect.bottom =	b_Rect.top+buttonbmph;
 
 	b_Rect.left = list_Rect.left+10;
-	b_Rect.right = b_Rect.left+200;
+	b_Rect.right = b_Rect.left+300;
 	GetDlgItem(IDC_STATIC_INFO)->MoveWindow(b_Rect);
 
 	printf_Rect=b_Rect;

@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "zogvm.h"
 #include "DLGFileType.h"
+#include "video.h"
 
 #include "SqliteOperate.h"
 extern CSqliteOperate SQLDB;
@@ -88,8 +89,8 @@ BOOL CDLGFileType::OnInitDialog()
 
 void CDLGFileType::InitVideoList(void)
 {
-	m_list_video.InsertColumn(0, _T("后缀") , LVCFMT_LEFT, 100);
-	m_list_video.InsertColumn(1, _T("nid") , LVCFMT_LEFT, 0);
+	m_list_video.InsertColumn(0, ConvertString("后缀") , LVCFMT_LEFT, 100);
+	m_list_video.InsertColumn(1, ConvertString("nid") , LVCFMT_LEFT, 0);
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list_video.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
 	
@@ -118,8 +119,8 @@ void CDLGFileType::DisplayVideoList(void)
 
 void CDLGFileType::InitMusicList(void)
 {
-	m_list_music.InsertColumn(0, _T("后缀") , LVCFMT_LEFT, 100);
-	m_list_music.InsertColumn(1, _T("nid") , LVCFMT_LEFT, 0);
+	m_list_music.InsertColumn(0, ConvertString("后缀") , LVCFMT_LEFT, 100);
+	m_list_music.InsertColumn(1, ConvertString("nid") , LVCFMT_LEFT, 0);
 	
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list_music.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -152,8 +153,8 @@ void CDLGFileType::DisplayMusicList(void)
 
 void CDLGFileType::InitSubList(void)
 {
-	m_list_sub.InsertColumn(0, _T("后缀") , LVCFMT_LEFT, 100);
-	m_list_sub.InsertColumn(1, _T("nid") , LVCFMT_LEFT, 0);
+	m_list_sub.InsertColumn(0, ConvertString("后缀") , LVCFMT_LEFT, 100);
+	m_list_sub.InsertColumn(1, ConvertString("nid") , LVCFMT_LEFT, 0);
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list_sub.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
 
@@ -180,8 +181,8 @@ void CDLGFileType::DisplaySubList(void)
 
 void CDLGFileType::InitOtherList(void)
 {
-	m_list_other.InsertColumn(0, _T("后缀") , LVCFMT_LEFT, 100);
-	m_list_other.InsertColumn(1, _T("nid") , LVCFMT_LEFT, 0);
+	m_list_other.InsertColumn(0, ConvertString("后缀") , LVCFMT_LEFT, 100);
+	m_list_other.InsertColumn(1, ConvertString("nid") , LVCFMT_LEFT, 0);
 	
 	//带复选框 LVS_EX_CHECKBOXES
 	m_list_other.SetExtendedStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_CHECKBOXES);
@@ -293,7 +294,7 @@ void CDLGFileType::OnBnClickedButtonNew()
 
 	if(m_e_new.IsEmpty())
 	{
-		MessageBox("文件后缀不能为空");
+		MessageBox(ConvertString("文件后缀不能为空"));
 		return ;
 	}
 	SQLDB.Type_Add_Lock(m_c_new,m_e_new.GetBuffer(0));
